@@ -1,4 +1,5 @@
 <div align="center">
+  <!-- GitHub Copilot; updated 2026-09-27T22:23:08Z -->
   <img src="assets/pics/gqy-logo.png" alt="GQY logo" width="160" />
   <h1>GQY v2 · 顾清影</h1>
   <p><strong>Rust as the body, Web as the face, C as the path</strong></p>
@@ -55,6 +56,12 @@ Everything below is a **design goal** for v2. None of it is an existing feature.
 | M4 Companion | Personas, memory, QQ / iMessage | Not started |
 | M5 Multi-device | Pair devices, share capabilities, sync on request | Not started |
 | M6 First release | Download and install, import v1 data | Not started |
+
+## Commit History
+
+![Commit activity](https://yxxbc.github.io/GQYv2/commit-activity.svg)
+
+[View the branch and commit graph](https://github.com/yxxbc/GQYv2/network). The activity chart updates after every push to `main`, including PR merges.
 
 ## Documentation
 
