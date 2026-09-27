@@ -1,0 +1,5 @@
+# macOS
+.DS_Store
+
+# 施工工作树（见 AGENTS.md）
+.worktrees/

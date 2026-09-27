@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 4 ]]; then
+  printf '用法: %s <base-sha> <head-sha> <pr-title> <skip-changelog-label>\n' "$0" >&2
+  exit 2
+fi
+
+base_sha=$1
+head_sha=$2
+pr_title=$3
+skip_changelog_label=$4
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+check_subject() {
+  bash "$script_dir/check-commit-subject.sh" "$1" "$2"
+}
+
+check_subject 'PR 标题' "$pr_title"
+
+commit_range="$base_sha..$head_sha"
+merge_commits=$(git rev-list --merges "$commit_range")
+if [[ -n "$merge_commits" ]]; then
+  printf 'PR 分支不得包含 merge commit，请 rebase 整理提交。\n' >&2
+  exit 1
+fi
+
+commit_shas=$(git rev-list "$commit_range")
+if [[ -z "$commit_shas" ]]; then
+  printf 'PR 分支没有可检查的提交。\n' >&2
+  exit 1
+fi
+
+while IFS= read -r commit_sha; do
+  subject=$(git show -s --format=%s "$commit_sha")
+  commit_body=$(git show -s --format=%b "$commit_sha")
+  check_subject '提交标题' "$subject"
+
+  if [[ "$subject" == *'!: '* ]] && ! printf '%s\n' "$commit_body" | grep -Eq '^BREAKING CHANGE: .+'; then
+    printf '破坏性提交必须在提交正文中包含非空的 BREAKING CHANGE: footer: %s\n' "$subject" >&2
+    exit 1
+  fi
+done <<< "$commit_shas"
+
+if git diff --quiet "$base_sha...$head_sha" -- CHANGELOG.md; then
+  if [[ "$skip_changelog_label" != 'true' ]]; then
+    printf '此 PR 必须更新 CHANGELOG.md；纯内部变更请由维护者添加 skip-changelog 标签。\n' >&2
+    exit 1
+  fi
+  printf '提交标题通过；已按 skip-changelog 标签豁免变更日志。\n'
+  exit 0
+fi
+
+if ! awk '
+  /^## \[Unreleased\]$/ { section = "unreleased"; next }
+  /^## / {
+    if (section == "unreleased" && /^## \[v?[0-9]+\.[0-9]+\.[0-9]+/) {
+      section = "release"
+    } else {
+      section = "other"
+    }
+    in_category = 0
+    next
+  }
+  (section == "unreleased" || section == "release") && /^### (Added|Changed|Deprecated|Removed|Fixed|Security)$/ {
+    in_category = 1
+    next
+  }
+  (section == "unreleased" || section == "release") && /^### / { in_category = 0 }
+  section == "unreleased" && in_category && /^[*-] .+/ { found_unreleased_entry = 1 }
+  section == "release" && in_category && /^[*-] .+/ { found_release_entry = 1 }
+  END { exit !(found_unreleased_entry || found_release_entry) }
+' CHANGELOG.md; then
+  printf 'CHANGELOG.md 必须在 ## [Unreleased] 或最新版本标题下包含分类标题及至少一条列表记录。\n' >&2
+  exit 1
+fi
+
+printf '提交标题和变更日志检查通过。\n'

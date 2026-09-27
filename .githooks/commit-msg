@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ $# -ne 1 ]]; then
+  printf 'commit-msg hook 需要 Git 提供提交说明文件路径。\n' >&2
+  exit 2
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+message_file=$1
+subject=$(sed -n '1p' "$message_file")
+
+exec bash "$repo_root/scripts/check-commit-subject.sh" '提交标题' "$subject"

@@ -1,0 +1,1955 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GQY v2 施工图</title>
+<!--
+  GQY v2 施工图。单文件、无外部依赖，直接用浏览器打开。
+
+  维护规则（见 AGENTS.md「施工的规矩」与 docs/construction/00-施工总纲.md §3）：
+  1. 数据只有一处：下方 <script id="plan-data"> 里每张施工单的 status。
+     施工单文件头的“状态”是唯一真相源，改了施工单状态就同步改这里（P00 起由 `cargo xtask plan` 校验一致）。
+  2. 顶上的架构拼图按 status 自动点亮：一块对应的施工单全部“已完成”就画实，部分完成画框，
+     有“待验收”画虚线。块与施工单的对应关系在脚本里的 PIECES，新增或调整施工单时同步改它。
+  3. 每张施工单合入 main 时，在「每一步的图」里补一节 <section class="sheet">：这一步做完以后仓库长成什么样、
+     新加了什么、怎么验收的（模板见该区块内的注释）。
+-->
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f0e2;--panel:#fffdf6;--panel-2:#f1eada;
+  --ink:#34303a;--ink-2:#797064;--line:#c6b795;--line-2:#e3d8c1;
+  --primary:#7568b0;--on-primary:#ffffff;--primary-soft:#e6e1f6;--primary-ink:#372e66;
+  --secondary:#8f6b1e;--secondary-soft:#f3e2bb;
+  --ok:#3e8e5c;--ok-soft:#dcefe2;
+  --core-fill:#f0e8d6;--kernel-fill:#ece8f5;--kernel-box:#f9f7fd;--store-fill:#f5ebd2;
+  --sans:"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",system-ui,sans-serif;
+  --serif:"Songti SC","Noto Serif CJK SC","Source Han Serif SC","STSong",serif;
+  --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --gutter:24px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#171821;--panel:#1f212c;--panel-2:#282b38;
+    --ink:#e9e6ef;--ink-2:#9993a5;--line:#4c5065;--line-2:#303341;
+    --primary:#aebde8;--on-primary:#1f2c55;--primary-soft:#2a3354;--primary-ink:#dce3f9;
+    --secondary:#e4bf79;--secondary-soft:#3d3217;
+    --ok:#7ccb96;--ok-soft:#1d3326;
+    --core-fill:#1c1d28;--kernel-fill:#222740;--kernel-box:#292f4a;--store-fill:#221f18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#171821;--panel:#1f212c;--panel-2:#282b38;
+  --ink:#e9e6ef;--ink-2:#9993a5;--line:#4c5065;--line-2:#303341;
+  --primary:#aebde8;--on-primary:#1f2c55;--primary-soft:#2a3354;--primary-ink:#dce3f9;
+  --secondary:#e4bf79;--secondary-soft:#3d3217;
+  --ok:#7ccb96;--ok-soft:#1d3326;
+  --core-fill:#1c1d28;--kernel-fill:#222740;--kernel-box:#292f4a;--store-fill:#221f18;
+}
+@media (max-width:640px){:root{--gutter:16px}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
+.page{max-width:1160px;margin:0 auto;padding-inline:var(--gutter);padding-block:36px 72px;display:grid;gap:52px}
+a{color:var(--primary)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--primary);outline-offset:2px;border-radius:4px}
+code,.mono{font-family:var(--mono);font-size:.9em}
+h2{font:700 24px/1.3 var(--serif);margin:0}
+h3{font:600 14px/1.4 var(--sans);margin:0 0 8px;color:var(--ink-2);letter-spacing:.04em}
+.sub{margin:0;color:var(--ink-2);font-size:14px}
+
+/* 刊头 */
+.mast{position:relative}
+.eyebrow{margin:0;font:600 12px/1.4 var(--mono);letter-spacing:.1em;color:var(--ink-2)}
+h1{font:700 clamp(32px,4.6vw,50px)/1.15 var(--serif);margin:.3em 0 .35em;letter-spacing:.01em}
+.lede{margin:0;max-width:62ch;font-size:16.5px;line-height:1.8}
+.facts{display:flex;flex-wrap:wrap;gap:12px 34px;margin:22px 0 0;padding:0;list-style:none}
+.facts li{display:flex;align-items:baseline;gap:9px;color:var(--ink-2);font-size:13.5px;line-height:1.4}
+.facts b{font:700 26px/1 var(--serif);color:var(--primary);font-variant-numeric:tabular-nums}
+.facts b.mono{font:600 19px/1 var(--mono)}
+.facts strong{color:var(--ink);font-weight:600}
+.theme{position:absolute;top:0;right:0;font:inherit;font-size:13px;color:var(--ink-2);background:var(--panel);border:1px solid var(--line-2);border-radius:8px;padding:4px 10px;cursor:pointer}
+
+/* 拼图 */
+.board{display:grid;gap:14px}
+.map-scroll{overflow-x:auto;border:1px solid var(--line-2);border-radius:10px;background:var(--panel)}
+.map-inner{min-width:900px}
+#bmap{display:block;width:100%;height:auto}
+#bmap text{font-family:var(--sans)}
+#bmap .shell{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:5 4}
+#bmap .gl{fill:var(--ink-2);font-size:13px;font-weight:600}
+#bmap .gs{fill:var(--ink-2);font-size:11.5px}
+#bmap .box{fill:transparent;stroke:var(--line);stroke-width:1.1;stroke-dasharray:5 4}
+#bmap .t{fill:var(--ink-2);font-size:14px;font-weight:600;opacity:.75}
+#bmap .s{fill:var(--ink-2);font-size:11.5px;opacity:.6}
+#bmap .tree{fill:var(--ink-2);font:11.5px var(--mono);opacity:.7}
+#bmap .ln{fill:none;stroke:var(--line);stroke-width:1.2;stroke-dasharray:4 4}
+#bmap .mk{fill:var(--line)}
+#bmap .el{fill:var(--ink-2);font-size:11px;opacity:.7}
+#bmap .g-core>.shell{fill:var(--core-fill);stroke:var(--line);stroke-dasharray:none;opacity:.55}
+#bmap .g-kernel>.shell{fill:var(--kernel-fill);opacity:.7}
+#bmap .g-store>.shell{fill:var(--store-fill);opacity:.6}
+/* 画实：全部施工单已完成 */
+#bmap .on .box{fill:var(--panel);stroke:var(--ink-2);stroke-width:1.4;stroke-dasharray:none}
+#bmap .on.k-kernel .box{fill:var(--kernel-box);stroke:var(--primary)}
+#bmap .on.k-ext .box{stroke-dasharray:4 3}
+#bmap .on.k-bus .box{fill:var(--primary-soft);stroke:var(--primary)}
+#bmap .on text{opacity:1}
+#bmap .on .t{fill:var(--ink)}
+#bmap .on>.shell{stroke:var(--primary);stroke-dasharray:none;opacity:1}
+#bmap .edge.on .ln{stroke:var(--ink-2);stroke-width:1.5;stroke-dasharray:none}
+#bmap .edge.on.t-proto .ln{stroke:var(--primary)}
+#bmap .edge.on.t-store .ln{stroke:var(--secondary)}
+#bmap .edge.on .el{opacity:1}
+/* 搭好框：部分施工单已完成 */
+#bmap .frame .box{fill:var(--kernel-box);stroke:var(--primary);stroke-width:1.3;stroke-dasharray:none}
+#bmap .frame .t{fill:var(--ink);opacity:1}
+#bmap .frame .s{opacity:.85}
+#bmap .frame>.shell{stroke:var(--primary);stroke-dasharray:none}
+/* 等验收 */
+#bmap .review .box,#bmap .review>.shell{stroke:var(--secondary);stroke-width:1.6;stroke-dasharray:5 3}
+#bmap .review text{opacity:1}
+#bmap .by rect{fill:var(--primary)}
+#bmap .by text{fill:var(--on-primary);font:600 10.5px var(--mono)}
+#bmap .by.review rect{fill:var(--secondary)}
+#bmap .by.review text{fill:var(--panel)}
+#bmap .by.part rect{fill:var(--panel);stroke:var(--primary)}
+#bmap .by.part text{fill:var(--primary)}
+#bmap .hit{cursor:pointer}
+#bmap .hit:hover .box{stroke:var(--primary)}
+#bmap .pick .box{stroke:var(--primary)!important;stroke-width:2.4!important}
+
+.base{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.base-cap{flex-basis:100%;margin:0;font-size:13px;font-weight:600;color:var(--ink-2)}
+.base-cap span{font-weight:400}
+.piece{display:inline-flex;align-items:center;gap:7px;padding:4px 9px;border-radius:7px;border:1px solid var(--primary);background:var(--primary-soft);font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink)}
+.piece .by{font:600 10.5px/1 var(--mono);padding:3px 6px;border-radius:4px;background:var(--primary);color:var(--on-primary)}
+.piece.review{border:1.5px dashed var(--secondary);background:var(--panel)}
+.piece.review .by{background:var(--secondary);color:var(--panel)}
+.piece.ghost{border:1px dashed var(--line);background:transparent;color:var(--ink-2)}
+.piece.ghost .nm{opacity:.6}
+.piece.ghost .by{background:var(--line-2);color:var(--ink-2)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;margin:0;padding:0;list-style:none;color:var(--ink-2);font-size:13px}
+.legend li{display:flex;align-items:center;gap:7px}
+.sw{display:inline-block;width:22px;height:13px;border-radius:3px;border:1.4px solid var(--ink-2);background:var(--panel)}
+.sw.ghost{border:1px dashed var(--line);background:transparent}
+.sw.frame{border-color:var(--primary);background:var(--kernel-box)}
+.sw.review{border:1.5px dashed var(--secondary);background:transparent}
+.built{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px;font-size:13.5px;line-height:1.6}
+.built li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:4px 10px;align-items:baseline}
+.built .by{font:600 10.5px/1 var(--mono);padding:3px 6px;border-radius:4px;background:var(--primary);color:var(--on-primary);white-space:nowrap}
+.built .by.part{background:var(--panel);color:var(--primary);border:1px solid var(--primary)}
+.built .nm{font-weight:600;white-space:nowrap}
+.built .nt{color:var(--ink-2)}
+.empty{color:var(--ink-2);font-size:13.5px;margin:0}
+@media (max-width:640px){.built li{grid-template-columns:auto minmax(0,1fr)}.built .nt{grid-column:1/-1}}
+
+/* 工程表 */
+.sched{display:grid;gap:14px}
+.ms{list-style:none;margin:0;padding:0;display:grid;border-top:1px solid var(--line-2)}
+.ms>li{display:grid;grid-template-columns:minmax(170px,230px) 1fr;gap:6px 22px;padding:14px 0;border-bottom:1px solid var(--line-2);align-items:start}
+.ms-head{display:grid;grid-template-columns:auto 1fr;column-gap:10px;align-items:baseline}
+.ms-id{font:600 13px/1 var(--mono);color:var(--primary)}
+.ms-name{font-weight:600}
+.ms-name a{color:inherit;text-decoration:none}
+.ms-name a:hover{text-decoration:underline}
+.ms-goal{grid-column:2;color:var(--ink-2);font-size:12.5px;line-height:1.5}
+.ms-tag{grid-column:2;font:600 11px/1.6 var(--mono);color:var(--secondary)}
+.chips{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.step{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);color:var(--ink-2);font:13px/1.3 var(--sans);cursor:pointer;text-align:left}
+.step .n{font:600 11.5px/1 var(--mono);color:var(--ink-2)}
+.step .st{font-size:11.5px;font-weight:600}
+.step:hover{border-color:var(--primary)}
+.step.done{border-color:var(--ok);background:var(--ok-soft);color:var(--ink)}
+.step.done .st{color:var(--ok)}
+.step.review,.step.doing{border-color:var(--secondary);background:var(--secondary-soft);color:var(--ink)}
+.step.review .st,.step.doing .st{color:var(--secondary)}
+.step.dropped{text-decoration:line-through;opacity:.6}
+.step.sel{outline:2px solid var(--primary)}
+.step.up{box-shadow:inset 0 -3px 0 var(--primary)}
+.step.down{box-shadow:inset 0 -3px 0 var(--secondary)}
+.step.fade{opacity:.35}
+.ms-sep{padding:18px 0 4px!important;grid-template-columns:1fr!important;border-bottom:none!important}
+.ms-sep b{font:700 17px/1.3 var(--serif)}
+.ms-sep span{color:var(--ink-2);font-size:13px;margin-left:10px}
+
+.detail{position:sticky;bottom:12px;padding:14px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.12);z-index:5}
+.detail h3{color:var(--ink);font-size:15px;margin:0 0 8px}
+.detail dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 12px;margin:0;font-size:13px}
+.detail dt{color:var(--ink-2)}
+.detail dd{margin:0;display:flex;flex-wrap:wrap;gap:6px}
+.lk{background:none;border:none;padding:0;color:var(--primary);cursor:pointer;font:12px var(--mono);text-decoration:underline}
+.close{float:right;font:inherit;font-size:12px;background:var(--panel-2);border:1px solid var(--line-2);border-radius:6px;padding:2px 8px;cursor:pointer;color:var(--ink)}
+
+/* 每一步的图 */
+.sheets{display:grid;gap:18px}
+.sheet{background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:18px 20px}
+.sheet-head{display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;justify-content:space-between}
+.sheet h2 .no{font:600 14px var(--mono);color:var(--primary);margin-right:10px}
+.pill{font-size:12px;padding:1px 9px;border-radius:999px;border:1px solid var(--ok);color:var(--ok);background:var(--ok-soft)}
+.pill.review{color:var(--secondary);border-color:var(--secondary);background:var(--secondary-soft)}
+footer{color:var(--ink-2);font-size:12.5px}
+@media (max-width:720px){.ms>li{grid-template-columns:1fr}.ms-goal,.ms-tag{grid-column:auto}}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="mast">
+    <button class="theme" id="theme" type="button" aria-label="切换明暗">◐ 明暗</button>
+    <p class="eyebrow">GQY V2 · 施工图</p>
+    <h1>顾清影 v2 施工图</h1>
+    <p class="lede">整个 v2 的架构先全画成虚线；每完成一张施工单，就把它拼上的那几块点亮。施工方案和每一步的施工单在 <code>docs/construction/</code>，这张图跟着它们一起更新。</p>
+    <ul class="facts" id="facts"></ul>
+  </header>
+
+  <section class="board" aria-labelledby="h-board">
+    <h2 id="h-board">拼到哪了</h2>
+    <p class="sub">布局照 <code>docs/designs/01-总体架构.md</code> 的分层。块上的标签是拼它的施工单；点一块，下面的工程表会高亮它对应的施工单。</p>
+    <div class="map-scroll"><div class="map-inner"><svg id="bmap" role="img" aria-label="GQY v2 架构拼图"></svg></div></div>
+    <div class="base" id="base" aria-label="地基与工具"><p class="base-cap">地基与工具 <span>· 不在架构图里，每一步都站在它上面</span></p></div>
+    <ul class="legend" aria-label="拼图的图例">
+      <li><span class="sw ghost"></span>还没拼</li>
+      <li><span class="sw frame"></span>拼了一部分（标签写完成几张）</li>
+      <li><span class="sw"></span>拼完了，标签是最后一张单</li>
+      <li><span class="sw review"></span>有施工单在等验收</li>
+    </ul>
+    <ol class="built" id="built" aria-label="拼上的块"></ol>
+  </section>
+
+  <section class="sched" aria-labelledby="h-sched">
+    <h2 id="h-sched">工程表</h2>
+    <p class="sub">17 个阶段、全部施工单都已拆到 PR 级。点一张单，看它依赖谁（紫色下划线）、谁依赖它（金色下划线）。阶段名链接到阶段说明。</p>
+    <ul class="legend" aria-label="图例">
+      <li><span class="sw" style="border-color:var(--ok);background:var(--ok-soft)"></span>已完成</li>
+      <li><span class="sw" style="border-color:var(--secondary);background:var(--secondary-soft)"></span>进行中、待验收</li>
+      <li><span class="sw" style="border-color:var(--line-2)"></span>未开始</li>
+    </ul>
+    <ol class="ms" id="ms"></ol>
+    <aside class="detail" id="detail" hidden aria-live="polite"></aside>
+  </section>
+
+  <section class="sheets" aria-labelledby="h-sheets">
+    <h2 id="h-sheets">每一步的图</h2>
+    <p class="sub">一步一张图：这一步做完以后仓库长成什么样、新加了什么、怎么验收的。施工单合入 main 时补上自己的一节。</p>
+    <!--
+      模板（复制后改编号、标题、状态与内容；id 用 s + 施工单编号）：
+      <section class="sheet" id="sP00-01">
+        <div class="sheet-head"><h2><span class="no">P00-01</span>workspace骨架</h2><span class="pill">已完成</span></div>
+        <p>一句话：做完以后仓库多了什么。</p>
+        <ul><li>新加的文件/crate/命令……</li></ul>
+        <p>验收：照施工单「验收流程」跑过的命令与结果。提交：<code>abc1234</code></p>
+      </section>
+    -->
+    <p class="empty" id="no-sheets">还没有完成的施工单。</p>
+  </section>
+
+  <footer>数据来源：本文件内的 <code>plan-data</code>，状态以各施工单文件头为准。规范见 <a href="00-施工总纲.md">00-施工总纲.md</a> 与仓库根 <code>AGENTS.md</code>。</footer>
+</div>
+
+<script type="application/json" id="plan-data">{
+ "updated": "2026-09-28",
+ "phases": [
+  {
+   "id": "P00",
+   "name": "工程地基",
+   "goal": "workspace、lints、CI、架构/体积门禁、测试日志、错误与日志骨架",
+   "milestone": null,
+   "deps": [],
+   "wos": [
+    {
+     "id": "P00-01",
+     "title": "workspace骨架",
+     "deps": [],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-01-workspace骨架.md"
+    },
+    {
+     "id": "P00-02",
+     "title": "xtask与分层门禁",
+     "deps": [
+      "P00-01"
+     ],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-02-xtask与分层门禁.md"
+    },
+    {
+     "id": "P00-03",
+     "title": "体积门禁与clippy规则",
+     "deps": [
+      "P00-01"
+     ],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-03-体积门禁与clippy规则.md"
+    },
+    {
+     "id": "P00-04",
+     "title": "测试日志与报告",
+     "deps": [
+      "P00-02"
+     ],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-04-测试日志与报告.md"
+    },
+    {
+     "id": "P00-05",
+     "title": "错误与日志骨架",
+     "deps": [
+      "P00-01"
+     ],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-05-错误与日志骨架.md"
+    },
+    {
+     "id": "P00-06",
+     "title": "CI与本地检查接入",
+     "deps": [
+      "P00-02",
+      "P00-03",
+      "P00-04"
+     ],
+     "status": "未开始",
+     "file": "P00-工程地基/P00-06-CI与本地检查接入.md"
+    }
+   ],
+   "dir": "P00-工程地基"
+  },
+  {
+   "id": "P01",
+   "name": "核心类型与存储",
+   "goal": "领域类型、SQLite 单写者、迁移框架、核心表、blob、备份、路径与最小配置",
+   "milestone": null,
+   "deps": [
+    "P00"
+   ],
+   "wos": [
+    {
+     "id": "P01-01",
+     "title": "核心ID、Clock与规范化JSON",
+     "deps": [
+      "P00-05"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-01-核心ID、Clock与规范化JSON.md"
+    },
+    {
+     "id": "P01-02",
+     "title": "领域消息类型与安全文本工具",
+     "deps": [
+      "P01-01"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-02-领域消息类型与安全文本工具.md"
+    },
+    {
+     "id": "P01-03",
+     "title": "GqyPaths与最小配置加载",
+     "deps": [
+      "P01-01"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-03-GqyPaths与最小配置加载.md"
+    },
+    {
+     "id": "P01-04",
+     "title": "store写者线程与读连接池",
+     "deps": [
+      "P01-01"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-04-store写者线程与读连接池.md"
+    },
+    {
+     "id": "P01-05",
+     "title": "迁移框架与增量性守护",
+     "deps": [
+      "P01-04"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-05-迁移框架与增量性守护.md"
+    },
+    {
+     "id": "P01-06",
+     "title": "核心表",
+     "deps": [
+      "P01-05"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-06-核心表.md"
+    },
+    {
+     "id": "P01-07",
+     "title": "内容寻址blob存储",
+     "deps": [
+      "P01-04"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-07-内容寻址blob存储.md"
+    },
+    {
+     "id": "P01-08",
+     "title": "备份与完整性检查",
+     "deps": [
+      "P01-06",
+      "P01-07"
+     ],
+     "status": "未开始",
+     "file": "P01-核心类型与存储/P01-08-备份与完整性检查.md"
+    }
+   ],
+   "dir": "P01-核心类型与存储"
+  },
+  {
+   "id": "P02",
+   "name": "供应商适配",
+   "goal": "Provider trait、SSE、四类超时、mock、三种协议适配器、用量、重试与密钥轮转",
+   "milestone": null,
+   "deps": [
+    "P01"
+   ],
+   "wos": [
+    {
+     "id": "P02-01",
+     "title": "Provider trait、ProviderProfile与错误分类",
+     "deps": [
+      "P01-02",
+      "P01-03"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-01-Providertrait、ProviderProfile与错误分类.md"
+    },
+    {
+     "id": "P02-02",
+     "title": "HTTP客户端、四类超时与SSE解析",
+     "deps": [
+      "P02-01"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-02-HTTP客户端、四类超时与SSE解析.md"
+    },
+    {
+     "id": "P02-03",
+     "title": "mock供应商",
+     "deps": [
+      "P02-02"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-03-mock供应商.md"
+    },
+    {
+     "id": "P02-04",
+     "title": "openai-chat适配器",
+     "deps": [
+      "P02-03"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-04-openai-chat适配器.md"
+    },
+    {
+     "id": "P02-05",
+     "title": "anthropic适配器",
+     "deps": [
+      "P02-03"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-05-anthropic适配器.md"
+    },
+    {
+     "id": "P02-06",
+     "title": "openai-responses适配器",
+     "deps": [
+      "P02-03"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-06-openai-responses适配器.md"
+    },
+    {
+     "id": "P02-07",
+     "title": "用量归一化与缓存用量日志",
+     "deps": [
+      "P02-04"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-07-用量归一化与缓存用量日志.md"
+    },
+    {
+     "id": "P02-08",
+     "title": "重试、多key轮转与模型档位",
+     "deps": [
+      "P02-04"
+     ],
+     "status": "未开始",
+     "file": "P02-供应商适配/P02-08-重试、多key轮转与模型档位.md"
+    }
+   ],
+   "dir": "P02-供应商适配"
+  },
+  {
+   "id": "P03",
+   "name": "前缀缓存账本",
+   "goal": "账本条目、请求规划、化石化、工具面规范化、哈希链、字节前缀门禁",
+   "milestone": null,
+   "deps": [
+    "P01",
+    "P02"
+   ],
+   "wos": [
+    {
+     "id": "P03-01",
+     "title": "账本条目模型与三通道",
+     "deps": [
+      "P01-06",
+      "P02-01"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-01-账本条目模型与三通道.md"
+    },
+    {
+     "id": "P03-02",
+     "title": "请求规划与布局",
+     "deps": [
+      "P03-01"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-02-请求规划与布局.md"
+    },
+    {
+     "id": "P03-03",
+     "title": "化石化与冻结注入",
+     "deps": [
+      "P03-02"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-03-化石化与冻结注入.md"
+    },
+    {
+     "id": "P03-04",
+     "title": "工具面规范化与surface_hash",
+     "deps": [
+      "P03-02"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-04-工具面规范化与surface_hash.md"
+    },
+    {
+     "id": "P03-05",
+     "title": "前缀哈希链与请求记录",
+     "deps": [
+      "P03-03",
+      "P03-04",
+      "P02-07"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-05-前缀哈希链与请求记录.md"
+    },
+    {
+     "id": "P03-06",
+     "title": "字节前缀门禁",
+     "deps": [
+      "P03-05",
+      "P02-04",
+      "P02-05",
+      "P02-06"
+     ],
+     "status": "未开始",
+     "file": "P03-前缀缓存账本/P03-06-字节前缀门禁.md"
+    }
+   ],
+   "dir": "P03-前缀缓存账本"
+  },
+  {
+   "id": "P04",
+   "name": "回合引擎",
+   "goal": "TurnContext、会话 actor、Supervisor、准入与排队、状态机、取消、停机、事件总线",
+   "milestone": null,
+   "deps": [
+    "P03"
+   ],
+   "wos": [
+    {
+     "id": "P04-01",
+     "title": "TurnContext与会话快照",
+     "deps": [
+      "P03-02"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-01-TurnContext与会话快照.md"
+    },
+    {
+     "id": "P04-02",
+     "title": "Supervisor与SessionActor",
+     "deps": [
+      "P04-01"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-02-Supervisor与SessionActor.md"
+    },
+    {
+     "id": "P04-03",
+     "title": "准入、排队与代际",
+     "deps": [
+      "P04-02"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-03-准入、排队与代际.md"
+    },
+    {
+     "id": "P04-04",
+     "title": "回合状态机（无工具）",
+     "deps": [
+      "P04-03",
+      "P03-06"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-04-回合状态机（无工具）.md"
+    },
+    {
+     "id": "P04-05",
+     "title": "取消树与预算",
+     "deps": [
+      "P04-04"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-05-取消树与预算.md"
+    },
+    {
+     "id": "P04-06",
+     "title": "事件总线",
+     "deps": [
+      "P04-04"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-06-事件总线.md"
+    },
+    {
+     "id": "P04-07",
+     "title": "停机与启动恢复",
+     "deps": [
+      "P04-05",
+      "P04-06"
+     ],
+     "status": "未开始",
+     "file": "P04-回合引擎/P04-07-停机与启动恢复.md"
+    }
+   ],
+   "dir": "P04-回合引擎"
+  },
+  {
+   "id": "P05",
+   "name": "网关与最小闭环",
+   "goal": "协议 v1、HTTP/SSE、UDS、客户端、daemon 生命周期、gqy ask、最小 TUI",
+   "milestone": "M1",
+   "deps": [
+    "P04"
+   ],
+   "wos": [
+    {
+     "id": "P05-01",
+     "title": "协议v1 DTO与事件信封",
+     "deps": [
+      "P04-06"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-01-协议v1DTO与事件信封.md"
+    },
+    {
+     "id": "P05-02",
+     "title": "网关HTTP路由与SSE",
+     "deps": [
+      "P05-01"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-02-网关HTTP路由与SSE.md"
+    },
+    {
+     "id": "P05-03",
+     "title": "UDS传输与本机鉴权",
+     "deps": [
+      "P05-02"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-03-UDS传输与本机鉴权.md"
+    },
+    {
+     "id": "P05-04",
+     "title": "gqy-client",
+     "deps": [
+      "P05-03"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-04-gqy-client.md"
+    },
+    {
+     "id": "P05-05",
+     "title": "daemon生命周期子命令",
+     "deps": [
+      "P05-04",
+      "P04-07"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-05-daemon生命周期子命令.md"
+    },
+    {
+     "id": "P05-06",
+     "title": "gqy ask与JSONL契约",
+     "deps": [
+      "P05-05"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-06-gqyask与JSONL契约.md"
+    },
+    {
+     "id": "P05-07",
+     "title": "最小TUI对话与M1验收",
+     "deps": [
+      "P05-06"
+     ],
+     "status": "未开始",
+     "file": "P05-网关与最小闭环/P05-07-最小TUI对话与M1验收.md"
+    }
+   ],
+   "dir": "P05-网关与最小闭环"
+  },
+  {
+   "id": "P06",
+   "name": "工具系统",
+   "goal": "Tool trait、注册表、参数收口、文件/编辑/搜索/命令/PTY 工具、stub 与 load_tools、形状夹具",
+   "milestone": null,
+   "deps": [
+    "P05"
+   ],
+   "wos": [
+    {
+     "id": "P06-01",
+     "title": "Tool trait、注册表与工具面编译",
+     "deps": [
+      "P05-07",
+      "P03-04"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-01-Tooltrait、注册表与工具面编译.md"
+    },
+    {
+     "id": "P06-02",
+     "title": "分发入口与参数收口",
+     "deps": [
+      "P06-01"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-02-分发入口与参数收口.md"
+    },
+    {
+     "id": "P06-03",
+     "title": "读取类工具",
+     "deps": [
+      "P06-02"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-03-读取类工具.md"
+    },
+    {
+     "id": "P06-04",
+     "title": "写入类工具",
+     "deps": [
+      "P06-02"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-04-写入类工具.md"
+    },
+    {
+     "id": "P06-05",
+     "title": "run_command与转作业",
+     "deps": [
+      "P06-02"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-05-run_command与转作业.md"
+    },
+    {
+     "id": "P06-06",
+     "title": "PTY会话工具",
+     "deps": [
+      "P06-05"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-06-PTY会话工具.md"
+    },
+    {
+     "id": "P06-07",
+     "title": "stub模式与load_tools",
+     "deps": [
+      "P06-01"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-07-stub模式与load_tools.md"
+    },
+    {
+     "id": "P06-08",
+     "title": "工具循环接入引擎与形状夹具",
+     "deps": [
+      "P06-03",
+      "P06-04",
+      "P06-05",
+      "P06-07"
+     ],
+     "status": "未开始",
+     "file": "P06-工具系统/P06-08-工具循环接入引擎与形状夹具.md"
+    }
+   ],
+   "dir": "P06-工具系统"
+  },
+  {
+   "id": "P07",
+   "name": "权限审批与沙盒",
+   "goal": "能力档位、交互式审批、Landlock、macOS 无沙盒审批路径与 Seatbelt 研究、路径守卫、审计",
+   "milestone": null,
+   "deps": [
+    "P06"
+   ],
+   "wos": [
+    {
+     "id": "P07-01",
+     "title": "能力档位与效果类别判定",
+     "deps": [
+      "P06-08"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-01-能力档位与效果类别判定.md"
+    },
+    {
+     "id": "P07-02",
+     "title": "交互式审批流程",
+     "deps": [
+      "P07-01"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-02-交互式审批流程.md"
+    },
+    {
+     "id": "P07-03",
+     "title": "命令策略与危险删除",
+     "deps": [
+      "P07-01"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-03-命令策略与危险删除.md"
+    },
+    {
+     "id": "P07-04",
+     "title": "进程内路径守卫",
+     "deps": [
+      "P07-01"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-04-进程内路径守卫.md"
+    },
+    {
+     "id": "P07-05",
+     "title": "Linux Landlock后端",
+     "deps": [
+      "P07-04"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-05-LinuxLandlock后端.md"
+    },
+    {
+     "id": "P07-06",
+     "title": "macOS无沙盒审批路径与Seatbelt研究",
+     "deps": [
+      "P07-04"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-06-macOS无沙盒审批路径与Seatbelt研究.md"
+    },
+    {
+     "id": "P07-07",
+     "title": "审计记录",
+     "deps": [
+      "P07-02",
+      "P07-03"
+     ],
+     "status": "未开始",
+     "file": "P07-权限审批与沙盒/P07-07-审计记录.md"
+    }
+   ],
+   "dir": "P07-权限审批与沙盒"
+  },
+  {
+   "id": "P08",
+   "name": "上下文压缩",
+   "goal": "占用计量、水位纪元与撤销、fork 摘要、隔离回退、四道闸、压后回灌、溢出恢复",
+   "milestone": null,
+   "deps": [
+    "P06"
+   ],
+   "wos": [
+    {
+     "id": "P08-01",
+     "title": "占用计量与锚点",
+     "deps": [
+      "P06-08"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-01-占用计量与锚点.md"
+    },
+    {
+     "id": "P08-02",
+     "title": "压缩独占操作、水位与撤销",
+     "deps": [
+      "P08-01"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-02-压缩独占操作、水位与撤销.md"
+    },
+    {
+     "id": "P08-03",
+     "title": "fork摘要",
+     "deps": [
+      "P08-02"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-03-fork摘要.md"
+    },
+    {
+     "id": "P08-04",
+     "title": "隔离回退与机械占位",
+     "deps": [
+      "P08-03"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-04-隔离回退与机械占位.md"
+    },
+    {
+     "id": "P08-05",
+     "title": "四道闸",
+     "deps": [
+      "P08-02"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-05-四道闸.md"
+    },
+    {
+     "id": "P08-06",
+     "title": "足迹、压后回灌与折叠存档",
+     "deps": [
+      "P08-03"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-06-足迹、压后回灌与折叠存档.md"
+    },
+    {
+     "id": "P08-07",
+     "title": "被动溢出恢复",
+     "deps": [
+      "P08-02"
+     ],
+     "status": "未开始",
+     "file": "P08-上下文压缩/P08-07-被动溢出恢复.md"
+    }
+   ],
+   "dir": "P08-上下文压缩"
+  },
+  {
+   "id": "P09",
+   "name": "TUI",
+   "goal": "单渲染路径布局、转录虚拟化、输入框、命令表、审批/提问界面、会话与任务面板",
+   "milestone": "M2",
+   "deps": [
+    "P07",
+    "P08"
+   ],
+   "wos": [
+    {
+     "id": "P09-01",
+     "title": "布局模型与单渲染路径",
+     "deps": [
+      "P07-02",
+      "P08-02"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-01-布局模型与单渲染路径.md"
+    },
+    {
+     "id": "P09-02",
+     "title": "转录模型、虚拟化与流式渲染",
+     "deps": [
+      "P09-01"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-02-转录模型、虚拟化与流式渲染.md"
+    },
+    {
+     "id": "P09-03",
+     "title": "输入编辑器",
+     "deps": [
+      "P09-01"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-03-输入编辑器.md"
+    },
+    {
+     "id": "P09-04",
+     "title": "命令表",
+     "deps": [
+      "P09-03"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-04-命令表.md"
+    },
+    {
+     "id": "P09-05",
+     "title": "审批与提问界面",
+     "deps": [
+      "P09-02"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-05-审批与提问界面.md"
+    },
+    {
+     "id": "P09-06",
+     "title": "会话切换、任务与子代理面板",
+     "deps": [
+      "P09-02"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-06-会话切换、任务与子代理面板.md"
+    },
+    {
+     "id": "P09-07",
+     "title": "性能预算、快照测试与M2验收",
+     "deps": [
+      "P09-04",
+      "P09-05",
+      "P09-06"
+     ],
+     "status": "未开始",
+     "file": "P09-TUI/P09-07-性能预算、快照测试与M2验收.md"
+    }
+   ],
+   "dir": "P09-TUI"
+  },
+  {
+   "id": "P10",
+   "name": "Web控制台",
+   "goal": "esbuild 与 tsgo 工具链、TS 类型生成、内嵌与开发目录、应用骨架、对话、设置、浏览器测试",
+   "milestone": "M3",
+   "deps": [
+    "P09"
+   ],
+   "wos": [
+    {
+     "id": "P10-01",
+     "title": "esbuild与原生TS检查器获取、web构建",
+     "deps": [
+      "P09-07"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-01-esbuild与原生TS检查器获取、web构建.md"
+    },
+    {
+     "id": "P10-02",
+     "title": "TS类型生成",
+     "deps": [
+      "P10-01"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-02-TS类型生成.md"
+    },
+    {
+     "id": "P10-03",
+     "title": "资源内嵌、开发目录与CSP",
+     "deps": [
+      "P10-01"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-03-资源内嵌、开发目录与CSP.md"
+    },
+    {
+     "id": "P10-04",
+     "title": "前端分层骨架与层序检查",
+     "deps": [
+      "P10-02"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-04-前端分层骨架与层序检查.md"
+    },
+    {
+     "id": "P10-05",
+     "title": "对话视图与事件流",
+     "deps": [
+      "P10-04",
+      "P10-03"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-05-对话视图与事件流.md"
+    },
+    {
+     "id": "P10-06",
+     "title": "配置模式生成的设置页",
+     "deps": [
+      "P10-04",
+      "P11-01"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-06-配置模式生成的设置页.md"
+    },
+    {
+     "id": "P10-07",
+     "title": "浏览器端测试与M3验收",
+     "deps": [
+      "P10-05",
+      "P10-06"
+     ],
+     "status": "未开始",
+     "file": "P10-Web控制台/P10-07-浏览器端测试与M3验收.md"
+    }
+   ],
+   "dir": "P10-Web控制台"
+  },
+  {
+   "id": "P11",
+   "name": "人格配置与感知",
+   "goal": "完整配置模式与热加载、persona 代际、场所与工具面快照、感知提供者、system 组装、i18n",
+   "milestone": null,
+   "deps": [
+    "P09"
+   ],
+   "wos": [
+    {
+     "id": "P11-01",
+     "title": "完整配置模式、热加载与单写者保存",
+     "deps": [
+      "P09-07"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-01-完整配置模式、热加载与单写者保存.md"
+    },
+    {
+     "id": "P11-02",
+     "title": "密钥存储",
+     "deps": [
+      "P11-01"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-02-密钥存储.md"
+    },
+    {
+     "id": "P11-03",
+     "title": "persona目录与代际切换",
+     "deps": [
+      "P11-01"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-03-persona目录与代际切换.md"
+    },
+    {
+     "id": "P11-04",
+     "title": "场所注册与工具面快照",
+     "deps": [
+      "P11-03"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-04-场所注册与工具面快照.md"
+    },
+    {
+     "id": "P11-05",
+     "title": "感知提供者与doctor",
+     "deps": [
+      "P11-04"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-05-感知提供者与doctor.md"
+    },
+    {
+     "id": "P11-06",
+     "title": "system分段组装与i18n",
+     "deps": [
+      "P11-03",
+      "P11-05"
+     ],
+     "status": "未开始",
+     "file": "P11-人格配置与感知/P11-06-system分段组装与i18n.md"
+    }
+   ],
+   "dir": "P11-人格配置与感知"
+  },
+  {
+   "id": "P12",
+   "name": "记忆与知识库",
+   "goal": "记忆表、写入/召回工具、关键词检索、整理作业、遗忘、聊后复盘、知识库、reset 语义",
+   "milestone": null,
+   "deps": [
+    "P11"
+   ],
+   "wos": [
+    {
+     "id": "P12-01",
+     "title": "记忆表与可见性",
+     "deps": [
+      "P11-06"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-01-记忆表与可见性.md"
+    },
+    {
+     "id": "P12-02",
+     "title": "写入与召回工具",
+     "deps": [
+      "P12-01"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-02-写入与召回工具.md"
+    },
+    {
+     "id": "P12-03",
+     "title": "关键词检索",
+     "deps": [
+      "P12-01"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-03-关键词检索.md"
+    },
+    {
+     "id": "P12-04",
+     "title": "联想注入",
+     "deps": [
+      "P12-03"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-04-联想注入.md"
+    },
+    {
+     "id": "P12-05",
+     "title": "整理作业与遗忘",
+     "deps": [
+      "P12-02",
+      "P13-02"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-05-整理作业与遗忘.md"
+    },
+    {
+     "id": "P12-06",
+     "title": "聊后复盘",
+     "deps": [
+      "P12-05"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-06-聊后复盘.md"
+    },
+    {
+     "id": "P12-07",
+     "title": "知识库与kb域",
+     "deps": [
+      "P12-03"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-07-知识库与kb域.md"
+    },
+    {
+     "id": "P12-08",
+     "title": "reset语义与记忆代数",
+     "deps": [
+      "P12-05"
+     ],
+     "status": "未开始",
+     "file": "P12-记忆与知识库/P12-08-reset语义与记忆代数.md"
+    }
+   ],
+   "dir": "P12-记忆与知识库"
+  },
+  {
+   "id": "P13",
+   "name": "扩展体系",
+   "goal": "SubsystemHooks、技能、脚本工具、MCP、子代理、持久化作业与定时器、扩展包",
+   "milestone": null,
+   "deps": [
+    "P11"
+   ],
+   "wos": [
+    {
+     "id": "P13-01",
+     "title": "SubsystemHooks正式化",
+     "deps": [
+      "P11-06"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-01-SubsystemHooks正式化.md"
+    },
+    {
+     "id": "P13-02",
+     "title": "持久化作业与定时器",
+     "deps": [
+      "P13-01"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-02-持久化作业与定时器.md"
+    },
+    {
+     "id": "P13-03",
+     "title": "子代理",
+     "deps": [
+      "P13-01"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-03-子代理.md"
+    },
+    {
+     "id": "P13-04",
+     "title": "技能",
+     "deps": [
+      "P13-01"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-04-技能.md"
+    },
+    {
+     "id": "P13-05",
+     "title": "脚本工具",
+     "deps": [
+      "P13-01"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-05-脚本工具.md"
+    },
+    {
+     "id": "P13-06",
+     "title": "MCP stdio客户端",
+     "deps": [
+      "P13-01"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-06-MCPstdio客户端.md"
+    },
+    {
+     "id": "P13-07",
+     "title": "扩展包管理",
+     "deps": [
+      "P13-04",
+      "P13-05",
+      "P13-06"
+     ],
+     "status": "未开始",
+     "file": "P13-扩展体系/P13-07-扩展包管理.md"
+    }
+   ],
+   "dir": "P13-扩展体系"
+  },
+  {
+   "id": "P14",
+   "name": "连接器与平台",
+   "goal": "连接器协议端点、连接器 SDK、QQ 与 iMessage 连接器、不可信输入、聊天室、投递幂等",
+   "milestone": "M4",
+   "deps": [
+    "P12",
+    "P13"
+   ],
+   "wos": [
+    {
+     "id": "P14-01",
+     "title": "连接器协议端点",
+     "deps": [
+      "P12-02",
+      "P13-02"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-01-连接器协议端点.md"
+    },
+    {
+     "id": "P14-02",
+     "title": "连接器SDK",
+     "deps": [
+      "P14-01"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-02-连接器SDK.md"
+    },
+    {
+     "id": "P14-03",
+     "title": "不可信输入通道与平台权限",
+     "deps": [
+      "P14-01"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-03-不可信输入通道与平台权限.md"
+    },
+    {
+     "id": "P14-04",
+     "title": "投递幂等与限流",
+     "deps": [
+      "P14-01"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-04-投递幂等与限流.md"
+    },
+    {
+     "id": "P14-05",
+     "title": "QQ OneBot连接器",
+     "deps": [
+      "P14-02",
+      "P14-03",
+      "P14-04"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-05-QQOneBot连接器.md"
+    },
+    {
+     "id": "P14-06",
+     "title": "iMessage连接器",
+     "deps": [
+      "P14-02",
+      "P14-03",
+      "P14-04"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-06-iMessage连接器.md"
+    },
+    {
+     "id": "P14-07",
+     "title": "聊天室与M4验收",
+     "deps": [
+      "P14-05"
+     ],
+     "status": "未开始",
+     "file": "P14-连接器与平台/P14-07-聊天室与M4验收.md"
+    }
+   ],
+   "dir": "P14-连接器与平台"
+  },
+  {
+   "id": "P15",
+   "name": "设备共享",
+   "goal": "发现、全员同意配对、TLS 信任、能力委派、同步合并、跨设备前缀交接",
+   "milestone": "M5",
+   "deps": [
+    "P14"
+   ],
+   "wos": [
+    {
+     "id": "P15-01",
+     "title": "设备身份与证书",
+     "deps": [
+      "P14-07"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-01-设备身份与证书.md"
+    },
+    {
+     "id": "P15-02",
+     "title": "局域网发现",
+     "deps": [
+      "P15-01"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-02-局域网发现.md"
+    },
+    {
+     "id": "P15-03",
+     "title": "全员同意配对与撤销",
+     "deps": [
+      "P15-02"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-03-全员同意配对与撤销.md"
+    },
+    {
+     "id": "P15-04",
+     "title": "能力委派",
+     "deps": [
+      "P15-03"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-04-能力委派.md"
+    },
+    {
+     "id": "P15-05",
+     "title": "同步与合并",
+     "deps": [
+      "P15-03"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-05-同步与合并.md"
+    },
+    {
+     "id": "P15-06",
+     "title": "跨设备前缀交接验证",
+     "deps": [
+      "P15-05"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-06-跨设备前缀交接验证.md"
+    },
+    {
+     "id": "P15-07",
+     "title": "服务器角色、自动降级与M5验收",
+     "deps": [
+      "P15-04",
+      "P15-05"
+     ],
+     "status": "未开始",
+     "file": "P15-设备共享/P15-07-服务器角色、自动降级与M5验收.md"
+    }
+   ],
+   "dir": "P15-设备共享"
+  },
+  {
+   "id": "P16",
+   "name": "导入与发布",
+   "goal": "v1 导入（预演/核对/应用）、发布构建、桌面宿主、版本一致性、发布流水线",
+   "milestone": "M6",
+   "deps": [
+    "P10",
+    "P14"
+   ],
+   "wos": [
+    {
+     "id": "P16-01",
+     "title": "import-v1读取器与预演",
+     "deps": [
+      "P12-08",
+      "P13-07"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-01-import-v1读取器与预演.md"
+    },
+    {
+     "id": "P16-02",
+     "title": "核对报告",
+     "deps": [
+      "P16-01"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-02-核对报告.md"
+    },
+    {
+     "id": "P16-03",
+     "title": "应用与回退",
+     "deps": [
+      "P16-02"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-03-应用与回退.md"
+    },
+    {
+     "id": "P16-04",
+     "title": "发布构建与版本一致性检查",
+     "deps": [
+      "P10-07"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-04-发布构建与版本一致性检查.md"
+    },
+    {
+     "id": "P16-05",
+     "title": "发布流水线",
+     "deps": [
+      "P16-04"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-05-发布流水线.md"
+    },
+    {
+     "id": "P16-06",
+     "title": "桌面宿主",
+     "deps": [
+      "P16-04"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-06-桌面宿主.md"
+    },
+    {
+     "id": "P16-07",
+     "title": "M6验收与发布手册",
+     "deps": [
+      "P16-03",
+      "P16-05",
+      "P16-06"
+     ],
+     "status": "未开始",
+     "file": "P16-导入与发布/P16-07-M6验收与发布手册.md"
+    }
+   ],
+   "dir": "P16-导入与发布"
+  }
+ ]
+}</script>
+<script>
+(() => {
+'use strict';
+const data = JSON.parse(document.getElementById('plan-data').textContent);
+const phases = data.phases;
+const phaseById = Object.fromEntries(phases.map(p => [p.id, p]));
+const wos = phases.flatMap(p => p.wos.map(w => ({ ...w, phase: p.id })));
+const woById = Object.fromEntries(wos.map(w => [w.id, w]));
+const dependents = {};
+wos.forEach(w => w.deps.forEach(d => (dependents[d] ||= []).push(w.id)));
+const $ = id => document.getElementById(id);
+const h = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+const range = (p, a, b) => Array.from({ length: b - a + 1 }, (_, i) => `${p}-${String(a + i).padStart(2, '0')}`);
+
+/* 主题：跟随系统，可手动切换（存储不可用时静默忽略） */
+const root = document.documentElement;
+try { const t = localStorage.getItem('gqy-plan-theme'); if (t) root.dataset.theme = t; } catch (_) {}
+$('theme').onclick = () => {
+  const dark = root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  root.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('gqy-plan-theme', root.dataset.theme); } catch (_) {}
+};
+
+/* ── 块与施工单的对应：一块对应的施工单全部完成即画实 ── */
+const PIECES = {
+  // 入口
+  n_tui: ['P05-07', ...range('P09', 1, 7)],
+  n_web: range('P10', 2, 7),
+  n_cli: ['P05-06'],
+  n_desktop: ['P16-06'],
+  n_api: ['P05-01', 'P05-04'],
+  // daemon
+  g_daemon: ['P05-05'],
+  n_gateway: ['P05-02', 'P05-03'],
+  n_connep: ['P14-01', 'P14-03', 'P14-04', 'P14-07'],
+  n_events: ['P04-06'],
+  n_config: ['P01-03', 'P11-01', 'P11-02', 'P11-03'],
+  k_super: ['P04-02', 'P04-03'],
+  k_actor: ['P04-07'],
+  k_ctx: ['P04-01', 'P04-05', 'P11-04'],
+  k_turn: ['P04-04', 'P06-08'],
+  k_compact: range('P08', 1, 7),
+  k_jobs: ['P13-02', 'P13-03'],
+  n_ledger: [...range('P03', 1, 6), 'P11-06'],
+  n_provider: range('P02', 1, 8),
+  n_tools: range('P06', 1, 7),
+  n_perm: ['P07-01', 'P07-02', 'P07-03', 'P07-07'],
+  n_perception: ['P11-05'],
+  n_memory: range('P12', 1, 8),
+  n_ext: ['P13-01', 'P13-04', 'P13-07'],
+  n_mesh: range('P15', 1, 7),
+  n_store: range('P01', 4, 8),
+  n_sys: ['P07-04', 'P07-05', 'P07-06'],
+  // 连接器
+  c_qq: ['P14-05'], c_imsg: ['P14-06'], c_sdk: ['P14-02'],
+  // 子进程
+  p_cmd: ['P06-05'], p_pty: ['P06-06'], p_mcp: ['P13-06'], p_script: ['P13-05'],
+  // 数据
+  x_v1: range('P16', 1, 3),
+};
+/* 外部系统与连线：跟着接上它的块一起亮 */
+const FOLLOW = {
+  x_providers: 'n_provider', x_qq: 'c_qq', x_imsg: 'c_imsg', x_devices: 'n_mesh', x_svc: 'g_daemon', g_data: 'n_store',
+  e_tui: 'n_tui', e_web: 'n_web', e_cli: 'n_cli', e_desk: 'n_desktop', e_api: 'n_gateway', e_submit: 'k_super',
+  e_actor: 'k_actor', e_ledger: 'n_ledger', e_provider: 'n_provider', e_tools: 'n_tools', e_https: 'n_provider',
+  e_store: 'n_store', e_data: 'n_store', e_proc: 'p_cmd', e_mcp: 'p_mcp', e_mesh: 'n_mesh', e_conn1: 'n_connep',
+  e_conn2: 'n_connep', e_qq: 'c_qq', e_imsg: 'c_imsg', e_v1: 'x_v1', e_events: 'n_events',
+};
+/* 地基与工具：不在图里的施工单 */
+const BASE = [
+  ['P00-01', 'workspace 与全部 crate 空壳'], ['P00-02', '分层门禁 xtask arch'], ['P00-03', '体积门禁与 clippy 规则'],
+  ['P00-04', '测试日志与报告'], ['P00-05', '错误与日志骨架'], ['P00-06', '三平台 CI'],
+  ['P01-01', 'gqy-core：ID、Clock、规范化 JSON'], ['P01-02', 'gqy-core：领域消息类型'],
+  ['P10-01', 'esbuild 与 tsgo 工具链'], ['P16-04', '发布构建与版本一致性'], ['P16-05', '发布流水线'], ['P16-07', 'M6 验收与发布手册'],
+];
+
+const statusOf = id => (woById[id] || {}).status || '未开始';
+function pieceState(id) {
+  const key = FOLLOW[id] || id;
+  const list = PIECES[key];
+  if (!list) return null;
+  const live = list.filter(w => statusOf(w) !== '已废弃');
+  const done = live.filter(w => statusOf(w) === '已完成');
+  const review = live.some(w => statusOf(w) === '待验收');
+  if (review) return { how: 'review', label: live.find(w => statusOf(w) === '待验收'), done: done.length, total: live.length, list };
+  if (live.length && done.length === live.length) return { how: 'on', label: done[done.length - 1], done: done.length, total: live.length, list };
+  if (done.length) return { how: 'frame', label: `${done.length}/${live.length}`, done: done.length, total: live.length, list };
+  return { how: '', label: null, done: 0, total: live.length, list };
+}
+
+/* ── 拼图布局（坐标照 01 的分层手排） ── */
+const W = 1400, H = 1150;
+const GROUPS = [
+  { id: 'g_entries', x: 256, y: 14, w: 888, h: 116, label: '入口 · 都是网关的客户端，不持有业务事实' },
+  { id: 'g_daemon', x: 256, y: 200, w: 888, h: 630, cls: 'core', label: 'gqy daemon · 唯一执行回合的进程（gqy-daemon 组装 · 单实例锁 · 停机与启动恢复）' },
+  { id: 'g_engine', x: 272, y: 336, w: 560, h: 282, cls: 'kernel', label: '回合引擎 gqy-engine · 显式上下文，每次等待都有上界' },
+  { id: 'g_caps', x: 848, y: 336, w: 280, h: 282, label: '基础能力 · L2' },
+  { id: 'g_conn', x: 16, y: 200, w: 220, h: 510, label: '连接器 · 独立进程' },
+  { id: 'g_net', x: 1164, y: 200, w: 220, h: 520, label: '外部 · 经网络' },
+  { id: 'g_data', x: 16, y: 930, w: 388, h: 206, cls: 'store', label: '数据目录 ~/.gqy2（D-01 待定）' },
+  { id: 'g_children', x: 420, y: 930, w: 964, h: 206, label: 'daemon 的子进程 · 独立进程组，超时与取消时整组终止' },
+];
+const NODES = [
+  { id: 'n_tui', x: 268, y: 44, w: 198, h: 76, k: 'proc', t: '终端界面 TUI', s: ['gqy · ratatui', '单渲染路径 · 审批界面'] },
+  { id: 'n_web', x: 490, y: 44, w: 198, h: 76, k: 'proc', t: 'Web 控制台', s: ['TS + esbuild · 内嵌二进制', '设置页照配置模式生成'] },
+  { id: 'n_cli', x: 712, y: 44, w: 198, h: 76, k: 'proc', t: '命令行', s: ['gqy ask · JSONL', '给人，也给脚本'] },
+  { id: 'n_desktop', x: 934, y: 44, w: 198, h: 76, k: 'proc', t: '桌面（可选）', s: ['Tauri v2 宿主', '进程内组装同一内核'] },
+  { id: 'n_api', x: 256, y: 150, w: 888, h: 30, k: 'bus', custom: 'bus' },
+  { id: 'n_gateway', x: 272, y: 228, w: 203, h: 84, k: 'module', t: '网关 gqy-gateway', s: ['/api/v1 · 版本化', '鉴权 · 路由表驱动'] },
+  { id: 'n_connep', x: 489, y: 228, w: 203, h: 84, k: 'module', t: '连接器端点', s: ['不可信通道 · 限流', '投递幂等 · 聊天室'] },
+  { id: 'n_events', x: 706, y: 228, w: 203, h: 84, k: 'module', t: '事件总线', s: ['会话内 seq', '先落库后广播 · resync'] },
+  { id: 'n_config', x: 923, y: 228, w: 205, h: 84, k: 'module', t: '配置与人格', s: ['默认值唯一来源 · TOML', 'persona 代际 · 密钥'] },
+  { id: 'k_super', x: 286, y: 372, w: 260, h: 62, k: 'kernel', t: 'Supervisor', s: ['准入唯一入口 · 并发配额'] },
+  { id: 'k_actor', x: 558, y: 372, w: 260, h: 62, k: 'kernel', t: '会话 actor', s: ['独占会话状态 · 独占操作'] },
+  { id: 'k_ctx', x: 286, y: 454, w: 260, h: 62, k: 'kernel', t: 'TurnContext', s: ['显式上下文 · 取消树 · 预算'] },
+  { id: 'k_turn', x: 558, y: 454, w: 260, h: 62, k: 'kernel', t: '回合状态机', s: ['请求 → 工具 → 审批 → 回填'] },
+  { id: 'k_compact', x: 286, y: 536, w: 260, h: 66, k: 'kernel', t: '上下文压缩', s: ['水位纪元 · fork 摘要 · 四道闸'] },
+  { id: 'k_jobs', x: 558, y: 536, w: 260, h: 66, k: 'kernel', t: '作业 · 定时器 · 子代理', s: ['持久化 · 开机补跑'] },
+  { id: 'n_ledger', x: 860, y: 364, w: 256, h: 44, k: 'module', t: '前缀缓存账本', s: ['只追加 · 化石化 · 哈希链'], one: true },
+  { id: 'n_provider', x: 860, y: 414, w: 256, h: 44, k: 'module', t: '供应商适配', s: ['三协议 · 能力画像 · 用量'], one: true },
+  { id: 'n_tools', x: 860, y: 464, w: 256, h: 44, k: 'module', t: '工具系统', s: ['stub 工具面 · 参数收口'], one: true },
+  { id: 'n_perm', x: 860, y: 514, w: 256, h: 44, k: 'module', t: '权限与审批', s: ['档位 · 提问 · 审计'], one: true },
+  { id: 'n_perception', x: 860, y: 564, w: 256, h: 44, k: 'module', t: '感知矩阵', s: ['四维 · 回合内冻结'], one: true },
+  { id: 'n_memory', x: 272, y: 636, w: 270, h: 78, k: 'module', t: '记忆与知识库', s: ['gqy-memory · 挂在子系统钩子上', '关键词召回 · 化石化注入'] },
+  { id: 'n_ext', x: 554, y: 636, w: 278, h: 78, k: 'module', t: '扩展体系', s: ['gqy-ext · 技能 · 扩展包', '伴侣功能以扩展回归'] },
+  { id: 'n_mesh', x: 848, y: 636, w: 280, h: 78, k: 'module', t: '设备共享', s: ['gqy-mesh · 全员同意配对', '能力委派 · 用户确认的合并'] },
+  { id: 'n_store', x: 272, y: 732, w: 420, h: 82, k: 'module', t: '存储 gqy-store', s: ['一个写者线程 + 读连接池 · 迁移只增不删', 'blob 按 blake3 内容寻址 · VACUUM INTO 备份'] },
+  { id: 'n_sys', x: 704, y: 732, w: 424, h: 82, k: 'module', t: '系统原语 gqy-sys', s: ['PTY · 信号 · 进程组 · OS 探测', '沙盒后端 · 平台差异只关在这里'] },
+  { id: 'x_qq', x: 28, y: 236, w: 196, h: 54, k: 'ext', t: 'QQ', s: ['NapCat · OneBot v11'] },
+  { id: 'c_qq', x: 28, y: 316, w: 196, h: 70, k: 'proc', t: 'QQ 连接器', s: ['正向 WS 连 NapCat', 'launchd / systemd 守护'] },
+  { id: 'x_imsg', x: 28, y: 420, w: 196, h: 54, k: 'ext', t: 'iMessage', s: ['macOS · 信息 App'] },
+  { id: 'c_imsg', x: 28, y: 500, w: 196, h: 70, k: 'proc', t: 'iMessage 连接器', s: ['Rust 重写，替换 Python 桥', '签名与 TCC 待研究'] },
+  { id: 'c_sdk', x: 28, y: 600, w: 196, h: 64, k: 'module', t: '连接器 SDK', s: ['gqy-connector-sdk', '握手 · 心跳 · 重连 · 水位'] },
+  { id: 'x_svc', x: 1176, y: 236, w: 196, h: 70, k: 'ext', t: '系统服务管理器', s: ['launchd · systemd --user', '托管 daemon 与连接器'] },
+  { id: 'x_providers', x: 1176, y: 380, w: 196, h: 90, k: 'ext', t: '模型供应商', s: ['OpenAI 兼容 · Anthropic', 'Responses · DeepSeek…', '缓存语义各不相同'] },
+  { id: 'x_devices', x: 1176, y: 630, w: 196, h: 84, k: 'ext', t: '其他设备', s: ['每个 app 都是客户端 + 服务端', 'HTTPS · 证书钉住'] },
+  { id: 'x_v1', x: 212, y: 1000, w: 180, h: 110, k: 'ext', t: 'v1 数据（只读）', s: ['~/.gqy 不动', 'gqy import-v1', '预演 → 核对 → 应用'] },
+  { id: 'p_cmd', x: 432, y: 966, w: 520, h: 150, k: 'proc', custom: 'cmd', t: '命令（run_command）' },
+  { id: 'p_pty', x: 964, y: 966, w: 128, h: 150, k: 'proc', t: 'PTY 会话', s: ['交互式终端', 'SIGHUP → 整组终止'] },
+  { id: 'p_mcp', x: 1102, y: 966, w: 130, h: 150, k: 'proc', t: 'MCP 服务器', s: ['stdio', '每次调用有超时', '不健康即隔离'] },
+  { id: 'p_script', x: 1242, y: 966, w: 130, h: 150, k: 'proc', t: '脚本工具', s: ['头部契约声明', '信任级 · 平台'] },
+];
+const EDGES = [
+  { id: 'e_tui', pts: [[367, 120], [367, 150]], t: 'proto', a: 'both', lab: { x: 374, y: 140, s: 'UDS + 令牌' } },
+  { id: 'e_web', pts: [[589, 120], [589, 150]], t: 'proto', a: 'both', lab: { x: 596, y: 140, s: 'HTTP · SSE' } },
+  { id: 'e_cli', pts: [[811, 120], [811, 150]], t: 'proto', a: 'both', lab: { x: 818, y: 140, s: 'UDS + 令牌' } },
+  { id: 'e_desk', pts: [[1033, 120], [1033, 150]], t: 'proto', a: 'both', lab: { x: 1040, y: 140, s: '进程内 / UDS' } },
+  { id: 'e_api', pts: [[373, 180], [373, 228]], t: 'proto', a: 'both', lab: { x: 381, y: 218, s: '/api/v1' } },
+  { id: 'e_events', pts: [[807, 228], [807, 180]], t: 'proto', a: 'end', lab: { x: 815, y: 218, s: '推送事件' } },
+  { id: 'e_submit', pts: [[373, 312], [373, 372]], t: 'int', a: 'end' },
+  { id: 'e_actor', pts: [[546, 403], [558, 403]], t: 'int', a: 'end' },
+  { id: 'e_ledger', pts: [[818, 470], [836, 470], [836, 386], [860, 386]], t: 'int', a: 'end' },
+  { id: 'e_provider', pts: [[836, 436], [860, 436]], t: 'int', a: 'end' },
+  { id: 'e_tools', pts: [[818, 494], [860, 494]], t: 'int', a: 'end' },
+  { id: 'e_https', pts: [[1116, 436], [1150, 436], [1150, 425], [1176, 425]], t: 'io', a: 'end', lab: { x: 1122, y: 452, s: 'HTTPS' } },
+  { id: 'e_store', pts: [[548, 618], [548, 732]], t: 'store', a: 'end', lab: { x: 540, y: 726, s: '先落库', a: 'end' } },
+  { id: 'e_data', pts: [[330, 814], [330, 930]], t: 'store', a: 'end', lab: { x: 338, y: 880, s: 'WAL · 单写者' } },
+  { id: 'e_proc', pts: [[916, 814], [916, 966]], t: 'io', a: 'end', lab: { x: 924, y: 880, s: '进程组 · 沙盒策略' } },
+  { id: 'e_mcp', pts: [[698, 714], [698, 900], [1167, 900], [1167, 966]], t: 'io', a: 'both', lab: { x: 1160, y: 894, s: 'stdio', a: 'end' } },
+  { id: 'e_mesh', pts: [[1128, 675], [1176, 675]], t: 'io', a: 'both', lab: { x: 1133, y: 668, s: '配对' } },
+  { id: 'e_conn1', pts: [[224, 351], [244, 351], [244, 322], [590, 322], [590, 312]], t: 'proto', a: 'end', lab: { x: 28, y: 694, s: '→ gqy-connector/1 · WS · 专用令牌' } },
+  { id: 'e_conn2', pts: [[224, 535], [244, 535], [244, 351]], t: 'proto', a: 'none' },
+  { id: 'e_qq', pts: [[126, 290], [126, 316]], t: 'io', a: 'both' },
+  { id: 'e_imsg', pts: [[126, 474], [126, 500]], t: 'io', a: 'both' },
+  { id: 'e_v1', pts: [[212, 1055], [196, 1055]], t: 'store', a: 'end', lab: { x: 204, y: 1046, s: '导入', a: 'middle' } },
+];
+
+const NS = 'http://www.w3.org/2000/svg';
+const svg = $('bmap');
+svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs || {}) if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function tx(parent, x, y, s, cls, anchor) { const t = el('text', { x, y, class: cls, 'text-anchor': anchor || null }, parent); t.textContent = s; return t; }
+const defs = el('defs', null, svg);
+['ghost', 'on'].forEach(kind => {
+  const m = el('marker', { id: 'bm-' + kind, viewBox: '0 0 10 10', refX: 9, refY: 5, markerWidth: 8, markerHeight: 8, markerUnits: 'userSpaceOnUse', orient: 'auto-start-reverse' }, defs);
+  el('path', { d: 'M0,0.8 L10,5 L0,9.2 z', class: 'mk', style: kind === 'on' ? 'fill:var(--ink-2)' : null }, m);
+});
+const layer = { grp: el('g', null, svg), edge: el('g', null, svg), node: el('g', null, svg), by: el('g', null, svg) };
+const cls = id => { const s = pieceState(id); return s && s.how ? ' ' + s.how : ''; };
+
+function badge(id, x, y, right) {
+  const st = pieceState(id);
+  if (!st || !st.label) return;
+  let w = 10; for (const c of st.label) w += c.charCodeAt(0) > 255 ? 10.5 : 6.6;
+  const g = el('g', { class: 'by' + (st.how === 'review' ? ' review' : st.how === 'frame' ? ' part' : '') }, layer.by);
+  const bx = right ? x - w : x;
+  el('rect', { x: bx, y, width: w, height: 17, rx: 4 }, g);
+  tx(g, bx + w / 2, y + 12.5, st.label, null, 'middle');
+}
+function pathD(pts) {
+  let d = 'M' + pts[0].join(',');
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], [x2, y2] = pts[i + 1];
+    const l1 = Math.hypot(x1 - x0, y1 - y0), l2 = Math.hypot(x2 - x1, y2 - y1), r = Math.min(8, l1 / 2, l2 / 2);
+    d += ` L${x1 - (x1 - x0) / l1 * r},${y1 - (y1 - y0) / l1 * r} Q${x1},${y1} ${x1 + (x2 - x1) / l2 * r},${y1 + (y2 - y1) / l2 * r}`;
+  }
+  return d + ' L' + pts[pts.length - 1].join(',');
+}
+GROUPS.forEach(gr => {
+  const g = el('g', { class: 'grp' + (gr.cls ? ' g-' + gr.cls : '') + cls(gr.id) }, layer.grp);
+  el('rect', { x: gr.x, y: gr.y, width: gr.w, height: gr.h, rx: 12, class: 'shell' }, g);
+  tx(g, gr.x + 12, gr.y + 20, gr.label, 'gl');
+  if (gr.id === 'g_data') {
+    ['gqy.db          WAL · 唯一主库', 'blobs/          内容寻址', 'config/         gqy.toml · 密钥', 'run/            锁 · 套接字 · 令牌', 'logs/           14 天轮转', 'personas/ · extensions/']
+      .forEach((line, i) => tx(g, gr.x + 14, gr.y + 50 + i * 17, line.split(/\s{2,}/)[0], 'tree'));
+    ['唯一主库 · WAL', '内容寻址', 'gqy.toml · 密钥', '锁 · 套接字 · 令牌', '14 天轮转', '']
+      .forEach((line, i) => tx(g, gr.x + 88, gr.y + 50 + i * 17, line, 's'));
+  }
+  badge(gr.id, gr.x + gr.w - 12, gr.y - 9, true);
+});
+EDGES.forEach(e => {
+  const st = pieceState(e.id);
+  const on = st && st.how === 'on';
+  const g = el('g', { class: 'edge t-' + e.t + (on ? ' on' : '') }, layer.edge);
+  const arrow = `url(#bm-${on ? 'on' : 'ghost'})`;
+  el('path', { d: pathD(e.pts), class: 'ln', 'marker-end': e.a === 'end' || e.a === 'both' ? arrow : null, 'marker-start': e.a === 'both' ? arrow : null }, g);
+  if (e.lab) tx(g, e.lab.x, e.lab.y, e.lab.s, 'el', e.lab.a);
+});
+NODES.forEach(n => {
+  const g = el('g', { class: 'node k-' + n.k + cls(n.id) + (PIECES[FOLLOW[n.id] || n.id] ? ' hit' : ''), 'data-id': n.id }, layer.node);
+  el('rect', { x: n.x, y: n.y, width: n.w, height: n.h, rx: n.k === 'bus' ? 15 : 9, class: 'box' }, g);
+  if (n.custom === 'bus') {
+    tx(g, n.x + n.w / 2, n.y + 19.5, '网关协议 gqy-protocol v1 · 命令向下、事件向上 · UDS、HTTP/SSE、WebSocket 跑的是同一套 · 类型生成 TS', 't', 'middle').style.fontSize = '13px';
+  } else if (n.custom === 'cmd') {
+    tx(g, n.x + 14, n.y + 24, n.t, 't');
+    tx(g, n.x + 170, n.y + 23, '连不上 daemon，读不到 run/ 与 config/', 's');
+    [['Linux', 'Landlock 管文件 · 网络暂不限制（写明）'], ['macOS', '暂无后端：审批后无沙盒执行，醒目标注'], ['Windows', '第一版拒绝执行（失败关闭）'], ['Full 档', '你本人切换后在宿主机直接跑']]
+      .forEach((r, i) => { tx(g, n.x + 14, n.y + 54 + i * 22, r[0], 't').style.fontSize = '12.5px'; tx(g, n.x + 92, n.y + 54 + i * 22, r[1], 's'); });
+  } else if (n.one) {
+    tx(g, n.x + 12, n.y + 27, n.t, 't');
+    tx(g, n.x + 116, n.y + 27, n.s[0], 's');
+  } else {
+    const lines = n.s ? n.s.length : 0;
+    const tb = n.y + Math.max(20, (n.h - (16 * lines + 18)) / 2 + 14);
+    tx(g, n.x + 12, tb, n.t, 't');
+    (n.s || []).forEach((s, i) => tx(g, n.x + 12, tb + 17 + i * 16, s, 's'));
+  }
+  const st = pieceState(n.id);
+  if (st) { const tt = el('title', null, g); tt.textContent = `${n.t || '网关协议'}：${st.list.join('、')}（${st.done}/${st.total} 已完成）`; }
+  badge(n.id, n.x + 8, n.y - 9, false);
+});
+svg.addEventListener('click', ev => {
+  const g = ev.target.closest('.node.hit');
+  if (!g) return;
+  const id = g.dataset.id;
+  document.querySelectorAll('#bmap .pick').forEach(x => x.classList.remove('pick'));
+  g.classList.add('pick');
+  highlight(PIECES[FOLLOW[id] || id] || []);
+  $('h-sched').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+/* 地基 */
+BASE.forEach(([id, name]) => {
+  const s = statusOf(id);
+  const b = h('button', 'piece' + (s === '已完成' ? '' : s === '待验收' ? ' review' : ' ghost'));
+  b.type = 'button'; b.title = `${id} ${(woById[id] || {}).title || ''}（${s}）`;
+  b.append(h('span', 'by', id), h('span', 'nm', name));
+  b.onclick = () => select(id, true);
+  $('base').append(b);
+});
+
+/* 拼上的块清单 */
+const pieceNames = Object.fromEntries([...NODES.map(n => [n.id, n.t || '网关协议']), ...GROUPS.map(g => [g.id, g.label.split(' · ')[0]])]);
+const builtRows = Object.keys(PIECES).map(id => ({ id, st: pieceState(id) })).filter(r => r.st.done > 0 || r.st.how === 'review');
+if (!builtRows.length) $('built').replaceWith(Object.assign(h('p', 'empty'), { textContent: '还没有拼上的块：第一块由 P00 起的施工单拼上。' }));
+builtRows.forEach(({ id, st }) => {
+  const li = h('li');
+  li.append(h('span', 'by' + (st.how === 'on' ? '' : ' part'), st.label), h('span', 'nm', pieceNames[id]),
+    h('span', 'nt', st.list.map(w => `${w} ${woById[w].title}（${statusOf(w)}）`).join('；')));
+  $('built').append(li);
+});
+
+/* 刊头数字 */
+const done = wos.filter(w => w.status === '已完成');
+const live = wos.filter(w => w.status !== '已废弃');
+const ready = live.filter(w => w.status !== '已完成' && w.deps.every(d => statusOf(d) === '已完成'));
+const next = ready.find(w => w.status === '进行中' || w.status === '待验收') || ready[0];
+const facts = [
+  [String(done.length), `/ ${live.length} 张<strong>已完成</strong>`, false],
+  [next ? next.id : '—', next ? `下一步：${next.title}（${next.status}）` : '全部完成', true],
+  [String(ready.length), '张施工单的依赖已满足，可以开工', false],
+];
+facts.forEach(([b, span, mono]) => { const li = h('li'); const bb = h('b', mono ? 'mono' : null, b); const sp = h('span'); sp.innerHTML = span; li.append(bb, sp); $('facts').append(li); });
+
+/* 工程表：按里程碑分组 */
+const GROUPS_MS = [
+  ['M1', '最小闭环', ['P00', 'P01', 'P02', 'P03', 'P04', 'P05']],
+  ['M2', '可日用编码', ['P06', 'P07', 'P08', 'P09']],
+  ['M3', 'Web 控制台', ['P10']],
+  ['M4', '伴侣回归', ['P11', 'P12', 'P13', 'P14']],
+  ['M5', '多设备', ['P15']],
+  ['M6', '首个正式发布', ['P16']],
+];
+const stepEls = {};
+const cssOf = { '已完成': 'done', '待验收': 'review', '进行中': 'doing', '已废弃': 'dropped' };
+const mark = { '已完成': '✓', '待验收': '待验收', '进行中': '进行中', '已废弃': '废弃' };
+GROUPS_MS.forEach(([mid, mname, pids]) => {
+  const list = pids.flatMap(p => phaseById[p].wos);
+  const sep = h('li', 'ms-sep');
+  sep.append(h('b', null, `${mid} · ${mname}`), h('span', null, `${list.filter(w => w.status === '已完成').length} / ${list.length} 张`));
+  $('ms').append(sep);
+  pids.forEach(pid => {
+    const p = phaseById[pid];
+    const li = h('li'); li.id = pid;
+    const head = h('div', 'ms-head');
+    const nm = h('span', 'ms-name'); const a = h('a', null, p.name); a.href = encodeURI(p.dir + '/README.md'); nm.append(a);
+    head.append(h('span', 'ms-id', pid), nm, h('span', 'ms-goal', p.goal));
+    if (p.deps.length) head.append(h('span', 'ms-tag', '前置 ' + p.deps.join('、')));
+    const chips = h('ol', 'chips');
+    p.wos.forEach(w => {
+      const b = h('button', 'step ' + (cssOf[w.status] || '')); b.type = 'button'; b.title = `${w.id} ${w.title}（${w.status}）`;
+      b.append(h('span', 'n', w.id.slice(4)), document.createTextNode(w.title));
+      if (mark[w.status]) b.append(h('span', 'st', mark[w.status]));
+      b.onclick = () => select(w.id);
+      stepEls[w.id] = b;
+      const c = h('li'); c.append(b); chips.append(c);
+    });
+    li.append(head, chips);
+    $('ms').append(li);
+  });
+});
+
+/* 选中与高亮 */
+const closure = (id, next) => { const out = new Set(); const walk = x => (next(x) || []).forEach(y => { if (!out.has(y)) { out.add(y); walk(y); } }); walk(id); return out; };
+function highlight(ids) {
+  const set = new Set(ids);
+  Object.entries(stepEls).forEach(([k, e]) => { e.classList.remove('sel', 'up', 'down'); e.classList.toggle('fade', set.size > 0 && !set.has(k)); if (set.has(k)) e.classList.add('sel'); });
+  $('detail').hidden = true;
+}
+function select(id, scroll) {
+  const w = woById[id]; if (!w) return;
+  const up = closure(id, x => woById[x] && woById[x].deps), down = closure(id, x => dependents[x]);
+  Object.entries(stepEls).forEach(([k, e]) => {
+    e.classList.toggle('sel', k === id); e.classList.toggle('up', up.has(k)); e.classList.toggle('down', down.has(k));
+    e.classList.toggle('fade', k !== id && !up.has(k) && !down.has(k));
+  });
+  const det = $('detail'); det.replaceChildren(); det.hidden = false;
+  const close = h('button', 'close', '关闭 ✕'); close.type = 'button'; close.onclick = clear;
+  const links = ids => { const dd = h('dd'); if (!ids.length) dd.append('—'); ids.forEach(x => { const b = h('button', 'lk', `${x} ${woById[x].title}`); b.type = 'button'; b.onclick = () => select(x); dd.append(b); }); return dd; };
+  const file = h('a', null, w.file); file.href = encodeURI(w.file);
+  const fdd = h('dd'); fdd.append(file);
+  const dl = h('dl');
+  dl.append(h('dt', null, '状态'), h('dd', null, w.status), h('dt', null, '阶段'), h('dd', null, `${w.phase} ${phaseById[w.phase].name}`),
+    h('dt', null, '施工单'), fdd, h('dt', null, '直接依赖'), links(w.deps), h('dt', null, '直接被依赖'), links(dependents[id] || []),
+    h('dt', null, '全部上游 / 下游'), h('dd', null, `${up.size} 张 / ${down.size} 张`));
+  det.append(close, h('h3', null, `${w.id} · ${w.title}`), dl);
+  history.replaceState(null, '', '#' + id);
+  if (scroll) stepEls[id].scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function clear() {
+  Object.values(stepEls).forEach(e => e.classList.remove('sel', 'up', 'down', 'fade'));
+  document.querySelectorAll('#bmap .pick').forEach(x => x.classList.remove('pick'));
+  $('detail').hidden = true;
+  history.replaceState(null, '', location.pathname);
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') clear(); });
+
+/* 每一步的图：有 sheet 时隐藏空提示 */
+if (document.querySelector('.sheet')) $('no-sheets').hidden = true;
+
+/* 自检：每张施工单都应落在拼图、地基之一（新增施工单忘了登记时在控制台提示） */
+const covered = new Set([...Object.values(PIECES).flat(), ...BASE.map(b => b[0])]);
+const missing = wos.filter(w => !covered.has(w.id)).map(w => w.id);
+if (missing.length) console.warn('施工图：这些施工单没有对应的块或地基：', missing.join(', '));
+const unknown = [...covered].filter(id => !woById[id]);
+if (unknown.length) console.warn('施工图：PIECES/BASE 里有不存在的施工单：', unknown.join(', '));
+
+const hash = decodeURIComponent(location.hash.slice(1));
+if (woById[hash]) select(hash, true);
+})();
+</script>
+</body>
+</html>
