@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/*"]
+members = ["crates/*", "xtask"]
 
 [workspace.package]
 version = "0.3.0"          # 与 version.txt 同步；发布 PR 由 release-please-config.json 的 extra-files 一起更新
