@@ -3,6 +3,13 @@
 
 本项目的变更记录遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0](https://github.com/yxxbc/GQYv2/compare/v0.2.0...v0.3.0) (2026-09-27)
+
+
+### Added
+
+* **scripts:** add guarded worktree sync ([#18](https://github.com/yxxbc/GQYv2/issues/18)) ([1918151](https://github.com/yxxbc/GQYv2/commit/19181515fbda1f6406fb4dd8b5dd7d510947cc9b))
+
 ## [0.2.0](https://github.com/yxxbc/GQYv2/compare/v0.1.0...v0.2.0) (2026-09-27)
 
 
