@@ -4,7 +4,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 状态 | 未开始 |
+| 状态 | 待验收 |
 | 依赖 | —（本阶段起点） |
 | 设计依据 | designs/01-总体架构.md §2、§3、§6；docs/tech-stack.md；designs/19-可观测性与测试.md §6.2 |
 | 规模 | M（1–2 天） |
@@ -14,7 +14,7 @@
 
 建立 Cargo workspace：固定工具链、edition 2024、按 01 §3 的层表建出全部 17 个库 crate 空壳，打开第一版 workspace lints，并把 `Cargo.lock` 入库。做完之后，后续每一张施工单都在这个骨架上加代码；空壳上 `cargo build --workspace`、`cargo test --workspace`、`cargo fmt --all --check`、`cargo clippy --workspace --all-targets -- -D warnings` 全绿。
 
-“全部 crate 空壳”的口径：**只建 `crates/` 下的 17 个库 crate**（01 §3 表）。`xtask/` 由 P00-02 创建；`apps/gqy`、`apps/tui`、`apps/web-console`、`apps/desktop`、`apps/connectors` 分别由 P05-05、P05-07、P10-01、P16-06、P14 创建。理由：每个入口的骨架与它的首张施工单一起出现，避免空 bin 长期存在（“不为以后写代码”）。
+“全部 crate 空壳”的口径：**只建 `crates/` 下的 17 个库 crate**（01 §3 表）。`xtask/` 由 P00-02 创建；`apps/gqy`、`apps/tui`、`apps/web-console`、`apps/desktop`、`apps/connectors` 分别由 P05-10、P05-13、P10-01、P16-06、P14 创建（P05 重排后更新的引用）。理由：每个入口的骨架与它的首张施工单一起出现，避免空 bin 长期存在（“不为以后写代码”）。
 
 ## 范围
 
@@ -135,12 +135,12 @@ cargo metadata --format-version 1 | python3 -c \
 
 ## 完成判据
 
-- [ ] 全局完成定义（施工总纲 §3.3）全部满足（其中 cargo/xtask 检查按本单交付范围解释）
-- [ ] 17 个 crate 空壳与 01 §3 名单一一对应，无多余、无遗漏
-- [ ] `rust-toolchain.toml` 的 channel 与 `rust-version` 为同一版本，且 ≥ 1.85，数值记录在 PR 描述
-- [ ] `Cargo.lock` 入库
-- [ ] `Cargo.toml` 的 `version` 与 `version.txt` 一致（当前均为 `0.1.0`）
-- [ ] 四个命令（build / test / fmt / clippy）输出贴进 PR 描述
+- [x] 全局完成定义（施工总纲 §3.3）全部满足（其中 cargo/xtask 检查按本单交付范围解释）
+- [x] 17 个 crate 空壳与 01 §3 名单一一对应，无多余、无遗漏
+- [x] `rust-toolchain.toml` 的 channel 与 `rust-version` 为同一版本，且 ≥ 1.85，数值记录在 PR 描述
+- [x] `Cargo.lock` 入库
+- [x] `Cargo.toml` 的 `version` 与 `version.txt` 一致（当前均为 `0.1.0`）
+- [x] 四个命令（build / test / fmt / clippy）输出贴进 PR 描述
 
 ## 风险与回退
 

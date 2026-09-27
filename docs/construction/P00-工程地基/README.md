@@ -33,7 +33,7 @@ workspace、lints、CI、架构/体积门禁、测试日志、错误与日志骨
 
 | 单 | 标题 | 依赖 | 规模 | 状态 |
 | --- | --- | --- | --- | --- |
-| [P00-01](P00-01-workspace骨架.md) | workspace 骨架 | — | M | 未开始 |
+| [P00-01](P00-01-workspace骨架.md) | workspace 骨架 | — | M | 待验收 |
 | [P00-02](P00-02-xtask与分层门禁.md) | xtask 与分层门禁 | P00-01 | L | 未开始 |
 | [P00-03](P00-03-体积门禁与clippy规则.md) | 体积门禁与 clippy 规则 | P00-01、P00-02 | M | 未开始 |
 | [P00-04](P00-04-测试日志与报告.md) | 测试日志与报告 | P00-02 | L | 未开始 |
@@ -66,5 +66,11 @@ P00 不设里程碑（里程碑见 00-施工总纲 §2：M1 在 P05 末）。
 2. **`gqy-core` 的允许依赖表述**（P00-05）：01 §3 的“允许的外部重依赖”列没有列 `tokio`/`tracing`，而 02 §2 明确 `gqy_core::blocking::run`、19 §3.1 的 span 层级引用它。P00-05 按 02/19 执行（把 tokio/tracing 视为全项目标配而非“重依赖”）。**已定（2026-09-28）**：写进 01 §3 的 L0 行（连同 `jiff`）。
 3. **“吞错误”的机器守护**（P00-03，参考 miyu 0-1/0-2）：miyu 把 `let _ =`、`.ok()` 丢弃 `Result` 也纳入 lint；GQYv2 的 19 §6.1 只列了 `unwrap_used` 等。推荐：加 `clippy::let_underscore_must_use`（restriction，deny）；`.ok()` 没有现成 lint，用扫描器规则（与 `task_local!` 同机制）。**已定（2026-09-28）**：`.ok()` 有现成 lint（`clippy::unused_result_ok`，Clippy 1.82+），与 `let_underscore_must_use` 一并进 19 §6.1 与 P00-03。
 4. **时间与本地日期换算的实现**（P00-05、P01-01、P11-05）：技术栈未列时间库；10 §4.4 已定“存储一律 Unix 毫秒 UTC”，13 §58 要 RFC 3339 UTC 字符串，备份时间（10 §9.1）与日志文件名要本地时间/日期。推荐：UTC 毫秒为唯一表示；RFC 3339 UTC 自写（约 30 行，参考 miyu 1-1“时间换算自己写”）；本地日期/时区在用到它的单里落地（P11-05 感知）；若时区处理成本过高再引入 `jiff` 并更新 tech-stack。**已定（2026-09-28）**：不自己写——引入 `jiff` 为唯一时间库（Unix 读系统 tzdb、Windows 默认内嵌 `jiff-tzdb`；RFC 3339 / 本地日期 / 时区同源）；已写入 tech-stack 与 01 §3，P00-05/P01-01 按此实施。
+
+施工中发现的差量（2026-09-28，P00-01）：
+
+5. **跨 crate 夹具的家有两套口径**：P02-04 写 `crates/gqy-provider/tests/fixtures/request-shapes/…`，P03-06（已随 PR #4 合入 main）写根 `tests/fixtures/request-shapes/**`。21 §6 已定口径：跨 crate 共享的字节契约夹具放根 `tests/fixtures/`，供应商自己的流夹具留 crate 内；对应单施工时按 21 §6 更正措辞，并同步 19 §4 的表述。
+6. **`docs/AGENTS.md` §7 的“已知预期断链”说明已过时**：P02–P05 阶段目录已随 PR #4/#5/#7 合入 main，该段仍写“P02…P16 阶段目录随阶段开工才建（P00、P01 已建）”。留给下次改动该文件的人顺手更新，或由项目主人指定一处修正。
+7. **P00-01 的入口归属引用已随 P05 重排过时**：`apps/gqy` 现归 P05-10、`apps/tui` 现归 P05-13（原文写 P05-05、P05-07）。已在 P00-01 单内更正，21 §2/§4 同步。
 
 
