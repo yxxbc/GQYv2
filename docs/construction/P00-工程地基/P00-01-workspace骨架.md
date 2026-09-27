@@ -14,7 +14,7 @@
 
 建立 Cargo workspace：固定工具链、edition 2024、按 01 §3 的层表建出全部 17 个库 crate 空壳，打开第一版 workspace lints，并把 `Cargo.lock` 入库。做完之后，后续每一张施工单都在这个骨架上加代码；空壳上 `cargo build --workspace`、`cargo test --workspace`、`cargo fmt --all --check`、`cargo clippy --workspace --all-targets -- -D warnings` 全绿。
 
-“全部 crate 空壳”的口径：**只建 `crates/` 下的 17 个库 crate**（01 §3 表）。`xtask/` 由 P00-02 创建；`apps/gqy`、`apps/tui`、`apps/web-console`、`apps/desktop`、`apps/connectors` 分别由 P05-05、P05-07、P10-01、P16-06、P14 创建。理由：每个入口的骨架与它的首张施工单一起出现，避免空 bin 长期存在（“不为以后写代码”）。
+“全部 crate 空壳”的口径：**只建 `crates/` 下的 17 个库 crate**（01 §3 表）。`xtask/` 由 P00-02 创建；`apps/gqy`、`apps/tui`、`apps/web-console`、`apps/desktop`、`apps/connectors` 分别由 P05-10、P05-13、P10-01、P16-06、P14 创建（P05 重排后更新的引用）。理由：每个入口的骨架与它的首张施工单一起出现，避免空 bin 长期存在（“不为以后写代码”）。
 
 ## 范围
 
