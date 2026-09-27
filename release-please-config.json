@@ -5,7 +5,14 @@
       "release-type": "simple",
       "version-file": "version.txt",
       "changelog-path": "CHANGELOG.md",
-      "initial-version": "0.1.0"
+      "initial-version": "0.1.0",
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "Cargo.toml",
+          "jsonpath": "$.workspace.package.version"
+        }
+      ]
     }
   },
   "include-v-in-tag": true,

@@ -24,7 +24,7 @@
 - `.githooks/commit-msg` 调用共享标题校验器；`scripts/install-hooks.sh` 只设置当前 clone 的 `core.hooksPath`，不得改全局 Git 配置。
 - `skip-changelog` 只能豁免 changelog 要求，不能跳过标题校验。PR 标题、分支提交范围和标签判断由 CI 验证；本地 hook 不应伪装成完整 PR 检查。
 - 版本策略以 `docs/release-versioning.md` 为详细规范、`CONTRIBUTING.md` 为贡献者摘要：版本代表发布产物，不按提交/修复次数 bump；一天多次发布时，每个发布递增到唯一版本。添加包清单或本地版本检查器时，保证包版本、Git tag 与 changelog 标题一致。
-- Dependabot 更新规则在 `.github/dependabot.yml`；Release Please 使用 `version.txt`、`.release-please-manifest.json` 和 `release-please-config.json`，不得手工复制版本/changelog 生成逻辑。
+- Dependabot 更新规则在 `.github/dependabot.yml`；Release Please 使用 `version.txt`、`.release-please-manifest.json` 和 `release-please-config.json`，并通过 `extra-files` 的 toml 更新器同步 `Cargo.toml` 的 `[workspace.package].version`（改动这条链路时同步 `docs/release-versioning.md` 与 `scripts/check-version-consistency.sh`）；不得手工复制版本/changelog 生成逻辑。
 - `.github/workflows/security-review.yml` 负责 zizmor 与 dependency review。Cargo 清单未出现前不添加会因缺少 lockfile 而失败的 Rust 审计步骤。
 
 ## 脚本与本地工具约定
