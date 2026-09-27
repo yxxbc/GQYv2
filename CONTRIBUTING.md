@@ -1,4 +1,5 @@
 # 贡献规范
+<!-- GitHub Copilot; updated 2026-09-27T22:46:09Z -->
 
 所有合并到主分支的变更都必须通过 `pr-standards` 和 `workflow-security` 检查。仓库管理员还必须在 GitHub 分支保护规则中将这两项设为必需状态检查，并禁止绕过检查的直接推送；仅添加工作流而不启用必需检查，不构成强制门槛。公开仓库还应将 `dependency-review` 设为必需检查；私有仓库需先启用 GitHub Advanced Security 才能使用该检查。管理员还必须保护 `v*` 版本 tag，禁止更新和删除已发布 tag。
 
@@ -36,6 +37,19 @@ bash scripts/install-hooks.sh
 ```
 
 此后每次提交都会自动校验提交标题；不符合格式时，Git 会拒绝该次提交。该配置是本地 clone 级别的设置，每个开发者需各自启用。PR 标题、提交范围和变更日志仍由 GitHub Actions 检查。
+
+### 同步本地 worktree
+
+云端 PR 合并到 `main` 后，在仓库任一 worktree 运行：
+
+```sh
+bash scripts/sync-worktrees.sh
+bash scripts/sync-worktrees.sh --apply
+```
+
+第一条命令 fetch `origin` 并报告所有 worktree 的落后、分叉和脏状态，不改本地分支。第二条只会快进干净的 `main`，或 rebase 干净且没有非 main upstream、也没有同名远端分支的本地分支到 `origin/main`。有未提交/未跟踪文件、已配置其他 upstream、upstream 已删除、存在同名远端分支或处于 detached HEAD 的 worktree 会跳过。遇到真实冲突时脚本会 abort 当前 rebase、停止后续同步并返回失败；之前已成功更新的 worktree 不会回滚。
+
+脚本不会删除 worktree、推送分支或 force-push。已发布的 PR 分支需要单独处理历史改写；此脚本不能保证不同分支修改同一文件时绝不冲突。
 
 ## 版本号与发布节奏
 
