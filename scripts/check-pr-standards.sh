@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -ne 4 ]]; then
-  printf '用法: %s <base-sha> <head-sha> <pr-title> <skip-changelog-label>\n' "$0" >&2
+if [[ $# -ne 5 ]]; then
+  printf '用法: %s <base-sha> <head-sha> <pr-title> <skip-changelog-label> <large-commit-approved-label>\n' "$0" >&2
   exit 2
 fi
 
@@ -10,7 +10,10 @@ base_sha=$1
 head_sha=$2
 pr_title=$3
 skip_changelog_label=$4
+large_commit_approved_label=$5
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+max_commit_changed_lines=500
+max_commit_changed_files=10
 
 check_subject() {
   bash "$script_dir/check-commit-subject.sh" "$1" "$2"
@@ -35,6 +38,15 @@ while IFS= read -r commit_sha; do
   subject=$(git show -s --format=%s "$commit_sha")
   commit_body=$(git show -s --format=%b "$commit_sha")
   check_subject '提交标题' "$subject"
+
+  change_stats=$(git show --format= --numstat "$commit_sha")
+  changed_files=$(printf '%s\n' "$change_stats" | awk 'NF >= 3 { count++ } END { print count + 0 }')
+  changed_lines=$(printf '%s\n' "$change_stats" | awk -F '\t' '$1 ~ /^[0-9]+$/ && $2 ~ /^[0-9]+$/ { total += $1 + $2 } END { print total + 0 }')
+  if [[ ( "$changed_files" -gt "$max_commit_changed_files" || "$changed_lines" -gt "$max_commit_changed_lines" ) && "$large_commit_approved_label" != 'true' ]]; then
+    printf '提交改动过大：%s 个文件、%s 行增删；上限为 %s 个文件或 %s 行。拆分提交，或由维护者添加 large-commit-approved 标签。\n' \
+      "$changed_files" "$changed_lines" "$max_commit_changed_files" "$max_commit_changed_lines" >&2
+    exit 1
+  fi
 
   if [[ "$subject" == *'!: '* ]] && ! printf '%s\n' "$commit_body" | grep -Eq '^BREAKING CHANGE: .+'; then
     printf '破坏性提交必须在提交正文中包含非空的 BREAKING CHANGE: footer: %s\n' "$subject" >&2

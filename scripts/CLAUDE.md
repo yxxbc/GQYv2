@@ -20,7 +20,7 @@
 ## 当前提交与 PR 护栏
 
 - `scripts/check-commit-subject.sh` 是 Conventional Commits 标题规则的唯一实现。其他脚本调用它，不复制正则。
-- `scripts/check-pr-standards.sh` 接收 `<base-sha> <head-sha> <pr-title> <skip-changelog-label>`，检查 PR 标题、提交标题与 changelog；调整参数或语义时同步检查 `.github/workflows/pr-standards.yml` 和 `CONTRIBUTING.md`。
+- `scripts/check-pr-standards.sh` 接收 `<base-sha> <head-sha> <pr-title> <skip-changelog-label> <large-commit-approved-label>`，检查 PR 标题、逐提交标题、体量、merge commit、破坏性 footer 与 changelog；单个提交最多 10 个文件、增删合计最多 500 行。超限仅能由维护者通过 `large-commit-approved` PR 标签豁免。调整参数或语义时同步检查 `.github/workflows/pr-standards.yml` 和 `CONTRIBUTING.md`。
 - `.githooks/commit-msg` 调用共享标题校验器；`scripts/install-hooks.sh` 只设置当前 clone 的 `core.hooksPath`，不得改全局 Git 配置。
 - `skip-changelog` 只能豁免 changelog 要求，不能跳过标题校验。PR 标题、分支提交范围和标签判断由 CI 验证；本地 hook 不应伪装成完整 PR 检查。
 - 版本策略以 `docs/release-versioning.md` 为详细规范、`CONTRIBUTING.md` 为贡献者摘要：版本代表发布产物，不按提交/修复次数 bump；一天多次发布时，每个发布递增到唯一版本。添加包清单或本地版本检查器时，保证包版本、Git tag 与 changelog 标题一致。
@@ -38,7 +38,7 @@
 ## 验证要求
 
 - 先运行能最快证伪本次改动假设的窄检查，再按影响范围补充测试；不要用宽泛测试掩盖局部问题。
-- 修改 Shell 时至少运行 `bash -n`。修改校验器时测试有效和无效样例；修改 hook/安装器时在临时 Git 仓库验证；修改 PR 检查时验证提交范围、`Unreleased` 条目、`skip-changelog` 豁免和工作流参数。
+- 修改 Shell 时至少运行 `bash -n`。修改校验器时测试有效和无效样例；修改 hook/安装器时在临时 Git 仓库验证；修改 PR 检查时验证提交范围、提交体量边界、批准标签、`Unreleased` 条目、`skip-changelog` 豁免和工作流参数。
 - 修改工作流时核实触发器、权限、输入/输出以及本地脚本调用保持一致；修改文档时核对链接和描述与实际实现一致。
 - 结束时简要说明改了什么、实际跑了哪些验证、哪些仓库外设置仍需用户或管理员配置，并给出可照做的验收步骤。
 

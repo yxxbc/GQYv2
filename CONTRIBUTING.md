@@ -15,7 +15,7 @@
 
 `feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`build`、`ci`、`chore`、`revert`。
 
-Scope 使用小写 ASCII 字母、数字、点、下划线、斜杠或连字符。描述不能为空，可使用中文或英文。每个提交应表达一个独立、可理解的变更；PR 分支不要包含 merge commit，使用 rebase 整理提交。`pr-standards` 会拒绝包含 merge commit 的 PR 分支。
+Scope 使用小写 ASCII 字母、数字、点、下划线、斜杠或连字符。描述不能为空，可使用中文或英文。每个提交应表达一个独立、可理解的变更；PR 分支不要包含 merge commit，使用 rebase 整理提交。单个提交最多修改 10 个文件、最多增删 500 行；超过任一上限必须拆分提交。`pr-standards` 会拒绝超限提交和包含 merge commit 的 PR 分支。
 
 示例：
 
@@ -26,7 +26,7 @@ docs: 补充本地构建说明
 feat(api)!: 删除旧版会话接口
 ```
 
-破坏性变更还应在提交正文中说明迁移影响，并使用 `BREAKING CHANGE:` footer。提交标题带 `!` 时，`pr-standards` 会强制要求非空 footer；迁移影响是否完整仍须由评审确认。PR 标题也必须符合上述格式，以确保 squash merge 生成的提交标题一致。
+破坏性变更还应在提交正文中说明迁移影响，并使用 `BREAKING CHANGE:` footer。提交标题带 `!` 时，`pr-standards` 会强制要求非空 footer；迁移影响是否完整仍须由评审确认。只有确实无法拆分的单一变更，才可由维护者添加 `large-commit-approved` 标签豁免体量门禁；PR 描述必须解释原因，标签不能作为常规绕过方式。二进制文件计入文件数，不计入增删行数。PR 标题也必须符合上述格式，以确保 squash merge 生成的提交标题一致。
 
 ### 本地自动检查
 
@@ -36,7 +36,7 @@ feat(api)!: 删除旧版会话接口
 bash scripts/install-hooks.sh
 ```
 
-此后每次提交都会自动校验提交标题；不符合格式时，Git 会拒绝该次提交。该配置是本地 clone 级别的设置，每个开发者需各自启用。PR 标题、提交范围和变更日志仍由 GitHub Actions 检查。
+此后每次提交都会自动校验提交标题；不符合格式时，Git 会拒绝该次提交。该配置是本地 clone 级别的设置，每个开发者需各自启用。提交体量、PR 标题、提交范围和变更日志由 GitHub Actions 检查。
 
 ### 同步本地 worktree
 
