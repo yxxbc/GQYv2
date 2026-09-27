@@ -1,4 +1,5 @@
 <div align="center">
+  <!-- GitHub Copilot; updated 2026-09-27T22:23:08Z -->
   <img src="assets/pics/gqy-logo.png" alt="GQY / 顾清影标识" width="160" />
   <h1>顾清影 · GQY v2</h1>
   <p><strong>Rust 为体，Web 为面，C 为径</strong></p>
@@ -55,6 +56,12 @@ GQY v2 是对 [gqy-agent（v1）](https://github.com/yxxbc/gqy-agent) 的一次�
 | M4 伴侣回归 | 人格、记忆、QQ / iMessage | 未开始 |
 | M5 多设备 | 设备配对、互相提供能力、按需同步 | 未开始 |
 | M6 首个正式发布 | 下载安装、导入 v1 数据 | 未开始 |
+
+## 提交记录
+
+![提交活跃度](https://yxxbc.github.io/GQYv2/commit-activity.svg)
+
+[查看分支与提交关系图](https://github.com/yxxbc/GQYv2/network)。活跃度图在 `main` 每次 push（包括 PR 合并）后自动更新。
 
 ## 文档
 
