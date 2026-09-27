@@ -8,6 +8,9 @@ updates:
       time: "09:00"
       timezone: Asia/Shanghai
     open-pull-requests-limit: 5
+    # 冷却期（zizmor dependabot-cooldown：新版本先晾一晾，避开刚发布的恶意/坏版本）
+    cooldown:
+      default-days: 7
     labels:
       - dependencies
       - skip-changelog
