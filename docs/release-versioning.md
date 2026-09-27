@@ -14,11 +14,23 @@ Release Please 以仓库根目录为单一发布单元，使用 `simple` release
 | `release-please-config.json` | 版本递增、tag 格式、changelog 分类与 `extra-files` 规则 |
 | `CHANGELOG.md` | `[Unreleased]` 及已发布版本的变更记录 |
 
-当前版本为 `0.2.0`。不要在普通提交或功能 PR 中手动递增 `version.txt`、`Cargo.toml` 版本、manifest 或 Git tag；这些文件由 Release Please 的发布 PR 同步更新。发布 PR 合并后，`Cargo.lock` 里工作区成员的版本会落后一步：下一次 `cargo` 命令（build、metadata 等）会自动刷新，把刷新结果随下一个提交入库即可。
+当前版本为 `0.1.0`。不要在普通提交或功能 PR 中手动递增 `version.txt`、`Cargo.toml` 版本、manifest 或 Git tag；这些文件由 Release Please 的发布 PR 同步更新（M1 之前不合并发布 PR，见下节）。发布 PR 合并后，`Cargo.lock` 里工作区成员的版本会落后一步：下一次 `cargo` 命令（build、metadata 等）会自动刷新，把刷新结果随下一个提交入库即可。
 
 ### 为什么不是 `rust` release type（2026-09-28 实测）
 
 `release-please` 的 `rust` 策略会更新每个成员与根 `Cargo.toml` 的 `[package] version` 并写 `Cargo.lock`；但本仓库是**虚拟 workspace**（根 `Cargo.toml` 没有 `[package]`，版本在 `[workspace.package]`），它的 `CargoToml` updater 对没有 `[package]` 的清单会直接抛错（`is not a package manifest (might be a cargo workspace)`，release-please 17.11.2 实测）；成员清单用 `version.workspace = true` 时同样会因 `package.version` 不是字面量而抛错。因此维持 `simple` + `extra-files` 的 toml 更新器（实测格式与注释保留）。跨文件的一致性由 `scripts/check-version-consistency.sh` 守护，接入 CI 见 P00-06。
+
+## 发布冻结（M1 之前）
+
+**M1（P05 末，最小闭环）之前不合并发布 PR。** 只要 main 上落下 `feat` / `fix` 这类可发布提交，Release Please 工作流就会开（或更新）一个 `chore: release X.Y.Z` 的 PR——但**发布 PR 的出现不等于发布**：只有**合并**它才会创建 `v*` tag 与 GitHub Release。P00 阶段没有制品，提前发布只会让版本号虚涨。
+
+冻结期间的做法：
+
+- 不合并任何 `chore: release X.Y.Z` PR（留着或关闭，等 M1）；
+- 变更只在 `CHANGELOG.md` 的 `[Unreleased]` 累积；开发工具与内部维护用隐藏类型（`chore` / `build` / `docs` / `test` / `ci` / `refactor` / `style`），它们既不进 changelog 也不触发发布；
+- 到达 M1 后合并届时的发布 PR，作为首个正式版本发布。届时机器人按提交自动生成版本节，与 `[Unreleased]` 里的人工条目可能重复：以机器人生成的为准，把人工条目归并进同一个版本节。
+
+**2026-09-28 回退记录**：P00 期间误合了两个发布 PR（`v0.2.0`、`v0.3.0`，均无制品）。已删除这两个 tag 与 GitHub Release，`version.txt` / `Cargo.toml` / manifest 回到 `0.1.0`，两条变更回到 `[Unreleased]`；删除 tag 时临时禁用过 `protect v* tags` ruleset，删除后已恢复 `active`。
 
 ## 版本格式与递增
 

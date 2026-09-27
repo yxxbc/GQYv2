@@ -59,6 +59,8 @@ bash scripts/install-hooks.sh
 
 Release Please 根据 Conventional Commits 汇总发布 PR，并同步更新 `version.txt`、`Cargo.toml` 的 `[workspace.package].version`、`CHANGELOG.md` 和 `.release-please-manifest.json`；合并发布 PR 后会创建 `vX.Y.Z` tag 和 GitHub Release notes。初始版本为 `0.1.0`，类别映射见 `release-please-config.json`。版本一致性由 `scripts/check-version-consistency.sh` 校验。
 
+**M1（P05 末）之前不合并发布 PR**：发布 PR 的出现不等于发布，合并才会创建 tag 与 Release；冻结规则与 2026-09-28 的回退记录见 `docs/release-versioning.md`。
+
 为使发布机器人 PR 也触发必需检查，仓库管理员需创建只授权本仓库 `contents`、`issues`、`pull requests` 读写权限的 fine-grained token，并将其保存为 Actions secret `RELEASE_PLEASE_TOKEN`。同时在 Settings → Actions → General 允许 GitHub Actions 创建 pull request。不要将 token 写入文件或日志。
 
 ### 依赖与安全审查
