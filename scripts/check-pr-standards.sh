@@ -52,9 +52,11 @@ if git diff --quiet "$base_sha...$head_sha" -- CHANGELOG.md; then
 fi
 
 if ! awk '
+  # 段状态：unreleased = ## [Unreleased]；release = 版本标题（## [0.2.0](…) 之类）；other = 其它二级标题。
+  # 版本标题不要求先出现 ## [Unreleased]：Release Please 把新版本段插在文件最前（自动发布 PR 的形态）。
   /^## \[Unreleased\]$/ { section = "unreleased"; next }
   /^## / {
-    if (section == "unreleased" && /^## \[v?[0-9]+\.[0-9]+\.[0-9]+/) {
+    if (/^## \[v?[0-9]+\.[0-9]+\.[0-9]+/) {
       section = "release"
     } else {
       section = "other"
