@@ -14,7 +14,7 @@
      有“待验收”画虚线。块与施工单的对应关系在脚本里的 PIECES，新增或调整施工单时同步改它。
   3. 每张施工单合入 main 时，在「每一步的图」里补一节 <section class="sheet">：这一步做完以后仓库长成什么样、
      新加了什么、怎么验收的（模板见该区块内的注释）。
-  维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）；同日 P00-01 施工至待验收（施工单 / P00 README / plan-data 三处同步）。
+  维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）；P00-01 完工并合入 main（新增 21 代码文件树规范 + workspace 骨架，PR #6）。
             2026-09-28 Cline 会话——P05 阶段改名「生产级网关」并重排为 13 张单（含局域网 TLS），plan-data 与 PIECES 同步。
 -->
 <style>
@@ -245,6 +245,16 @@ footer{color:var(--ink-2);font-size:12.5px}
         <p>验收：照施工单「验收流程」跑过的命令与结果。提交：<code>abc1234</code></p>
       </section>
     -->
+    <section class="sheet" id="sP00-01">
+      <div class="sheet-head"><h2><span class="no">P00-01</span>workspace 骨架</h2><span class="pill">已完成</span></div>
+      <p>仓库从“只有文档”变成“可以照施工总纲施工的骨架”：一个 Cargo workspace + 17 个库 crate 空壳，外加一份把整个文件树定死的设计文档。</p>
+      <ul>
+        <li>根 <code>Cargo.toml</code>（resolver 3、edition 2024、<code>rust-version 1.98.1</code>、<code>unsafe_code = "deny"</code>）、<code>rust-toolchain.toml</code>（钉 1.98.1）、<code>.gitattributes</code>（全仓 LF）、<code>Cargo.lock</code> 入库、<code>.gitignore</code> 增 <code>/target/</code>。</li>
+        <li><code>crates/</code> 下 17 个空壳：每个只有 <code>Cargo.toml</code> 与写明职责、设计出处与分层规则的 <code>src/lib.rs</code>；名单与 01 §3 一一对应。</li>
+        <li>新设计文档 <a href="../designs/21-代码文件树规范.md">21 代码文件树规范</a>：目录、模块、测试与夹具位置、命名与守护方式（00 阅读顺序表与 01 §2 已接入）。</li>
+      </ul>
+      <p>验收：<code>cargo build / test / fmt --check / clippy -D warnings</code> 在 rustc 1.98.1 上全绿；<code>cargo metadata</code> 恰好 17 个 <code>gqy-*</code> 包、edition 全为 2024。提交：PR #6（<code>docs(designs)</code> 21 号文档 + <code>feat(workspace)</code> 骨架）。</p>
+    </section>
     <p class="empty" id="no-sheets">还没有完成的施工单。</p>
   </section>
 
@@ -265,7 +275,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "id": "P00-01",
      "title": "workspace骨架",
      "deps": [],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-01-workspace骨架.md"
     },
     {
