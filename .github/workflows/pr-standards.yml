@@ -23,4 +23,5 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_TITLE: ${{ github.event.pull_request.title }}
           SKIP_CHANGELOG_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'skip-changelog') }}
-        run: bash scripts/check-pr-standards.sh "$BASE_SHA" "$HEAD_SHA" "$PR_TITLE" "$SKIP_CHANGELOG_LABEL"
+          LARGE_COMMIT_APPROVED_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'large-commit-approved') }}
+        run: bash scripts/check-pr-standards.sh "$BASE_SHA" "$HEAD_SHA" "$PR_TITLE" "$SKIP_CHANGELOG_LABEL" "$LARGE_COMMIT_APPROVED_LABEL"
