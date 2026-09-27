@@ -3,6 +3,13 @@
 
 本项目的变更记录遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0](https://github.com/yxxbc/GQYv2/compare/v0.2.0...v0.3.0) (2026-09-27)
+
+
+### Added
+
+* **readme:** add auto-updating commit visualizations ([#13](https://github.com/yxxbc/GQYv2/issues/13)) ([e898d4d](https://github.com/yxxbc/GQYv2/commit/e898d4d34efc7f82f27c4e8932e786a3af460187))
+
 ## [0.2.0](https://github.com/yxxbc/GQYv2/compare/v0.1.0...v0.2.0) (2026-09-27)
 
 
