@@ -50,6 +50,7 @@
 * **异步运行时**：`tokio`（多线程核心驱动 + 单线程 local task 隔离）
 * **数据序列化**：`serde`, `serde_json`
 * **结构化日志与追踪**：`tracing`, `tracing-subscriber`
+* **时间与时区**：`jiff`（RFC 3339 / 本地时区；Unix 读系统 tzdb，Windows 默认内嵌 `jiff-tzdb`，WASM 内嵌；存储一律 Unix 毫秒 UTC——10 §4.4。2026-09-28 定，00 §5）
 * **前缀缓存契约**：Rust 原生 Append-only 账本状态机，逐字节保持前缀一致性。
 
 ### 2. 底层系统交互与沙盒（System FFI & Sandbox）
