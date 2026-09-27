@@ -18,6 +18,7 @@
             2026-09-28 Cline 会话——P05 阶段改名「生产级网关」并重排为 13 张单（含局域网 TLS），plan-data 与 PIECES 同步。
             2026-09-27T22:26:40Z GitHub Copilot——登记 P00-07 README 提交可视化，并更新 plan-data / BASE。
             2026-09-28 Cline 会话——P00-02 施工至待验收（xtask 骨架 + 层序/静态规则门禁，层表解析出 21 条目标）。
+            2026-09-28 Cline 会话——P00-02 完工并合入 main（PR #15，施工图补 P00-02 一节）；同日回退 P00 期间的两个过早发布（删除 v0.2.0 / v0.3.0 tag 与 Release，版本回到 0.1.0），确立 M1 前的发布冻结。
 -->
 <style>
 :root{
@@ -257,6 +258,17 @@ footer{color:var(--ink-2);font-size:12.5px}
       </ul>
       <p>验收：<code>cargo build / test / fmt --check / clippy -D warnings</code> 在 rustc 1.98.1 上全绿；<code>cargo metadata</code> 恰好 17 个 <code>gqy-*</code> 包、edition 全为 2024。提交：PR #6（<code>docs(designs)</code> 21 号文档 + <code>feat(workspace)</code> 骨架）。</p>
     </section>
+    <section class="sheet" id="sP00-02">
+      <div class="sheet-head"><h2><span class="no">P00-02</span>xtask 与分层/静态规则门禁</h2><span class="pill">已完成</span></div>
+      <p>仓库有了第一道机器门禁：<code>cargo xtask arch</code> 会挡住接错方向的依赖、层表外的包与被禁的代码模式。</p>
+      <ul>
+        <li>新 crate <code>xtask</code>（库 + 二进制）与 <code>.cargo/config.toml</code> 的 <code>cargo xtask</code> 别名；退出码统一 0 / 1 / 2。</li>
+        <li><b>层序门禁</b>：直接解析 <code>docs/designs/01-总体架构.md</code> §3 的表格（不另存副本）并与 <code>cargo metadata --no-deps</code> 比对——<code>unknown-package</code>、<code>layer-order</code>、<code>entry-layer</code>、<code>heavy-dep</code>、<code>daemon-assembly</code>、<code>connector-sdk-deps</code> 六类规则。</li>
+        <li><b>静态规则</b>：<code>task_local!</code>、可变全局 <code>static</code>、<code>#[instrument]</code> 缺 <code>skip_all</code>；扫描 <code>crates/*/src/**/*.rs</code> 与 <code>apps/**/*.rs</code>（<code>xtask/</code> 自身跳过）。</li>
+        <li>测试 18 例（层序 8 + 扫描 10），含「关掉规则 → 对应测试必红」的区分能力对照。</li>
+      </ul>
+      <p>验收：<code>cargo xtask arch</code> 退 0（层表 21 条目标 / 18 个包 / 17 个文件）；手工红绿三组（接错方向、<code>task_local!</code>、图纸删行）都退 1。提交：PR #15。</p>
+    </section>
     <p class="empty" id="no-sheets">还没有完成的施工单。</p>
   </section>
 
@@ -286,7 +298,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "deps": [
       "P00-01"
      ],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-02-xtask与分层门禁.md"
     },
     {
