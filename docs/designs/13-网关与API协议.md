@@ -9,8 +9,9 @@
 3. **事件可续传、不死循环。** 每个事件有会话内单调 `seq`，断线按 `Last-Event-ID` 补拉，超出补拉窗口时显式要求整页重建，且重建有次数上限（02 §7）。
 4. **鉴权由代码判定。** 身份来自传输层的真实凭据（UDS 本地令牌 + 对端 uid 附加检查、HTTP bearer / cookie、mesh 双向 TLS），永远不因为“来自本机回环”而放行（铁律 7）。
 5. **兼容性可机器验证。** v1 协议内只允许加字段、加事件类型、加路由；旧夹具必须仍能反序列化，由测试钉住。
+6. **生产级运行形态。** 连接与请求都有上界（头读取超时、请求超时、请求体上限、并发上限、速率上限），拒绝有明确语义与稳定错误码；panic 不炸连接；停机先排空再强制退出（§3、§7、§11、§12）。
 
-非目标：GraphQL / gRPC；多租户；公网直接暴露（公网访问只能经 mesh 或用户自备反向代理，且仍需 bearer）。
+非目标：GraphQL / gRPC；多租户；默认不监听局域网（显式开启后强制 TLS，§3.3）；公网直接暴露（公网访问只能经 mesh 或用户自备反向代理，且仍需 bearer）。
 
 ## 2 v1 教训
 
@@ -24,14 +25,17 @@
 | `gqy ask` JSONL 每行 `"v":1`，字段只加不改，退出码 0/1/2/3/124/130 | 这是 v1 做对的地方，外部脚本依赖它 | 原样继承契约（§9） |
 | 前端配置默认值手抄 Rust（schema 3 文件 3.2k 行） | 两个真相源，改一处漏一处 | 配置 schema 由 `GET /api/v1/config/schema` 下发（§5.7、15） |
 | 事件必须带 `run_id` | 旧 run 的迟到事件会污染新 run 的显示 | 信封固定带 `run`（可空），客户端按 run 过滤 |
+| 没有头读取超时与连接上限 | 慢速客户端可以长时间占住 daemon 的连接与内存 | 头读取超时 + 最大并发连接 + 减载（§3.1、§3.2） |
+| 异常没有统一出口 | panic 与框架错误各自为政，客户端拿到的是框内的字符串 | panic 一层捕获 → 500 `Internal`；错误体只有 `ApiError` 一种形状（§3.2、§7） |
+| 曾把监听暴露到 `0.0.0.0` 且没有 TLS | 局域网明文可访问 | 局域网默认关、开启必须 TLS、`Host`/`Origin` 校验（§3.3） |
 
 ## 3 传输与监听
 
 | 传输 | 地址 | 默认 | 用途 | 身份来源 |
 | --- | --- | --- | --- | --- |
 | UDS | `<data>/run/gqy.sock`，目录 0700、socket 0600 | 开 | 本机 TUI、`gqy ask`、`gqy config`、桌面客户端模式 | 本地令牌（§8.1，必需）；对端 uid == daemon uid 为附加检查 |
-| HTTP | `127.0.0.1:<port>`（端口默认 8310，待 P05 定） | 开 | Web 控制台、同机脚本 | bearer 令牌或浏览器会话 cookie |
-| HTTP（局域网） | `0.0.0.0:<port>` 或指定地址 | 关（D-03 待定） | 局域网访问 | 同上；必须同时启用 TLS（17） |
+| HTTP | `127.0.0.1:8310`（Q-13-5 已定） | 开 | Web 控制台、同机脚本 | bearer 令牌或浏览器会话 cookie |
+| HTTPS（局域网） | `gateway.lan.listen`（默认 `0.0.0.0:8310`） | 关（显式开启） | 局域网浏览器与脚本 | bearer / cookie；**必须 TLS**（自签或用户证书，§3.3）；`Host` 校验 |
 | HTTPS mesh | `mesh.listen`，默认关 | 关 | 设备间 API、同步、委派 | 双向 TLS，证书按公钥钉扎（17） |
 | WebSocket | `GET /api/v1/connector/ws`（HTTP 升级） | 随 HTTP | 连接器（16） | 连接器专用 bearer |
 | in-proc | 桌面宿主 | — | Tauri 内嵌模式 | 宿主进程即 Owner（15） |
@@ -41,6 +45,56 @@
 - UDS 使用 `hyper` 的 HTTP/1.1 连接，`Host` 头固定写 `gqy.local`。`gqy-client` 对 UDS 与 TCP 暴露同一接口。
 - 请求体上限：JSON 默认 1 MiB；附件上传单个 16 MiB（与 16 连接器一致）；超限返回 413 `PayloadTooLarge`。
 - 每个请求都有 `request_id`（ULID），写入响应头 `X-Request-Id` 与 tracing span（19）。
+- **监听实现基线**：自建 accept 循环 + `hyper_util::server::conn::auto::Builder`（每连接一个任务，用 `hyper_util::server::graceful::GracefulShutdown` 跟踪），不用 `axum::serve`——官方说明它是“不带任何配置的简单实现”。HTTP/1 用 `http1::Builder` 的 `header_read_timeout`（必须同时配 timer，否则 `serve_connection` panic）、`max_headers`、`max_buf_size`、`keep_alive`；TCP 侧设 `TCP_NODELAY` 与 keepalive；UDS 沿用 §8.1 的目录/文件权限与对端凭据。
+- **超限请求体的连接处置**：带 `Content-Length` 且超限的请求在读取前直接返回 413；无 `Content-Length` 的读到上限即断流。超限之后连接**可能必须关闭**（payload 长度错误可被用来走私请求），不假设 keep-alive 仍可用——依赖 hyper 的重同步，并在测试里钉住这一行为。
+
+### 3.1 连接与请求上界
+
+| 上界 | 配置键（默认） | 上限 | 超限行为 |
+| --- | --- | --- | --- |
+| 最大并发连接（TCP） | `gateway.http.max_connections`（512） | 4096 | 暂停 accept（背压），计数并每分钟一行 `warn`；不静默丢弃 |
+| HTTP/1 头读取超时 | `gateway.http.header_read_timeout_ms`（10000） | 60000 | 关闭连接（不回响应，hyper 行为）；记 `conn.header_timeout` |
+| 最大请求头数量 | `gateway.http.max_headers`（100） | 与 hyper 上限一致 | hyper 直接回 400/431；网关只记日志 |
+| 请求头缓冲上限 | `gateway.http.max_buf_size`（hyper 默认） | — | 同上 |
+| 请求超时（非 SSE） | `gateway.request_timeout_ms`（30000） | 300000 | 408 `request_timeout`；`/blobs` 上传用 120000 |
+| 请求体上限 | `gateway.body_limit_bytes`（1 MiB） | 8 MiB | 413 `body_too_large`；`/blobs` 用 `gateway.blob_upload_max_bytes`（16 MiB，上限 64 MiB） |
+| TLS 握手超时 | `gateway.tls.handshake_timeout_ms`（10000） | 30000 | 关闭连接；记 `conn.tls_timeout` |
+| SSE 订阅并发 | §11 表（每令牌 32、全局 256） | — | 429 / 503 `Busy` |
+| 单连接总时长 | **不设**（SSE 是长连接） | — | 由连接上限与头超时约束 |
+
+- 只有 `GET /health` 跳过身份与限速；其余路径没有“绕过上界”的例外。
+- 所有上界在 `gqy-config` 一处定义（铁律 6），只能放宽到“上限”列，不能关闭。
+
+### 3.2 中间件栈与顺序
+
+从外到内，这是**唯一的栈**（实现为一个 `tower::ServiceBuilder` 栈；顺序与例外都有测试钉住）：
+
+| # | 层 | 作用 | 例外 |
+| --- | --- | --- | --- |
+| 1 | `LoadShed` | 内层未就绪（在途已满）时立即 503 `overloaded`，不排队堆死 | — |
+| 2 | `ConcurrencyLimit` | 在途请求上限（写路由独立一档） | SSE 上限在限速层（§11） |
+| 3 | `CatchPanic` | panic → 500 `Internal`（只给 `request_id`），连接不中断 | — |
+| 4 | `Trace` | span `http{request_id, method, route, caller_kind}`（19 §3.1），不含正文 | — |
+| 5 | `SetRequestId` + `PropagateRequestId` | ULID 生成与响应头 `X-Request-Id` 回传 | — |
+| 6 | `SensitiveHeaders` | `Authorization`、`Cookie`、`X-GQY-CSRF` 标记为敏感，不进日志 | — |
+| 7 | `Timeout` | 408（见 §3.1） | **SSE 豁免**；`/blobs` 120 s |
+| 8 | `RequestBodyLimit` | 413（见 §3.1） | `/blobs` 用大限额 |
+| 9 | 身份提取（`AuthSource` → `Caller`） | UDS 本地令牌 + 对端 uid；HTTP bearer / cookie（§8） | `GET /health` |
+| 10 | 限速（§11） | 登录 per-IP、每令牌写、SSE 并发 | `GET /health` |
+| 11 | 业务 `Router` | §5 的路由 | — |
+
+- 浏览器 `EventSource` 不能设头，所以 Web 用 cookie（§8.3）；但**鉴权与限速是同一套代码**，不为 Web 开第二条路径。
+
+### 3.3 TLS 与局域网暴露
+
+- **默认只监听 `127.0.0.1` 与 UDS。** 局域网访问必须显式开启：`gateway.lan.enabled = true` 与 `gateway.lan.listen`；开启后强制 TLS（`gateway.lan.require_tls` 不可关），配置校验拒绝“局域网 + 明文”。开启与关闭都写审计（§8.6）。
+- **证书来源**：`gateway.tls.mode = auto_self_signed | files`。
+  - `auto_self_signed`（默认）：`rcgen` 生成自签证书，SAN 覆盖 `localhost`、`127.0.0.1`、`::1`、主机名与当前局域网地址；有效期 397 天；到期或 SAN 不再覆盖当前地址时自动重签并记录指纹变化。私钥 `config/tls/gqy-key.pem`（0600），证书 `config/tls/gqy-cert.pem`。
+  - `files`：用户提供 PEM（`gateway.tls.cert_path` / `key_path`）；配置热加载时重载，加载失败保留旧证书并告警，不中断服务。
+- **指纹与信任**：启动与 `gqy doctor` 打印证书 SHA-256 指纹；自签证书浏览器会告警，这是预期行为（把证书加入系统信任，或用 `mkcert` 这类本地 CA 的证书走 `files` 模式）。
+- **DNS rebinding 防护**：`Host` 必须属于允许集合（监听地址 + `gateway.http.allowed_hosts`；默认 `localhost`、`127.0.0.1`、`::1`、主机名、局域网地址）；不匹配 → 421 `Misdirected Request`。浏览器会话的非 GET 请求照 §8.3 校验 `Origin` 与 `X-GQY-CSRF`。
+- **ALPN**：通告 `h2` 与 `http/1.1`；HTTP/2 用于 TLS 连接（含 SSE），回环 HTTP 保持 HTTP/1.1。
+- **凭据分域**：局域网与回环共用同一套 bearer / cookie；`Secure` cookie 只在 TLS 下下发（§8.3）。首次凭据只能经本机 UDS 配对码获得（Owner 动作，§8.3）；局域网不能自行“注册”。
 
 ## 4 版本化
 
@@ -128,8 +182,10 @@ pub enum Admission {                      // 03 §4 Admission 的线上投影
 // 草案，以实现为准
 pub struct QuestionView {
     pub id: QuestionId,
+    pub drawer_id: DrawerId,              // 抽屉化交互（00 §5，2026-09-28）：审批 / 提问 / 多选共用同一抽屉语义
     pub run: RunId,
-    pub kind: QuestionKind,               // Approval { call: CallId, tool: String, effect: EffectClass, preview: ApprovalPreview } | Ask
+    /// Approval { call: CallId, tool: String, effect: EffectClass, preview: ApprovalPreview } | Ask | Choice
+    pub kind: QuestionKind,
     pub prompts: Vec<QuestionPrompt>,     // header, question, options[], multi: bool, allow_free_text: bool
     pub asked_at: String,
 }
@@ -141,6 +197,7 @@ pub enum Answer {
 ```
 
 - 任一有权限的客户端都可以回答；先到者生效，其它客户端收到 `question.answered` 后关闭自己的界面。
+- **抽屉化**：审批、提问与多选是同一形状的“抽屉”；`drawer_id` 用于前端结构化渲染与事件重放，`Choice` 是纯选择（无自由文本）；事件行照 §6.2 携带 `drawer_id`（00 §5 的「抽屉化交互」决策在此并入）。
 - 回答方身份写入账本（审计，08）。M 不能回答 O 会话的问题。
 
 ### 5.4 事件
@@ -250,10 +307,10 @@ pub struct EventEnvelope {
 | `tool.finished` | 是 | `call, ok, summary, elapsed_ms, error?` | |
 | `permission.decided` | 是 | `call, decision: ask\|deny, layer, rule_id` | 只发 ask 与 deny（08 §9.2） |
 | `sandbox.unavailable` | 是 | `backend, reason` | 沙盒探测由可用变不可用（08 §8）；全局流 |
-| `question.asked` | 是 | `QuestionView` | |
-| `question.answered` | 是 | `question, by: CallerSummary, answer_summary` | |
-| `question.closed` | 是 | `question, reason: dismissed\|run_ended\|expired\|cancelled` | `expired`：启动恢复时关闭（03 §13） |
-| `question.unanswerable` | 是 | `question, venue_kind` | 非交互场所需要审批而被拒（08 §5.5），供 UI 提醒 |
+| `question.asked` | 是 | `QuestionView`（含 `drawer_id`） | 抽屉化交互 |
+| `question.answered` | 是 | `question, drawer_id, by: CallerSummary, answer_summary` | |
+| `question.closed` | 是 | `question, drawer_id, reason: dismissed\|run_ended\|expired\|cancelled` | `expired`：启动恢复时关闭（03 §13） |
+| `question.unanswerable` | 是 | `question, drawer_id, venue_kind` | 非交互场所需要审批而被拒（08 §5.5），供 UI 提醒 |
 | `context.compact_started` | 是 | `trigger: auto\|force\|overflow\|manual, stage, before_tokens` | 05 §12 |
 | `context.compact_finished` | 是 | `path, folded_turns, kept_turns, summary_tokens, before_tokens, after_estimate, rehydrated_files, epoch` | |
 | `context.compact_skipped` | 是 | `gate` | 四道闸之一拦下（05 §5.2） |
@@ -336,9 +393,12 @@ pub struct ApiError {
 | `Upstream` | 502 | 视情况 | 供应商错误（06 的分类放在 `actual` 里） |
 | `StoreBusy` | 503 | 是 | 写队列超时（02 §6） |
 | `Stopping` | 503 | 是 | daemon 停机中 |
+| `Overloaded` | 503 | 是 | `overloaded`（减载：在途超过上限，§3.2） |
+| `RequestTimeout` | 408 | 是 | `request_timeout`（网关请求超时；SSE 豁免） |
 | `Timeout` | 504 | 是 | 服务端内部等待超时 |
 
 - 不允许出现“兜底 500 + 字符串”。每个库 crate 的 `Error` 实现 `kind()`，网关只做 `kind → HTTP` 的一张表映射（单一路径）；新增 `ErrorKind` 变体时编译器强制补表（穷尽 match）。
+- 连接级错误（畸形请求行、请求头超限）由 hyper 直接回 400/431，不经过 `ErrorKind` 表；网关只记日志（`conn.*`），保证协议层事实不丢。
 - `run.failed` 事件的 `error` 字段是同一个 `ApiError` 结构。
 
 ## 8 鉴权
@@ -365,11 +425,24 @@ pub struct ApiError {
 2. 页面用配对码 `POST /auth/login`，服务端下发 `gqy_session` cookie：`HttpOnly; SameSite=Strict; Path=/api; Secure`（非 TLS 回环除外）；有效期 30 天，滑动续期。
 3. 所有非 GET 请求还必须满足：`Origin` 与服务地址同源，且带 `X-GQY-CSRF` 头（值来自 `GET /info` 的响应，绑定会话）。
 
-**待定 Q-13-2**：是否改用“fetch 流式读取 SSE + 内存中的 bearer”以彻底去掉 cookie。推荐保留 cookie 方案：令牌不暴露给页面 JS，XSS 时也无法外带长期凭据。
+**Q-13-2 已定（2026-09-28）**：保留 cookie 方案（`HttpOnly` + `SameSite=Strict` + `Origin` 校验 + `X-GQY-CSRF` 头）；不采用“页面内存 bearer”。令牌不暴露给页面 JS，XSS 时也无法外带长期凭据。
 
 ### 8.4 身份到场所
 
 `Caller { auth: AuthSource, principal: Principal, trust: Trust }` 在身份提取层产生。网关据此构造 `Venue`：UDS 且客户端声明为 TUI → `VenueKind::Tui`；浏览器会话 → `Web`；`gqy ask` → `Cli`；桌面 → `Desktop`；连接器 → `Connector{platform}`；mesh → `Mesh{device}`。客户端声明的“我是谁”（`X-GQY-Client: tui/0.1.0`）只影响 `VenueKind` 的显示类别，**不影响信任级**——信任级只由 `AuthSource` 决定（12）。
+
+### 8.5 真实客户端 IP 与可信代理
+
+- 真实来源 IP 只用于限速与审计，**不参与授权判定**（授权只认凭据，§8.1/§8.2）。
+- 默认取连接对端地址：TCP 用 `ConnectInfo`，UDS 用对端凭据（§8.1）。
+- `gateway.http.trusted_proxies`（默认空）列出的地址是**唯一**允许提供 `X-Forwarded-For` 的来源；只有请求来自这些地址时才取 `X-Forwarded-For` 的最后一跳作为客户端 IP。其它来源带该头时忽略并记一行 `warn`（防伪造绕过限速）。
+- 用户自备反向代理时，传输安全由其自理；本项只定义 IP 归属规则。
+
+### 8.6 鉴权审计
+
+- 鉴权相关事件写独立追加表 `auth_events`（10 §7.6；保留期与 `audit_log` 一致，180 天）：`pairing_issued`、`login_ok`、`login_fail`、`token_created`、`token_revoked`、`lan_enabled`、`lan_disabled`、`tls_cert_rotated`。
+- 字段：时间、kind、来源（`uds|http|lan`）、对端（IP 或 uid）、principal、token 指纹（不写明文）、详情 JSON。
+- 登录失败与限速锁定（§11）分别记录；`auth_events` 不通过 `GET /audit` 回给客户端，只在本地只读视图与日志里可见。
 
 ## 9 `gqy ask` 与 JSONL 契约
 
@@ -441,6 +514,8 @@ pub struct ApiError {
 
 - 限速器是令牌桶，进程内、按键有界（LRU 上限 10k 键），不落库；重启后清零是可接受的。
 - 所有数值在 `gqy-config` 一处定义（02 §6 的同一张表），可放宽到上限，不能关闭。
+- **实现形态**：令牌桶 + 计数上限 + 失败锁定同属一个模块；取时一律经注入的 `Clock`，测试用 `TestClock` 做确定性断言；键先哈希再入桶（令牌键用令牌哈希，不是明文）；LRU 淘汰计数并每分钟报一行 `warn`。
+- 客户端 IP 的取法见 §8.5（可信代理白名单）；429 只用于传输层限速，准入结果仍是 202 + `Admission::Rejected`（Q-13-3 已定，§5.3.1）。
 
 ## 12 边界与失败模式
 
@@ -454,15 +529,34 @@ pub struct ApiError {
 | 令牌在 SSE 期间被吊销 | 5 秒内关闭连接 |
 | 请求体含未知字段 | 忽略（兼容规则 1） |
 | UDS socket 文件残留（上次崩溃） | 启动时先拿 `daemon.lock`，拿到才删除旧 socket 重建（01 §4） |
+| 客户端慢发请求头 | 头读取超时（§3.1）关闭连接；计数 `conn.header_timeout` |
+| 客户端发超限请求体 | 413（有 `Content-Length`）或断流（无）；随后连接可能关闭（§3） |
+| 处理函数 panic | `CatchPanic` → 500 `Internal`（只给 `request_id`），连接继续服务后续请求 |
+| 停机时有 SSE 订阅 | 先发 `daemon.stopping` → 关流 → `GracefulShutdown` 等待 → `gateway.drain_ms` 到期强制 abort（§3.2、02 §9） |
+| 局域网开启但证书加载失败 | 启动期：拒绝启动；热加载期：保留旧证书并告警。**不降级为明文**（§3.3） |
 
 ## 13 配置项
 
 | 键 | 默认 | 说明 |
 | --- | --- | --- |
-| `gateway.http.listen` | `127.0.0.1:8310` | D-03 待定；端口 P05 定 |
+| `gateway.http.listen` | `127.0.0.1:8310` | 回环监听；端口 Q-13-5 已定 |
 | `gateway.http.enabled` | `true` | 关闭后只剩 UDS |
 | `gateway.uds.enabled` | `true` | |
+| `gateway.http.max_connections` | 512 | 上限 4096；超限暂停 accept（§3.1） |
+| `gateway.http.header_read_timeout_ms` | 10000 | 上限 60000 |
+| `gateway.http.max_headers` | 100 | 不超过 hyper 上限 |
+| `gateway.http.allowed_hosts` | `[]` | `Host` 校验白名单；默认含本机名、`localhost`、`127.0.0.1`、`::1` 与监听地址（§3.3） |
+| `gateway.http.trusted_proxies` | `[]` | 唯一允许提供 `X-Forwarded-For` 的来源（§8.5） |
+| `gateway.request_timeout_ms` | 30000 | 上限 300000；`/blobs` 上传 120000；SSE 豁免 |
 | `gateway.body_limit_bytes` | 1 MiB | 上限 8 MiB |
+| `gateway.blob_upload_max_bytes` | 16 MiB | 上限 64 MiB |
+| `gateway.lan.enabled` | `false` | 显式开启局域网；开启强制 TLS（§3.3） |
+| `gateway.lan.listen` | `0.0.0.0:8310` | 仅在 `lan.enabled` 时生效 |
+| `gateway.lan.require_tls` | `true` | **不可关** |
+| `gateway.tls.mode` | `auto_self_signed` | `auto_self_signed` / `files` |
+| `gateway.tls.cert_path` / `key_path` | — | `files` 模式必填 |
+| `gateway.tls.handshake_timeout_ms` | 10000 | 上限 30000 |
+| `gateway.drain_ms` | 5000 | 停机排空宽限，上限 30000 |
 | `gateway.events.replay_max` | 5000 | 上限 50000 |
 | `gateway.events.coalesce_ms` | 50 | 范围 10–250 |
 | `gateway.browser_session_ttl` | `30d` | |
@@ -480,6 +574,17 @@ pub struct ApiError {
 - **TS 生成门禁**：`gen-ts --check`。
 - **`gqy ask` 契约测试**：对 mock 回合跑 `stream-json`，逐行断言 `v == 1`、最后一行为 `done`；对超时、取消、会话不存在分别断言退出码 124/130/3。去掉 `ask_line_from_event` 中任一分支，对应断言变红。
 - **错误映射穷尽**：`ErrorKind → HTTP` 使用无通配 match，clippy `wildcard_enum_match_arm` 在该模块 deny。
+- **中间件栈顺序**：注入“全 500”的内层服务断言顺序与终态（去掉 `CatchPanic` → panic 测试红；把 `LoadShed` 放到 `ConcurrencyLimit` 内侧 → 减载测试红）。
+- **panic 隔离**：处理函数 panic → 500 `Internal` + `request_id`，同连接的下一个请求照常。
+- **慢速头**：连上后只发一半请求头并停顿 → 头超时关闭连接，计数 +1。
+- **请求体限**：有 `Content-Length` 超限 → 413 且内层未被调用；无 `Content-Length` 的超限流 → 断流；钉住 §3 的连接处置与“超限后连接可能关闭”的行为。
+- **限速与锁定**：登录 5/分钟的第 6 次 429；连续失败 10 次锁 15 分钟（TestClock）；每令牌写 30/s、突发 60；`Retry-After` 存在；LRU 淘汰有计数。
+- **可信代理**：非可信来源带 `X-Forwarded-For` 时按真实对端 IP 计数（§8.5）。
+- **减载**：在途上限调为 1 并挂起一个请求 → 第二个 503 `overloaded`（不排队）。
+- **优雅停机含 SSE**：订阅先收 `daemon.stopping` 并关闭；`GracefulShutdown` 在宽限内完成；超宽限被 abort（退出码归 P05 的 lifecycle 单）。
+- **TLS**：自签证书指纹可复现；SAN 覆盖 `localhost` 与当前地址；ALPN 协商到 `h2`；明文连 TLS 端口握手失败被拒；热加载失败保留旧证书（§3.3）。
+- **Host 校验**：伪造 `Host` → 421；`Origin` 不匹配的非 GET 浏览器请求被拒（§3.3、§8.3）。
+- **鉴权审计**：`pairing_issued`/`login_ok`/`login_fail`/`token_revoked` 各写一行 `auth_events`（§8.6）；`GET /audit` 不含它们。
 
 ## 15 与其他文档的关系
 
@@ -492,9 +597,9 @@ pub struct ApiError {
 
 | 编号 | 问题 | 推荐 | 状态 |
 | --- | --- | --- | --- |
-| D-03 | 默认监听地址 | `127.0.0.1` + UDS；局域网需显式开启并配合配对与 TLS | 待用户确认（00） |
+| D-03 | 默认监听地址 | 已定（2026-09-28）：默认只监听 `127.0.0.1` 与 UDS；局域网访问必须显式开启并强制 TLS（自签或用户证书），首次凭据只能经本机 UDS 配对码；完整设备配对仍归 17 | 已定（§3.3、§8.3、00 §5） |
 | Q-13-1 | macOS 无沙盒后端时，子进程是否可能读到 `run/local.token` | 由 00 §5 的 UDS 鉴权与无沙盒 Exec 两项决策关闭：沙盒存在时必须拒绝读 `run/`；无沙盒执行等价 Owner，明文写出（§8.1） | 已定（2026-09-28） |
-| Q-13-2 | 浏览器凭据用 cookie 还是内存 bearer | cookie（HttpOnly + SameSite=Strict + Origin + CSRF 头） | 待用户确认 |
-| Q-13-3 | 队列满时准入返回 202+Rejected 还是 429 | 保持 202 + `Admission::Rejected`，准入是业务结果 | 待用户确认 |
+| Q-13-2 | 浏览器凭据用 cookie 还是内存 bearer | cookie（HttpOnly + SameSite=Strict + Origin + CSRF 头）；令牌不暴露给页面 JS | 已定（2026-09-28，§8.3） |
+| Q-13-3 | 队列满时准入返回 202+Rejected 还是 429 | 保持 202 + `Admission::Rejected`，准入是业务结果；429 只用于传输层限速 | 已定（2026-09-28，§5.3.1、§11） |
 | Q-13-4 | 是否继承 v1 `gqy stdio` 长驻协议 | 不继承；长驻宿主用 UDS 上的 HTTP + SSE | 待用户确认 |
-| Q-13-5 | 默认 HTTP 端口 | 8310（避开 v1 的 8300，共存期不冲突） | 待用户确认 |
+| Q-13-5 | 默认 HTTP 端口 | 8310（避开 v1 的 8300，共存期不冲突） | 已定（2026-09-28，§13） |
