@@ -386,7 +386,7 @@ Landlock 让无特权进程也能对自己施加访问控制[7]，这正是本�
 
 - SQLite WAL + 纯增量 migration；历史会话与账本向前兼容；
 - 迁移必须可核对：预演、计数校验、备份，与 v1 改名迁移的流程同构【现状】；
-- 发布产物与版本必须一致：包版本、Git tag 与 changelog 标题同源；仓库当前以 `version.txt` 作为单一版本文件【现状】。
+- 发布产物与版本必须一致：包版本、Git tag 与 changelog 标题同源；仓库当前以 `version.txt` 为版本文件，`Cargo.toml` 的 `[workspace.package].version` 由发布 PR 同步【现状】。
 
 ### 10.3 版本与发布治理【现状，本仓库已落地】
 
@@ -397,7 +397,7 @@ GQYv2 在写第一行运行时代码之前，先落地了可执行的治理：
 | 提交与 PR 规范 | Conventional Commits；本地 commit-msg hook 与 CI 共用同一校验器（scripts/check-commit-subject.sh） |
 | PR 标准检查 | pr-standards：PR 标题、提交范围与 changelog 条目一致性（scripts/check-pr-standards.sh） |
 | 供应链与工作流安全 | zizmor 工作流审查（中危及以上阻断）；dependency-review 阻断高危及以上依赖 |
-| 发布 | Release Please：version.txt / manifest / changelog 单一来源；0.x 阶段按 minor 承接破坏性变更；Git tag 不可变 |
+| 发布 | Release Please：version.txt / Cargo.toml / manifest / changelog 同源（`extra-files` 同步 Cargo 版本）；0.x 阶段按 minor 承接破坏性变更；Git tag 不可变 |
 | 变更日志 | Keep a Changelog：面向用户的变更进入 `[Unreleased]`，纯文档与内部维护可豁免 |
 
 ### 10.4 阶段声明【现状】
@@ -427,7 +427,7 @@ GQYv2 在写第一行运行时代码之前，先落地了可执行的治理：
 | --- | --- | --- |
 | 项目定位与口号 | README.md | "Rust 为体，Web 为面，C 为径"；本地 Agent Harness；TUI 与内嵌 Web 控制台 |
 | 技术栈选型 | docs/tech-stack.md | 工程原则、语言与技术栈矩阵、分层选型、测试与基准体系、待考虑事项 |
-| 版本与发布 | docs/release-versioning.md；release-please-config.json；version.txt | 0.1.0 单一版本来源；SemVer 0.x 递增规则；发布 PR 与 tag 流程 |
+| 版本与发布 | docs/release-versioning.md；release-please-config.json；version.txt | version.txt 与 Cargo.toml 同源（发布 PR 同步）；SemVer 0.x 递增规则；发布 PR 与 tag 流程 |
 | 贡献与检查 | CONTRIBUTING.md；scripts/check-commit-subject.sh；scripts/check-pr-standards.sh；.github/workflows/ | Conventional Commits；PR 标准；zizmor；dependency-review；本地 hook |
 | AI 工作护栏 | CLAUDE.md；scripts/CLAUDE.md | "未实现的设计只能描述为规划"；单一事实来源；验证要求 |
 | 入口占位 | apps/README.md | tui / web-console / desktop 的规划定位 |
