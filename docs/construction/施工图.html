@@ -17,6 +17,7 @@
   维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）；P00-01 完工并合入 main（新增 21 代码文件树规范 + workspace 骨架，PR #6）。
             2026-09-28 Cline 会话——P05 阶段改名「生产级网关」并重排为 13 张单（含局域网 TLS），plan-data 与 PIECES 同步。
             2026-09-27T22:26:40Z GitHub Copilot——登记 P00-07 README 提交可视化，并更新 plan-data / BASE。
+            2026-09-27T22:44:16Z GitHub Copilot——登记 P00-08 worktree 安全同步，并更新 plan-data / BASE。
             2026-09-28 Cline 会话——P00-02 施工至待验收（xtask 骨架 + 层序/静态规则门禁，层表解析出 21 条目标）。
             2026-09-28 Cline 会话——P00-02 完工并合入 main（PR #15，施工图补 P00-02 一节）；同日回退 P00 期间的两个过早发布（删除 v0.2.0 / v0.3.0 tag 与 Release，版本回到 0.1.0），确立 M1 前的发布冻结。
 -->
@@ -346,6 +347,13 @@ footer{color:var(--ink-2);font-size:12.5px}
      "deps": [],
      "status": "待验收",
      "file": "P00-工程地基/P00-07-README提交可视化.md"
+    },
+    {
+     "id": "P00-08",
+     "title": "本地工作树安全同步",
+     "deps": [],
+     "status": "待验收",
+     "file": "P00-工程地基/P00-08-本地工作树安全同步.md"
     }
    ],
    "dir": "P00-工程地基"
@@ -1735,11 +1743,11 @@ const FOLLOW = {
   e_store: 'n_store', e_data: 'n_store', e_proc: 'p_cmd', e_mcp: 'p_mcp', e_mesh: 'n_mesh', e_conn1: 'n_connep',
   e_conn2: 'n_connep', e_qq: 'c_qq', e_imsg: 'c_imsg', e_v1: 'x_v1', e_events: 'n_events',
 };
-/* 地基与工具：不在图里的施工单。P00-07 是仓库可视化，不对应产品架构节点。 */
+/* 地基与工具：不在图里的施工单。P00-07/08 是仓库维护工具，不对应产品架构节点。 */
 const BASE = [
   ['P00-01', 'workspace 与全部 crate 空壳'], ['P00-02', '分层门禁 xtask arch'], ['P00-03', '体积门禁与 clippy 规则'],
   ['P00-04', '测试日志与报告'], ['P00-05', '错误与日志骨架'], ['P00-06', '三平台 CI'],
-  ['P00-07', 'README 提交可视化'],
+  ['P00-07', 'README 提交可视化'], ['P00-08', '本地工作树安全同步'],
   ['P01-01', 'gqy-core：ID、Clock、规范化 JSON'], ['P01-02', 'gqy-core：领域消息类型'],
   ['P10-01', 'esbuild 与 tsgo 工具链'], ['P16-04', '发布构建与版本一致性'], ['P16-05', '发布流水线'], ['P16-07', 'M6 验收与发布手册'],
 ];
