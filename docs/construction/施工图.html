@@ -15,6 +15,7 @@
   3. 每张施工单合入 main 时，在「每一步的图」里补一节 <section class="sheet">：这一步做完以后仓库长成什么样、
      新加了什么、怎么验收的（模板见该区块内的注释）。
   维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）。
+            2026-09-28 Cline 会话——P05 阶段改名「生产级网关」并重排为 13 张单（含局域网 TLS），plan-data 与 PIECES 同步。
 -->
 <style>
 :root{
@@ -642,8 +643,8 @@ footer{color:var(--ink-2);font-size:12.5px}
   },
   {
    "id": "P05",
-   "name": "网关与最小闭环",
-   "goal": "协议 v1、HTTP/SSE、UDS、客户端、daemon 生命周期、gqy ask、最小 TUI",
+   "name": "生产级网关",
+   "goal": "协议 v1、生产级网关（传输硬化与连接上界、中间件栈与错误契约、鉴权与浏览器会话、限速、SSE 生产语义、局域网 TLS、优雅停机）、客户端、daemon 生命周期、gqy ask、最小 TUI",
    "milestone": "M1",
    "deps": [
     "P04"
@@ -651,70 +652,126 @@ footer{color:var(--ink-2);font-size:12.5px}
    "wos": [
     {
      "id": "P05-01",
-     "title": "协议v1 DTO与事件信封",
+     "title": "协议v1 DTO、事件信封与兼容夹具",
      "deps": [
       "P04-06"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-01-协议v1DTO与事件信封.md"
+     "file": "P05-生产级网关/P05-01-协议v1DTO、事件信封与兼容夹具.md"
     },
     {
      "id": "P05-02",
-     "title": "网关HTTP路由与SSE",
+     "title": "传输层：UDS与回环TCP、连接硬化",
      "deps": [
       "P05-01"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-02-网关HTTP路由与SSE.md"
+     "file": "P05-生产级网关/P05-02-传输层UDS与回环TCP、连接硬化.md"
     },
     {
      "id": "P05-03",
-     "title": "UDS传输与本机鉴权",
+     "title": "横切：中间件栈、错误契约与限额",
      "deps": [
       "P05-02"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-03-UDS传输与本机鉴权.md"
+     "file": "P05-生产级网关/P05-03-横切中间件栈、错误契约与限额.md"
     },
     {
      "id": "P05-04",
-     "title": "gqy-client",
+     "title": "鉴权：本地令牌、bearer scope与浏览器会话",
      "deps": [
       "P05-03"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-04-gqy-client.md"
+     "file": "P05-生产级网关/P05-04-鉴权与浏览器会话.md"
     },
     {
      "id": "P05-05",
-     "title": "daemon生命周期子命令",
+     "title": "限速与配额",
      "deps": [
-      "P05-04",
-      "P04-07"
+      "P05-04"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-05-daemon生命周期子命令.md"
+     "file": "P05-生产级网关/P05-05-限速与配额.md"
     },
     {
      "id": "P05-06",
-     "title": "gqy ask与JSONL契约",
+     "title": "路由A：系统、会话、令牌与blob",
      "deps": [
-      "P05-05"
+      "P05-04"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-06-gqyask与JSONL契约.md"
+     "file": "P05-生产级网关/P05-06-路由A系统、会话、令牌与blob.md"
     },
     {
      "id": "P05-07",
-     "title": "最小TUI对话与M1验收",
+     "title": "路由B：回合、运行、问题与幂等",
      "deps": [
-      "P05-06"
+      "P05-04"
      ],
      "status": "未开始",
-     "file": "P05-网关与最小闭环/P05-07-最小TUI对话与M1验收.md"
+     "file": "P05-生产级网关/P05-07-路由B回合、运行、问题与幂等.md"
+    },
+    {
+     "id": "P05-08",
+     "title": "事件流：SSE续传、心跳与慢客户端",
+     "deps": [
+      "P05-07",
+      "P04-06"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-08-事件流SSE续传、心跳与慢客户端.md"
+    },
+    {
+     "id": "P05-09",
+     "title": "gqy-client",
+     "deps": [
+      "P05-08"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-09-gqy-client.md"
+    },
+    {
+     "id": "P05-10",
+     "title": "daemon生命周期与优雅停机",
+     "deps": [
+      "P05-02",
+      "P04-07"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-10-daemon生命周期与优雅停机.md"
+    },
+    {
+     "id": "P05-11",
+     "title": "gqy ask与JSONL契约",
+     "deps": [
+      "P05-09"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-11-gqyask与JSONL契约.md"
+    },
+    {
+     "id": "P05-12",
+     "title": "局域网暴露与TLS",
+     "deps": [
+      "P05-04",
+      "P05-05"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-12-局域网暴露与TLS.md"
+    },
+    {
+     "id": "P05-13",
+     "title": "最小TUI对话与M1验收",
+     "deps": [
+      "P05-11"
+     ],
+     "status": "未开始",
+     "file": "P05-生产级网关/P05-13-最小TUI对话与M1验收.md"
     }
    ],
-   "dir": "P05-网关与最小闭环"
+   "dir": "P05-生产级网关"
   },
   {
    "id": "P06",
@@ -729,7 +786,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "id": "P06-01",
      "title": "Tool trait、注册表与工具面编译",
      "deps": [
-      "P05-07",
+      "P05-13",
       "P03-04"
      ],
      "status": "未开始",
@@ -1605,16 +1662,16 @@ $('theme').onclick = () => {
 /* ── 块与施工单的对应：一块对应的施工单全部完成即画实 ── */
 const PIECES = {
   // 入口
-  n_tui: ['P05-07', ...range('P09', 1, 7)],
+  n_tui: ['P05-13', ...range('P09', 1, 7)],
   n_web: range('P10', 2, 7),
-  n_cli: ['P05-06'],
+  n_cli: ['P05-11'],
   n_desktop: ['P16-06'],
-  n_api: ['P05-01', 'P05-04'],
+  n_api: ['P05-01', 'P05-06', 'P05-07'],
   // daemon
-  g_daemon: ['P05-05'],
-  n_gateway: ['P05-02', 'P05-03'],
+  g_daemon: ['P05-10'],
+  n_gateway: ['P05-02', 'P05-03', 'P05-04', 'P05-05', 'P05-12'],
   n_connep: ['P14-01', 'P14-03', 'P14-04', 'P14-07'],
-  n_events: ['P04-06'],
+  n_events: ['P04-06', 'P05-08'],
   n_config: ['P01-03', 'P11-01', 'P11-02', 'P11-03'],
   k_super: ['P04-02', 'P04-03'],
   k_actor: ['P04-07'],
