@@ -4,7 +4,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 状态 | 未开始 |
+| 状态 | 待验收 |
 | 依赖 | —（本阶段起点） |
 | 设计依据 | designs/01-总体架构.md §2、§3、§6；docs/tech-stack.md；designs/19-可观测性与测试.md §6.2 |
 | 规模 | M（1–2 天） |
@@ -135,12 +135,12 @@ cargo metadata --format-version 1 | python3 -c \
 
 ## 完成判据
 
-- [ ] 全局完成定义（施工总纲 §3.3）全部满足（其中 cargo/xtask 检查按本单交付范围解释）
-- [ ] 17 个 crate 空壳与 01 §3 名单一一对应，无多余、无遗漏
-- [ ] `rust-toolchain.toml` 的 channel 与 `rust-version` 为同一版本，且 ≥ 1.85，数值记录在 PR 描述
-- [ ] `Cargo.lock` 入库
-- [ ] `Cargo.toml` 的 `version` 与 `version.txt` 一致（当前均为 `0.1.0`）
-- [ ] 四个命令（build / test / fmt / clippy）输出贴进 PR 描述
+- [x] 全局完成定义（施工总纲 §3.3）全部满足（其中 cargo/xtask 检查按本单交付范围解释）
+- [x] 17 个 crate 空壳与 01 §3 名单一一对应，无多余、无遗漏
+- [x] `rust-toolchain.toml` 的 channel 与 `rust-version` 为同一版本，且 ≥ 1.85，数值记录在 PR 描述
+- [x] `Cargo.lock` 入库
+- [x] `Cargo.toml` 的 `version` 与 `version.txt` 一致（当前均为 `0.1.0`）
+- [x] 四个命令（build / test / fmt / clippy）输出贴进 PR 描述
 
 ## 风险与回退
 

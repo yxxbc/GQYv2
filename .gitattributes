@@ -1,0 +1,13 @@
+# 文本文件一律 LF。
+# 原因：Windows 检出默认把文本改成 CRLF，会让按字节比对的夹具（04 的账本字节契约、
+# 19 §4 的 sha256 形状夹具）与 shell 脚本在不同平台上对不上（P00-01 实测教训）。
+* text=auto eol=lf
+
+# 二进制夹具显式标记，避免 Git 做文本转换。
+*.db binary
+*.sqlite binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary

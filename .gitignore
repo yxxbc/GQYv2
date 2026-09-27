@@ -3,3 +3,6 @@
 
 # 施工工作树（见 AGENTS.md）
 .worktrees/
+
+# Cargo 构建产物
+/target/

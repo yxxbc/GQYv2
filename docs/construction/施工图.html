@@ -14,7 +14,7 @@
      有“待验收”画虚线。块与施工单的对应关系在脚本里的 PIECES，新增或调整施工单时同步改它。
   3. 每张施工单合入 main 时，在「每一步的图」里补一节 <section class="sheet">：这一步做完以后仓库长成什么样、
      新加了什么、怎么验收的（模板见该区块内的注释）。
-  维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）。
+  维护记录：2026-09-28 Cline 会话——登记 P00/P01 施工单文件、修正 P00-03 依赖（plan-data）；同日 P00-01 施工至待验收（施工单 / P00 README / plan-data 三处同步）。
             2026-09-28 Cline 会话——P05 阶段改名「生产级网关」并重排为 13 张单（含局域网 TLS），plan-data 与 PIECES 同步。
 -->
 <style>
@@ -265,7 +265,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "id": "P00-01",
      "title": "workspace骨架",
      "deps": [],
-     "status": "未开始",
+     "status": "待验收",
      "file": "P00-工程地基/P00-01-workspace骨架.md"
     },
     {
