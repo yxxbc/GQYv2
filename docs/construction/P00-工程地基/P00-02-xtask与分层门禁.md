@@ -4,7 +4,7 @@
 
 | 项 | 值 |
 | --- | --- |
-| 状态 | 未开始 |
+| 状态 | 待验收 |
 | 依赖 | P00-01 |
 | 设计依据 | designs/01-总体架构.md §3、§6；designs/19-可观测性与测试.md §6.1（第 4、5 项）、§7、§8.3；AGENTS.md“依赖只朝一个方向”“上下文显式” |
 | 规模 | L（2–3 天） |
@@ -42,6 +42,7 @@
 | `.cargo/config.toml`（新增） | `[alias] xtask = "run --package xtask --"` |
 | `Cargo.toml` | members 加 `"xtask"` |
 | `xtask/Cargo.toml`（新增） | bin crate；依赖：`clap`（derive）、`serde_json`、`anyhow`；dev 依赖：`tempfile` |
+| `xtask/src/lib.rs`（新增） | 库入口：检查逻辑放库里，`tests/` 才能直接调用纯函数（实施时的补充，见 PR 说明） |
 | `xtask/src/main.rs`（新增） | 子命令分派与退出码 |
 | `xtask/src/arch/mod.rs`（新增） | `ArchCmd` 入口：跑 `cargo metadata`、汇总两类检查、打印报告 |
 | `xtask/src/arch/layers.rs`（新增） | 从 01 §3 解析层表（`parse_layers`）与附加约束规则、`check_arch` 纯函数 |
@@ -147,12 +148,12 @@ cargo xtask arch                    # 退出码 1，输出含文件与行号
 
 ## 完成判据
 
-- [ ] 全局完成定义（施工总纲 §3.3）全部满足（xtask 检查即本单交付）
-- [ ] `cargo xtask arch` 在真实仓库跑绿；`cargo test -p xtask` 全绿
-- [ ] 层表与 01 §3 逐行一致（PR 描述里贴对照或说明核对方式）
-- [ ] 两类检查共 7 个 fixture 用例（4 层序 + 3 静态规则中的违规/合规对），全部自动化
-- [ ] 违规输出含规则名、位置、期望值、实际值
-- [ ] `cargo xtask --help` 与 `cargo xtask arch --help` 可用
+- [x] 全局完成定义（施工总纲 §3.3）全部满足（xtask 检查即本单交付）
+- [x] `cargo xtask arch` 在真实仓库跑绿；`cargo test -p xtask` 全绿
+- [x] 层表与 01 §3 逐行一致（PR 描述里贴对照或说明核对方式）
+- [x] 两类检查共 7 个 fixture 用例（4 层序 + 3 静态规则中的违规/合规对），全部自动化
+- [x] 违规输出含规则名、位置、期望值、实际值
+- [x] `cargo xtask --help` 与 `cargo xtask arch --help` 可用
 
 ## 风险与回退
 
