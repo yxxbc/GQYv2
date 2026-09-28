@@ -145,71 +145,71 @@ dependencies = [
 
 [[package]]
 name = "gqy-client"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-config"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-connector-sdk"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-core"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-daemon"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-engine"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-ext"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-gateway"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-ledger"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-memory"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-mesh"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-perception"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-protocol"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-provider"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-store"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-sys"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "gqy-tools"
-version = "0.1.0"
+version = "0.3.0"
 
 [[package]]
 name = "heck"
@@ -397,7 +397,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "clap",

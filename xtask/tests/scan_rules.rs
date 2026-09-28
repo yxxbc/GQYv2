@@ -2,6 +2,15 @@
 //!
 //! 直接喂源码字符串，不编译被测代码；去掉扫描器里的任一条模式，对应断言必然红。
 //! 创建：AI 助手（Cline 会话），2026-09-28 06:31:10。
+//! 更新：AI 助手（Cline 会话），2026-09-28 22:21:06（P00-03 集成测试放开）。
+
+// 集成测试整文件放开（19 §6.1；P00-03）：测试里允许 unwrap/expect/panic/索引。
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
 
 use std::path::Path;
 

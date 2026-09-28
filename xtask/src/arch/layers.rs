@@ -139,7 +139,7 @@ pub fn parse_layers(doc: &str) -> Result<LayerTable, LayerParseError> {
         }
 
         let cells: Vec<&str> = line.trim_matches('|').split('|').map(str::trim).collect();
-        if cells.len() < 4 {
+        let [layer_cell, crate_cell, _, dep_cell, ..] = cells.as_slice() else {
             return Err(LayerParseError::new(
                 line_no,
                 format!(
@@ -147,14 +147,14 @@ pub fn parse_layers(doc: &str) -> Result<LayerTable, LayerParseError> {
                     cells.len()
                 ),
             ));
-        }
+        };
 
-        let layer = parse_layer_cell(cells[0], line_no)?;
-        for target in parse_crate_cell(cells[1], line_no)? {
+        let layer = parse_layer_cell(layer_cell, line_no)?;
+        for target in parse_crate_cell(crate_cell, line_no)? {
             entries.push(LayerEntry {
                 target,
                 layer,
-                allowed_heavy_deps: parse_dep_cell(cells[3]),
+                allowed_heavy_deps: parse_dep_cell(dep_cell),
                 line: line_no,
             });
         }

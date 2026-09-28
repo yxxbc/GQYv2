@@ -69,7 +69,10 @@ pub fn run(args: &ArchArgs) -> anyhow::Result<ExitCode> {
     let table =
         layers::parse_layers(&doc).map_err(|err| anyhow::anyhow!("{LAYER_DOC} 解析失败：{err}"))?;
     let metadata = load_metadata(&root)?;
-    let package_count = metadata["packages"].as_array().map_or(0, Vec::len);
+    let package_count = metadata
+        .get("packages")
+        .and_then(serde_json::Value::as_array)
+        .map_or(0, Vec::len);
     let mut violations = layers::check_arch(&metadata, &table);
     let (scanned_files, scan_violations) = scan::scan_repo(&root)?;
     violations.extend(scan_violations);

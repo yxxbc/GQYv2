@@ -1,10 +1,11 @@
 # P00-03 · 体积门禁与 clippy 规则
 
 > 创建：AI 助手（Cline 会话），2026-09-28。改动本文件时，按根 `AGENTS.md` 规矩 7 更新这一行：写清谁改的、什么时候改的。
+> 更新：AI 助手（Cline 会话），2026-09-28 22:21:06 —— 施工完成，状态置为「待验收」（实施记录见文末）。
 
 | 项 | 值 |
 | --- | --- |
-| 状态 | 未开始 |
+| 状态 | 待验收 |
 | 依赖 | P00-01、P00-02 |
 | 设计依据 | designs/00-设计理念.md §3（文件体积）；designs/01-总体架构.md §6；designs/19-可观测性与测试.md §6.1（第 2、3、6 项）、§8.3；AGENTS.md“文件要小”“不吞错误” |
 | 规模 | M（1–2 天） |
@@ -146,13 +147,13 @@ cargo test -p xtask          # fixture 全绿
 
 ## 完成判据
 
-- [ ] 全局完成定义（施工总纲 §3.3）全部满足
-- [ ] `cargo xtask check`（默认 / `--fast` / `--docs` / `--no-docs`）在仓库全绿
-- [ ] 19 §6.1 第 2、3、6 项的每一条规则都有对应的红绿对照证据（PR 描述）
-- [ ] clippy 的 `disallowed_methods` 名单与 02 §2 一致（4 条，带 reason）
-- [ ] 两条吞错误 lint（`let_underscore_must_use`、`unused_result_ok`）有红绿对照证据
-- [ ] 测试代码放开策略只覆盖测试（非测试代码出现 `unwrap` 会红）
-- [ ] size 阈值为 800 / 1500 / 2000，行为与 00 §3 一致（警告 / 说明 / 红）
+- [x] 全局完成定义（施工总纲 §3.3）全部满足
+- [x] `cargo xtask check`（默认 / `--fast` / `--docs` / `--no-docs`）在仓库全绿
+- [x] 19 §6.1 第 2、3、6 项的每一条规则都有对应的红绿对照证据（PR 描述）
+- [x] clippy 的 `disallowed_methods` 名单与 02 §2 一致（4 条，带 reason）
+- [x] 两条吞错误 lint（`let_underscore_must_use`、`unused_result_ok`）有红绿对照证据
+- [x] 测试代码放开策略只覆盖测试（非测试代码出现 `unwrap` 会红）
+- [x] size 阈值为 800 / 1500 / 2000，行为与 00 §3 一致（警告 / 说明 / 红）
 
 ## 风险与回退
 
@@ -161,4 +162,13 @@ cargo test -p xtask          # fixture 全绿
 - **`indexing_slicing` 与解析代码**：解析器（P02 起）会用到索引，届时用局部 `#[expect]`/`#[allow]` + 说明处理；此处只保证门禁就位。
 - **clippy fixture 的耗时**：若单次超过约 15 秒，把 fixture 标注 `#[ignore]` 并在 `ci-checks` 作业里显式运行（仍在 CI 上自动），在 PR 里记录实测耗时与选择；不静默放过。
 - **回退**：revert 即可；lint 配置不影响运行时与数据。
+
+## 实施记录（2026-09-28 22:21:06，AI 助手 Cline 会话）
+
+- **新增测试文件比「改动清单」多一个**：`xtask/tests/gates_docs.rs`。清单只列了 size 与 clippy 两个 fixture，而「测试与守护」要求 rustdoc 的公开项/私有项断链各有红绿对照——它与另外两类不同质，放独立文件。清单漏列属写单时的遗漏，按「测试与守护」执行。
+- **测试放开策略的落地形式**（19 §6.1 的「测试代码放开」）：17 个 crate 的 `src/lib.rs` 与 `xtask/src/{lib,main}.rs` 顶部加 `#![cfg_attr(test, allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing))]`；集成测试文件（`xtask/tests/*.rs`）文件头用同样四条 `#![allow(...)]`（集成测试编译 lib 时没有 `cfg(test)`，两者形式不同）。
+- **评估过 clippy 的 `allow-*-in-tests` 配置**（可选的集中方案）：1.98.1 实测 `allow-unwrap-in-tests = true` 未能让 `#[cfg(test)] mod tests` 里的 `unwrap()` 通过，故不采用，按草案的 `cfg_attr` 样板落地。
+- **gates_clippy 的 fixture 读真实配置**：mini workspace 的 `[workspace.lints.clippy]` 段用 `real_clippy_lints()` 从仓库根 `Cargo.toml` 提取，不另造清单；因此「删掉真实配置里的 `unwrap_used`」会让 fixture 变红（区分能力要求，PR 里有输出）。fixture 源码带 `# Panics` 段落，让 `missing_panics_doc` 不介入「去掉 `unwrap_used`」的单变量对照。
+- **实测耗时**（施工单「风险与回退」的 15 秒 `#[ignore]` 条件）：`cargo clippy` 对无依赖 mini crate 约 0.2–0.3 秒/次、`cargo doc` 约 0.3 秒/次；`cargo test -p xtask` 全部 fixture 约 1 秒。fixture 保持默认运行。
+- **`cargo xtask check` 的执行细节**：arch 与 size 走进程内调用（不另起 `cargo`），其报告直接打印在 check 摘要之间；fmt/clippy/doc 走子进程并捕获输出、只在失败时打印（成功时只留一行摘要）。
 
