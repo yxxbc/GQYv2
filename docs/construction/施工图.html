@@ -27,6 +27,7 @@
             2026-09-28 Cline 会话——P00-04 施工完成（状态：待验收）：cargo xtask test（libtest 解析、19 §5.2 摘要、schema 1 报告与 Markdown、计数门禁与平台基线、needs 标签筛选）。
             2026-09-28 Cline 会话——P00-04 完工并合入 main（PR #29，施工图补 P00-04 一节，状态置「已完成」）；分支与工作树已清理。
             2026-09-28 Cline 会话——P00-05 施工完成（状态：待验收）：ErrorKind/Classified、Secret 密钥容器、blocking::run、daemon 日志骨架（JSONL 双文件、有界队列与丢弃计数、按日/按大小轮转、14 天保留清理）。
+            2026-09-29 Cline 会话——P00-05（PR #31）/ P00-07（PR #13）/ P00-09（PR #25）合入收尾：状态置「已完成」、施工图补三节；P00-07 在线验收完成（Pages 部署 SVG 可访问）；分支与工作树已清理。
 -->
 <style>
 :root{
@@ -310,6 +311,39 @@ footer{color:var(--ink-2);font-size:12.5px}
       </ul>
       <p>验收：<code>cargo xtask check</code> 与 <code>cargo xtask test</code> 全绿（65 = 基线 65）；红绿对照四组（失败用例定位与复跑命令、基线调高报红、needs 标签筛选、编译失败退 2）与两处变异验证见 PR 输出。提交：PR #29。</p>
     </section>
+    <section class="sheet" id="sP00-05">
+      <div class="sheet-head"><h2><span class="no">P00-05</span>错误与日志骨架</h2><span class="pill">已完成</span></div>
+      <p>后续任何 crate 都有统一的错误分类、密钥容器与阻塞包装；daemon 有了双文件 JSONL 日志骨架——写入不阻塞回合，超限有丢弃计数，按日与大小轮转，按保留期清理。</p>
+      <ul>
+        <li><b>错误分类</b> <code>gqy-core/src/error.rs</code>：<code>ErrorKind</code>（11 类，<code>#[non_exhaustive]</code>）+ <code>Classified</code> 接口；单测演示 thiserror 与「期望 X，实际 Y」的写法。</li>
+        <li><b>密钥容器</b> <code>secret.rs</code>：<code>Secret&lt;T&gt;</code> 的 <code>Debug</code>/<code>Display</code> 恒为 <code>***</code>、不实现 <code>Serialize</code>、取值必须 <code>expose()</code>；canary 单测（改回 derive 即红）。</li>
+        <li><b>阻塞包装</b> <code>blocking.rs</code>：<code>run(label, f)</code> 走 blocking 池，统一计时并打 <code>blocking{label}</code> span（debug 级）；panic 转 <code>Panicked</code>（带 label 与载荷摘要）、runtime 关闭转 <code>Cancelled</code>。</li>
+        <li><b>日志骨架</b> <code>gqy-daemon/src/logging.rs</code>：默认值（256 MiB / 8192）单一处；<code>daemon.*.jsonl</code> 收全部、<code>requests.*.jsonl</code> 只收 <code>gqy::usage</code> / <code>gqy::context_rewrite</code>；有界队列 + 独立写线程（满时 debug/trace 直丢、info 以上至多等 50 ms）；丢弃计数每 60 s 直写 stderr；按本地日期与单文件大小轮转。</li>
+        <li><b>保留期清理</b> <code>logging/purge.rs</code>：<code>purge_old_logs</code> 只删本模块命名的文件；14 天边界有测试（正好 14 天保留），单个文件删除失败不中断。</li>
+      </ul>
+      <p>验收：<code>cargo test -p gqy-core -p gqy-daemon</code> 与 <code>cargo xtask check --fast</code> 全绿；测试计数基线 65 → 84（linux/macos；windows 待 P00-06 回填）；区分能力对照（Secret canary、丢弃计数、purge 边界）见 PR 输出。提交：PR #31（<code>b74f119</code>）。</p>
+    </section>
+    <section class="sheet" id="sP00-07">
+      <div class="sheet-head"><h2><span class="no">P00-07</span>README 提交可视化</h2><span class="pill">已完成</span></div>
+      <p>README 中英文版都有了自动刷新的近一年提交活跃度日历；每次 <code>main</code> push（含 PR 合并）后由 Actions 从完整历史生成 SVG 并发布到 GitHub Pages，不向 main 写机器人提交。</p>
+      <ul>
+        <li><code>scripts/generate-commit-activity.py</code>：标准库实现，统计 HEAD 可达提交近 365 天的 committer 日期并输出 SVG；<code>--today</code> 供可重复测试。</li>
+        <li><code>scripts/tests/generate-commit-activity.sh</code>：临时 Git 仓库验证同日多提交合并计数、颜色强度与 365 天边界。</li>
+        <li><code>.github/workflows/commit-activity.yml</code>：只监听 main push；最小权限（<code>contents: read</code> + <code>pages: write</code> + <code>id-token: write</code>）、action 固定 SHA、不用 secrets。</li>
+        <li>中英文 README 的提交记录区与 Network 图谱入口；CHANGELOG 记录新增可视化入口。</li>
+      </ul>
+      <p>验收：<code>bash scripts/tests/generate-commit-activity.sh</code> 通过；PR #13 合入后 Pages 来源＝GitHub Actions（<code>build_type=workflow</code>），<code>https://yxxbc.github.io/GQYv2/commit-activity.svg</code> 可访问（HTTP 200），此后每次 main push 工作流均成功。提交：PR #13（<code>e898d4d</code>）。</p>
+    </section>
+    <section class="sheet" id="sP00-09">
+      <div class="sheet-head"><h2><span class="no">P00-09</span>代码文件树规范事实校正</h2><span class="pill">已完成</span></div>
+      <p>21 号文件树文档回归事实：它描述的是目标布局，实际进度以施工单与施工图为准；被仓库现状证伪的措辞已清除，目标目录方案未动。</p>
+      <ul>
+        <li><code>docs/designs/21-代码文件树规范.md</code>：头注区分目标布局与落地进度；§3.2 的「其余 crate」从「尚无施工单」改为映射 P11-05 / P12-01 / P13-01 / P14-02 / P15-01。</li>
+        <li>跨 crate 夹具口径定为「共享字节契约（含 <code>request-shapes/</code>）放根 <code>tests/fixtures/</code>，供应商专属流夹具留 crate 内」；P02-04 的旧措辞标为待施工同步。</li>
+        <li>施工图 <code>plan-data</code> / BASE 与 P00 README 同步登记。</li>
+      </ul>
+      <p>验收：HTMLParser/JSON 解析校验 plan-data 与本单状态一致；检索确认旧断言（仓库无 Cargo、相关 crate 无施工单、request-shapes 口径未决）已消失；<code>git diff --check</code>。提交：PR #25（<code>88eb4d8</code>）。</p>
+    </section>
     <p class="empty" id="no-sheets">还没有完成的施工单。</p>
   </section>
 
@@ -367,7 +401,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "deps": [
       "P00-01"
      ],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-05-错误与日志骨架.md"
     },
     {
@@ -385,7 +419,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "id": "P00-07",
      "title": "README提交可视化",
      "deps": [],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-07-README提交可视化.md"
     },
     {
@@ -399,7 +433,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "id": "P00-09",
      "title": "代码文件树规范事实校正",
      "deps": [],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-09-代码文件树规范事实校正.md"
     }
    ],
