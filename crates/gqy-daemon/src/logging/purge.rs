@@ -45,7 +45,9 @@ pub fn purge_old_logs(
         if age_days > retention {
             match std::fs::remove_file(&path) {
                 Ok(()) => report.deleted += 1,
-                Err(err) => report.failed.push((path.display().to_string(), err.to_string())),
+                Err(err) => report
+                    .failed
+                    .push((path.display().to_string(), err.to_string())),
             }
         }
     }
