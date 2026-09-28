@@ -20,3 +20,4 @@
 pub mod arch;
 pub mod check;
 pub mod size;
+pub mod test;
