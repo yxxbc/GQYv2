@@ -501,3 +501,40 @@ impl RotatingWriter {
         Ok(())
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// 队列满 + 无人消费：`debug`/`trace` 直接丢并计数（19 §3.2）。
+    /// 这里直接构造 `FileSink`（不写文件、不起线程），让「必然丢弃」可复现——
+    /// 靠真写线程制造队列满会依赖调度，测试会抖。
+    #[test]
+    fn send_drops_when_queue_full_without_consumer() {
+        let (sender, _receiver) = std::sync::mpsc::sync_channel::<Vec<u8>>(1);
+        let dropped = Arc::new(AtomicU64::new(0));
+        let sink = FileSink {
+            sender,
+            dropped: Arc::clone(&dropped),
+        };
+
+        sink.send(b"first\n".to_vec(), tracing::Level::TRACE);
+        assert_eq!(dropped.load(Ordering::Relaxed), 0, "第一条应当入队");
+        sink.send(b"second\n".to_vec(), tracing::Level::TRACE);
+        assert_eq!(
+            dropped.load(Ordering::Relaxed),
+            1,
+            "队列已满且无人消费，第二条应当被丢弃并计数"
+        );
+    }
+
+    /// 默认值来自单一处（19 §3.2：256 MiB 与 8192）。
+    #[test]
+    fn defaults_match_the_design() {
+        let opts = LoggingOptions::default();
+        assert_eq!(opts.max_file_bytes, 256 * 1024 * 1024);
+        assert_eq!(opts.queue_capacity, 8192);
+        assert_eq!(opts.filter, "info");
+        assert!(opts.dir.is_none(), "默认只输出 stderr");
+    }
+}
