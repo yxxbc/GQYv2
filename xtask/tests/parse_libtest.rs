@@ -4,7 +4,12 @@
 //! 去掉 `parse_stream` 里对 `FAILED`/`ignored`/`test result` 任一分支的处理，对应断言必然红。
 //!
 //! 测试放开（P00-03）：集成测试允许 unwrap/expect/panic/索引。
-#![allow(clippy::unwrap_used, clippy::expect_used, clippy::panic, clippy::indexing_slicing)]
+#![allow(
+    clippy::unwrap_used,
+    clippy::expect_used,
+    clippy::panic,
+    clippy::indexing_slicing
+)]
 
 use xtask::test::parse::{ParseOutcome, Parsed, parse_stream};
 
@@ -84,12 +89,14 @@ fn parses_failure_with_location() {
     );
     assert_eq!(failure.line, Some(88));
     assert!(
-        failure.message.contains("left: [System, History, User, UntrustedTail"),
+        failure
+            .message
+            .contains("left: [System, History, User, UntrustedTail"),
         "期望/实际要在原文里：{}",
         failure.message
     );
     assert_eq!(
-        failure.rerun(),
+        failure.rerun,
         "cargo test -p gqy-ledger plan::tests::tail_order_is_stable -- --exact"
     );
 }

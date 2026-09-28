@@ -15,8 +15,10 @@
 //! 所以耗时只统计到 suite（测试二进制）粒度，摘要里的“最慢”按 suite 排序（施工单实施记录）。
 //! 创建：AI 助手（Cline 会话），2026-09-28 22:42:25。
 
+use serde::Serialize;
+
 /// 一个测试二进制（suite）的汇总。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct SuiteResult {
     /// 展示名：`<包名> (<描述>)`，如 `gqy-core (lib)`、`xtask (tests/gates_size.rs)`、`gqy-core (doc)`。
     pub name: String,
@@ -31,7 +33,7 @@ pub struct SuiteResult {
 }
 
 /// 一个失败用例的定位信息（19 §5.2：位置、期望/实际、复跑）。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Failure {
     /// 完整测试名（libtest 输出里的名字）。
     pub name: String,
@@ -45,20 +47,12 @@ pub struct Failure {
     pub line: Option<u32>,
     /// 失败块原文（期望/实际在原文里；解析器只提取，不猜测，19 §5.2）。
     pub message: String,
-}
-
-impl Failure {
-    /// 可直接复制的复跑命令（19 §5.2 的“复跑”一行）；包名未知时退回 workspace 级命令。
-    pub fn rerun(&self) -> String {
-        match &self.crate_name {
-            Some(krate) => format!("cargo test -p {krate} {} -- --exact", self.name),
-            None => format!("cargo test {} -- --exact", self.name),
-        }
-    }
+    /// 可直接复制的复跑命令（19 §5.2 的“复跑”一行；也是报告 JSON 的一列）。
+    pub rerun: String,
 }
 
 /// 一个被跳过的用例。
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Skipped {
     /// 完整测试名。
     pub name: String,
@@ -243,6 +237,10 @@ impl BlockBuilder {
             ),
             None => (String::new(), None),
         };
+        let rerun = match &crate_name {
+            Some(krate) => format!("cargo test -p {krate} {} -- --exact", self.name),
+            None => format!("cargo test {} -- --exact", self.name),
+        };
         Failure {
             name: self.name,
             suite: suite_name,
@@ -250,6 +248,7 @@ impl BlockBuilder {
             file,
             line,
             message,
+            rerun,
         }
     }
 }

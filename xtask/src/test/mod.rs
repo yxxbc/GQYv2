@@ -11,3 +11,4 @@
 pub mod count_gate;
 pub mod ignore_tags;
 pub mod parse;
+pub mod report;
