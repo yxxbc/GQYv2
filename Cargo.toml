@@ -10,3 +10,18 @@ publish = false
 
 [workspace.lints.rust]
 unsafe_code = "deny"       # 仅 gqy-sys 允许模块级 allow + // SAFETY:（01 §6；豁免在 P07-04 落地时按需添加）
+missing_docs = "deny"      # 公开项必须有文档（19 §6.1 第 3 项；P00-03）
+
+[workspace.lints.clippy]
+# 19 §6.1 第 2 项的全量名单（P00-03）。测试代码的放开策略见各 crate 的 cfg(test) 头部。
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
+let_underscore_must_use = "deny"   # 吞错误：let _ = result（19 §6.1）
+unused_result_ok = "deny"          # 吞错误：result.ok(); 只是压掉 must_use 警告（19 §6.1）
+await_holding_lock = "deny"
+large_futures = "deny"
+missing_errors_doc = "deny"        # # Errors 一节（AGENTS.md 注释规范）
+missing_panics_doc = "deny"        # # Panics 一节（AGENTS.md 注释规范）
+disallowed_methods = "deny"        # 名单在 clippy.toml（Runtime::new / block_on / unbounded_channel，02 §2）

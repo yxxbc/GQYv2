@@ -20,9 +20,8 @@ pub fn scan_source(path: &str, source: &str) -> Vec<Violation> {
     let lines: Vec<&str> = source.lines().collect();
     let mut index = 0;
 
-    while index < lines.len() {
+    while let Some(&line) = lines.get(index) {
         let line_no = index + 1;
-        let line = lines[index];
 
         if line.contains("task_local!") {
             violations.push(Violation::new(
@@ -44,10 +43,13 @@ pub fn scan_source(path: &str, source: &str) -> Vec<Violation> {
 
         if let Some(start) = instrument_attr_start(line) {
             let mut text = String::from(&line[start..]);
-            while !text.contains(']') && index + 1 < lines.len() {
+            while !text.contains(']') {
+                let Some(next) = lines.get(index + 1) else {
+                    break;
+                };
                 index += 1;
                 text.push(' ');
-                text.push_str(lines[index]);
+                text.push_str(next);
             }
             if !text.contains("skip_all") {
                 violations.push(Violation::new(
