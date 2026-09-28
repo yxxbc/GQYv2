@@ -3,7 +3,7 @@
 //! 用法：`cargo xtask <子命令>`（别名见 `.cargo/config.toml`）。检查逻辑在库里（`src/lib.rs`），
 //! 这里只做分派与退出码——新增子命令只登记，不改中心（21 §4）。
 //! 创建：AI 助手（Cline 会话），2026-09-28 06:31:10。
-//! 更新：AI 助手（Cline 会话），2026-09-28 22:21:06 —— P00-03：登记 `size` 子命令。
+//! 更新：AI 助手（Cline 会话），2026-09-28 22:21:06 —— P00-03：登记 `size` 与 `check` 子命令。
 
 // 测试代码放开（19 §6.1；P00-03）：单元测试允许 unwrap/expect/panic/索引，非测试代码仍 deny。
 #![cfg_attr(
@@ -36,6 +36,8 @@ enum Cmd {
     Arch(xtask::arch::ArchArgs),
     /// 文件体积门禁（00 §3、19 §6.1 第 6 项）
     Size(xtask::size::SizeArgs),
+    /// 统一门禁入口：fmt / clippy / rustdoc / arch / size（19 §6.1、§8.3）
+    Check(xtask::check::CheckArgs),
 }
 
 /// 执行子命令；违规的退出码由子命令返回（1），工具自身出错统一退 2。
@@ -44,6 +46,7 @@ fn main() -> ExitCode {
     let result = match cli.command {
         Cmd::Arch(args) => xtask::arch::run(&args),
         Cmd::Size(args) => xtask::size::run(&args),
+        Cmd::Check(args) => xtask::check::run(&args),
     };
     match result {
         Ok(code) => code,
