@@ -1,0 +1,33 @@
+# cargo-deny 供应链基线（19 §6.1 第 14 项、§8.2；P00-06）。
+# 本地与 CI 同一命令：`cargo deny check`（licenses / bans / sources / advisories 四类）。
+# 许可证首版只放行 MIT / Apache-2.0 / BSD 系；另加依赖实际需要、已确认的 Unicode-3.0
+#（unicode-ident 的 `(MIT OR Apache-2.0) AND Unicode-3.0`，另一半由 MIT/Apache-2.0 覆盖）。
+# 其余许可证出现即红，由维护者逐案决定。
+# 创建：AI 助手（Cline 会话），2026-09-29 00:22:26。
+
+[advisories]
+# 采用默认口径：已知漏洞（RustSec advisories）出现即红；需要放行时在这里写 ID 与理由。
+
+[licenses]
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "Unicode-3.0",
+]
+# 清单按“预授权的宽松许可证家族”维护：暂时没有依赖使用的项不报警告，等对应依赖引入时直接生效。
+unused-allowed-license = "allow"
+
+[licenses.private]
+# 未发布的 workspace 成员（publish = false）不是第三方依赖，不参与依赖许可证审查。
+ignore = true
+
+[bans]
+# 重复版本先只警告（照 P00-06 施工单骨架）；后续按实际情况收紧。
+multiple-versions = "warn"
+
+[sources]
+# 依赖只允许来自 crates.io；未知 registry 或 git 源出现即红（禁用源）。
+unknown-registry = "deny"
+unknown-git = "deny"

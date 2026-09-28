@@ -1,7 +1,8 @@
 # 贡献规范
 <!-- GitHub Copilot; updated 2026-09-27T22:46:09Z -->
+<!-- 更新：AI 助手（Cline 会话），2026-09-29 00:22:26 —— 补 CI 作业列表与必需检查管理员清单，修正供应链审查的过时说明（P00-06）。 -->
 
-所有合并到主分支的变更都必须通过 `pr-standards` 和 `workflow-security` 检查。仓库管理员还必须在 GitHub 分支保护规则中将这两项设为必需状态检查，并禁止绕过检查的直接推送；仅添加工作流而不启用必需检查，不构成强制门槛。公开仓库还应将 `dependency-review` 设为必需检查；私有仓库需先启用 GitHub Advanced Security 才能使用该检查。管理员还必须保护 `v*` 版本 tag，禁止更新和删除已发布 tag。
+所有合并到主分支的变更都必须通过 `pr-standards`、`workflow-security` 与 CI 的六个作业（见「CI 检查」）等检查。仓库管理员必须在 GitHub 分支保护规则中将这些检查设为必需状态检查，并禁止绕过检查的直接推送；仅添加工作流而不启用必需检查，不构成强制门槛。公开仓库还应将 `dependency-review` 设为必需检查；私有仓库需先启用 GitHub Advanced Security 才能使用该检查。管理员还必须保护 `v*` 版本 tag，禁止更新和删除已发布 tag。
 
 ## Commit 与 PR 标题
 
@@ -51,6 +52,25 @@ bash scripts/sync-worktrees.sh --apply
 
 脚本不会删除 worktree、推送分支或 force-push。已发布的 PR 分支需要单独处理历史改写；此脚本不能保证不同分支修改同一文件时绝不冲突。
 
+## CI 检查
+
+每个 PR 与 `main` 推送运行 `.github/workflows/ci.yml`（P00-06），作业与本地命令一一对应：
+
+| 作业 | 内容 | 本地复现 |
+| --- | --- | --- |
+| `checks` | 格式、clippy、层序、体积 | `bash scripts/ci-checks.sh` |
+| `test-linux` / `test-macos` | 全量测试（单元 + 集成 + doc）与计数门禁 | `bash scripts/ci-test.sh` |
+| `test-windows` | 编译 + 单元测试（Git Bash） | `bash scripts/ci-test.sh --unit` |
+| `docs` | rustdoc 文档门禁 | `bash scripts/ci-docs.sh` |
+| `supply-chain` | `cargo deny check`（许可证、重复版本、禁用源、advisories，配置见 `deny.toml`） | `cargo deny check` |
+
+测试作业会把 `target/gqy-test-report/` 作为构件上传（保留 14 天），并把 `report.md` 写入作业摘要。工作流顶层 `permissions: {}`，各作业只授予 `contents: read`；第三方 Action 固定到完整 commit SHA。
+
+管理员配置（P00-06 合入后执行）：
+
+- 必需状态检查：`pr-standards`、`workflow-security`、`checks`、`test-linux`、`test-macos`、`test-windows`、`docs`、`supply-chain`（`dependency-review` 可用时同样设为必需）；
+- 分支保护：确保禁止直接推送 `main`；`v*` tag 禁止更新与删除。
+
 ## 版本号与发布节奏
 
 完整版本基线、Release Please 的变更分类和发布操作见[版本与发布流程](docs/release-versioning.md)。
@@ -84,7 +104,7 @@ Release Please 根据 Conventional Commits 汇总发布 PR，并同步更新 `ve
 - `dependency-review` 在 PR 中阻止引入高危及以上漏洞依赖。仓库 `LICENSE` 尚未确定，当前也未配置依赖许可证允许/禁止清单，因此许可证兼容性还不是硬门禁；在引入外部依赖前必须确定策略并配置检查。该功能适用于公开仓库；私有仓库需要 GitHub Advanced Security 和启用 Dependency graph。
 - 私有仓库启用 GHAS 后，还需设置仓库 Actions variable `DEPENDENCY_REVIEW_ENABLED=true` 才会运行 `dependency-review`。
 - 仓库管理员应将 `pr-standards`、`workflow-security` 设为必需检查；在 Dependency Review 可用时也将 `dependency-review` 设为必需。另需在 GitHub 仓库设置启用 Dependency graph、Dependabot alerts、secret scanning、私有漏洞报告和分支保护，并为 `v*` tag 配置禁止更新与删除的规则；工作流文件不能代替这些设置。
-- Cargo manifest 与 lockfile 尚不存在。加入 Rust 依赖后，应为 Dependabot 增加 Cargo ecosystem，并接入 `cargo audit`/相应供应链检查；在此之前不运行空依赖清单上的 Rust 检查。
+- Rust 供应链检查已接入：`supply-chain` 作业运行 `cargo deny check`（许可证、重复版本、禁用源、advisories，配置见 `deny.toml`）。Cargo 清单与 lockfile 已入库（P00-05）；Dependabot 的 Cargo ecosystem 待按 `.github/dependabot.yml` 注释加入。
 
 ## Changelog
 

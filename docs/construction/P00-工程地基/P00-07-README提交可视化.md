@@ -1,9 +1,10 @@
 <!-- GitHub Copilot; updated 2026-09-27T22:23:08Z -->
+<!-- 更新：AI 助手（Cline 会话），2026-09-29 00:22:26 —— 已合入 main（PR #13），状态置为「已完成」；Pages 在线验收完成（部署工作流成功、SVG 可访问）；分支已清理。 -->
 # P00-07 · README 提交可视化
 
 | 项 | 值 |
 | --- | --- |
-| 状态 | 待验收 |
+| 状态 | 已完成 |
 | 依赖 | — |
 | 设计依据 | AGENTS.md「施工的规矩」；scripts/CLAUDE.md「规范与职责边界」 |
 | 规模 | S（≤1 天） |
@@ -57,7 +58,7 @@ README 同时提供 main 分支提交活跃度日历和 GitHub 原生分支关�
 - [x] 生成器测试覆盖计数、强度和一年窗口边界。
 - [x] 工作流只在 main push 触发，并采用最小 job 权限与 SHA 固定的 Actions。
 - [x] 中英文 README、`[Unreleased]` 与施工图已同步。
-- [ ] 仓库 Pages 来源设为 GitHub Actions，合并后完成在线验收。
+- [x] 仓库 Pages 来源设为 GitHub Actions，合并后完成在线验收（部署工作流成功、SVG 可访问）。
 
 ## 风险与回退
 
