@@ -3,6 +3,14 @@
 
 本项目的变更记录遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.5.0](https://github.com/yxxbc/GQYv2/compare/v0.4.0...v0.5.0) (2026-09-28)
+
+
+### Added
+
+* **xtask:** 落地 cargo xtask test 测试运行器与报告（P00-04） ([#29](https://github.com/yxxbc/GQYv2/issues/29)) ([13cdde8](https://github.com/yxxbc/GQYv2/commit/13cdde8e4a4f55fde14bdf0054c8787e524ff4ea))
+* 落地错误分类、Secret、blocking 与日志骨架（P00-05） ([#31](https://github.com/yxxbc/GQYv2/issues/31)) ([b74f119](https://github.com/yxxbc/GQYv2/commit/b74f119569aaf5ddb29df2bdb827d2d98bcc48a4))
+
 ## [0.4.0](https://github.com/yxxbc/GQYv2/compare/v0.3.0...v0.4.0) (2026-09-28)
 
 
