@@ -9,4 +9,11 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-# 本单为空；各 crate 的依赖随使用它的施工单添加
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["rt", "sync"] }
+tracing = { workspace = true }
+
+[dev-dependencies]
+# 测试用：`#[tokio::test]` 要 macros + rt；span 断言要 tracing-subscriber。
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
+tracing-subscriber = { workspace = true }
