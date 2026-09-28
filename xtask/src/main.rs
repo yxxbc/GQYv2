@@ -38,6 +38,8 @@ enum Cmd {
     Size(xtask::size::SizeArgs),
     /// 统一门禁入口：fmt / clippy / rustdoc / arch / size（19 §6.1、§8.3）
     Check(xtask::check::CheckArgs),
+    /// 测试运行器与报告：`cargo test` + 解析 + 摘要 + 报告 + 计数门禁（19 §5）
+    Test(xtask::test::TestArgs),
 }
 
 /// 执行子命令；违规的退出码由子命令返回（1），工具自身出错统一退 2。
@@ -47,6 +49,7 @@ fn main() -> ExitCode {
         Cmd::Arch(args) => xtask::arch::run(&args),
         Cmd::Size(args) => xtask::size::run(&args),
         Cmd::Check(args) => xtask::check::run(&args),
+        Cmd::Test(args) => xtask::test::run(&args),
     };
     match result {
         Ok(code) => code,
