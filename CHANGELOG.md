@@ -3,6 +3,14 @@
 
 本项目的变更记录遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.4.0](https://github.com/yxxbc/GQYv2/compare/v0.3.0...v0.4.0) (2026-09-28)
+
+
+### Added
+
+* **lints:** 落地体积门禁、clippy 全量 lints 与 cargo xtask check ([#28](https://github.com/yxxbc/GQYv2/issues/28)) ([5d29aab](https://github.com/yxxbc/GQYv2/commit/5d29aabdb0c16708e14dda9df661e3ef86dc8d06))
+* **pr-checks:** 增加对大提交的检查，允许通过标签豁免体量限制 ([#24](https://github.com/yxxbc/GQYv2/issues/24)) ([2355bd3](https://github.com/yxxbc/GQYv2/commit/2355bd3abadc35e5c10fe315bb419dd25f2cd174))
+
 ## [0.3.0](https://github.com/yxxbc/GQYv2/compare/v0.2.0...v0.3.0) (2026-09-27)
 
 
