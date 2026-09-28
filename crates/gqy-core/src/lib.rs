@@ -7,6 +7,7 @@
 //!
 //! 测试放宽：`cfg(test)` 下允许 unwrap/expect/panic/索引（19 §6.1），非测试代码仍 deny。
 //! 更新：AI 助手（Cline 会话），2026-09-28 22:21:06（P00-03）。
+//! 更新：AI 助手（Cline 会话），2026-09-28 23:03:25（P00-05：错误分类、Secret、blocking 与日志骨架）。
 #![cfg_attr(
     test,
     allow(
@@ -16,3 +17,5 @@
         clippy::indexing_slicing
     )
 )]
+
+pub mod error;
