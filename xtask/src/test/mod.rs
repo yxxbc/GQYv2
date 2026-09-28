@@ -9,4 +9,5 @@
 //! 创建：AI 助手（Cline 会话），2026-09-28 22:42:25。
 
 pub mod count_gate;
+pub mod ignore_tags;
 pub mod parse;
