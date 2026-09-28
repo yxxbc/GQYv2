@@ -25,6 +25,7 @@
             2026-09-28 Cline 会话——P00-03 施工完成（状态：待验收）：workspace clippy 全量 lints 与 clippy.toml、cargo xtask size、cargo xtask check（含 size/clippy/rustdoc 三组 fixture）；「每一步的图」待合入 main 时补一节。
             2026-09-28 Cline 会话——P00-03 完工并合入 main（PR #28，施工图补 P00-03 一节，状态置「已完成」）；分支与工作树已清理。
             2026-09-28 Cline 会话——P00-04 施工完成（状态：待验收）：cargo xtask test（libtest 解析、19 §5.2 摘要、schema 1 报告与 Markdown、计数门禁与平台基线、needs 标签筛选）。
+            2026-09-28 Cline 会话——P00-04 完工并合入 main（PR #29，施工图补 P00-04 一节，状态置「已完成」）；分支与工作树已清理。
 -->
 <style>
 :root{
@@ -296,6 +297,18 @@ footer{color:var(--ink-2);font-size:12.5px}
       </ul>
       <p>验收：<code>cargo xtask check</code>（默认 / <code>--fast</code> / <code>--docs</code> / <code>--no-docs</code>）全绿；<code>cargo test --workspace</code> 46 例通过；红绿对照五组（非测试 unwrap 探针、size 三档、公开/私有断链、删真实配置的 <code>unwrap_used</code>、把 Fail 档改成 Explain）见 PR 输出。提交：PR #28。</p>
     </section>
+    <section class="sheet" id="sP00-04">
+      <div class="sheet-head"><h2><span class="no">P00-04</span>测试日志与报告</h2><span class="pill">已完成</span></div>
+      <p>每次跑测试都能看出哪里出问题：<code>cargo xtask test</code> 一条命令跑测试、解析 libtest 输出、打印可读摘要（失败带位置与复跑命令）、写 JSON/Markdown 报告，并用平台基线拦住「删测试躲失败」。</p>
+      <ul>
+        <li><b>解析器</b> <code>xtask/src/test/parse.rs</code>：<code>parse_stream</code> 纯函数（Running / Doc-tests、<code>test … ok|FAILED|ignored</code>、<code>test result</code>、失败块与 <code>panicked at</code>）；无法识别或整份输出没有 <code>test result</code> 行 → 退 2，不把解析失败当通过。</li>
+        <li><b>报告</b> <code>report.rs</code>：schema 1 的 <code>TestReport</code>（19 §5.3 字段）与 Markdown；写 <code>target/gqy-test-report/{report.json,report.md}</code>；启动时间用 jiff（00 §5）。</li>
+        <li><b>计数门禁</b> <code>count_gate.rs</code>：等于基线 ✔ / 高于基线警告（提示同提交更新）/ 低于基线红（含期望值与实际值）；<code>xtask/baselines/test-count.{macos,linux,windows}.txt</code> 入库（linux 待 CI 校正、windows 待 P00-06 回填）。</li>
+        <li><b>needs 标签</b> <code>ignore_tags.rs</code>：扫描 <code>#[ignore = "needs:&lt;tag&gt;"]</code> 建映射，<code>--include-ignored=&lt;tag&gt;</code> 只跑该标签与常规用例（19 §4.1）；名字子串冲突时回退两次运行并提示改名。</li>
+        <li>fixture：解析器 7 类样本、计数门禁 6 例、标签扫描 6 例；<code>--unit</code> / <code>--filter</code> / <code>--no-count-gate</code> 齐备（子集运行自动跳过计数门禁并注明原因）。</li>
+      </ul>
+      <p>验收：<code>cargo xtask check</code> 与 <code>cargo xtask test</code> 全绿（65 = 基线 65）；红绿对照四组（失败用例定位与复跑命令、基线调高报红、needs 标签筛选、编译失败退 2）与两处变异验证见 PR 输出。提交：PR #29。</p>
+    </section>
     <p class="empty" id="no-sheets">还没有完成的施工单。</p>
   </section>
 
@@ -344,7 +357,7 @@ footer{color:var(--ink-2);font-size:12.5px}
      "deps": [
       "P00-02"
      ],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-04-测试日志与报告.md"
     },
     {
