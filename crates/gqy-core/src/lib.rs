@@ -4,3 +4,15 @@
 //! 设计：01 §3、02 §4、04 §4.5、10 §4、18 §3。
 //!
 //! 分层规则见 01 §3：本 crate 属 L0，不得依赖任何其它 workspace crate。
+//!
+//! 测试放宽：`cfg(test)` 下允许 unwrap/expect/panic/索引（19 §6.1），非测试代码仍 deny。
+//! 更新：AI 助手（Cline 会话），2026-09-28 22:21:06（P00-03）。
+#![cfg_attr(
+    test,
+    allow(
+        clippy::unwrap_used,
+        clippy::expect_used,
+        clippy::panic,
+        clippy::indexing_slicing
+    )
+)]
