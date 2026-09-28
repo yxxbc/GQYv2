@@ -23,6 +23,7 @@
             2026-09-28 Cline 会话——P00-02 施工至待验收（xtask 骨架 + 层序/静态规则门禁，层表解析出 21 条目标）。
             2026-09-28 Cline 会话——P00-02 完工并合入 main（PR #15，施工图补 P00-02 一节）；同日回退 P00 期间的两个过早发布（删除 v0.2.0 / v0.3.0 tag 与 Release，版本回到 0.1.0），确立 M1 前的发布冻结。
             2026-09-28 Cline 会话——P00-03 施工完成（状态：待验收）：workspace clippy 全量 lints 与 clippy.toml、cargo xtask size、cargo xtask check（含 size/clippy/rustdoc 三组 fixture）；「每一步的图」待合入 main 时补一节。
+            2026-09-28 Cline 会话——P00-03 完工并合入 main（PR #28，施工图补 P00-03 一节，状态置「已完成」）；分支与工作树已清理。
 -->
 <style>
 :root{
@@ -283,6 +284,17 @@ footer{color:var(--ink-2);font-size:12.5px}
       </ul>
       <p>验收：<code>bash scripts/tests/sync-worktrees.sh</code> 与两份脚本的 <code>bash -n</code> 全部通过；PR 标题/changelog 检查通过；合入后运行默认报告模式，确认只报告、不改动分支。<code>cargo xtask plan</code> 在当前 xtask 中尚不存在，plan-data 另用 JSON 解析校验。提交：PR #18（<code>1918151</code>）。</p>
     </section>
+    <section class="sheet" id="sP00-03">
+      <div class="sheet-head"><h2><span class="no">P00-03</span>体积门禁与 clippy 规则</h2><span class="pill">已完成</span></div>
+      <p>任何新代码在提交前都会被同一套门禁拦一遍：<code>cargo xtask check</code> 一条命令跑完格式、静态检查、文档、层序与体积；<code>cargo xtask size</code> 守住文件体积三档。</p>
+      <ul>
+        <li><b>workspace lints 全量</b>（19 §6.1 第 2 项）：<code>missing_docs</code> + clippy 11 条（<code>unwrap_used</code>、<code>expect_used</code>、<code>panic</code>、<code>indexing_slicing</code>、<code>let_underscore_must_use</code>、<code>unused_result_ok</code>、<code>await_holding_lock</code>、<code>large_futures</code>、<code>missing_errors_doc</code>、<code>missing_panics_doc</code>、<code>disallowed_methods</code>）；<code>clippy.toml</code> 4 条禁止调用（<code>Runtime::new</code> / <code>block_on</code> / <code>unbounded_channel</code>，带 reason）。测试代码用 <code>#![cfg_attr(test, allow(...))]</code> 样板放开，非测试代码仍 deny。</li>
+        <li><b><code>cargo xtask size</code></b>：<code>.rs/.ts/.css</code> 的 800（警告）/ 1500（需说明拆分计划）/ 2000（红）三档（00 §3），报告按严重度排序、有红退 1；扫描跳过隐藏目录（含 <code>.worktrees/</code>）、<code>target/</code>、<code>node_modules/</code>。</li>
+        <li><b><code>cargo xtask check</code></b>：注册表式组装 fmt / clippy / doc / arch / size，支持 <code>--fast</code>（提交前快检）、<code>--docs</code>（含 <code>--document-private-items</code> 的 rustdoc 断链）、<code>--no-docs</code> 与默认全集（19 §6.1、§8.3）。</li>
+        <li>fixture 三组共 20 例：<code>gates_size</code>（10，四档边界/排序/扫描范围）、<code>gates_clippy</code>（8，读真实 lints 配置 + 吞错误两条 + 测试放宽）、<code>gates_docs</code>（2，公开与私有断链的正反对照）。</li>
+      </ul>
+      <p>验收：<code>cargo xtask check</code>（默认 / <code>--fast</code> / <code>--docs</code> / <code>--no-docs</code>）全绿；<code>cargo test --workspace</code> 46 例通过；红绿对照五组（非测试 unwrap 探针、size 三档、公开/私有断链、删真实配置的 <code>unwrap_used</code>、把 Fail 档改成 Explain）见 PR 输出。提交：PR #28。</p>
+    </section>
     <p class="empty" id="no-sheets">还没有完成的施工单。</p>
   </section>
 
@@ -322,7 +334,7 @@ footer{color:var(--ink-2);font-size:12.5px}
       "P00-01",
       "P00-02"
      ],
-     "status": "待验收",
+     "status": "已完成",
      "file": "P00-工程地基/P00-03-体积门禁与clippy规则.md"
     },
     {
