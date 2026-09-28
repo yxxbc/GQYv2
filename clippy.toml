@@ -6,9 +6,12 @@
 # 每个 crate 通过 `[lints] workspace = true` 继承，不各自复制。
 # 注意：`tokio` / `futures` 目前（P00-03）还没进依赖图，路径解析不到时不生效；
 # P02 引入 tokio 后本名单立即对这四类调用生效，不需要再改代码。
+# `allow-invalid = true`（P00-05 补）：路径的可达性取决于各 crate 的依赖面——只有部分 crate
+# 依赖 tokio/futures，在别的 crate 的检查上下文里 clippy 会报「does not refer to a reachable
+# function」的配置警告；静音该警告，检查本身在可达的 crate 里照常生效。
 disallowed-methods = [
-  { path = "tokio::runtime::Runtime::new", reason = "runtime 只在入口二进制创建（02 §2）" },
-  { path = "tokio::runtime::Handle::block_on", reason = "库与组装层禁止 block_on（02 §2）" },
-  { path = "futures::executor::block_on", reason = "库与组装层禁止 block_on（02 §2）" },
-  { path = "tokio::sync::mpsc::unbounded_channel", reason = "禁止无界通道（铁律 5）" },
+  { path = "tokio::runtime::Runtime::new", reason = "runtime 只在入口二进制创建（02 §2）", allow-invalid = true },
+  { path = "tokio::runtime::Handle::block_on", reason = "库与组装层禁止 block_on（02 §2）", allow-invalid = true },
+  { path = "futures::executor::block_on", reason = "库与组装层禁止 block_on（02 §2）", allow-invalid = true },
+  { path = "tokio::sync::mpsc::unbounded_channel", reason = "禁止无界通道（铁律 5）", allow-invalid = true },
 ]
