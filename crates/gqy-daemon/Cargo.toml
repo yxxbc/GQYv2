@@ -9,4 +9,12 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-# 本单为空；各 crate 的依赖随使用它的施工单添加
+gqy-core = { path = "../gqy-core" }
+jiff = "0.2"
+serde_json = "1"
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3"

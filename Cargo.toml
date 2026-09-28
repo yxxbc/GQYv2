@@ -25,3 +25,10 @@ large_futures = "deny"
 missing_errors_doc = "deny"        # # Errors 一节（AGENTS.md 注释规范）
 missing_panics_doc = "deny"        # # Panics 一节（AGENTS.md 注释规范）
 disallowed_methods = "deny"        # 名单在 clippy.toml（Runtime::new / block_on / unbounded_channel，02 §2）
+
+[workspace.dependencies]
+# 跨 crate 共享的依赖版本集中在这里（P00-05 首次落地）；各 crate 用 `workspace = true` 引用。
+tokio = { version = "1", default-features = false }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+thiserror = "2"
