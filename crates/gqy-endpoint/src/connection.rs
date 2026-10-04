@@ -383,9 +383,10 @@ fn stream_of(request: &Request) -> Result<Stream, Refusal> {
     }
 }
 
-/// 命令的回应经哪个订阅写出去：给会话的经这个会话的订阅，`config.set` 经配置的订阅（施工 8-4）。
+/// 命令的回应经哪个订阅写出去：给会话的经这个会话的订阅，`config.set`、`model.list` 经配置的订阅（施工 8-4、
+/// 8-23：这两条会改配置——`model.list` 会清下架的成员——发它们的头等着先见推送、后见回应）。
 fn target(request: &Request) -> Option<Target> {
-    if request.method == "config.set" {
+    if matches!(request.method.as_str(), "config.set" | "model.list") {
         return Some(Target::Config);
     }
     request

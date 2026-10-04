@@ -128,11 +128,11 @@ async fn model_list_has_pools_and_both_uses() {
     assert_eq!(
         result["pools"],
         json!([
-            {"name": "empty", "strategy": "pin", "models": ["gone/y"], "subagent": true, "description": null},
+            {"name": "empty", "strategy": "pin", "models": ["gone/y"], "subagent": true, "description": null, "problem": "pool \"empty\" has no models"},
             {"name": "fast", "strategy": "rotate", "models": ["b/z"], "subagent": false, "description": null},
             {"name": "free", "strategy": "pin", "models": ["a/x", "gone/y", "b/z"], "subagent": true, "description": "Free models."},
         ]),
-        "照名字排，成员照写的原样，分法没写的照成员定，开关没写的是 false，说明没写的是 null"
+        "照名字排，成员照写的原样，分法没写的照成员定，开关没写的是 false，说明没写的是 null；解析不出的多 problem（施工 8-23）"
     );
     assert_eq!(result.get("tiers"), None, "施工 8-8 补去掉了挡位");
     assert_eq!(result["uses"], json!({"chat": "a/m", "vision": "b/v"}));

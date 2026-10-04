@@ -26,7 +26,7 @@
 | `crates/gqy-endpoint/src/spawn.rs` | 会话表交给会话的端口：造子会话、给会话发命令（施工 7-5，`session/tools.md`「派子代理」）；停下子会话、照日志看它（施工 7-4）；列主会话（施工 C-3） |
 | `crates/gqy-endpoint/src/list.rs` | `session.list`：标题、置顶照日志算（施工 3-8 三补）；工作目录、最近一次动静、忙不忙（施工 C-3）；读会话列表的索引、照日志补，起来时打开它，删会话删行（施工 3-8 七补，`store/index.md`）。她用 `sessions` 列会话也是这一个 `scan`（`tools/sessions.md`） |
 | `crates/gqy-endpoint/src/subscriptions.rs` | 订阅：每个订阅一个转发任务，先写补发的（施工 3-8 六补），再推 `event`、`resync`；换掉一个订阅时等它写完 |
-| `crates/gqy-endpoint/src/subscriptions/config.rs` | 配置的订阅（施工 8-4，`config.md`「协议」）：推 `config.changed`、掉队推 `resync`，`config.set` 的回应排在推送后面 |
+| `crates/gqy-endpoint/src/subscriptions/config.rs` | 配置的订阅（施工 8-4，`config.md`「协议」）：推 `config.changed`、掉队推 `resync`，`config.set`、`model.list` 的回应排在推送后面（8-23 起 `model.list` 也清下架的成员、改配置） |
 | `crates/gqy-endpoint/src/undo.rs` | 撤销、恢复、重做的回应里给人看的几样（`protocol/undo.md`） |
 | `crates/gqy-endpoint/src/attach.rs` | 附件（施工 3-9 三补）：`blob.put` 读、存；`session.send`、`session.redo` 的附件变成内容块；认是什么、文件名和媒体类型怎么查、存好了怎么拼回应，和分块上传共用（施工 W-5）；`model.call` 的图照哈希变成图片块（`images`，施工 8-20） |
 | `crates/gqy-endpoint/src/attach/kind.rs` | 认一个附件是什么：图片、PDF、别的文件，媒体类型 |
@@ -159,7 +159,7 @@
 | `secret.set` | 写入或者换掉一个密钥（`name`、`value`），落了盘、记了日志才回应 `{"replaced"}`（施工 8-5，`config.md`「协议」） |
 | `secret.delete` | 删掉一个密钥（`name`），回应 `{}`（施工 8-5） |
 | `secret.list` | 密钥的名字、设没设、谁在用（`used_by`），从不交出值（施工 8-5） |
-| `model.list` | 配好的供应商和模型，每一格资料的值和来源、状态，在用的目录（施工 8-7）；池、两种用途（施工 8-8：`pools`、`uses` 多 `vision`；8-8 补去掉 `tiers`，池多 `subagent`、`description`）；模型、key 的状态多 `cooling`，带 `until`、`class`（施工 8-9）；每个模型的 `facts` 多 `effort`（施工 8-18）、多 `temperature`（施工 8-22），都带 `key`（8-18（补）、8-22）。参数 `provider`（只看这一家）、`refresh`（先拉一遍供应商的模型列表）都可以不写；形状照 `models.md`「协议」`model.list` |
+| `model.list` | 配好的供应商和模型，每一格资料的值和来源、状态，在用的目录（施工 8-7）；池、两种用途（施工 8-8：`pools`、`uses` 多 `vision`；8-8 补去掉 `tiers`，池多 `subagent`、`description`；8-23 起解析不出的池多 `problem`）；模型、key 的状态多 `cooling`，带 `until`、`class`（施工 8-9）；每个模型的 `facts` 多 `effort`（施工 8-18）、多 `temperature`（施工 8-22），都带 `key`（8-18（补）、8-22）。参数 `provider`（只看这一家）、`refresh`（先拉一遍供应商的模型列表）都可以不写；形状照 `models.md`「协议」`model.list` |
 | `provider.detect` | 找现成的：核心的环境里设了的 key（不交值）、本机跑着的模型服务、找了哪些环境变量（施工 8-11）；形状照 `models.md`「协议」 |
 | `provider.catalog` | 搜目录和档案里的供应商：`query`、`limit` 都可以不写；每一家能不能用、在不在本机（施工 8-11） |
 | `provider.test` | 试一家：配好了的（`provider`）或者还没写进配置的（`candidate`），列模型、真发一句、收到第一段正文就停，交回成没成、哪一步、出错；会花一点额度（施工 8-11） |
@@ -684,7 +684,7 @@
 
 **先见结果，后见回应**
 
-1. 方法的回应，`params.session` 这个会话在这个连接上有订阅的，交给这个订阅的转发任务；`config.set` 的回应，这个连接订阅着配置的，交给配置的转发任务（施工 8-4）：它先把已经到了的推送都放进写队列，再放回应。会话先推送、后回应（`session/actor.md`），回应到的时候，这条命令产生的推送一定已经到了。
+1. 方法的回应，`params.session` 这个会话在这个连接上有订阅的，交给这个订阅的转发任务；`config.set`、`model.list` 的回应，这个连接订阅着配置的，交给配置的转发任务（施工 8-4；`model.list` 8-23 起也清下架的成员、改配置）：它先把已经到了的推送都放进写队列，再放回应。会话先推送、后回应（`session/actor.md`），回应到的时候，这条命令产生的推送一定已经到了。
 2. 别的回应直接放进写队列：没订阅的会话的；`params` 是数组的；`hello`、不写 `after` 的和被拒的 `subscribe`、`unsubscribe` 的；握手以前的拒绝；读不懂的行的。写了 `after`、订阅上了的 `subscribe`，回应交给新订阅的转发任务，排在补发的后面（「补发」第 2 条，施工 3-8 六补）。
 3. 订阅停了推（掉了队、会话停了），转发任务接着替这个会话转回应，直到这个订阅被取消、被新的换掉，或者连接断了。
 

@@ -2,7 +2,7 @@
 
 use gqy_kernel::time::Timestamp;
 
-use super::{Learned, ListedModel, ProviderList, Stamped};
+use super::{Learned, ListedModel, ProviderList, Stamped, delisted};
 
 fn at(text: &str) -> Timestamp {
     Timestamp::parse(text).expect("时刻写法对")
@@ -61,4 +61,37 @@ fn a_provider_list_reads_back_the_same() {
     assert_eq!(list.find("x").map(|listed| listed.window), Some(None));
     assert!(list.find("y").is_none());
     assert!(ProviderList::parse("{}").is_err());
+}
+
+/// 上一份列表里有、这一份里没有的算下架（施工 8-23，`models.md`「怎么走」第十五条）：新加的、还在的不算；
+/// 空的这一份（这一家一个都不列了）全部算下架；重复的名字只算一个，照字节序排。
+#[test]
+fn a_model_that_was_listed_and_is_gone_is_delisted() {
+    let previous = ProviderList {
+        fetched: at("2026-10-01T03:00:00.000Z"),
+        models: vec![
+            listed("deepseek-flash"),
+            listed("x"),
+            listed("gone"),
+            listed("x"),
+        ],
+    };
+    let fresh = vec![listed("x"), listed("new")];
+    assert_eq!(
+        delisted(&previous, &fresh),
+        vec!["deepseek-flash".to_string(), "gone".to_string()]
+    );
+    assert!(delisted(&previous, &previous.models).is_empty(), "都没有变");
+    assert_eq!(
+        delisted(&previous, &[]),
+        ["deepseek-flash", "gone", "x"].map(str::to_string).to_vec()
+    );
+}
+
+/// 列表里的一个模型：只有名字，没报窗口。
+fn listed(id: &str) -> ListedModel {
+    ListedModel {
+        id: id.to_string(),
+        window: None,
+    }
 }

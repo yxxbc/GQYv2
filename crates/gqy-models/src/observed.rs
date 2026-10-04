@@ -107,5 +107,20 @@ impl ProviderList {
     }
 }
 
+/// 上一份列表里有、这一份里没有的模型（施工 8-23，`docs/blueprint/models.md`「怎么走」第十五条）：下架的。
+///
+/// 两家都列了的、新加的都不算；照字节序排、去重。这家从没拉过列表的是调用一方的事（没有上一份就没有「原来有」）。
+pub fn delisted(previous: &ProviderList, fresh: &[ListedModel]) -> Vec<String> {
+    let mut gone: Vec<String> = previous
+        .models
+        .iter()
+        .filter(|listed| !fresh.iter().any(|now| now.id == listed.id))
+        .map(|listed| listed.id.clone())
+        .collect();
+    gone.sort_unstable();
+    gone.dedup();
+    gone
+}
+
 #[cfg(test)]
 mod tests;

@@ -14,7 +14,7 @@
 //!   8-11，[`ModelData::local`]）。拉某一家的列表、`provider.test` 照地址挑用哪个（[`ModelData::fetcher_for`]，施工 8-11
 //!   补）：地址落在本机的也不走代理，和探本机的服务一样。
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
@@ -46,6 +46,9 @@ pub struct ModelData {
     pointers: Mutex<Pointers>,
     /// 冷却表和 `[models.cooldown]` 的规矩（施工 8-9）：另一把锁，只在内存里。
     cooldowns: Mutex<(Cooldowns, Rules)>,
+    /// 下架了的（供应商、模型）（施工 8-23，`models.md`「怎么走」第十五条）：换上供应商的列表时记下，`model.list` 清池的
+    /// 一方取（[`ModelData::delisted`]）、清完忘掉（[`ModelData::forget_delisted`]）；另一把锁，只在内存里。
+    delisted: Mutex<BTreeSet<(String, String)>>,
     /// `state/models`：用出来的、供应商的列表、池的指针写在这里。没有的不写（测试里）。
     dir: Option<PathBuf>,
     /// 拉供应商的列表用的客户端（`gqy_http::fetcher`）；没有的不拉。
@@ -80,6 +83,7 @@ impl ModelData {
             observed: Mutex::new(Observed::default()),
             pointers: Mutex::new(Pointers::default()),
             cooldowns: Mutex::new((Cooldowns::default(), Rules::default())),
+            delisted: Mutex::new(BTreeSet::new()),
             dir,
             fetcher: None,
             local: None,
@@ -213,11 +217,40 @@ impl ModelData {
         self.lock().lists.get(provider).map(|list| list.fetched)
     }
 
-    /// 换上 `provider` 这一家新拉的列表，写盘。
+    /// 换上 `provider` 这一家新拉的列表，写盘；和前一份比，上一份里有、这一份里没有的记成下架的（施工 8-23，
+    /// `models.md`「怎么走」第十五条第 1 条）；这一家以前记着的、这一份里又列出来了的，从记着的里去掉（拉回来了）。
+    /// 这家从没拉过列表的（没有前一份）不比，也没有「原来有」。
     pub fn set_list(&self, provider: &str, list: ProviderList) {
         let text = list.to_json();
-        self.lock().lists.insert(provider.to_string(), list);
+        {
+            let mut held = self.lock();
+            let gone = match held.lists.get(provider) {
+                Some(previous) => gqy_models::observed::delisted(previous, &list.models),
+                None => Vec::new(),
+            };
+            let present: BTreeSet<String> = list.models.iter().map(|now| now.id.clone()).collect();
+            held.lists.insert(provider.to_string(), list);
+            let mut delisted = self.delisted_set();
+            // 这一家以前记着的：这一份里又列出来了的去掉（拉回来了），别的还记着。
+            delisted.retain(|(at, model)| at != provider || !present.contains(model));
+            for model in gone {
+                delisted.insert((provider.to_string(), model));
+            }
+        }
         self.write(&format!("providers/{provider}.json"), &text);
+    }
+
+    /// 下架了的（供应商、模型）（施工 8-23）：清池的一方取，照字节序排；只在内存里。
+    pub fn delisted(&self) -> Vec<(String, String)> {
+        self.delisted_set().iter().cloned().collect()
+    }
+
+    /// 清过了的（已经不在任何一层、或者写回去了的）从记着的里去掉（施工 8-23）。
+    pub fn forget_delisted(&self, gone: &[(String, String)]) {
+        let mut held = self.delisted_set();
+        for pair in gone {
+            held.remove(pair);
+        }
     }
 
     /// 池 `pool` 有 `count` 个成员：这一次取第几个，指针往前走一个（施工 8-8，[`Pointers::take`]）。只改内存：写盘由调的一方
@@ -252,6 +285,10 @@ impl ModelData {
 
     fn lock(&self) -> MutexGuard<'_, Observed> {
         self.observed.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
+    fn delisted_set(&self) -> MutexGuard<'_, BTreeSet<(String, String)>> {
+        self.delisted.lock().unwrap_or_else(PoisonError::into_inner)
     }
 
     fn pointers(&self) -> MutexGuard<'_, Pointers> {

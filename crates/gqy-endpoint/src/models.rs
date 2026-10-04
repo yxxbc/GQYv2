@@ -14,6 +14,7 @@
 
 mod call;
 mod entry;
+mod prune;
 
 pub(crate) use call::call;
 
@@ -106,15 +107,16 @@ pub(crate) async fn list(core: &Core, params: Value) -> Result<Value, Refusal> {
     };
     let data = Arc::clone(&core.model_data);
     data.wait().await;
-    let snapshot = snapshot(core);
-    let values = snapshot.resolved.values();
+    // 拉列表用这一刻的配置；清完池再照新的答（施工 8-23）。
+    let before = snapshot(core);
+    let values = before.resolved.values();
     let configured = gqy_config::key::names(values.keys(), "providers.<id>", &[]);
     let chosen: Vec<String> = match &params.provider {
         Some(id) if !configured.contains(id) => return Err(Refusal::UNKNOWN_PROVIDER),
         Some(id) => vec![id.clone()],
         None => configured,
     };
-    let secret = |reference: &Reference| snapshot.secret(reference);
+    let secret = |reference: &Reference| before.secret(reference);
     if params.refresh == Some(true) {
         for id in &chosen {
             // 拉不到的已经记过一行 `WARN`，照旧用上一份。
@@ -123,8 +125,12 @@ pub(crate) async fn list(core: &Core, params: Value) -> Result<Value, Refusal> {
                 .unwrap_or(());
         }
     } else {
-        refresh_stale(&data, &snapshot, &chosen);
+        refresh_stale(&data, &before, &chosen);
     }
+    // 下架的模型移出池（施工 8-23）：清完了照新的答（配置真变了才多抄一份）。
+    prune::prune(core, &data);
+    let snapshot = snapshot(core);
+    let values = snapshot.resolved.values();
     let now = crate::sessions::now();
     let providers: Vec<Value> = chosen
         .iter()
@@ -144,20 +150,28 @@ pub(crate) async fn list(core: &Core, params: Value) -> Result<Value, Refusal> {
 }
 
 /// 每个池：名字、怎么分（没写的照成员定）、写的成员（照写的原样），派子代理能不能选（没写的是 `false`）、给模型看的说明
-/// （没写的是 `null`，施工 8-8 补）。照名字排。
+/// （没写的是 `null`，施工 8-8 补）；解析不出的（没有成员，或者成员一个都认不出）多一格 `problem`（`no_model` 的那一句
+/// 原话，照供应商那一家的写法，施工 8-23）。照名字排。
 fn pools_json(values: &Values) -> Vec<Value> {
     pools::names(values)
         .into_iter()
         .filter_map(|name| {
             let (models, strategy) = pools::listed(values, &name)?;
             let settings = PoolSettings::at(values, &[&name]);
-            Some(json!({
+            let problem = pools::pool(values, &name)
+                .err()
+                .map(|NoModel(problem)| problem);
+            let mut entry = json!({
                 "name": name,
                 "strategy": strategy.as_str(),
                 "models": models,
                 "subagent": settings.subagent,
                 "description": settings.description,
-            }))
+            });
+            if let Some(problem) = problem {
+                entry["problem"] = json!(problem);
+            }
+            Some(entry)
         })
         .collect()
 }

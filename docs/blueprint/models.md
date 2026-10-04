@@ -311,6 +311,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 | `catalog` | 在用的目录：`source`（`snapshot` 或 `cache`）、`fetched`；两份都读不了的是 `null` |
 
 - 先等目录读完（核心写了 `ready` 以后才读）。`provider` 写了、不是配好了的：`unknown_provider`；不是字符串的：`bad_params`。
+- 这一条会清下架的成员、改配置（第十五条，施工 8-23）：回应经配置的订阅写（和 `config.set` 一样）：发它的头先见推送、后见回应；没订阅配置的连接不受影响。
 - 照不算项目配置的最终值答（项目配置里本来就不能写模型这一块）。
 - 列哪些模型：供应商的列表里的、目录里对上的那一家的、配置里手写了的、用途池里点名的（8-7 是 `models.chat`，8-8 加 `vision`、每个池的成员：`gqy_models::reference::named`），合在一起去重，照模型名排。`listed` 里点名的算 `config`。
 - 模型的 `state` 有三种。`ok` 能用。`cooling` 在冷却，带 `until` 最早什么时候能用（时刻，和 `fetched` 一样的写法）、`class` 为什么（8-9）。`no_key` 写了 key，一个都没有值。它看这个模型能用的 key（取得到值的，没写 key 的是那一个）里最好的那个：有一个不在冷却就是 `ok`；都在冷却的取最早恢复的那一个；一个 key 整个在冷却、这个 key 的这个模型在冷却都算，取晚的。
@@ -1119,7 +1120,7 @@ mimo = ["xiaomi"]
 | `crates/gqy-endpoint/tests/model_call.rs`、`model_call_log.rs` | `model.call` 的回应形状；参数校验（`purpose` 的写法、`messages` 的样子、`max_tokens`、`model` 是空字）、blob 不是这个账号的 `unknown_attachment`、不是图的 `bad_params`、`unknown_model`；出错的 `data`；不造会话、不进会话日志；测试的端口没有一次性入口的答 `no_model`；运行日志成了、没成各一行，不带 key（`model_call_log.rs`） | 8-20 |
 | `crates/gqy-models/src/observed/tests.rs`（8-23 那几条） | 两份列表比出下架的：上一份里有、这一份里没有的算；新加的、还在的不算；没有上一份的不算；照字节序排、去重 | 8-23 |
 | `crates/gqy-session/tests/route_delisted.rs` | 换上一份新的列表时记下下架的（这家、这个模型）；拉回来的从记着的里去掉；从没拉过的不算；清完了的去掉（`forget_delisted`） | 8-23 |
-| `crates/gqy-endpoint/tests/models_delisted.rs` | 池里的成员照新的列表删掉、写回配置文件（别的字节不动）、推送 `config.changed`（`via` 是 `core`、不带 `by`）、运行日志一条；系统配置、个人设置各改各的；删空的池 `model.list` 里带 `problem`；写不成的不动、记着的下一条 `model.list` 再试；拉回来的、从没列过的、拉不到的不动 | 8-23 |
+| `crates/gqy-endpoint/tests/models_delisted.rs`、`models_delisted_log.rs` | 池里的成员照新的列表删掉、写回配置文件（别的字节不动）、推送 `config.changed`（`via` 是 `core`、不带 `by`、先推后答）、运行日志一条；系统配置、个人设置各改各的；删空的池 `model.list` 里带 `problem`；写不成的不动、记着的下一条 `model.list` 再试（`models_delisted_log.rs`，连 `WARN pool not removed`、`INFO pool member removed` 一起）；拉回来的、从没列过的、拉不到的不动 | 8-23 |
 
 ### 出处
 

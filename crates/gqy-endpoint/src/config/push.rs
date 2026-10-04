@@ -26,6 +26,8 @@ pub(crate) enum Via {
     Edit,
     /// 手改，核心看到文件变了。
     File,
+    /// 核心自己改的（施工 8-23：下架的模型移出池，`models.md`「怎么走」第十五条）。
+    Core,
 }
 
 impl Via {
@@ -35,6 +37,7 @@ impl Via {
             Via::Set => "set",
             Via::Edit => "edit",
             Via::File => "file",
+            Via::Core => "core",
         }
     }
 }

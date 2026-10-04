@@ -11,6 +11,8 @@
 //!    的回 `config_conflict`。写不成：`internal_error`，记一条 `WARN config not written`。
 //! 5. 写成了：换上新的最终值，记日志（第六条），记一条 `INFO config changed`，推 `config.changed`（施工 8-4），回应。先落盘，
 //!    后回应。
+//! 6. 核心自己改几项（施工 8-23，[`core_set`]）走的也是这一段：值由核心算好、不查 `expect`、不带文件行列的报错，写不成
+//!    只交回为什么（调的一方记一行 `WARN`）；`via` 是 `core`，推送不带 `by`，日志里 `by` 是内核、没有 `cause`。
 //!
 //! 第 3 步的重读和监视看到手改走同一条路（`observe.rs`）：手改过的先当手改推、记，再改。
 
@@ -121,6 +123,9 @@ pub(crate) fn set(
         Plan::Changes(_) => Via::Set,
         Plan::Text(..) => Via::Edit,
     };
+    let by = By::Person(Person {
+        account: config.places.account.clone(),
+    });
     for _ in 0..TRIES {
         observe(core, &mut config, layer);
         let file = config.file(layer);
@@ -135,7 +140,15 @@ pub(crate) fn set(
                     text,
                     bom: file.bom,
                 };
-                return Ok(done(core, &mut config, layer, written, via, cause));
+                return Ok(done(
+                    core,
+                    &mut config,
+                    layer,
+                    written,
+                    via,
+                    by.clone(),
+                    Some(cause),
+                ));
             }
             Err(WriteError::Changed) => {}
             Err(WriteError::Io(error)) => {
@@ -344,24 +357,24 @@ fn changed(
 }
 
 /// 写成了：换上新的一份、重算最终值，记日志和运行日志，推给订阅着配置的头（发这一条的连接先见推送、后见回应，施工 8-4），
-/// 交回回应。
+/// 交回回应。`by` 是记在日志里的谁；推给头的只有人经协议改的（`set`、`edit`）才带，`file`（施工 8-4）、`core`（施工 8-23）
+/// 都不带（没有人对着一件事开口）。
 fn done(
     core: &Core,
     config: &mut Config,
     layer: Layer,
     written: ConfigText,
     via: Via,
-    cause: &CommandId,
+    by: By,
+    cause: Option<&CommandId>,
 ) -> Json {
     let old = config.file(layer).clone();
     let new = File::written(config.items(), &old, written);
     let version = new.version.clone();
     let changes = differences(&old, &new);
     config.replace(new);
-    let by = By::Person(Person {
-        account: config.places.account.clone(),
-    });
-    record(config, layer, via, by.clone(), Some(cause), &changes);
+    let pushed_by = matches!(via, Via::Set | Via::Edit).then_some(by.clone());
+    record(config, layer, via, by, cause, &changes);
     let keys: Vec<String> = changes.iter().map(|(key, _, _)| key.clone()).collect();
     let listed = push::keys(config, layer, &keys);
     core.hub.publish(
@@ -369,9 +382,87 @@ fn done(
         Some(Pushing {
             layer,
             via,
-            by: Some(by),
+            by: pushed_by,
             keys,
         }),
     );
     json!({"keys": listed, "version": version})
+}
+
+/// 核心自己改几项（施工 8-23，`docs/blueprint/config.md`「怎么走」第五条第 13 条、`models.md`「怎么走」第十五条）：把
+/// `changes` 里的一项项写进 `layer`，走和 [`set`] 同一条路（重读、只改那几项、先写临时文件再替换、留痕、推送）。
+///
+/// 值由核心自己算好、已经过了类型：不查 `expect`，也不带文件行列的报错；没有连接、没有人的语言，出的问题只交回给调的
+/// 一方（它记一行 `WARN`），文件一个字节不动。
+///
+/// # Errors
+///
+/// 写不成的一句英文：这一层的文件读不进来、这一项放不进去、替换前发现有人手改、撞满三次、磁盘写不进。
+pub(crate) fn core_set(
+    core: &Core,
+    layer: Layer,
+    changes: &[(String, Value)],
+) -> Result<(), String> {
+    let mut config = core.config();
+    for _ in 0..TRIES {
+        observe(core, &mut config, layer);
+        let file = config.file(layer);
+        let Some(text) = core_changed(file, changes)? else {
+            return Ok(());
+        };
+        let bytes = config_file::bytes(&text, file.bom);
+        match config_file::write(&file.path, &bytes, file.version.as_deref()) {
+            Ok(()) => {
+                let written = ConfigText {
+                    version: config_file::version(&bytes),
+                    text,
+                    bom: file.bom,
+                };
+                done(
+                    core,
+                    &mut config,
+                    layer,
+                    written,
+                    Via::Core,
+                    By::Kernel,
+                    None,
+                );
+                return Ok(());
+            }
+            Err(WriteError::Changed) => {}
+            Err(WriteError::Io(error)) => return Err(format!("not written: {error}")),
+        }
+    }
+    Err("the file changed while writing".to_string())
+}
+
+/// 在这一层现在的字上照 `changes` 改；这一层本来就是这样的当没改；什么都没变的是空的。
+///
+/// # Errors
+///
+/// 这一份文件读不进来（整份读不了：照 `observe` 的规矩，字读不进来的不当改），或者这一项放不进去（那一组写成了别的
+/// 东西，`edit::Blocked`）。
+fn core_changed(file: &File, changes: &[(String, Value)]) -> Result<Option<String>, String> {
+    if file.broken.is_some() {
+        return Err("the file is not readable".to_string());
+    }
+    let start = match file.version {
+        Some(_) => file.text.clone(),
+        None => edit::new_file(Config::schema(file.layer)),
+    };
+    let mut text = start.clone();
+    for (key, value) in changes {
+        let current = file
+            .parsed
+            .entries
+            .get(key)
+            .filter(|entry| entry.counts)
+            .map(|entry| &entry.value);
+        if current == Some(value) {
+            continue;
+        }
+        text =
+            edit::apply(&text, Change::Set(key, value)).map_err(|_| format!("cannot set {key}"))?;
+    }
+    Ok((text != start).then_some(text))
 }
