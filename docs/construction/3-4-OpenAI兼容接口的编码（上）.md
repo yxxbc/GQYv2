@@ -17,13 +17,13 @@
 
 | 文件 | 装什么 |
 |---|---|
-| `crates/miyu-drivers/`（新，第 2 层，纯逻辑） | `lib.rs`：一次调用要定的（模型、输出上限、模型能收哪些输入）、取 blob 字节的端口、占位的几句；`base64.rs`；`openai_chat.rs` 和 `openai_chat/` 下的编码：三个开关、线上的消息、编码 |
-| `docs/designs/01-架构.md` 第九节 | 第 2 层登记 `miyu-drivers`，和新 crate 同一个施工提交 |
+| `crates/gqy-drivers/`（新，第 2 层，纯逻辑） | `lib.rs`：一次调用要定的（模型、输出上限、模型能收哪些输入）、取 blob 字节的端口、占位的几句；`base64.rs`；`openai_chat.rs` 和 `openai_chat/` 下的编码：三个开关、线上的消息、编码 |
+| `docs/designs/01-架构.md` 第九节 | 第 2 层登记 `gqy-drivers`，和新 crate 同一个施工提交 |
 | `resources/core/drivers/` | 五句占位：图片发不了、文件发不了、工具一个字都没回、工具结果里的图片和文件挪到了后面（两句） |
-| `crates/miyu-drivers/tests/` | 各种写法和样本逐字节比对；少了 blob；占位读得进来 |
+| `crates/gqy-drivers/tests/` | 各种写法和样本逐字节比对；少了 blob；占位读得进来 |
 | `docs/designs/samples/drivers/openai-chat/` | 样本，一种写法一个文件 |
-| `crates/miyu-assemble/tests/probe.rs` | 探针的每一次请求再编码一份，和 `docs/designs/samples/probe/terminal/openai-chat/` 比对 |
-| `crates/miyu-assemble/tests/random_logs.rs` | 线上的前缀延伸 |
+| `crates/gqy-assemble/tests/probe.rs` | 探针的每一次请求再编码一份，和 `docs/designs/samples/probe/terminal/openai-chat/` 比对 |
+| `crates/gqy-assemble/tests/random_logs.rs` | 线上的前缀延伸 |
 | 施工图 | 3-4（上）那一张；3-4 拆成两半，总步数多一步 |
 
 ### 不做什么
@@ -38,7 +38,7 @@
 
 ### 我定的
 
-- **新 crate `miyu-drivers`**：驱动的编码解码在第 2 层（01 第九节的表早就写了），一个 crate 装各家驱动，一家一个模块。
+- **新 crate `gqy-drivers`**：驱动的编码解码在第 2 层（01 第九节的表早就写了），一个 crate 装各家驱动，一家一个模块。
 - **base64 自己写，不加白名单**：只要编码这一半，照 RFC 4648，用它第十节的七个测试值查。
 - **图片、文件的字节由执行器先取出来交进来**：驱动收一个只读的端口，不碰文件。驱动另给一个函数，列出这份请求要用哪些 blob，执行器照着取。少了一个，编码报错，写明是哪一个。
 - **编码交回请求字节，外加每条消息在字节里的位置**：随机日志拿它查线上的前缀延伸，以后按段记哈希也用得上（08 第七节）。

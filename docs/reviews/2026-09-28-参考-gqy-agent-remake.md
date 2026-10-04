@@ -4,7 +4,7 @@
 > - 用途：定时读取，用于跟进 GQYv2 的设计进度，以及据此推进后续工作，不必等中间人转述。
 > - 参考优先级（重要）：**不要把本文档当作设计依据的主要来源。** 本文档是二手对照与概括，带着筛选和取舍，可能有误读、遗漏或已经过时。需要确切结论时，去读原始材料，本文档只当索引用：
 >   1. 提示词工程相关：本地已拉取的 `~/Projects/claude-code-system-prompts`，`~/Desktop/claude-code-system-prompts` 是指向它的软链接，内容为 Claude Code v2.1.283 的 800 份提示词与工具定义（仓库内 2026-09-26 更新）。例如 `system-prompts/agent-prompt-dream-memory-consolidation.md`、`system-prompts/system-prompt-correction-restraint.md`、`system-prompts/system-prompt-auto-memory-durable-lesson-instructions.md`、`system-prompts/agent-prompt-plan-mode-enhanced.md`、`system-prompts/agent-prompt-code-review-part-4-three-state-verification-phase.md`。请读原文，不要引用本文档对这些提示词的转述。若要改动本地 Claude Code 的提示词，用仓库 README 里提到的 `tweakcc`。
->   2. 架构与设计对照：原始仓库 https://github.com/SHORiN-KiWATA/miyu-agent-remake/tree/main/docs/designs ，请直接读那 29 篇正文（文件名含中文，用 raw 地址抓取更可靠：https://raw.githubusercontent.com/SHORiN-KiWATA/miyu-agent-remake/main/docs/designs/ ）。本文档对它们的概括可能存在误读，与原文冲突时一律以原文为准。
+>   2. 架构与设计对照：原始仓库 https://github.com/SHORiN-KiWATA/gqy-agent-remake/tree/main/docs/designs ，请直接读那 29 篇正文（文件名含中文，用 raw 地址抓取更可靠：https://raw.githubusercontent.com/SHORiN-KiWATA/gqy-agent-remake/main/docs/designs/ ）。本文档对它们的概括可能存在误读，与原文冲突时一律以原文为准。
 >   3. 本项目的现状：始终以 `docs/designs/` 与 `docs/construction/` 为准。本文档写于 2026-09-28，只是那一天的快照。
 > - 建议读取顺序：先读「报告摘要」与「第五部分：决策点」，再按需展开「第一部分：主题级深度对照矩阵」；「第二部分」是行动清单，「第三部分」是边界，两者一起看。
 > - 工作方式（自主决策优先）：项目主人给这个会话配的是定时任务，可能随时中断，也不会有人在线回答问题。因此**遇到不确定，请自己拍板，不要留问题等人回答**。决策顺序：先选可逆的，再选改动面小的，最后选与 `docs/designs/` 现有决定一致的。每做一个决策都要就地留痕：选了哪条、依据是什么、影响范围多大、怎么回滚、日期，并标上「待项目主人事后复核」，等他下次在线时一次性汇报你选了哪几条、为什么。
@@ -15,7 +15,7 @@
 >   3. 处理「第五部分：决策点」里的每一条：直接选定一个方案，把选择、依据、影响范围和回滚方式写在条目下并标注日期，另标「待项目主人事后复核」。不要把它们攒成一张待答问题清单。
 >   4. 发现失效、过时或与现状矛盾的内容时，在文中注明「已过时（日期 + 原因）」，保留原文，交由项目主人确认后再清理，不要直接删除。
 
-# 外部参考仓库（miyu-agent-remake）与 GQYv2 设计文档对照评审报告
+# 外部参考仓库（gqy-agent-remake）与 GQYv2 设计文档对照评审报告
 
 日期：2026-09-28
 评审范围：外部参考仓库全部设计文档（29 篇 + 2 篇索引） vs 本地 GQYv2 全部设计文档（21 篇 + 4 篇工程总纲）
@@ -97,7 +97,7 @@
 | **1. 设计理念与铁律** | `00-设计理念.md`, `README.md`：轻量极速、跨平台、高质量、无硬编码、机制与策略分离 | `00-设计理念.md`, `AGENTS.md`, `Whitepaper`, `tech-stack.md` | 充分 | 参考侧侧重 Unix 系统设计哲学（一切皆文件、无头）；GQYv2 强调「纯血 Native（Rust+C）」、「零外部运行时」、「前缀缓存即契约」及 10 条不可逾越的工程铁律。两者在高质量与防硬编码上高度共识。 |
 | **2. 架构与内核** | `01-架构.md`, `02-内核.md`：纯逻辑内核（不带 I/O、不带 tokio、纯状态推进）、内核空间 vs 用户空间、10 个内核不变量 | `01-总体架构.md`, `02-运行时与并发模型.md`, `03-回合引擎.md` | 部分 | 参考侧将内核做成彻底的纯逻辑 Reducer（输入 Action/Event 输出 State/Effects），使得状态机无 I/O 可 100% 内存单测；GQYv2 采用 Tokio 异步 Actor 架构，回合循环中异步 I/O 与状态流转耦合度较高。 |
 | **3. 事件模型** | `03-事件模型.md`：单调递增 ID、事件日志 Append-only、ContentBlock 正规化、撤回与截断 | `03-回合引擎.md`, `04-前缀缓存账本.md`, `10-存储与数据演进.md` | 充分 | 参考侧全系统以 JSONL 事件为通用货币；GQYv2 采用 SQLite 强模式表结合内存 Channel 广播。GQYv2 在字节级前缀对齐与化石化更严谨，参考侧在前端内容块的多态表示上更细。 |
-| **4. 进程形态与分发** | `12-进程形态与分发.md`：单一二进制 miyu 分发出 core/cli/worker/bridge、自升级、跨平台包管理（RPM/DEB/AUR/MSI） | `01-总体架构.md`, `15-Web控制台与桌面.md`, `Whitepaper` | 充分 | GQYv2 强调单一自包含二进制内嵌 Web 前端与 Tauri v2 桌面宿主；参考仓库包含更重型的 Linux 多发行版与 Windows 服务打包体系。 |
+| **4. 进程形态与分发** | `12-进程形态与分发.md`：单一二进制 gqy 分发出 core/cli/worker/bridge、自升级、跨平台包管理（RPM/DEB/AUR/MSI） | `01-总体架构.md`, `15-Web控制台与桌面.md`, `Whitepaper` | 充分 | GQYv2 强调单一自包含二进制内嵌 Web 前端与 Tauri v2 桌面宿主；参考仓库包含更重型的 Linux 多发行版与 Windows 服务打包体系。 |
 | **5. 协议与内核接口** | `04-核心协议.md`, `05-内核接口.md`：JSON-RPC over UDS/Stdio、三次握手能力协商、3 类订阅、5 条命令保证、抽屉交互协议 | `13-网关与API协议.md`, `18-扩展体系.md` | 充分 | GQYv2 采用 Axum 异步网关（HTTP/SSE/WebSocket/UDS）；参考侧采用仿 Unix 协议，其「抽屉（Drawer）交互协议」（专门处理审批、提问、选择）比 GQYv2 通用事件流更具象。 |
 | **6. 多用户与身份** | `06-多用户与身份.md`：仿 Linux 多租户（UID/GID/owner/group/chmod）、无 root 概念、配额隔离 | `12-人格配置与场所.md`, `08-权限审批与沙盒.md` | 无（明确不做） | 定位根本差异。参考侧构建通用多租户平台；GQYv2 专注单人私有伴侣，仅区分来源（Origin）与场所（Venue），通过 P2P 共享协同，不引入多租户权限负担。 |
 | **7. 存储架构** | `07-存储.md`：四种真相、纯文件系统 JSONL 段文件、废弃 SQLite、声称无数据库迁移 | `10-存储与数据演进.md` | 充分（技术路线相反） | 参考侧采用纯文件 JSONL 段规避 Schema 迁移，但在事务一致性、复杂查询（记忆、任务树）及并发锁上极其脆弱；GQYv2 坚定采用 SQLite WAL 模式 + 强类型 Migration，具备完整的 37 版演进与导入验证体系。 |
@@ -112,7 +112,7 @@
 | **16. 通讯平台与连接器** | `18-通讯平台.md`：Linux 驱动架构、Bridge 纯翻译、线路规程（Line Discipline 防插话/防抢话）、出站队列、驱动 Quirk 表 | `16-连接器与外部平台.md` | 部分 | GQYv2 规定了 `gqy-connector/1` 协议；但参考侧在群聊「线路规程防抢话状态机」、「多级进站链」与「驱动 Quirk 表（平台特异性适配）」上极为成熟。 |
 | **17. 语音子系统** | `20-语音.md`：桌面语音助手 Venue、流式 VAD 状态机、ASR/TTS 引擎抽象、快捷听写模式 | `09-感知矩阵.md`, `16-连接器与外部平台.md`, `17-设备共享.md` | 部分 | GQYv2 将语音分散在感知矩阵与设备共享中；参考侧对流式 VAD 状态机、桌面语音 Venue 和听写集成做了独立完整设计。 |
 | **18. 终端与 Web 界面** | `13-终端界面.md`, `21-网页.md`：时间线流式渲染、抽屉交互、宽窄屏自适应（>=120列）、底栏 Token 丢弃优先级 | `14-TUI.md`, `15-Web控制台与桌面.md` | 充分 | GQYv2 采用 Ratatui 自建流式转录虚拟化与换行缓存，Web 端采用嵌入式 TypeScript；参考侧的宽窄屏降级与抽屉交互规范更详尽。 |
-| **19. 命令行（CLI）** | `22-命令行.md`：Unix 管道友好、`miyu ask`（JSONL/Markdown）、`doctor` 环境自检、终端快捷集成 | `01-总体架构.md`, `13-网关与API协议.md` | 部分 | GQYv2 定义了 API 网关和常规 CLI；参考侧对 CLI 管道交互、退出码标准以及 `doctor` 环境健康诊断（检测沙盒/网络/DB）梳理更成体系。 |
+| **19. 命令行（CLI）** | `22-命令行.md`：Unix 管道友好、`gqy ask`（JSONL/Markdown）、`doctor` 环境自检、终端快捷集成 | `01-总体架构.md`, `13-网关与API协议.md` | 部分 | GQYv2 定义了 API 网关和常规 CLI；参考侧对 CLI 管道交互、退出码标准以及 `doctor` 环境健康诊断（检测沙盒/网络/DB）梳理更成体系。 |
 | **20. 性能预算** | `23-性能预算.md`：启动三点法（第一帧/可打字/可提交）、进程私有内存 PSS、120k 上下文 TTFT 预算表 | `00-设计理念.md`, `19-可观测性与测试.md` | 部分 | GQYv2 有性能原则和 criterion 基准，但缺乏一张集中、量化的「全指标性能预算靶子表」。 |
 | **21. 威胁模型** | `24-威胁模型.md`：对手-防线对照表（多租户/未受限输入/提示词注入/恶意扩展）、明确登记已接受风险 | `08-权限审批与沙盒.md`, `Whitepaper` | 部分 | GQYv2 安全规则分布在沙盒与网关中；参考侧将威胁模型收敛为独立的结构化对抗矩阵，更易于审计。 |
 | **22. 提示词工程** | `26-提示词.md`：四去处原则、化石区清理指令、全英文短句硬约束、13 件基础工具说明草稿 | `04-前缀缓存账本.md`, `05-上下文与压缩.md`, `07-工具系统.md` | 部分 | GQYv2 在 AGENTS.md 中有英文约束，但未系统化整理提示词工程专篇；参考侧的「四去处」与「化石去指令化」极大保护了缓存与推理质量。 |

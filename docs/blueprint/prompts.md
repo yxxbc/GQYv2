@@ -235,7 +235,7 @@ A <permission> block gives the permission level from that point on. In read_only
 
 - 什么时候加进来：新会话的每次请求（施工 2-7 补起；以前造的快照没有，照旧不拼）
 - token：25（2026-10-01 主会话在开发端点的 `deepseek-v4.1-flash` 上量，带行尾换行）
-- 为什么加：回答里提到本机的文件写绝对路径：头照会话的工作目录找相对路径。网页那边撞见（2026-10-01）：她把图存在工作区外，回答里写 `![](cat.png)`，头找不到。主会话 A/B（同一天，`miyu ask --add-dir`，让她画 SVG 存到工作区外的目录再显示出来，各 4 遍）：不加时 3 遍用相对路径提文件，写成图片的 2 次里 1 次是 `![](cat.png)`，找不到；加了以后写成图片的 3 次全是绝对路径，只有 1 次在正文里顺口用相对路径提了文件名（施工 2-7 补，项目主人同意并进这一张）
+- 为什么加：回答里提到本机的文件写绝对路径：头照会话的工作目录找相对路径。网页那边撞见（2026-10-01）：她把图存在工作区外，回答里写 `![](cat.png)`，头找不到。主会话 A/B（同一天，`gqy ask --add-dir`，让她画 SVG 存到工作区外的目录再显示出来，各 4 遍）：不加时 3 遍用相对路径提文件，写成图片的 2 次里 1 次是 `![](cat.png)`，找不到；加了以后写成图片的 3 次全是绝对路径，只有 1 次在正文里顺口用相对路径提了文件名（施工 2-7 补，项目主人同意并进这一张）
 - 指纹：`a40fbc7f`
 
 ```text
@@ -489,7 +489,7 @@ The question was not answered: no one can answer here.
 - 指纹：`243bc2aa`
 
 ```text
-The call was cancelled: Miyu restarted before it finished. It may have been partly done.
+The call was cancelled: GQY restarted before it finished. It may have been partly done.
 ```
 
 #### `core/tool-results/unavailable.txt`
@@ -516,13 +516,13 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
 
 #### `core/permissions/forbidden.txt`
 
-- 什么时候加进来：权限策略拒绝：要碰的路径在 Miyu 的数据根里
-- token：27（路径按 `~/.miyu/run/token` 算）
+- 什么时候加进来：权限策略拒绝：要碰的路径在 GQY 的数据根里
+- token：27（路径按 `~/.gqy/run/token` 算）
 - 为什么加：告诉她为什么没做、哪一条路径，别换个说法再来（施工 4-3 下，`11-权限与沙盒.md` A9）
 - 指纹：`245c770b`
 
 ```text
-"{path}" is inside Miyu's own data, which no tool can read or change.
+"{path}" is inside GQY's own data, which no tool can read or change.
 ```
 
 #### `core/permissions/unresolvable.txt`
@@ -1529,7 +1529,7 @@ You are session {id}.
 #### `software/basesystem/sessions/listed.txt`
 
 - 什么时候加进来：`sessions`：一个有标题的会话一行
-- token：34（字段按 `9f03b21c`、`修 CI`、`~/src/miyu`、`busy`、`2026-10-01 14:03` 算，2026-10-01 量）
+- token：34（字段按 `9f03b21c`、`修 CI`、`~/src/gqy`、`busy`、`2026-10-01 14:03` 算，2026-10-01 量）
 - 为什么加：短编号是她读、发给它时写的；标题、工作目录让她认得出是哪一个；忙不忙、最近一次动静让她知道现在找它合不合适（设计 29 第一节第 1 条，施工 C-3）
 - 指纹：`d140f13c`
 
@@ -2246,7 +2246,7 @@ Describe what this image shows for someone who cannot see it. Copy all text in i
 
 #### `core/models/probe.txt`
 
-- 什么时候加进来：`provider.test` 每试一次（`miyu setup`、头的引导）：唯一的一条 user，没有 system、没有工具面，发的时候去掉行尾的换行
+- 什么时候加进来：`provider.test` 每试一次（`gqy setup`、头的引导）：唯一的一条 user，没有 system、没有工具面，发的时候去掉行尾的换行
 - token：4
 - 为什么加：第一次接入要真发一句试通 key 和地址，收到第一段正文就停（`models.md` 第七条第 4 条，施工 8-11）。一句英文短句，叫它只回 OK：回复越短越省额度；不属于哪个会话，不进主对话、不记用量。草稿照图纸（`models.md`「样子」）
 - 指纹：`5a1997c5`
@@ -2298,7 +2298,7 @@ Reply with OK.
 - 指纹：`e82c8e69`
 
 ```text
-<turn-ended reason="aborted">Miyu stopped unexpectedly and this turn did not finish.</turn-ended>
+<turn-ended reason="aborted">GQY stopped unexpectedly and this turn did not finish.</turn-ended>
 ```
 
 #### `core/turn-ended/restarted.txt`
@@ -2309,7 +2309,7 @@ Reply with OK.
 - 指纹：`5a9d12ba`
 
 ```text
-<turn-ended reason="restarted">A planned restart of Miyu stopped this turn.</turn-ended>
+<turn-ended reason="restarted">A planned restart of GQY stopped this turn.</turn-ended>
 ```
 
 ### tools 数组
@@ -2441,7 +2441,7 @@ Placeholder for a tool this client is expected to send with the request; it is n
 
 - 什么时候加进来：会话的工具面里有 `subagent`：本机、没到深度上限的会话（每次请求都带）；`pool` 那一格会话开局时照配置拼，一个池都没列的没有它
 - token：141（不列池时；2026-10-02 主会话照开发端点、`deepseek-v4.1-flash` 量，十二件一起时的边际份量。每列一个池约多十几个 token：一个带说明的典型池时 182，tools 数组 2188；施工 8-8 带 `tier` 时是 189）
-- 为什么加：派子代理的说明和参数（施工 7-5）：说明照附录的草稿，两句：在后台派一个子会话做一件事、回报自己送来，它看不到这边的对话、交代要自己说得清（背景、已知的、目标、要报什么）。参数声明 `description`、`prompt`，各一句，名字照 Claude Code。量法同上，九件一起时的边际份量 140。施工 7-5 再补从 `agent` 改名 `subagent`（2026-10-01 项目主人定：在 Miyu 里「agent」可能指她自己、子代理、别的会话），文件跟着改名，说明、参数一字不改；十一件一起时 140 → 141。施工 8-8 加 `tier`（`models.md`「工具」）：四个挡位的 `enum`，一句说明「从轻到强，不写用你自己的模型」，不进 `required`；说明、另两格一字不改，141 → 189，多 48。不加的话她派不了更便宜、更强的模型，只能和父会话用同一个。施工 8-8 补把 `tier` 换成 `pool`（`models.md`「工具」，2026-10-01 项目主人定：去掉挡位，模型只照池的名字分）：资源里是一句说明「给哪个池，不写用你自己的模型」，没有 `enum`；会话开局时照配置插上开着开关、有成员的池，说明后面每个池一行「池名: 说明」，一个都没有的拿掉 `pool`，189 → 不列池时 141。人格、预设随配置和预设
+- 为什么加：派子代理的说明和参数（施工 7-5）：说明照附录的草稿，两句：在后台派一个子会话做一件事、回报自己送来，它看不到这边的对话、交代要自己说得清（背景、已知的、目标、要报什么）。参数声明 `description`、`prompt`，各一句，名字照 Claude Code。量法同上，九件一起时的边际份量 140。施工 7-5 再补从 `agent` 改名 `subagent`（2026-10-01 项目主人定：在 GQY 里「agent」可能指她自己、子代理、别的会话），文件跟着改名，说明、参数一字不改；十一件一起时 140 → 141。施工 8-8 加 `tier`（`models.md`「工具」）：四个挡位的 `enum`，一句说明「从轻到强，不写用你自己的模型」，不进 `required`；说明、另两格一字不改，141 → 189，多 48。不加的话她派不了更便宜、更强的模型，只能和父会话用同一个。施工 8-8 补把 `tier` 换成 `pool`（`models.md`「工具」，2026-10-01 项目主人定：去掉挡位，模型只照池的名字分）：资源里是一句说明「给哪个池，不写用你自己的模型」，没有 `enum`；会话开局时照配置插上开着开关、有成员的池，说明后面每个池一行「池名: 说明」，一个都没有的拿掉 `pool`，189 → 不列池时 141。人格、预设随配置和预设
 - 指纹：`a7fea082`
 
 ```json

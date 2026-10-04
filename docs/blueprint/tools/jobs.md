@@ -8,10 +8,10 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/jobs.rs` | 参数、三个动作的结果那几句 |
-| `crates/miyu-basesystem/src/jobs/page.rs` | 读输出的一页：照 `read` 分页，一页最多 30000 个字 |
-| `crates/miyu-tool/src/jobs.rs` | 任务端口 `JobPort` 的 `list`、`output`、`stop`，`Listed`、`Output`、`JobError`（`tools/interface.md`） |
-| `crates/miyu-session/src/jobs/roster.rs`、`query.rs`、`stop.rs`、`peek.rs` | 执行器这一头：派出去的任务照日志记着，读、停（`session/tools.md` 第 6 条）；读后台命令的输出，协议的 `job.output` 和这件工具共用 `query.rs` 的同一份（施工 7-4 补） |
+| `crates/gqy-basesystem/src/jobs.rs` | 参数、三个动作的结果那几句 |
+| `crates/gqy-basesystem/src/jobs/page.rs` | 读输出的一页：照 `read` 分页，一页最多 30000 个字 |
+| `crates/gqy-tool/src/jobs.rs` | 任务端口 `JobPort` 的 `list`、`output`、`stop`，`Listed`、`Output`、`JobError`（`tools/interface.md`） |
+| `crates/gqy-session/src/jobs/roster.rs`、`query.rs`、`stop.rs`、`peek.rs` | 执行器这一头：派出去的任务照日志记着，读、停（`session/tools.md` 第 6 条）；读后台命令的输出，协议的 `job.output` 和这件工具共用 `query.rs` 的同一份（施工 7-4 补） |
 | `resources/software/basesystem/tools/jobs.json` | 说明和参数格式 |
 | `resources/software/basesystem/jobs/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -127,10 +127,10 @@ Reading the tests first.
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/jobs.rs` | 声明三个动作、访问类别是读、「不用轮询」那一句在；`list` 一个一行、标题里的引号转义、一个都没有和没有端口的一样；`output` 分页、从 `offset` 读起、上限停在整行上、`offset` 过了结尾、没存下来和空的一样、还在跑的、子代理在跑的工具；`stop` 照编号交给端口，停了、已经结束了、没有，几段的编号照样交（施工 7-1 补）；不合写法的编号照没有、没有端口的照没有、没写 `id` 参数不对、不认识的动作；六种说法两种语言都换得出字 |
-| `crates/miyu-basesystem/src/jobs/page/tests.rs` | 最后一段没有换行也算一行、空行照算；停在整行上、停了照样数到结尾、多一个字就停在前一行；一行就超过的截断补 `…`、正好到上限的一整行照给；`offset` 过了结尾 |
-| `crates/miyu-session/tests/jobs_stop.rs`、`jobs_stop/agents.rs` | 会话里真的 `jobs`：读到这时的输出、停掉（`by` 是那次调用、`cause` 是那一轮的、`by_model`、不叫醒她）、列出来是停掉的；子代理最近的回答和在跑的工具、停掉它（经会话表停、回报记成它交来的、`by_model`、不叫醒） |
-| `crates/miyu-basesystem/tests/budget.rs` | 工具面的预算 |
+| `crates/gqy-basesystem/tests/jobs.rs` | 声明三个动作、访问类别是读、「不用轮询」那一句在；`list` 一个一行、标题里的引号转义、一个都没有和没有端口的一样；`output` 分页、从 `offset` 读起、上限停在整行上、`offset` 过了结尾、没存下来和空的一样、还在跑的、子代理在跑的工具；`stop` 照编号交给端口，停了、已经结束了、没有，几段的编号照样交（施工 7-1 补）；不合写法的编号照没有、没有端口的照没有、没写 `id` 参数不对、不认识的动作；六种说法两种语言都换得出字 |
+| `crates/gqy-basesystem/src/jobs/page/tests.rs` | 最后一段没有换行也算一行、空行照算；停在整行上、停了照样数到结尾、多一个字就停在前一行；一行就超过的截断补 `…`、正好到上限的一整行照给；`offset` 过了结尾 |
+| `crates/gqy-session/tests/jobs_stop.rs`、`jobs_stop/agents.rs` | 会话里真的 `jobs`：读到这时的输出、停掉（`by` 是那次调用、`cause` 是那一轮的、`by_model`、不叫醒她）、列出来是停掉的；子代理最近的回答和在跑的工具、停掉它（经会话表停、回报记成它交来的、`by_model`、不叫醒） |
+| `crates/gqy-basesystem/tests/budget.rs` | 工具面的预算 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

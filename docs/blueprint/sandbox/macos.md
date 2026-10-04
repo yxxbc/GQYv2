@@ -15,14 +15,14 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos.rs` | 入口：`run`（换成真实的位置、写配置、装上、换成命令），`mechanisms`（探测时试装一次） |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/resolve.rs` | 规格里的路径换成真实的位置 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/profile.rs` | 照规格写配置和参数：只拼字，不碰系统 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/seatbelt.rs` | 调系统的 `sandbox_init_with_parameters` 装配置：整个 crate 只有这里（和测试里调 `fcntl` 的那一处）用 `unsafe` |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/base.sb` | 配置的底子：不看规格，每条命令都一样 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/probe.json` | 探测时用的规格 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/main.rs` | `macos` 这个模块在 macOS 上编；别的 Unix 上跑测试时也编进去，`resolve.rs`、`profile.rs` 的单元测试在 Linux 上也跑 |
-| `crates/miyu-sandbox/Cargo.toml` | 放开 `unsafe` 的写法：照抄工作区的 lints，`unsafe_code` 从 `forbid` 改成 `deny`，调系统接口的那几处单独放开；每个 `unsafe` 块写 `// SAFETY:`（`undocumented_unsafe_blocks`）。macOS 上测试多一个 `libc`：在只读的文件描述符上试 `fcntl` 要它 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos.rs` | 入口：`run`（换成真实的位置、写配置、装上、换成命令），`mechanisms`（探测时试装一次） |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/resolve.rs` | 规格里的路径换成真实的位置 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/profile.rs` | 照规格写配置和参数：只拼字，不碰系统 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/seatbelt.rs` | 调系统的 `sandbox_init_with_parameters` 装配置：整个 crate 只有这里（和测试里调 `fcntl` 的那一处）用 `unsafe` |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/base.sb` | 配置的底子：不看规格，每条命令都一样 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/probe.json` | 探测时用的规格 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/main.rs` | `macos` 这个模块在 macOS 上编；别的 Unix 上跑测试时也编进去，`resolve.rs`、`profile.rs` 的单元测试在 Linux 上也跑 |
+| `crates/gqy-sandbox/Cargo.toml` | 放开 `unsafe` 的写法：照抄工作区的 lints，`unsafe_code` 从 `forbid` 改成 `deny`，调系统接口的那几处单独放开；每个 `unsafe` 块写 `// SAFETY:`（`undocumented_unsafe_blocks`）。macOS 上测试多一个 `libc`：在只读的文件描述符上试 `fcntl` 要它 |
 | `docs/designs/samples/sandbox/macos-spec.json`、`macos.sb` | 例子：一份规格，和照它生成的规则 |
 
 ### 对外的样子
@@ -89,12 +89,12 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 
 **`mechanisms`**（探测）：照 `probe.json` 走一遍 `run` 的第 1 到 3 步（每一种规则都用上），装到自己身上。
 
-- 装上了报 `["seatbelt"]`；装不上报 `[]`，原因不报，要看原因就手动跑一次 `run`。例如 Miyu 自己跑在一个不许再装沙盒的沙盒里（`deny default` 的沙盒一般都不许：装沙盒要调的系统调用没放行）。
+- 装上了报 `["seatbelt"]`；装不上报 `[]`，原因不报，要看原因就手动跑一次 `run`。例如 GQY 自己跑在一个不许再装沙盒的沙盒里（`deny default` 的沙盒一般都不许：装沙盒要调的系统调用没放行）。
 - 装上以后这个进程就关进去了：只有 `probe` 调它，印完那一行就退出。
 
 ### 样子
 
-样本 `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/base.sb`（底子）：
+样本 `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/base.sb`（底子）：
 
 ```scheme
 ; macOS 的沙盒配置的底子（docs/blueprint/sandbox/macos.md）：不看规格，每条命令都一样。
@@ -222,10 +222,10 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 (deny system-fcntl (fcntl-command 80 110))
 ```
 
-样本 `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/probe.json`（探测用的规格）：
+样本 `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/probe.json`（探测用的规格）：
 
 ```json
-{"write":["/private/tmp"],"hidden":["/private/tmp/miyu-sandbox-probe/hidden"]}
+{"write":["/private/tmp"],"hidden":["/private/tmp/gqy-sandbox-probe/hidden"]}
 ```
 
 照规格生成的规则，例子。规格里的路径已经是真实的位置，没有经过链接的。
@@ -233,7 +233,7 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 样本 `docs/designs/samples/sandbox/macos-spec.json`（规格）：
 
 ```json
-{"write":["/Users/me/project","/private/var/folders/x1/abc/T"],"hidden":["/Users/me/.miyu"]}
+{"write":["/Users/me/project","/private/var/folders/x1/abc/T"],"hidden":["/Users/me/.gqy"]}
 ```
 
 样本 `docs/designs/samples/sandbox/macos.sb`（生成的，接在底子后面）：
@@ -254,14 +254,14 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 | 参数 | 路径 | 为什么排在这 |
 |---|---|---|
 | `WRITE_0` | `/Users/me/project` | 三段，能写的在前 |
-| `HIDDEN_0` | `/Users/me/.miyu` | 三段，藏起来的在后 |
+| `HIDDEN_0` | `/Users/me/.gqy` | 三段，藏起来的在后 |
 | `WRITE_1` | `/private/var/folders/x1/abc/T` | 六段 |
 | `KEEP_0` | `/Users/me/project` | 能写的那一片自己 |
 | `KEEP_1` | `/private/var/folders/x1/abc/T` | 能写的那一片自己 |
 
 ### 出错
 
-收紧不成的，照 `sandbox.md`：印 `miyu-sandbox: cannot confine: <原话>`，退出 125，命令没跑。macOS 上的原话：
+收紧不成的，照 `sandbox.md`：印 `gqy-sandbox: cannot confine: <原话>`，退出 125，命令没跑。macOS 上的原话：
 
 | 什么时候 | 原话 |
 |---|---|
@@ -279,10 +279,10 @@ macOS 上助手怎么收紧自己（`sandbox.md`「怎么走」第 4 条第 3 �
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/profile/tests.rs`（Linux、macOS 上都跑） | 例子生成的规则和样本逐字节一样，参数照上面的先后；深浅、一样深时藏起来的在后；一样深、一样的照字节；两种写法；删不掉的目录：规格的每一条和它的上级、落在能写的里面的，排在最后；根目录能写的，根目录自己也算；底子在最前面，空的规格只有底子 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/macos/resolve/tests.rs`（Linux、macOS 上都跑） | 经过链接的换成真实的位置：能写的只留换过的，藏起来的原样也留；还不存在的照上级换；已经是真实位置的、重复的只写一次；多出来的 `/` 去掉；相对路径、`.`、`..`、NUL 收紧不成 |
-| `crates/miyu-sandbox/tests/macos/`（只在 macOS 上编，真跑助手） | `files.rs`：整盘能读，规格外的写不了、建不了、删不了，空设备、标准输出写得了；藏起来的读不了、`stat` 不了、列不了、`test -e` 看不见、写不了、执行不了；工作区在数据根里照样能读能写，`pwd -P`、`realpath` 对，cargo 不说换不成；能写的那几片、藏起来的在能写的地方里的上级改不了名；规格写成 `/var/…` 照样挡；中文、带引号的路径；能写的地方里硬链接、符号链接、改名、删照常。`bypass.rs`：能读不能写的文件，硬链接、符号链接、改名、`fcntl` 改不了；`open`、`launchctl submit` 做不成，偏好设置、钥匙串写不进。`network.rs`：连得上沙盒外的 TCP 服务，听得了端口；Unix 套接字能写的地方连得上，别处、藏起来的连不上，`socketpair` 能用；解析得了名字，系统的 HTTPS（`nscurl`）下载得下来。`probe.rs`：探测报 `seatbelt`；套在不许再装沙盒的沙盒里，探测报空的，`run` 收紧不成、命令没跑、最后一行是助手那一句。`compat.rs`：照核心会写的规格跑得起 `/bin/sh`、`zsh`、`git`、`cargo`、`rustc`、`cc`。`child.rs`：测试程序自己当命令时做的那几件事，照环境变量做 |
-| `crates/miyu-sandbox/tests/run.rs` | 各平台共用的那几条：macOS 上助手真收紧，照样对 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/profile/tests.rs`（Linux、macOS 上都跑） | 例子生成的规则和样本逐字节一样，参数照上面的先后；深浅、一样深时藏起来的在后；一样深、一样的照字节；两种写法；删不掉的目录：规格的每一条和它的上级、落在能写的里面的，排在最后；根目录能写的，根目录自己也算；底子在最前面，空的规格只有底子 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/macos/resolve/tests.rs`（Linux、macOS 上都跑） | 经过链接的换成真实的位置：能写的只留换过的，藏起来的原样也留；还不存在的照上级换；已经是真实位置的、重复的只写一次；多出来的 `/` 去掉；相对路径、`.`、`..`、NUL 收紧不成 |
+| `crates/gqy-sandbox/tests/macos/`（只在 macOS 上编，真跑助手） | `files.rs`：整盘能读，规格外的写不了、建不了、删不了，空设备、标准输出写得了；藏起来的读不了、`stat` 不了、列不了、`test -e` 看不见、写不了、执行不了；工作区在数据根里照样能读能写，`pwd -P`、`realpath` 对，cargo 不说换不成；能写的那几片、藏起来的在能写的地方里的上级改不了名；规格写成 `/var/…` 照样挡；中文、带引号的路径；能写的地方里硬链接、符号链接、改名、删照常。`bypass.rs`：能读不能写的文件，硬链接、符号链接、改名、`fcntl` 改不了；`open`、`launchctl submit` 做不成，偏好设置、钥匙串写不进。`network.rs`：连得上沙盒外的 TCP 服务，听得了端口；Unix 套接字能写的地方连得上，别处、藏起来的连不上，`socketpair` 能用；解析得了名字，系统的 HTTPS（`nscurl`）下载得下来。`probe.rs`：探测报 `seatbelt`；套在不许再装沙盒的沙盒里，探测报空的，`run` 收紧不成、命令没跑、最后一行是助手那一句。`compat.rs`：照核心会写的规格跑得起 `/bin/sh`、`zsh`、`git`、`cargo`、`rustc`、`cc`。`child.rs`：测试程序自己当命令时做的那几件事，照环境变量做 |
+| `crates/gqy-sandbox/tests/run.rs` | 各平台共用的那几条：macOS 上助手真收紧，照样对 |
 
 ### 出处
 

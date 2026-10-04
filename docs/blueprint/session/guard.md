@@ -8,12 +8,12 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-session/src/guard.rs` | 判一次调用：实际生效的那一级、判法表、不报路径的、问人时提的规则和说明、拒绝 |
-| `crates/miyu-fs/src/resolve.rs` | 换成真实的位置，`~` 接家目录（`fs.md`） |
-| `crates/miyu-fs/src/boundary.rs` | 边界表：一个真实的位置落在哪一片（`fs.md`） |
-| `crates/miyu-policy/src/guard.rs` | 拒绝时写给她的三句，造会话、载入时从策略快照里拿 |
+| `crates/gqy-session/src/guard.rs` | 判一次调用：实际生效的那一级、判法表、不报路径的、问人时提的规则和说明、拒绝 |
+| `crates/gqy-fs/src/resolve.rs` | 换成真实的位置，`~` 接家目录（`fs.md`） |
+| `crates/gqy-fs/src/boundary.rs` | 边界表：一个真实的位置落在哪一片（`fs.md`） |
+| `crates/gqy-policy/src/guard.rs` | 拒绝时写给她的三句，造会话、载入时从策略快照里拿 |
 | `resources/core/permissions/forbidden.txt`、`unresolvable.txt`，`resources/core/tool-results/read-only.txt` | 三句的原文 |
-| `crates/miyu-session/src/actor.rs` | 动作「过执行前的链」交给它，当场判（`session/actor.md`） |
+| `crates/gqy-session/src/actor.rs` | 动作「过执行前的链」交给它，当场判（`session/actor.md`） |
 
 ### 对外的样子
 
@@ -41,7 +41,7 @@
 |---|---|
 | 能读能写（`Writable`） | 工作区、加进来的目录（施工 5-10 上）、临时目录 |
 | 只能读（`Readable`） | 系统目录、工具链目录；工作区里的 `.git/hooks`、`.git/config` |
-| 谁都不能碰（`Forbidden`） | Miyu 的数据根 |
+| 谁都不能碰（`Forbidden`） | GQY 的数据根 |
 | 边界以外（`Outside`） | 别的 |
 
 ### 怎么走
@@ -82,7 +82,7 @@
    1. 在工作区里：里面哪一层是 `.git`、下一层是 `hooks` 或者 `config` 的，只能读：沙盒外执行 git 时会跑它们。别的能读能写。
    2. 在数据根里：谁都不能碰。工作区退回到了数据根里的 `home/<账号>/workspace/` 的，那一片照第 1 条算。
    3. 在加进来的哪一个目录里：照第 1 条（施工 5-10 上）。排在数据根后面：落进了数据根的（报来以后被换成了链接），数据根照样谁都不能碰。
-   4. 在临时目录里：能读能写。数据根可能就在临时目录里（测试、`MIYU_HOME` 指到那里），所以数据根排在前面。
+   4. 在临时目录里：能读能写。数据根可能就在临时目录里（测试、`GQY_HOME` 指到那里），所以数据根排在前面。
    5. 在只能读的哪一片里：只能读。
    6. 别的：边界以外。
 4. 在不在里面，照路径一段一段比：`/a/bc` 不在 `/a/b` 里；这一片自己也算在里面。
@@ -145,7 +145,7 @@
 
 | 什么时候 | 写给她的一句 | 说法 |
 |---|---|---|
-| 碰到数据根 | `"{path}" is inside Miyu's own data, which no tool can read or change.` | `core/permissions/forbidden`，字段 `path` |
+| 碰到数据根 | `"{path}" is inside GQY's own data, which no tool can read or change.` | `core/permissions/forbidden`，字段 `path` |
 | 换不成真实的位置 | `Can't tell where "{path}" points: {reason}.` | `core/permissions/unresolvable`，字段 `path`、`reason` |
 | 只读的时候要写 | `The call was not run: the session is read-only.` | `core/tool-results/read-only` |
 
@@ -166,7 +166,7 @@
 |---|---|
 | 放行 | 派去执行 |
 | 拒绝 | 记一条被拒绝的结果（`denied`），`by` 是模块 `permissions`，带着写给她的一句和说法；这一步照常往下走，她接着干 |
-| 要问人，会话里没人能确认（例如 `miyu ask`） | 当场拒绝，`by` 是内核，写给她的是 `The call was not run: it needs the user's approval, which no one can give here.`，说法 `core/tool-results/unattended` |
+| 要问人，会话里没人能确认（例如 `gqy ask`） | 当场拒绝，`by` 是内核，写给她的是 `The call was not run: it needs the user's approval, which no one can give here.`，说法 `core/tool-results/unattended` |
 | 要问人，只读时访问类别要写入 | 当场拒绝，`by` 是内核，写给她的是只读那一句 |
 | 要问人，别的 | 记一条 `tool.approval_requested`，`by` 是模块 `permissions`，照写 `access`、`rule`、`detail`，这次调用停下来等人 |
 
@@ -174,7 +174,7 @@
 
 | 说法 | 中文 | 英文 |
 |---|---|---|
-| `core/permissions/forbidden` | 这是 Miyu 自己的数据，谁都不能碰 | Miyu's own data, off limits |
+| `core/permissions/forbidden` | 这是 GQY 自己的数据，谁都不能碰 | GQY's own data, off limits |
 | `core/permissions/unresolvable` | 说不清它指向哪里：{reason} | can't tell where it points: {reason} |
 | `core/tool-results/read-only` | 只读，没写 | read-only, not written |
 
@@ -184,11 +184,11 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-session/src/guard/tests.rs` | 判法表的每一格（边界以外的读哪一级都放行）；实际生效的那一级，不认识的按只读；不报路径的：执行命令沙盒能用时工作区、只读都放行，用不了时都问人、不提规则、说明是 `{"tool":"shell"}`，读写放行，联网除了完全放开都问人（施工 5-4 上） |
-| `crates/miyu-session/tests/guard.rs` | 相对路径照工作目录接、工作区里还不存在的也能写；越界的读放行（施工 5-4 上）；越界的写问人，规则和说明写对了、`by` 是 `permissions`；没人能确认的拒绝；数据根哪一级都拒、写对了那一句和说法；完全放开越界的写不问；执行命令照沙盒能不能用：能用时工作区、只读都放行，用不了时问人（没人能确认就拒）；工作区里的 git 钩子只能读；几条路径照最严的，有一条在数据根里就拒、不问；指向不存在处的链接拒绝、写对了那一句和说法；写 git 钩子问人，说明里是 `read_only`、规则只有 `write`；`~` 照家目录换，写到边界以外要问人（没人能确认，是内核拒的，不是权限策略）；`trash` 判的是链接本身：工作区里指向不存在处的、指进数据根的、指到外面的链接都放行 |
-| `crates/miyu-session/tests/guard_dirs.rs` | 加进来的目录（施工 5-10 上）：里面写不用问、里面的 `.git/hooks` 只能读、只读照旧拒绝 |
-| `crates/miyu-fs/tests/boundary.rs` | 工作区能读能写、git 钩子和配置只能读；数据根在临时目录里也不能碰；工作区退回到数据根里照样是工作区；临时目录能读能写、系统和工具链只能读、别的在边界以外；不存在的一片不算；大小写不分的平台上数据根不分大小写；这一片自己也算；这台机器的系统目录、临时目录 |
-| `crates/miyu-fs/tests/resolve.rs` | 相对路径、`~`、还不存在的照上级、链接照指向的地方、Windows 的两种分隔符和目录联接 |
+| `crates/gqy-session/src/guard/tests.rs` | 判法表的每一格（边界以外的读哪一级都放行）；实际生效的那一级，不认识的按只读；不报路径的：执行命令沙盒能用时工作区、只读都放行，用不了时都问人、不提规则、说明是 `{"tool":"shell"}`，读写放行，联网除了完全放开都问人（施工 5-4 上） |
+| `crates/gqy-session/tests/guard.rs` | 相对路径照工作目录接、工作区里还不存在的也能写；越界的读放行（施工 5-4 上）；越界的写问人，规则和说明写对了、`by` 是 `permissions`；没人能确认的拒绝；数据根哪一级都拒、写对了那一句和说法；完全放开越界的写不问；执行命令照沙盒能不能用：能用时工作区、只读都放行，用不了时问人（没人能确认就拒）；工作区里的 git 钩子只能读；几条路径照最严的，有一条在数据根里就拒、不问；指向不存在处的链接拒绝、写对了那一句和说法；写 git 钩子问人，说明里是 `read_only`、规则只有 `write`；`~` 照家目录换，写到边界以外要问人（没人能确认，是内核拒的，不是权限策略）；`trash` 判的是链接本身：工作区里指向不存在处的、指进数据根的、指到外面的链接都放行 |
+| `crates/gqy-session/tests/guard_dirs.rs` | 加进来的目录（施工 5-10 上）：里面写不用问、里面的 `.git/hooks` 只能读、只读照旧拒绝 |
+| `crates/gqy-fs/tests/boundary.rs` | 工作区能读能写、git 钩子和配置只能读；数据根在临时目录里也不能碰；工作区退回到数据根里照样是工作区；临时目录能读能写、系统和工具链只能读、别的在边界以外；不存在的一片不算；大小写不分的平台上数据根不分大小写；这一片自己也算；这台机器的系统目录、临时目录 |
+| `crates/gqy-fs/tests/resolve.rs` | 相对路径、`~`、还不存在的照上级、链接照指向的地方、Windows 的两种分隔符和目录联接 |
 
 ### 出处
 

@@ -8,18 +8,18 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/event/session.rs` | `session.created`、`session.policy_changed`、`session.meta_changed`、`session.recapped`（施工 3-8 四补）；权限 `Permission`、级别 `Level` |
-| `crates/miyu-kernel/src/event/turn.rs` | `turn.started`、`turn.ended`（`EndReason`）、`turn.reverted`、`turn.unreverted` |
-| `crates/miyu-kernel/src/event/restore.rs` | `files.restored`（`Restored`、`RestoreAction`、`RestoreOutcome`） |
-| `crates/miyu-kernel/src/event/message.rs` | `message.user`、`message.assistant`、`message.withdrawn` |
-| `crates/miyu-kernel/src/event/tool.rs` | `tool.result`（`ToolStatus`、给人看的说法 `Said`）、`tool.approval_requested`、`tool.approval_decided`（`Decision`） |
-| `crates/miyu-kernel/src/event/effect.rs` | 效果 `Effect`：`file.read`、`file.changed`、`file.trashed`、`job.started`（`JobStarted`、`JobKind`，施工 7-1）、`job.messaged`（`JobMessaged`，施工 7-7）、`peer.watch`（`PeerWatch`，施工 C-1） |
-| `crates/miyu-kernel/src/event/question.rs` | `question.asked`、`question.answered`；回答对不对得上 `fits` |
-| `crates/miyu-kernel/src/event/context.rs` | `context.injected`、`context.compacted`、`context.compaction_paused`（`PauseReason`） |
-| `crates/miyu-kernel/src/event/model.rs` | `model.called`（`FirstDifference`、`Usage`、`BlockSpan`、`CallResult`、`CallError`、`ErrorClass`，辅助请求的用途 `Purpose`、是不是辅助请求 `aside()`，施工 3-8 四补） |
-| `crates/miyu-kernel/src/event/job.rs` | `job.reported`（`JobReason`）、`child.reported`（`ChildReason`）（施工 7-1） |
-| `crates/miyu-kernel/src/event/peer.rs` | `peer.idle`（`PeerIdle`、`IdleReason`，施工 C-1） |
-| `crates/miyu-kernel/src/event/image.rs` | `image.described`（`ImageDescribed`，施工 8-17） |
+| `crates/gqy-kernel/src/event/session.rs` | `session.created`、`session.policy_changed`、`session.meta_changed`、`session.recapped`（施工 3-8 四补）；权限 `Permission`、级别 `Level` |
+| `crates/gqy-kernel/src/event/turn.rs` | `turn.started`、`turn.ended`（`EndReason`）、`turn.reverted`、`turn.unreverted` |
+| `crates/gqy-kernel/src/event/restore.rs` | `files.restored`（`Restored`、`RestoreAction`、`RestoreOutcome`） |
+| `crates/gqy-kernel/src/event/message.rs` | `message.user`、`message.assistant`、`message.withdrawn` |
+| `crates/gqy-kernel/src/event/tool.rs` | `tool.result`（`ToolStatus`、给人看的说法 `Said`）、`tool.approval_requested`、`tool.approval_decided`（`Decision`） |
+| `crates/gqy-kernel/src/event/effect.rs` | 效果 `Effect`：`file.read`、`file.changed`、`file.trashed`、`job.started`（`JobStarted`、`JobKind`，施工 7-1）、`job.messaged`（`JobMessaged`，施工 7-7）、`peer.watch`（`PeerWatch`，施工 C-1） |
+| `crates/gqy-kernel/src/event/question.rs` | `question.asked`、`question.answered`；回答对不对得上 `fits` |
+| `crates/gqy-kernel/src/event/context.rs` | `context.injected`、`context.compacted`、`context.compaction_paused`（`PauseReason`） |
+| `crates/gqy-kernel/src/event/model.rs` | `model.called`（`FirstDifference`、`Usage`、`BlockSpan`、`CallResult`、`CallError`、`ErrorClass`，辅助请求的用途 `Purpose`、是不是辅助请求 `aside()`，施工 3-8 四补） |
+| `crates/gqy-kernel/src/event/job.rs` | `job.reported`（`JobReason`）、`child.reported`（`ChildReason`）（施工 7-1） |
+| `crates/gqy-kernel/src/event/peer.rs` | `peer.idle`（`PeerIdle`、`IdleReason`，施工 C-1） |
+| `crates/gqy-kernel/src/event/image.rs` | `image.described`（`ImageDescribed`，施工 8-17） |
 
 每一种的样本在 `docs/designs/samples/events/<种类>.jsonl`。
 
@@ -44,13 +44,13 @@
 | `venue` | 场所 | 必有 | 会话所在的场所。本机开的会话是 `local` |
 | `policy` | 内容哈希 | 必有 | 开始时的策略快照（`policy.md`） |
 | `permission` | 权限 | 必有 | 开始时的权限 |
-| `oneshot` | 布尔 | 不写是假 | 一次性的：`miyu ask` 开的；`miyu ask --continue` 接的是最新的这种（`cli/ask.md`） |
+| `oneshot` | 布尔 | 不写是假 | 一次性的：`gqy ask` 开的；`gqy ask --continue` 接的是最新的这种（`cli/ask.md`） |
 | `cwd` | 字符串 | 可以没有 | 开会话时实际干活的目录，人看到的那种写法（施工 4-9 再补三上）。之前的日志没有 |
 | `parent` | 会话编号 | 可以没有 | 父会话：派它的那个会话（`agents.md`，施工 7-1）。主会话没有 |
 | `depth` | 整数（`u32`） | 可以没有 | 第几层：父会话的加一。主会话是第 0 层，不写。和 `parent` 同有同无、至少是 1，由账本查（`kernel/history.md`） |
 | `model` | 字符串 | 可以没有 | 会话用哪个模型（施工 8-8，`models.md`「事件」）：造会话时解析好的引用，模型 `<供应商>/<模型>` 或池 `@<池>`（施工 8-8 造的可能是挡位换成的那时的值）。协议造的照 `session.create` 的 `model`，没写的照那时的 `models.chat`；子会话照 `subagent` 的 `pool`（`@<池>`，施工 8-8 补；8-8 是 `tier`），没写的照父会话那时的。那时连 `models.chat` 都没配的不写。内核只记不解读 |
 
-子会话不写 `oneshot`：`--continue`、`miyu undo` 找「最近一次 `miyu ask` 开的」不会找到它（`agents.md`）。以前的日志没有 `parent`、`depth`、`model` 几格，原样一个字节不变；没有 `model` 的，路由照载入那一刻的 `models.chat`（`models.md`「怎么走」第一条第 7 条）。样本两条都带 `model`（施工 8-8）。
+子会话不写 `oneshot`：`--continue`、`gqy undo` 找「最近一次 `gqy ask` 开的」不会找到它（`agents.md`）。以前的日志没有 `parent`、`depth`、`model` 几格，原样一个字节不变；没有 `model` 的，路由照载入那一刻的 `models.chat`（`models.md`「怎么走」第一条第 7 条）。样本两条都带 `model`（施工 8-8）。
 
 **权限**（`session.created`、`session.policy_changed` 里的 `permission`）：
 
@@ -472,20 +472,20 @@
 
 | 测试 | 守哪几种 |
 |---|---|
-| `crates/miyu-kernel/src/event/session/tests.rs` | 会话的四种：图纸上的写法、一次性的写与不写、每一级读成自己那一种、不认识的级别原样留着、权限两格都要写、坏的说是哪一种；子会话的 `parent`、`depth` 读写一字不差，主会话不写这两格（施工 7-1）；`session.recapped` 两格都要写（施工 3-8 四补）；`session.policy_changed` 的 `model`、`replaced` 读写一字不差、以前的日志照读、`null` 当没有、不是字的读不进来（施工 8-10）；以前日志里带 `effort` 的照读得进、内核不理它（施工 8-18 加，8-18（补）去掉） |
-| `crates/miyu-kernel/src/event/turn/tests.rs` | 回合的四种：图纸上的写法、没有 `trigger` 的不写这一格（施工 6-8）、每种结束原因、不认识的原样留着、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/restore/tests.rs` | `files.restored` 的每一格读写一字不差；新的 `action`、`outcome` 原样留着 |
-| `crates/miyu-kernel/src/event/message/tests.rs` | `message.assistant` 图纸上的写法、`seen` 必有、`interrupted` 只在是真时写；`message.withdrawn` 的写法和序号从 1 起 |
-| `crates/miyu-kernel/src/event/tool/tests.rs` | `tool.result` 的五种状态、不认识的原样留着、没真执行过的没有用时、说法怎么记；确认的两种：每种决定、没写规则、说明、理由的不写这几格；坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/effect/tests.rs` | 四种效果读写一字不差；没显示行的不写 `lines`；新建的 `before` 写成 `null`、没写的当新建；不认识的原样留着；`job.started` 不认识的 `what` 原样留着、命令不写 `session`；`job.messaged` 读写一字不差（施工 7-7）；`peer.watch` 读写一字不差（`a_watch_on_another_session_round_trips`，施工 C-1）；坏的读不进来 |
-| `crates/miyu-kernel/src/event/job/tests.rs` | 两种回报（施工 7-1）：图纸上的写法读写一字不差、每种 `reason` 读成自己那一种、不认识的原样留着、不写是假的几格是假时不写、没有的格不写、负的退出码、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/image/tests.rs`（施工 8-17） | `image.described`：图纸上的一行读写一字不差、四格都要写、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/peer/tests.rs`（施工 C-1） | `peer.idle`：图纸上的两行读写一字不差、每种 `reason` 读成自己那一种、不认识的原样留着、`status` 写成 `null` 的不写、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/question/tests.rs` | 提问的两种：图纸上的写法、没写的格子不写、第 4 条对不对得上题目、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/context/tests.rs` | 上下文的几种：图纸上的写法、手动压缩带着要求（施工 6-8）、清空的空摘要照样写出 `summary`（施工 6-8 补）、坏的说是哪一种 |
-| `crates/miyu-kernel/src/event/model/tests.rs` | `model.called` 图纸上的写法；没发出去就失败的只有知道的几格；每种出错的分类；出错带着 HTTP 状态码、没有这一格的旧日志照读（施工 3-5 三补）；块的起止读写一字不差、没有这一格的旧日志照读（施工 2-3 补）；第一处不同的写法；`purpose` 读写一字不差、不认识的原样留着、带了的才是辅助请求（施工 3-8 四补） |
-| `crates/miyu-kernel/tests/samples.rs` | 每一种的样本读写一字不差；换模型的几条一条接一条：退回的带着回合、原来的正是前面换成的（施工 8-10） |
-| `crates/miyu-kernel/tests/resources.rs` 的 `the_sample_denial_is_the_sentence_with_the_reason` | 样本里 71 号被人拒绝的结果，就是资源里带理由的那一句 |
+| `crates/gqy-kernel/src/event/session/tests.rs` | 会话的四种：图纸上的写法、一次性的写与不写、每一级读成自己那一种、不认识的级别原样留着、权限两格都要写、坏的说是哪一种；子会话的 `parent`、`depth` 读写一字不差，主会话不写这两格（施工 7-1）；`session.recapped` 两格都要写（施工 3-8 四补）；`session.policy_changed` 的 `model`、`replaced` 读写一字不差、以前的日志照读、`null` 当没有、不是字的读不进来（施工 8-10）；以前日志里带 `effort` 的照读得进、内核不理它（施工 8-18 加，8-18（补）去掉） |
+| `crates/gqy-kernel/src/event/turn/tests.rs` | 回合的四种：图纸上的写法、没有 `trigger` 的不写这一格（施工 6-8）、每种结束原因、不认识的原样留着、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/restore/tests.rs` | `files.restored` 的每一格读写一字不差；新的 `action`、`outcome` 原样留着 |
+| `crates/gqy-kernel/src/event/message/tests.rs` | `message.assistant` 图纸上的写法、`seen` 必有、`interrupted` 只在是真时写；`message.withdrawn` 的写法和序号从 1 起 |
+| `crates/gqy-kernel/src/event/tool/tests.rs` | `tool.result` 的五种状态、不认识的原样留着、没真执行过的没有用时、说法怎么记；确认的两种：每种决定、没写规则、说明、理由的不写这几格；坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/effect/tests.rs` | 四种效果读写一字不差；没显示行的不写 `lines`；新建的 `before` 写成 `null`、没写的当新建；不认识的原样留着；`job.started` 不认识的 `what` 原样留着、命令不写 `session`；`job.messaged` 读写一字不差（施工 7-7）；`peer.watch` 读写一字不差（`a_watch_on_another_session_round_trips`，施工 C-1）；坏的读不进来 |
+| `crates/gqy-kernel/src/event/job/tests.rs` | 两种回报（施工 7-1）：图纸上的写法读写一字不差、每种 `reason` 读成自己那一种、不认识的原样留着、不写是假的几格是假时不写、没有的格不写、负的退出码、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/image/tests.rs`（施工 8-17） | `image.described`：图纸上的一行读写一字不差、四格都要写、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/peer/tests.rs`（施工 C-1） | `peer.idle`：图纸上的两行读写一字不差、每种 `reason` 读成自己那一种、不认识的原样留着、`status` 写成 `null` 的不写、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/question/tests.rs` | 提问的两种：图纸上的写法、没写的格子不写、第 4 条对不对得上题目、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/context/tests.rs` | 上下文的几种：图纸上的写法、手动压缩带着要求（施工 6-8）、清空的空摘要照样写出 `summary`（施工 6-8 补）、坏的说是哪一种 |
+| `crates/gqy-kernel/src/event/model/tests.rs` | `model.called` 图纸上的写法；没发出去就失败的只有知道的几格；每种出错的分类；出错带着 HTTP 状态码、没有这一格的旧日志照读（施工 3-5 三补）；块的起止读写一字不差、没有这一格的旧日志照读（施工 2-3 补）；第一处不同的写法；`purpose` 读写一字不差、不认识的原样留着、带了的才是辅助请求（施工 3-8 四补） |
+| `crates/gqy-kernel/tests/samples.rs` | 每一种的样本读写一字不差；换模型的几条一条接一条：退回的带着回合、原来的正是前面换成的（施工 8-10） |
+| `crates/gqy-kernel/tests/resources.rs` 的 `the_sample_denial_is_the_sentence_with_the_reason` | 样本里 71 号被人拒绝的结果，就是资源里带理由的那一句 |
 
 ### 出处
 

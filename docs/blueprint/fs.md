@@ -1,4 +1,4 @@
-## 碰文件：`miyu-fs`
+## 碰文件：`gqy-fs`
 
 ### 是什么
 
@@ -8,21 +8,21 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-fs/src/lib.rs` | 交出去的几样 |
-| `crates/miyu-fs/src/boundary.rs` | 边界表：几片、先后、各平台的清单；`within` |
-| `crates/miyu-fs/src/resolve.rs` | 换成真实的位置（整条换的、最后一段不跟链接的）；`~` 的规矩 |
-| `crates/miyu-fs/src/wide.rs` | 工作目录太宽 |
-| `crates/miyu-fs/src/open.rs` | 安全地打开 |
-| `crates/miyu-fs/src/replace.rs` | 整体换成新的内容 |
-| `crates/miyu-fs/src/nofollow.rs` | Unix 上路上一层链接都不跟地打开文件、目录（施工 5-10 下） |
-| `crates/miyu-fs/src/trash.rs` | 回收站：放进去、移回来 |
-| `crates/miyu-fs/src/trash/linux.rs`、`macos.rs`、`windows.rs`、`other.rs` | 各平台的回收站；别的系统一律收不了 |
-| `crates/miyu-fs/src/trash/recycled.rs` | Windows 回收站里的 `$I` 记录；每个平台都编，测试到处都跑 |
-| `crates/miyu-fs/src/list.rs` | 列一层目录（`fs.list`，施工 W-2） |
-| `crates/miyu-fs/src/find.rs` | 模糊找文件的清单（`Index`）、打分（`score`），`fs.find` 用（施工 W-2） |
-| `crates/miyu-fs/src/range.rs` | 安全地打开以后读一段（`read_range`），`blob.get`、`fs.read` 用（施工 W-6） |
+| `crates/gqy-fs/src/lib.rs` | 交出去的几样 |
+| `crates/gqy-fs/src/boundary.rs` | 边界表：几片、先后、各平台的清单；`within` |
+| `crates/gqy-fs/src/resolve.rs` | 换成真实的位置（整条换的、最后一段不跟链接的）；`~` 的规矩 |
+| `crates/gqy-fs/src/wide.rs` | 工作目录太宽 |
+| `crates/gqy-fs/src/open.rs` | 安全地打开 |
+| `crates/gqy-fs/src/replace.rs` | 整体换成新的内容 |
+| `crates/gqy-fs/src/nofollow.rs` | Unix 上路上一层链接都不跟地打开文件、目录（施工 5-10 下） |
+| `crates/gqy-fs/src/trash.rs` | 回收站：放进去、移回来 |
+| `crates/gqy-fs/src/trash/linux.rs`、`macos.rs`、`windows.rs`、`other.rs` | 各平台的回收站；别的系统一律收不了 |
+| `crates/gqy-fs/src/trash/recycled.rs` | Windows 回收站里的 `$I` 记录；每个平台都编，测试到处都跑 |
+| `crates/gqy-fs/src/list.rs` | 列一层目录（`fs.list`，施工 W-2） |
+| `crates/gqy-fs/src/find.rs` | 模糊找文件的清单（`Index`）、打分（`score`），`fs.find` 用（施工 W-2） |
+| `crates/gqy-fs/src/range.rs` | 安全地打开以后读一段（`read_range`），`blob.get`、`fs.read` 用（施工 W-6） |
 
-用它的：基础系统的几件工具（`tools/`）；权限策略 `crates/miyu-session/src/guard.rs`（换成真实的位置、查边界；判 `trash` 时最后一段不跟链接）；撤销时改回文件 `crates/miyu-session/src/restore.rs`（`replace`、`trash::put`、`trash::restore`）；开会话时挑工作区 `crates/miyu-endpoint/src/sessions.rs`（`resolve`、`too_wide`）；`blob.put` 读人附的文件 `crates/miyu-endpoint/src/attach.rs`（`resolve`、`tilde`、边界表只拦谁都不能碰的那一片、`open_file`，施工 3-9 三补，`protocol.md`）；`fs.list`、`fs.find` `crates/miyu-endpoint/src/files.rs`（`resolve`、边界表、`list_dir`、`find::Index`、`find::score`，找文件的清单记几份住在 `files/cache.rs`，施工 W-2，`protocol.md`）；`fs.realpath` 同一个 `crates/miyu-endpoint/src/files.rs`（直接用 `resolve`，不查边界，施工 W-3，`protocol.md`）；握手回应的 `host.home`（施工 W-3，`crates/miyu-endpoint/src/hello.rs`）照原样不走这一层，`host.workspace` 只调 `std::fs::canonicalize`，没有 `~`、相对路径要接，不用 `resolve`。`fs.read` 也是 `crates/miyu-endpoint/src/files.rs`（`resolve`、边界表、`read_range`，施工 W-6，`protocol.md`）；`blob.get` 经 `crates/miyu-store/src/blob.rs` 的 `Blobs::read_range` 调同一个 `read_range`（`crates/miyu-endpoint/src/attach.rs`，施工 W-6）。
+用它的：基础系统的几件工具（`tools/`）；权限策略 `crates/gqy-session/src/guard.rs`（换成真实的位置、查边界；判 `trash` 时最后一段不跟链接）；撤销时改回文件 `crates/gqy-session/src/restore.rs`（`replace`、`trash::put`、`trash::restore`）；开会话时挑工作区 `crates/gqy-endpoint/src/sessions.rs`（`resolve`、`too_wide`）；`blob.put` 读人附的文件 `crates/gqy-endpoint/src/attach.rs`（`resolve`、`tilde`、边界表只拦谁都不能碰的那一片、`open_file`，施工 3-9 三补，`protocol.md`）；`fs.list`、`fs.find` `crates/gqy-endpoint/src/files.rs`（`resolve`、边界表、`list_dir`、`find::Index`、`find::score`，找文件的清单记几份住在 `files/cache.rs`，施工 W-2，`protocol.md`）；`fs.realpath` 同一个 `crates/gqy-endpoint/src/files.rs`（直接用 `resolve`，不查边界，施工 W-3，`protocol.md`）；握手回应的 `host.home`（施工 W-3，`crates/gqy-endpoint/src/hello.rs`）照原样不走这一层，`host.workspace` 只调 `std::fs::canonicalize`，没有 `~`、相对路径要接，不用 `resolve`。`fs.read` 也是 `crates/gqy-endpoint/src/files.rs`（`resolve`、边界表、`read_range`，施工 W-6，`protocol.md`）；`blob.get` 经 `crates/gqy-store/src/blob.rs` 的 `Blobs::read_range` 调同一个 `read_range`（`crates/gqy-endpoint/src/attach.rs`，施工 W-6）。
 
 ### 对外的样子
 
@@ -66,7 +66,7 @@
 
    - 工作区排在数据根前面：工作区是数据根里的 `home/<账号>/workspace/` 时，那一片照工作区算，数据根别处照样不能碰。
    - 加进来的目录排在数据根后面：落进了数据根的（报来以后被换成了链接），数据根照样谁都不能碰。
-   - 数据根排在临时目录前面：数据根可能在临时目录里（测试、`MIYU_HOME` 指到那里）。
+   - 数据根排在临时目录前面：数据根可能在临时目录里（测试、`GQY_HOME` 指到那里）。
 2. `Places::here` 照这台机器填：
 
    | 平台 | 系统目录 |
@@ -116,7 +116,7 @@
 3. 包含数据根（数据根自己也算）；
 4. 落在数据根里，又不在账号自己的工作区 `own` 里（`own` 自己和它下面的不算太宽）。
 
-一段一段比，分大小写。开会话时照它挑工作区：太宽的退回账号的工作区（`crates/miyu-endpoint/src/sessions.rs`，`cli/ask.md` 第 5 条）。
+一段一段比，分大小写。开会话时照它挑工作区：太宽的退回账号的工作区（`crates/gqy-endpoint/src/sessions.rs`，`cli/ask.md` 第 5 条）。
 
 #### 四、安全地打开（`open_file`）
 
@@ -146,7 +146,7 @@
    - 在、不是只读的：记下它的权限。
    - 不在：照系统默认的权限建。
    - 读不了（不在以外的错）：报那个错。
-3. 在同一个目录里只许新建、不跟链接地建一个临时文件：名字 `.<原来的名字>.<进程号>-<序号>.miyu-tmp`，序号在这个进程里从 0 往上数。名字撞上了换下一个，最多 16 次；都撞上：`AlreadyExists`。建不了（撞名以外的错）：报那个错。
+3. 在同一个目录里只许新建、不跟链接地建一个临时文件：名字 `.<原来的名字>.<进程号>-<序号>.gqy-tmp`，序号在这个进程里从 0 往上数。名字撞上了换下一个，最多 16 次；都撞上：`AlreadyExists`。建不了（撞名以外的错）：报那个错。
 4. 写进 `bytes`；原来有的，照原来的权限设好；同步到磁盘。
 5. 改名盖上去。
 6. 第 4、5 步出错：删掉临时文件，报那个错；原来的文件没动。临时文件删不掉的，只记一条运行日志，目录里多一个以点开头的文件。
@@ -225,7 +225,7 @@
 2. 把 `kept` 改名移回 `to`。
 3. 删掉回收站给它记的那一份：Linux 上 `kept` 的上级叫 `files` 的，删掉同一个回收站里的 `info/<名字>.trashinfo`，不是的什么都不删；Windows 上删掉 `$R` 旁边的 `$I`；macOS 上没有要删的。不在的不算；删不掉的只记一条运行日志：东西已经回来了。
 
-- `to` 要空着、`kept` 要还在：先查的是调用的一方（`crates/miyu-session/src/restore.rs`）。查和移之间 `to` 被别的程序占了的，改名会盖掉它。
+- `to` 要空着、`kept` 要还在：先查的是调用的一方（`crates/gqy-session/src/restore.rs`）。查和移之间 `to` 被别的程序占了的，改名会盖掉它。
 - 出错：上级目录建不了、改名移不回去（例如 `kept` 已经没了）：报那个错。
 
 #### 七、列一层、模糊找（`fs.list`、`fs.find`，施工 W-2；协议层的参数、边界检查、出错、清单记几份在 `web-module.md`「三、列文件、找文件」、`protocol.md`）
@@ -246,7 +246,7 @@
 
 **打分**（`find::score(path, query)`）：`query` 的字照先后都在 `path` 里（不论大小写）才算，交回分和对上的是第几个字（按字符数）；对不上的是 `None`。先试整个落在文件名里，落不下再从路径开头找；每个字对上 1 分，落在文件名里多 3 分，在一段的开头（路径的头一个字，或者前面是 `/`、`-`、`_`、`.`、空格）多 8 分，和上一个字连着多 5 分；文件名去掉扩展名正好是打的字多 100 分。`query` 是空的都对得上、0 分。照 proto/web-demo 分支 `web-demo/bridge/src/mention.rs` 的 `score` 搬过来，测试一起搬。
 
-- 清单记几份、`fresh` 多久重建、排序、截到多少条、拼成协议回应的 JSON 都在协议端点（`crates/miyu-endpoint/src/files.rs`、`files/cache.rs`），这里只是走目录、打分的底子。
+- 清单记几份、`fresh` 多久重建、排序、截到多少条、拼成协议回应的 JSON 都在协议端点（`crates/gqy-endpoint/src/files.rs`、`files/cache.rs`），这里只是走目录、打分的底子。
 
 #### 八、读一段（`read_range`，施工 W-6；协议层的参数、边界检查、出错在 `web-module.md`「七、分块读」、`protocol.md`）
 
@@ -273,7 +273,7 @@
 
 `OpenError` 的这几句现在没有哪一处给她看：`read` 照种类说自己的那几句（`tools/read.md`）。`replace`、`trash::restore` 出错是系统的 `io::Error`；`trash::put` 出错见上面那三种。
 
-运行日志（target `miyu::fs`，级别 WARN）：
+运行日志（target `gqy::fs`，级别 WARN）：
 
 | 什么时候 | 那一行 |
 |---|---|
@@ -285,19 +285,19 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-fs/tests/boundary.rs` | 六片的先后、加进来的目录照工作区算、落进数据根的照样不能碰、不存在的不算（施工 5-10 上）、工作区里的 `.git/hooks`、`.git/config` 只能读（子仓库里的也算）、数据根在临时目录里也不能碰、工作区挪进数据根的照工作区算、一段一段比、不存在的那一片不算、macOS 和 Windows 上数据根不分大小写、`within`、这台机器的清单 |
-| `crates/miyu-fs/tests/resolve.rs` | 相对的照工作目录接、`.` 和走过存在的目录再 `..`、绝对的照原样、`~` 和 `~alice`、没有家目录、还不存在的照上级算、还不存在的 `..`（Unix 报错、Windows 照字面消掉）、链接照指向的地方算、指向不存在处的链接、Windows 两种分隔符；最后一段不跟链接：指向不存在处的、指到别处的链接交回链接本身，`.`、`..`、`~` 交回空的，`src/.` 是 `src` |
-| `crates/miyu-fs/tests/open.rs` | 普通文件打得开、目录和不存在的、最后一层是链接不跟（Unix、Windows）、路上有链接的不开（Unix（施工 5-10 下））、FIFO 不卡住、设备和套接字 |
-| `crates/miyu-fs/tests/wide.rs` | 太宽的四样；家目录读不出来时 |
-| `crates/miyu-fs/src/replace/tests.rs` | 新建和覆盖、不留临时文件、只读的不写、盖不上去时临时文件删掉；路上有链接的一个字节都不落到链接指的地方、不留临时文件（Unix（施工 5-10 下）） |
-| `crates/miyu-fs/src/nofollow/tests.rs` | 普通的文件、目录打得开；路上、最后一层有链接的报 `ELOOP`；一层一层打开那条路单独测：链接照样不开、相对的不收（施工 5-10 下） |
-| `crates/miyu-fs/tests/trash.rs` | Linux：移回来、`.trashinfo` 删了、上级目录没了的建上、只删回收站里的记录、回收站里没有了的移不回来；macOS、Windows（在 CI 上）：文件、目录放进系统的回收站再移回来，Windows 的 `$I` 删了 |
-| `crates/miyu-fs/src/trash/recycled/tests.rs` | `$I` 第 2 版、第 1 版，认不出的、不够长的、字数说得比记录长的，`$I` 在 `$R` 旁边 |
-| `crates/miyu-basesystem/tests/trash.rs` | 经 `trash` 这件工具：Linux 上放进家目录的回收站、记录的样子、`files/` 和 `info/` 是 `0700`、重名接 `.2`、同名却没有记录的不盖、目录和链接、转义、挪不动的不删也不留记录、家目录的回收站建不了的不删 |
-| `crates/miyu-basesystem/tests/write.rs` | 经 `write`：原来的权限照留、不留临时文件、只读的不写 |
-| `crates/miyu-fs/src/list/tests.rs` | 开头对、大小写不论、点开头的打了点才列、目录在前、50 条截断、`partial`；落进「谁都不能碰」那一片的不列、旁边照样列；读不了的目录是错（施工 W-2） |
-| `crates/miyu-fs/src/find/tests.rs` | 打分（照桥的 `score` 测试，一样先在文件名里找、落在一段开头的分高、连着的分高、文件名正好是的分高）；模糊找：认 `.gitignore`（不要求是 git 仓库）、跳过隐藏目录和名单、最深几层、收满就停、落进「谁都不能碰」那一片的不收、工作区在数据根里面照样穿得过去、读不了一层目录的跳过并报给 `on_error`、建到一半也能读（施工 W-2） |
-| `crates/miyu-fs/src/range/tests.rs` | 读一段、`length` 超过剩下的读到结尾就停、`offset` 过了结尾（含正好等于大小）是空的、`length` 是 0 只报大小、整份都读得下、没有这个文件、不是普通文件（施工 W-6） |
+| `crates/gqy-fs/tests/boundary.rs` | 六片的先后、加进来的目录照工作区算、落进数据根的照样不能碰、不存在的不算（施工 5-10 上）、工作区里的 `.git/hooks`、`.git/config` 只能读（子仓库里的也算）、数据根在临时目录里也不能碰、工作区挪进数据根的照工作区算、一段一段比、不存在的那一片不算、macOS 和 Windows 上数据根不分大小写、`within`、这台机器的清单 |
+| `crates/gqy-fs/tests/resolve.rs` | 相对的照工作目录接、`.` 和走过存在的目录再 `..`、绝对的照原样、`~` 和 `~alice`、没有家目录、还不存在的照上级算、还不存在的 `..`（Unix 报错、Windows 照字面消掉）、链接照指向的地方算、指向不存在处的链接、Windows 两种分隔符；最后一段不跟链接：指向不存在处的、指到别处的链接交回链接本身，`.`、`..`、`~` 交回空的，`src/.` 是 `src` |
+| `crates/gqy-fs/tests/open.rs` | 普通文件打得开、目录和不存在的、最后一层是链接不跟（Unix、Windows）、路上有链接的不开（Unix（施工 5-10 下））、FIFO 不卡住、设备和套接字 |
+| `crates/gqy-fs/tests/wide.rs` | 太宽的四样；家目录读不出来时 |
+| `crates/gqy-fs/src/replace/tests.rs` | 新建和覆盖、不留临时文件、只读的不写、盖不上去时临时文件删掉；路上有链接的一个字节都不落到链接指的地方、不留临时文件（Unix（施工 5-10 下）） |
+| `crates/gqy-fs/src/nofollow/tests.rs` | 普通的文件、目录打得开；路上、最后一层有链接的报 `ELOOP`；一层一层打开那条路单独测：链接照样不开、相对的不收（施工 5-10 下） |
+| `crates/gqy-fs/tests/trash.rs` | Linux：移回来、`.trashinfo` 删了、上级目录没了的建上、只删回收站里的记录、回收站里没有了的移不回来；macOS、Windows（在 CI 上）：文件、目录放进系统的回收站再移回来，Windows 的 `$I` 删了 |
+| `crates/gqy-fs/src/trash/recycled/tests.rs` | `$I` 第 2 版、第 1 版，认不出的、不够长的、字数说得比记录长的，`$I` 在 `$R` 旁边 |
+| `crates/gqy-basesystem/tests/trash.rs` | 经 `trash` 这件工具：Linux 上放进家目录的回收站、记录的样子、`files/` 和 `info/` 是 `0700`、重名接 `.2`、同名却没有记录的不盖、目录和链接、转义、挪不动的不删也不留记录、家目录的回收站建不了的不删 |
+| `crates/gqy-basesystem/tests/write.rs` | 经 `write`：原来的权限照留、不留临时文件、只读的不写 |
+| `crates/gqy-fs/src/list/tests.rs` | 开头对、大小写不论、点开头的打了点才列、目录在前、50 条截断、`partial`；落进「谁都不能碰」那一片的不列、旁边照样列；读不了的目录是错（施工 W-2） |
+| `crates/gqy-fs/src/find/tests.rs` | 打分（照桥的 `score` 测试，一样先在文件名里找、落在一段开头的分高、连着的分高、文件名正好是的分高）；模糊找：认 `.gitignore`（不要求是 git 仓库）、跳过隐藏目录和名单、最深几层、收满就停、落进「谁都不能碰」那一片的不收、工作区在数据根里面照样穿得过去、读不了一层目录的跳过并报给 `on_error`、建到一半也能读（施工 W-2） |
+| `crates/gqy-fs/src/range/tests.rs` | 读一段、`length` 超过剩下的读到结尾就停、`offset` 过了结尾（含正好等于大小）是空的、`length` 是 0 只报大小、整份都读得下、没有这个文件、不是普通文件（施工 W-6） |
 
 没测到的：Linux 另一块盘上的 `.Trash/<uid>`、`.Trash-<uid>`（测试机上造不出另一块盘）；`XDG_DATA_HOME` 那一条（测试里不改环境变量）。
 

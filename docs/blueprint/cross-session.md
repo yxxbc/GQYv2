@@ -12,7 +12,7 @@
 
 状态：图纸，定稿（2026-10-01 起草，主会话审过，项目主人同一天批准）。定了的六条和防刷屏在 `docs/designs/29-跨会话.md` 第一、二节，这一页把第三节留下的技术细节定下来（末尾「起草时定的」）。每一节标着由哪一步做，步子见末尾「施工步子」（C-1 到 C-7，正式编号）。做完一步，这一页照做好的样子改写那几节，相关的几页跟着改（末尾「要跟着改的别的页」）。
 
-做好了的：C-1 会话的短编号（`kernel/ids.md`）；事件 `peer.idle`、效果 `peer.watch` 的类型、读写、样本（`kernel/events.md`、`kernel/events-bodies.md`）；`by` 是会话的三种关系（`kernel/ids.md`「谁」）；账本在等哪几个会话、`peer.idle` 只认在等的（`kernel/history.md`「在等的通知」）。C-2 收别的会话发来的话：内核认出别的会话、照「别处来的」收，防刷屏前三款（`kernel/session.md`「别的会话发来的话」，账本见 `kernel/history.md`「最近收下的别的会话的话」），策略数据 `peers.burst`、`window`、`unread`（`policy.md`），渲染 `<session-message from="短编号">`（`kernel/request.md`「别的会话发来的话」），`history` 的「谁」写 `session <短编号>`（`tools/history.md`），它开的那一轮重做不了。发话随 C-5，订和通知随 C-6（都做好了，见下）。C-3 列会话：`session.list` 每一项多 `cwd`、`busy`、`last_active`（`protocol.md`），新的一件工具 `sessions`，只给本机的主会话（`tools/sessions.md`、`session/tools.md`「1d. 列会话」「工具面」）；认会话编号的 `find_session` 做好了，C-4、C-5 接着用。C-4 读别的会话：`history` 多一格 `session`（`tools/history.md`），和 `send_message` 同一个认法认出是哪一个会话，认成她自己的照没写；`SessionsPort` 多 `open`，交回一个 `Log`，只算出会话的真实目录，不读盘、不载入它，在跑的也读得到（`miyu-tool/src/sessions.rs`，实现在 `miyu-endpoint/src/spawn.rs`）；找不到、对得上不止一个、没有列会话的端口（子会话、场所会话）各拒一句，一条日志都不读；时刻照这个会话自己的时区，和读的是哪一份日志无关。工具面、说明的字节没变，只有参数格式多一格，待量 token。C-6 空了告诉我：`send_message` 多 `notify_when_idle`、`message` 可以不写（`tools/send_message.md`），订的记录是那次调用的效果 `peer.watch`；等的这一边的执行器照内核的 `watching()` 去订、计时（`miyu-session/src/peers.rs`，`session/tools.md`「订、计时、再订」），被等的那一边的 actor 记名单、空了发命令 `PeerIdle`（`actor/watchers.rs`，`session/actor.md`「被等的名单」）；内核收通知、作废、不在了记 `peer.idle`，空下来了的照回报叫醒她，作废、不在了的只记下（`kernel/session.md`「空了的通知」）；渲染 `<session-idle session=… reason=…>`（`kernel/request.md`「空了的通知」）；策略数据 `peers.watch_hours`、`status_chars`（`policy.md`）。
+做好了的：C-1 会话的短编号（`kernel/ids.md`）；事件 `peer.idle`、效果 `peer.watch` 的类型、读写、样本（`kernel/events.md`、`kernel/events-bodies.md`）；`by` 是会话的三种关系（`kernel/ids.md`「谁」）；账本在等哪几个会话、`peer.idle` 只认在等的（`kernel/history.md`「在等的通知」）。C-2 收别的会话发来的话：内核认出别的会话、照「别处来的」收，防刷屏前三款（`kernel/session.md`「别的会话发来的话」，账本见 `kernel/history.md`「最近收下的别的会话的话」），策略数据 `peers.burst`、`window`、`unread`（`policy.md`），渲染 `<session-message from="短编号">`（`kernel/request.md`「别的会话发来的话」），`history` 的「谁」写 `session <短编号>`（`tools/history.md`），它开的那一轮重做不了。发话随 C-5，订和通知随 C-6（都做好了，见下）。C-3 列会话：`session.list` 每一项多 `cwd`、`busy`、`last_active`（`protocol.md`），新的一件工具 `sessions`，只给本机的主会话（`tools/sessions.md`、`session/tools.md`「1d. 列会话」「工具面」）；认会话编号的 `find_session` 做好了，C-4、C-5 接着用。C-4 读别的会话：`history` 多一格 `session`（`tools/history.md`），和 `send_message` 同一个认法认出是哪一个会话，认成她自己的照没写；`SessionsPort` 多 `open`，交回一个 `Log`，只算出会话的真实目录，不读盘、不载入它，在跑的也读得到（`gqy-tool/src/sessions.rs`，实现在 `gqy-endpoint/src/spawn.rs`）；找不到、对得上不止一个、没有列会话的端口（子会话、场所会话）各拒一句，一条日志都不读；时刻照这个会话自己的时区，和读的是哪一份日志无关。工具面、说明的字节没变，只有参数格式多一格，待量 token。C-6 空了告诉我：`send_message` 多 `notify_when_idle`、`message` 可以不写（`tools/send_message.md`），订的记录是那次调用的效果 `peer.watch`；等的这一边的执行器照内核的 `watching()` 去订、计时（`gqy-session/src/peers.rs`，`session/tools.md`「订、计时、再订」），被等的那一边的 actor 记名单、空了发命令 `PeerIdle`（`actor/watchers.rs`，`session/actor.md`「被等的名单」）；内核收通知、作废、不在了记 `peer.idle`，空下来了的照回报叫醒她，作废、不在了的只记下（`kernel/session.md`「空了的通知」）；渲染 `<session-idle session=… reason=…>`（`kernel/request.md`「空了的通知」）；策略数据 `peers.watch_hours`、`status_chars`（`policy.md`）。
 
 ### 在哪
 
@@ -20,33 +20,33 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/id.rs` | `SessionId::short()`：会话的短编号（C-1） |
-| `crates/miyu-kernel/src/event/peer.rs` | 事件 `peer.idle`（C-1） |
-| `crates/miyu-kernel/src/event/effect.rs` | 效果 `peer.watch`（C-1） |
-| `crates/miyu-kernel/src/ledger/peers.rs` | 账本：最近收下的别的会话的话（防刷屏用）、还没听到的、父会话是哪个，在等哪几个会话的通知（C-1、C-2） |
-| `crates/miyu-kernel/src/history/jobs.rs` | 有效历史记着父会话，`History::is_peer` 认别的会话，和账本同一个认法（C-2）：渲染、`history` 照它 |
-| `crates/miyu-kernel/src/session/peers.rs` | 收别的会话发来的话、防刷屏三条（C-2，认和收走 `session/messages.rs` 那条别处来的路）。收空了的通知、作废、不在了，「空了」的判断，最后回复的第一行（C-6） |
-| `crates/miyu-policy/src/peers.rs` | 策略数据 `peers.*` 的出厂值（C-2、C-6） |
-| `crates/miyu-assemble/src/peers.rs` | 两种渲染：别的会话发来的话、空了的通知（C-2、C-6），标签那一块照 `tag.rs`。人这边的一条照谁发的包哪种外壳在 `render.rs` 的 `said`，主请求和回顾的请求共用（C-2） |
-| `crates/miyu-endpoint/src/list.rs` | 列会话多算三样：工作目录、忙不忙、最近一次动静，`session.list` 和 `sessions` 共用（C-3） |
-| `crates/miyu-endpoint/src/spawn.rs` | 会话表那一头的 `SessionPort` 多几样：列主会话（C-3，`sessions`，含调的那个会话自己）、只读地开别的会话的日志（C-4），发话时交回对方有没有人看着（C-5），订、发通知（C-6） |
-| `crates/miyu-session/src/spawn.rs` | `SessionPort` 多的那几样定义在这一层，会话表在上一层实现 |
-| `crates/miyu-tool/src/sessions.rs` | 交给 `sessions`、`history` 的端口 `SessionsPort`：列（C-3）、开日志（C-4）。认会话编号的 `find_session`：整个编号或者至少 8 位的后缀，在一批编号里对（C-3 做好，C-4、C-5 照它认：列出这个会话能看到的主会话加它自己，再对） |
-| `crates/miyu-session/src/sessions.rs` | 执行器：本机的主会话每一次调用造列会话的端口，拿掉她自己（C-3） |
-| `crates/miyu-tool/src/messages.rs` | `Recipient` 多 `Session`，`NotSent` 多几种（C-5）。只订不发时不另认：`send_message` 本来就照 `find_session` 认出整个编号（C-5），效果里写它（C-6，不用改这一份）。效果多一种 `PeerWatch` 在 `miyu-tool/src/run.rs` |
-| `crates/miyu-session/src/messages.rs` | 执行器：认会话编号、送、订（C-5、C-6） |
-| `crates/miyu-session/src/peers.rs` | 执行器：每送完一批，照内核新多出来的在等的去订、计时，到点交作废（C-6） |
-| `crates/miyu-session/src/actor/watchers.rs` | 被等的那一边：谁在等，每送完一批看空没空，空了发通知（C-6）。执行器送回 actor 的那几样挪进了 `actor/back.rs`（`actor.rs` 到了行数上限），多一样到点、不在了 |
-| `crates/miyu-session/src/agents.rs` | 工具面：`sessions` 只给本机的主会话（C-3） |
-| `crates/miyu-basesystem/src/sessions.rs` | `sessions`：参数、一行一个、分页（C-3） |
-| `crates/miyu-basesystem/src/history.rs`、`history/entry.rs` | 「谁」多一种 `session <短编号>`（C-2），多一格 `session`（C-4） |
-| `crates/miyu-basesystem/src/send_message.rs` | 原来的 `message_agent.rs` 改名（C-5）。`to` 认会话编号、长度上限（C-5），`notify_when_idle`（C-6） |
+| `crates/gqy-kernel/src/id.rs` | `SessionId::short()`：会话的短编号（C-1） |
+| `crates/gqy-kernel/src/event/peer.rs` | 事件 `peer.idle`（C-1） |
+| `crates/gqy-kernel/src/event/effect.rs` | 效果 `peer.watch`（C-1） |
+| `crates/gqy-kernel/src/ledger/peers.rs` | 账本：最近收下的别的会话的话（防刷屏用）、还没听到的、父会话是哪个，在等哪几个会话的通知（C-1、C-2） |
+| `crates/gqy-kernel/src/history/jobs.rs` | 有效历史记着父会话，`History::is_peer` 认别的会话，和账本同一个认法（C-2）：渲染、`history` 照它 |
+| `crates/gqy-kernel/src/session/peers.rs` | 收别的会话发来的话、防刷屏三条（C-2，认和收走 `session/messages.rs` 那条别处来的路）。收空了的通知、作废、不在了，「空了」的判断，最后回复的第一行（C-6） |
+| `crates/gqy-policy/src/peers.rs` | 策略数据 `peers.*` 的出厂值（C-2、C-6） |
+| `crates/gqy-assemble/src/peers.rs` | 两种渲染：别的会话发来的话、空了的通知（C-2、C-6），标签那一块照 `tag.rs`。人这边的一条照谁发的包哪种外壳在 `render.rs` 的 `said`，主请求和回顾的请求共用（C-2） |
+| `crates/gqy-endpoint/src/list.rs` | 列会话多算三样：工作目录、忙不忙、最近一次动静，`session.list` 和 `sessions` 共用（C-3） |
+| `crates/gqy-endpoint/src/spawn.rs` | 会话表那一头的 `SessionPort` 多几样：列主会话（C-3，`sessions`，含调的那个会话自己）、只读地开别的会话的日志（C-4），发话时交回对方有没有人看着（C-5），订、发通知（C-6） |
+| `crates/gqy-session/src/spawn.rs` | `SessionPort` 多的那几样定义在这一层，会话表在上一层实现 |
+| `crates/gqy-tool/src/sessions.rs` | 交给 `sessions`、`history` 的端口 `SessionsPort`：列（C-3）、开日志（C-4）。认会话编号的 `find_session`：整个编号或者至少 8 位的后缀，在一批编号里对（C-3 做好，C-4、C-5 照它认：列出这个会话能看到的主会话加它自己，再对） |
+| `crates/gqy-session/src/sessions.rs` | 执行器：本机的主会话每一次调用造列会话的端口，拿掉她自己（C-3） |
+| `crates/gqy-tool/src/messages.rs` | `Recipient` 多 `Session`，`NotSent` 多几种（C-5）。只订不发时不另认：`send_message` 本来就照 `find_session` 认出整个编号（C-5），效果里写它（C-6，不用改这一份）。效果多一种 `PeerWatch` 在 `gqy-tool/src/run.rs` |
+| `crates/gqy-session/src/messages.rs` | 执行器：认会话编号、送、订（C-5、C-6） |
+| `crates/gqy-session/src/peers.rs` | 执行器：每送完一批，照内核新多出来的在等的去订、计时，到点交作废（C-6） |
+| `crates/gqy-session/src/actor/watchers.rs` | 被等的那一边：谁在等，每送完一批看空没空，空了发通知（C-6）。执行器送回 actor 的那几样挪进了 `actor/back.rs`（`actor.rs` 到了行数上限），多一样到点、不在了 |
+| `crates/gqy-session/src/agents.rs` | 工具面：`sessions` 只给本机的主会话（C-3） |
+| `crates/gqy-basesystem/src/sessions.rs` | `sessions`：参数、一行一个、分页（C-3） |
+| `crates/gqy-basesystem/src/history.rs`、`history/entry.rs` | 「谁」多一种 `session <短编号>`（C-2），多一格 `session`（C-4） |
+| `crates/gqy-basesystem/src/send_message.rs` | 原来的 `message_agent.rs` 改名（C-5）。`to` 认会话编号、长度上限（C-5），`notify_when_idle`（C-6） |
 | `resources/software/basesystem/tools/{sessions,history,send_message}.json` | 说明和参数格式 |
 | `resources/software/basesystem/{sessions,history,send_message}/*.txt` | 结果里给她看的几句 |
 | `resources/core/peers/*.txt` | 两种标签和通知里的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
 
-分层照 `01-架构.md`，和子代理那一套一样。内核不碰别的会话，只从日志算状态、交出动作。工具只拿端口，不认识会话表。会话表在 `miyu-endpoint`，比会话 actor 高一层，端口由 `miyu-session`、`miyu-tool` 定义，`miyu-endpoint` 在核心启动时装上（`agents.md`「在哪」）。
+分层照 `01-架构.md`，和子代理那一套一样。内核不碰别的会话，只从日志算状态、交出动作。工具只拿端口，不认识会话表。会话表在 `gqy-endpoint`，比会话 actor 高一层，端口由 `gqy-session`、`gqy-tool` 定义，`gqy-endpoint` 在核心启动时装上（`agents.md`「在哪」）。
 
 ### 对外的样子
 
@@ -59,7 +59,7 @@
 | `peers.unread` | 50 | 还没听到的别的会话来的话最多几句（第五条第 3 款） | 同上 |
 | `peers.watch_hours` | 12 | 订了多久没等到通知就作废（第六条第 8 款） | 等的那边的内核（C-6） |
 | `peers.status_chars` | 200 | 通知里带的那一行最多几个字（第六条第 6 款） | 被等的那边的内核（C-6） |
-| `peers.message_chars` | 100000 | 一句话最多几个字（第五条第 4 款） | 发话那边的工具（C-5），出厂值在 `crates/miyu-basesystem/src/send_message.rs`，照 `jobs.output_chars` 的放法，不进快照 |
+| `peers.message_chars` | 100000 | 一句话最多几个字（第五条第 4 款） | 发话那边的工具（C-5），出厂值在 `crates/gqy-basesystem/src/send_message.rs`，照 `jobs.output_chars` 的放法，不进快照 |
 
 - 前五个在快照里是 `peers`（C-2、C-6 各加自己用的）。以前造的快照里没有的，照出厂值读：防刷屏不能因为会话旧就不管。C-2 时造的快照里有前三个、没有后两个，后两个照出厂值读、不写，读回写出一字不差（施工 C-6）。
 - 数是估的，待 C-7 实测（「起草时定的」第 11 条）。
@@ -130,7 +130,7 @@
 - `session.list` 的每一项多三格（C-3 做好了，`protocol.md`「`session.list`」第 4、5 条）：`cwd` 会话的工作目录（头报来的写法），`busy` 这时有回合在进行（是的才写 `true`，和 `pinned` 一样），`last_active` 日志最后一条事件的时刻。和 `sessions` 是同一个函数算的。排序不改，还是照编号倒着排。
 
 ```json
-{"busy":true,"cwd":"~/src/miyu","last_active":"2026-10-01T06:03:12.345Z","oneshot":false,"parent":null,"session":"0192f3a0-2222-7abc-8def-5566778899aa","title":"修 CI"}
+{"busy":true,"cwd":"~/src/gqy","last_active":"2026-10-01T06:03:12.345Z","oneshot":false,"parent":null,"session":"0192f3a0-2222-7abc-8def-5566778899aa","title":"修 CI"}
 ```
 
 - 推送不加方法：`by` 是别的会话的 `message.user`、事件 `peer.idle`、效果 `peer.watch` 照原样推。头照「给人看的字」显示。C-2、C-3、C-6 合了，照规矩把 sha 和形状告诉两个头（终端界面、网页）。C-6 以后 `peer.idle`、`peer.watch` 真的会出现。
@@ -142,7 +142,7 @@
 **一、列会话**（`sessions`，C-3 做好了，工具照 `tools/sessions.md`）
 
 1. 只有本机的主会话工具面里有它（第九条）。每一次调用的列会话端口也只给本机的主会话（`Agents::lists_sessions`，和工具面同一个判断）。
-2. 执行器经会话表要一份会话：属主和这个会话一样、`session.created` 不带 `parent`（主会话）、没删的，会话表交回的含它自己，执行器拿掉它自己。每个会话交编号、标题、工作目录、忙不忙、最近一次动静。和 `session.list` 同一个函数算（`crates/miyu-endpoint/src/list.rs` 的 `scan`，`protocol.md`「`session.list`」第 2 到 5 条：读会话列表的索引，没有那一行、对不上的读第一条、再整份读一遍盖上标题，施工 3-8 七补），多算三样：
+2. 执行器经会话表要一份会话：属主和这个会话一样、`session.created` 不带 `parent`（主会话）、没删的，会话表交回的含它自己，执行器拿掉它自己。每个会话交编号、标题、工作目录、忙不忙、最近一次动静。和 `session.list` 同一个函数算（`crates/gqy-endpoint/src/list.rs` 的 `scan`，`protocol.md`「`session.list`」第 2 到 5 条：读会话列表的索引，没有那一行、对不上的读第一条、再整份读一遍盖上标题，施工 3-8 七补），多算三样：
    - 工作目录：日志里最后一条带 `cwd` 的 `turn.started` 的，没有就照 `session.created` 的，都没有（很早以前的日志）写 `~`。和「会话表」第 5 条同一个认法，同一个函数。
    - 最近一次动静：日志最后一条事件的 `at`。日志坏了的，照坏的那一段以前的；只有一段、它坏了的，是 `session.created` 的时刻。
    - 忙：它在会话表里，这时有回合在进行（回合结束了 `turn.ended` 还没落盘、正在改回文件也算）。和 `Core::idle` 看的是同一样（`Sessions::busy_ids`，先拿着表的锁记下，再去读日志）。没载入的都是闲。在等人确认、等人回答的也算忙。
@@ -214,7 +214,7 @@
    - `message` 不写、`notify_when_idle` 也不是 `true` 的：参数不对。
 2. **这边记下**：端口认出那个会话（和发话同一个认法），那次调用报效果 `peer.watch`，结果接一句 `watching.txt`。工具自己不去订。效果落了盘，账本记着在等那个会话，从这条效果的时刻算起。已经在等它的又订一次，从新的时刻重新算。
 3. **那边记下**：这边每送完一批，执行器照内核的 `watching()` 看有没有新多出来的在等的（没订过的、起算时刻变了的：又订了一次、撤掉又订回到前一次），新多出来的经会话表交给那个会话的 actor 一个「订」（`SessionPort::watch`，带着这边的起算时刻），不经内核、不进它的日志。订的那次调用落了盘、载入以后、恢复撤销以后，走的都是这一条路。落了盘才订，通知就不会赶在这边记下在等以前到（施工 7-6 撞过的那种先后）：一批送完时这一批追加的都已经落了盘。不在等了的（收到了通知、订它的那一轮撤掉了、作废了），撤掉它的计时，那边的名单不管，发来的通知这边拒就是。记进它 actor 的名单，同一个会话只记一个（后订的替掉先订的）：那个会话这时正忙着，或者这次起算的时刻不晚于它上一次忙完的时刻的（带话又订、这边手快先忙完了一轮的情形），上膛，闲着就当场发；不然不上膛，留着等它下一次忙完（2026-10-01 项目主人定，「起草时定的」第 66 条：空着的先不发，免得带的是它上一轮的旧回答）。它没载入的，会话表先载入它：刚载入的没记着忙过、没有上一次忙完的时刻，照这一条一样判，不会因为「刚载入就是空的」另当场发。
-4. **「空了」**：内核说空闲（没有回合在进行、没有结束了 `turn.ended` 还没落盘的、没在读回日志、改回文件），而且它派的子代理都不欠它回报（`waiting_children()` 是空的），也没收到「要重启了」（被重启打断的那一轮再起来接着干，停的时候说空了是假的，施工 C-6，「起草时定的」第 65 条）。和 `miyu ask` 等到的是同一个时刻（`agents.md` 第十一条第 1 条）：子代理报上来、被叫醒的那几轮也做完了才算。后台命令不算。
+4. **「空了」**：内核说空闲（没有回合在进行、没有结束了 `turn.ended` 还没落盘的、没在读回日志、改回文件），而且它派的子代理都不欠它回报（`waiting_children()` 是空的），也没收到「要重启了」（被重启打断的那一轮再起来接着干，停的时候说空了是假的，施工 C-6，「起草时定的」第 65 条）。和 `gqy ask` 等到的是同一个时刻（`agents.md` 第十一条第 1 条）：子代理报上来、被叫醒的那几轮也做完了才算。后台命令不算。
 5. **发**：被等的会话的 actor 每送完一批看一次。忙着的，名单上每一项上膛（2026-10-01 改，见第 3 款：不管订进来时上没上膛，这个会话一忙起来，名单上的都该在它下一次空下来时收到）。空了、名单上有上膛的，给上膛的每一个发通知、清掉；没上膛的留着，等它下一次忙完。发通知不挡着 actor：一个一个起任务发。先把通知交出去，再写「没有在跑的回合」，免得核心在通知的路上空闲退出。那边正在撤销、恢复（回 `restoring`）的，退避着再交同一个命令（第一次等 100 毫秒，每次翻倍，最多等 30 秒，照向上回报）；别的拒绝、交不到的记一行运行日志就完了。没有会话表的端口的（测试里自己造的会话）发不出去，名单照样清空。
 6. **通知**：经会话表交给等的那个会话一个命令 `PeerIdle`，`by` 是被等的会话，命令编号 `<被等的会话>/idle/<等的会话>/<等的那一边这次订的起算时刻，Unix 毫秒>`（施工 C-6 定，「起草时定的」第 53 条）。带 `status`：它最近结束的那一轮最后一条有字的回复的第一行（整段先去掉前后空白，取第一行，再去掉这一行的前后空白），超过 `peers.status_chars`（200）个字的截到 200 个字、末尾接 `…`，正好 200 个字的不截，由它的内核交（`last_line()`，和向上回报拿正文是同一个认法，`kernel/session.md`「向上回报」第 3 条）。一个字都没说的不带。
 7. **这边收**：账本说在等它的，记 `peer.idle`（`reason` 是 `idle`）。不在等的，拒绝 `unknown_watch`，什么都不记（订它的那一轮撤掉了、已经收到过、作废了，`by` 不是一个会话）。同一个编号再交一次，照上一次回应（内核照编号只生效一次）。被拒的那一边记一行运行日志，不再发。记下的照第四条第 3 款叫不叫醒她：闲着、开得了开一轮，正忙下一步看到，开不了的记在一边。
@@ -287,7 +287,7 @@
 
 ```text
 You are session 22334455.
-9f03b21c "修 CI" in ~/src/miyu: busy, last active 2026-10-01 14:03
+9f03b21c "修 CI" in ~/src/gqy: busy, last active 2026-10-01 14:03
 0c5d77aa (untitled) in ~/notes: idle, last active 2026-09-30 22:41
 (Showing 1-2 of 5. Use offset=2 to see more.)
 ```
@@ -395,7 +395,7 @@ No notice came within 12 hours, so the request was dropped.
 | `inbox_full` | 还没听到的别的会话的话到了上限 |
 | `unknown_watch` | 通知来了，这边不在等它 |
 
-运行日志（目标 `miyu::session`，一律英文）：
+运行日志（目标 `gqy::session`，一律英文）：
 
 | 级别 | 行 | 什么时候 |
 |---|---|---|
@@ -451,32 +451,32 @@ No notice came within 12 hours, so the request was dropped.
 
 | 测试 | 守哪几条 | 步 |
 |---|---|---|
-| `crates/miyu-kernel/src/id/tests.rs` 的 `a_short_session_id_is_its_last_eight_characters`、`crates/miyu-session/src/clock/tests.rs` 的 `ids_made_together_differ_in_their_short_form` | 短编号：取后 8 位，测试里写死的编号；真造的编号前 8 位一样、短编号各不一样（内核不造编号，放在造编号的那一层，「起草时定的」第 31 条） | C-1 |
-| `crates/miyu-kernel/src/event/peer/tests.rs`、`event/effect/tests.rs` 的 `a_watch_on_another_session_round_trips` | `peer.idle`、`peer.watch` 读写一字不差，不认识的原因原样留着，坏的说是哪一种 | C-1 |
-| `crates/miyu-kernel/src/ledger/tests/peers.rs` | `peer.watch` 的编号是自己的拒。`peer.idle` 只认在等的、`by` 对得上。撤掉订它的那一轮就不算在等，恢复了照原来的时刻又算。再订从新时刻算，撤掉再订的回到前一次（`kernel/history.md`「守着它的」）。C-6 多记的 `cause` 由 `scenario/watch.rs` 的作废那一条守着 | C-1、C-6 |
-| `crates/miyu-kernel/src/session/tests/peers.rs` | 造的、载入的会话，账本都知道自己是哪个会话：订自己的当场停下、载入拒绝 | C-1 |
-| `crates/miyu-kernel/tests/samples.rs` | 样本读写一字不差；样本里的通知对得上前面订的、`by` 对得上原因（`the_notices_in_the_samples_answer_the_watches`） | C-1 |
-| `crates/miyu-kernel/src/session/tests/scenario/peers.rs` | 别的会话发来的话：认三种关系。闲着开一轮、正忙下一步听到、最后一步里到的接着开、不带回合编号、打断不撤回不接着开、不作废在等人的题、没人看着只记下、能恢复撤销时记在一边、载入算回来、撤销不带走、重做不了、子会话里收到的不欠父会话回报 | C-2 |
-| `crates/miyu-kernel/src/session/tests/scenario/flood.rs` | 防刷屏：限速第 6 句拒、被拒的什么都不记、别的发话方照收、窗口过了又收、正好 600 秒那一刻、一字不差的拒且不占数、窗口过了一字不差的又收、没听到的第 51 句拒、听到以后又收、重启以后限速和没听到的数照日志算回来、子代理的留言不受「5 句」管 | C-2 |
-| `crates/miyu-kernel/src/ledger/tests/said.rs` | 账本：别的会话不是父会话、不是派的子代理；只记别的会话的话、照时刻数、哈希一字不差；还没听到的只由主对话的请求、回复清掉，回顾的请求不算 | C-2 |
-| `crates/miyu-policy/src/peers/tests.rs` | 快照带着五个数、标签和通知的七份字（通知的字和标签平铺在 `core.peers` 一层）；旧快照没有 `peers` 照出厂值，没有标签的照人的话原样；C-2 时的快照没有后两个数、通知的字，数照出厂的、通知不出；作废那一句照快照的小时数换；通知的字坏了照名字报；读回写出一字不差 | C-2、C-6 |
-| `crates/miyu-kernel/src/session/tests/scenario/watch.rs` | 空了的通知：在等的记下、不带回合编号、`cause` 是那个命令、闲着开一轮、正忙下一步听到；收到过的、没订过的、订的不是它的拒，什么都不记。撤掉订它的那一轮不等了、恢复了照原来的时刻又等。作废只在到点以后（含正好那一刻）、只记下不叫醒、`cause` 是订它的那一轮的；又订从新的时刻算，旧的计时到了不算。`gone` 只记下。执行器交的 `idle` 不理。「空了」要子代理都报完、后台命令不算。`last_line()` 的截法（正好 200 个字不截、超了接 `…`、最后一条有字的回复、没说话的）。它开的那一轮重做不了、撤销不带走。还能恢复撤销时记在一边，崩了载入以后恢复了接着开 | C-6 |
-| `crates/miyu-kernel/src/session/tests/random/` | 随机输入里别的会话的话、通知和回报、撤销交错：`random/peering.rs` 送、`random/watch/peers.rs` 查（C-2）。C-6：在跑的调用做完时订一个发话方，送「空了」、作废、不在了；看守照内核这时在等的判收还是拒、作废到没到点、记的 `by` 和原因，叫不叫醒照回报（`watch/reports.rs`），压缩、清空的看守把通知和回报一样算（`watch/compaction.rs`、`watch/clear.rs`）。不在等的被拒在三百例里查，收下、作废、不在了在长跑里查（「起草时定的」第 61 条） | C-2、C-6 |
-| `crates/miyu-assemble/src/peers/tests.rs`、`tests/probe_peers.rs` | 两种标签和样本一字不差（`idle.txt`、`idle-expired.txt`）。通知每种原因的样子（没说话的、不在了的、不认识的只有开头和收尾、末尾有换行的不补）。排在哪：开这一轮的挪到回合开始、事实在前，回合中途到的排在工具结果后面。旧快照照人的话原样、没有通知的字的通知不出。子会话里父会话的话原样。请求形状（`docs/designs/samples/probe/peers/`，C-6 加了订和通知开的一轮，第 5 到 7 次请求）和同一份剧本换成人说的比，只多标签那几段 | C-2、C-6 |
-| `crates/miyu-basesystem/src/history/tests/peers.rs` | 「谁」写 `session <短编号>`，筛 `user` 时在里面 | C-2 |
-| `crates/miyu-endpoint/src/list/tests.rs`、`tests/list.rs`、`tests/meta.rs` | 三格新字段：工作目录的认法（一条都没记的写 `~`）、最近动静、忙照会话表交来的，叫停的旗。`session.list` 带着它们，闲着的不写 `busy`。日志坏了的照样列，工作目录、最近动静照第一条 | C-3 |
-| `crates/miyu-endpoint/tests/sessions.rs` | 真核心：工作目录跟着头报的换、忙着的写 `busy`（主会话、子会话）、最近动静是日志最后一条；她列出来的只有同一个属主的别的主会话，不列自己、不列子会话、不列删了的，和 `session.list` 对得上 | C-3 |
-| `crates/miyu-basesystem/tests/sessions.rs` | 输出一字不差、第一行是自己、新的在前、一样的照编号、未命名的、字段转义、时区、分页、过了结尾、没有别的、撞了放长、参数不对不问端口、没有端口、列不出来、叫停。每种说法中文、英文、日文都换得出字 | C-3 |
-| `crates/miyu-tool/src/sessions/tests.rs` | 认会话编号：整个编号、8 位和 12 位的后缀对上，别的写法对不上，撞了是不止一个 | C-3 |
-| `crates/miyu-session/tests/sessions.rs` | 执行器照这个会话的属主要、拿掉她自己，没有会话表的照没有别的，载入的主会话照样列。工具面：本机主会话有 `sessions`，子会话、群没有，别的一件不少；子会话调它照没有的工具拒 | C-3 |
-| `crates/miyu-basesystem/src/history/tests/other.rs`、`crates/miyu-session/tests/history_other.rs` | 读别的会话：只读、不载入、在跑的也读、时区照自己的。找不到、撞了、子会话和群拒 | C-4 |
-| `crates/miyu-basesystem/tests/send_message.rs` | `to` 的认法和先后。长度上限（父子之间也管）。每种拒绝、`held`、`duplicate` 的说法。子会话写会话编号拒。说明里那几句在 | C-5 |
-| `crates/miyu-basesystem/tests/send_message/watch.rs` | `notify_when_idle`：只订不发、端口一次不问、效果里是整个编号；带话的先发，送到了（`sent`、`held`、一模一样的）才订，被拒、太长的整次不订；订子代理、父会话整次拒、留言也不发；订自己拒；两样都没有的参数不对；不能找别的会话的照旧拒；说法两种语言都换得出字 | C-6 |
-| `crates/miyu-session/tests/messages_peer.rs` | 执行器：命令编号、`by`、没载入的先载入、没人看着的一次性会话交回 `held`、三种拒绝对上三句、运行日志不带话的字 | C-5 |
-| `crates/miyu-endpoint/tests/peers.rs` | 真核心两个主会话：A 列出、读 B、发话，B 被叫醒、回话，A 被叫醒。两边互相发到第 6 句断开 | C-5 |
-| `crates/miyu-session/tests/watch.rs` | 被等的这边：订进来时已经空着不当场发，等它下一次忙完才发、带新那一轮的第一行（2026-10-01 改，编号还是订的起算时刻、不是新忙完的时刻）；订的起算时刻不晚于它上一次忙完的时刻的，照样当场发（带话又订的情形）；正忙时订了，忙完才发；同一个会话只记一个（后订的替掉先订的）；子代理没报完不发、报完被叫醒的那一轮做完了才发。等的这边：效果落了盘才订（订的时刻就是那条结果的时刻）、一直在等的不再订、找不到交 `gone` 不叫醒、载入再订（时刻不变）、日志往前挪过 12 小时的载入时不订当场作废、撤掉订它的那一轮不订、恢复撤销再订。「先交通知再报空闲」照 `actor.rs` 的 `drain` 写的先后，没有单独的测试（定时的先后测不稳） | C-6 |
-| `crates/miyu-endpoint/tests/watch.rs` | 真核心：只订不开轮、那边已经空着不当场到，等它自己又做完一轮才叫醒她，她看到的是那一块带标签的事实（2026-10-01 改）；带话的先送话再等，通知带着那句话叫醒的那一轮的第一行；B 正忙时订了、核心停了（被重启打断不算空，停的时候不发），换一份核心 A 一载入就再订，B 跟着载入接着做完，A 照样等到；B 删了以后 A 载入再订，会话表找不到它，记 `gone`、不叫醒 | C-6 |
-| `crates/miyu-basesystem/tests/budget.rs`、`xtask/src/ledger.rs` | 工具面的预算。新字的指纹和登记簿对得上 | C-3 到 C-6 |
+| `crates/gqy-kernel/src/id/tests.rs` 的 `a_short_session_id_is_its_last_eight_characters`、`crates/gqy-session/src/clock/tests.rs` 的 `ids_made_together_differ_in_their_short_form` | 短编号：取后 8 位，测试里写死的编号；真造的编号前 8 位一样、短编号各不一样（内核不造编号，放在造编号的那一层，「起草时定的」第 31 条） | C-1 |
+| `crates/gqy-kernel/src/event/peer/tests.rs`、`event/effect/tests.rs` 的 `a_watch_on_another_session_round_trips` | `peer.idle`、`peer.watch` 读写一字不差，不认识的原因原样留着，坏的说是哪一种 | C-1 |
+| `crates/gqy-kernel/src/ledger/tests/peers.rs` | `peer.watch` 的编号是自己的拒。`peer.idle` 只认在等的、`by` 对得上。撤掉订它的那一轮就不算在等，恢复了照原来的时刻又算。再订从新时刻算，撤掉再订的回到前一次（`kernel/history.md`「守着它的」）。C-6 多记的 `cause` 由 `scenario/watch.rs` 的作废那一条守着 | C-1、C-6 |
+| `crates/gqy-kernel/src/session/tests/peers.rs` | 造的、载入的会话，账本都知道自己是哪个会话：订自己的当场停下、载入拒绝 | C-1 |
+| `crates/gqy-kernel/tests/samples.rs` | 样本读写一字不差；样本里的通知对得上前面订的、`by` 对得上原因（`the_notices_in_the_samples_answer_the_watches`） | C-1 |
+| `crates/gqy-kernel/src/session/tests/scenario/peers.rs` | 别的会话发来的话：认三种关系。闲着开一轮、正忙下一步听到、最后一步里到的接着开、不带回合编号、打断不撤回不接着开、不作废在等人的题、没人看着只记下、能恢复撤销时记在一边、载入算回来、撤销不带走、重做不了、子会话里收到的不欠父会话回报 | C-2 |
+| `crates/gqy-kernel/src/session/tests/scenario/flood.rs` | 防刷屏：限速第 6 句拒、被拒的什么都不记、别的发话方照收、窗口过了又收、正好 600 秒那一刻、一字不差的拒且不占数、窗口过了一字不差的又收、没听到的第 51 句拒、听到以后又收、重启以后限速和没听到的数照日志算回来、子代理的留言不受「5 句」管 | C-2 |
+| `crates/gqy-kernel/src/ledger/tests/said.rs` | 账本：别的会话不是父会话、不是派的子代理；只记别的会话的话、照时刻数、哈希一字不差；还没听到的只由主对话的请求、回复清掉，回顾的请求不算 | C-2 |
+| `crates/gqy-policy/src/peers/tests.rs` | 快照带着五个数、标签和通知的七份字（通知的字和标签平铺在 `core.peers` 一层）；旧快照没有 `peers` 照出厂值，没有标签的照人的话原样；C-2 时的快照没有后两个数、通知的字，数照出厂的、通知不出；作废那一句照快照的小时数换；通知的字坏了照名字报；读回写出一字不差 | C-2、C-6 |
+| `crates/gqy-kernel/src/session/tests/scenario/watch.rs` | 空了的通知：在等的记下、不带回合编号、`cause` 是那个命令、闲着开一轮、正忙下一步听到；收到过的、没订过的、订的不是它的拒，什么都不记。撤掉订它的那一轮不等了、恢复了照原来的时刻又等。作废只在到点以后（含正好那一刻）、只记下不叫醒、`cause` 是订它的那一轮的；又订从新的时刻算，旧的计时到了不算。`gone` 只记下。执行器交的 `idle` 不理。「空了」要子代理都报完、后台命令不算。`last_line()` 的截法（正好 200 个字不截、超了接 `…`、最后一条有字的回复、没说话的）。它开的那一轮重做不了、撤销不带走。还能恢复撤销时记在一边，崩了载入以后恢复了接着开 | C-6 |
+| `crates/gqy-kernel/src/session/tests/random/` | 随机输入里别的会话的话、通知和回报、撤销交错：`random/peering.rs` 送、`random/watch/peers.rs` 查（C-2）。C-6：在跑的调用做完时订一个发话方，送「空了」、作废、不在了；看守照内核这时在等的判收还是拒、作废到没到点、记的 `by` 和原因，叫不叫醒照回报（`watch/reports.rs`），压缩、清空的看守把通知和回报一样算（`watch/compaction.rs`、`watch/clear.rs`）。不在等的被拒在三百例里查，收下、作废、不在了在长跑里查（「起草时定的」第 61 条） | C-2、C-6 |
+| `crates/gqy-assemble/src/peers/tests.rs`、`tests/probe_peers.rs` | 两种标签和样本一字不差（`idle.txt`、`idle-expired.txt`）。通知每种原因的样子（没说话的、不在了的、不认识的只有开头和收尾、末尾有换行的不补）。排在哪：开这一轮的挪到回合开始、事实在前，回合中途到的排在工具结果后面。旧快照照人的话原样、没有通知的字的通知不出。子会话里父会话的话原样。请求形状（`docs/designs/samples/probe/peers/`，C-6 加了订和通知开的一轮，第 5 到 7 次请求）和同一份剧本换成人说的比，只多标签那几段 | C-2、C-6 |
+| `crates/gqy-basesystem/src/history/tests/peers.rs` | 「谁」写 `session <短编号>`，筛 `user` 时在里面 | C-2 |
+| `crates/gqy-endpoint/src/list/tests.rs`、`tests/list.rs`、`tests/meta.rs` | 三格新字段：工作目录的认法（一条都没记的写 `~`）、最近动静、忙照会话表交来的，叫停的旗。`session.list` 带着它们，闲着的不写 `busy`。日志坏了的照样列，工作目录、最近动静照第一条 | C-3 |
+| `crates/gqy-endpoint/tests/sessions.rs` | 真核心：工作目录跟着头报的换、忙着的写 `busy`（主会话、子会话）、最近动静是日志最后一条；她列出来的只有同一个属主的别的主会话，不列自己、不列子会话、不列删了的，和 `session.list` 对得上 | C-3 |
+| `crates/gqy-basesystem/tests/sessions.rs` | 输出一字不差、第一行是自己、新的在前、一样的照编号、未命名的、字段转义、时区、分页、过了结尾、没有别的、撞了放长、参数不对不问端口、没有端口、列不出来、叫停。每种说法中文、英文、日文都换得出字 | C-3 |
+| `crates/gqy-tool/src/sessions/tests.rs` | 认会话编号：整个编号、8 位和 12 位的后缀对上，别的写法对不上，撞了是不止一个 | C-3 |
+| `crates/gqy-session/tests/sessions.rs` | 执行器照这个会话的属主要、拿掉她自己，没有会话表的照没有别的，载入的主会话照样列。工具面：本机主会话有 `sessions`，子会话、群没有，别的一件不少；子会话调它照没有的工具拒 | C-3 |
+| `crates/gqy-basesystem/src/history/tests/other.rs`、`crates/gqy-session/tests/history_other.rs` | 读别的会话：只读、不载入、在跑的也读、时区照自己的。找不到、撞了、子会话和群拒 | C-4 |
+| `crates/gqy-basesystem/tests/send_message.rs` | `to` 的认法和先后。长度上限（父子之间也管）。每种拒绝、`held`、`duplicate` 的说法。子会话写会话编号拒。说明里那几句在 | C-5 |
+| `crates/gqy-basesystem/tests/send_message/watch.rs` | `notify_when_idle`：只订不发、端口一次不问、效果里是整个编号；带话的先发，送到了（`sent`、`held`、一模一样的）才订，被拒、太长的整次不订；订子代理、父会话整次拒、留言也不发；订自己拒；两样都没有的参数不对；不能找别的会话的照旧拒；说法两种语言都换得出字 | C-6 |
+| `crates/gqy-session/tests/messages_peer.rs` | 执行器：命令编号、`by`、没载入的先载入、没人看着的一次性会话交回 `held`、三种拒绝对上三句、运行日志不带话的字 | C-5 |
+| `crates/gqy-endpoint/tests/peers.rs` | 真核心两个主会话：A 列出、读 B、发话，B 被叫醒、回话，A 被叫醒。两边互相发到第 6 句断开 | C-5 |
+| `crates/gqy-session/tests/watch.rs` | 被等的这边：订进来时已经空着不当场发，等它下一次忙完才发、带新那一轮的第一行（2026-10-01 改，编号还是订的起算时刻、不是新忙完的时刻）；订的起算时刻不晚于它上一次忙完的时刻的，照样当场发（带话又订的情形）；正忙时订了，忙完才发；同一个会话只记一个（后订的替掉先订的）；子代理没报完不发、报完被叫醒的那一轮做完了才发。等的这边：效果落了盘才订（订的时刻就是那条结果的时刻）、一直在等的不再订、找不到交 `gone` 不叫醒、载入再订（时刻不变）、日志往前挪过 12 小时的载入时不订当场作废、撤掉订它的那一轮不订、恢复撤销再订。「先交通知再报空闲」照 `actor.rs` 的 `drain` 写的先后，没有单独的测试（定时的先后测不稳） | C-6 |
+| `crates/gqy-endpoint/tests/watch.rs` | 真核心：只订不开轮、那边已经空着不当场到，等它自己又做完一轮才叫醒她，她看到的是那一块带标签的事实（2026-10-01 改）；带话的先送话再等，通知带着那句话叫醒的那一轮的第一行；B 正忙时订了、核心停了（被重启打断不算空，停的时候不发），换一份核心 A 一载入就再订，B 跟着载入接着做完，A 照样等到；B 删了以后 A 载入再订，会话表找不到它，记 `gone`、不叫醒 | C-6 |
+| `crates/gqy-basesystem/tests/budget.rs`、`xtask/src/ledger.rs` | 工具面的预算。新字的指纹和登记簿对得上 | C-3 到 C-6 |
 | 真模型实测 | 施工步子 C-7 | C-7 |
 
 ### 出处
@@ -524,13 +524,13 @@ No notice came within 12 hours, so the request was dropped.
 | # | 定了什么 | 为什么 | 别的选法 |
 |---|---|---|---|
 | 1 | 列会话新开一件 `sessions`，读并进 `history`（多 `session`），发和订并进 `send_message`（`to` 认会话编号，多 `notify_when_idle`） | 域内聚合、域间分名：翻日志是 `history` 的事，另开一件要把它七个参数再背一遍（估多 150 token）。给谁发话都是留言，Claude Code 的 `SendMessage` 也是一件管子代理、队友、别的会话。列会话是新的一件事，藏进参数里她想不起来（旧版 `kb:` 前缀的教训）。基础系统从 13 件变 14 件，`10-自带软件.md` 的决定跟着改 | 三件全新（估多两三百 token）。列会话并进 `jobs`（`jobs` 管她派出去的，会话不是她派的）。`history` 写 `session: list` 列会话 |
-| 2 | 列会话的工具叫 `sessions`（主会话认了，2026-10-01） | 和 `jobs` 一个样子：一个名词，列她手里有的。Miyu 里 agent 指子代理，不叫 `list_agents` | `list_sessions`。照 Claude Code 叫 `list_agents` |
+| 2 | 列会话的工具叫 `sessions`（主会话认了，2026-10-01） | 和 `jobs` 一个样子：一个名词，列她手里有的。GQY 里 agent 指子代理，不叫 `list_agents` | `list_sessions`。照 Claude Code 叫 `list_agents` |
 | 2a | 留言的工具在 C-5 改名 `send_message`（2026-10-01 项目主人定），派子代理的另开小单改名 `subagent`（施工 7-5 再补，项目主人定） | 照 Claude Code 的 `SendMessage`。和说明第一句、`to` 同一步改，只冷一次缓存。老会话冻着旧名字，照认成同一件 | 留着 `message_agent` |
 | 3 | 短编号取会话编号最后 8 位。撞了放长。认的时候照后缀 | UUIDv7 前 8 位约 65 秒才变，同一分钟开的会话前 8 位一样。最后 32 位是随机的。从编号算得出，不另存 | 前 8 位。照造的先后编 `s1`、`s2`（要另存计数，删了会重编）。编号的哈希 |
 | 4 | 没标题的，她看到 `(untitled)`，人看到「未命名」（主会话照推荐定，2026-10-01） | 设计 29 第一节第 1 条。施工 3-8 五补会给会话自动起标题，多数会话会有标题，用不着每行再带一截字 | 带第一句话的开头 |
 | 5 | `by` 沿用 `session`，照关系分三种 | `session` 本来就是「另一个会话」。关系在日志里查得到，不加种类，旧核心读得懂 | 新加一种 `peer` |
 | 6 | 标签 `<session-message from="短编号">`，不带标题 | 短编号从 `by` 算得出，前缀稳。标题会改，要带就得多一格记发话那一刻的。另用标签名，别的 harness 仿不了 | 借 `<agent-message from=…>`（harness 能冒充）。带标题 |
-| 7 | 「空了」= 内核空闲，而且它派的子代理都不欠它回报。后台命令不算 | 和 `miyu ask` 等到的是同一个时刻。只看回合的话，它派了子代理就先报空，她拿到的是「在等子代理」 | 只看回合（Claude Code 的做法） |
+| 7 | 「空了」= 内核空闲，而且它派的子代理都不欠它回报。后台命令不算 | 和 `gqy ask` 等到的是同一个时刻。只看回合的话，它派了子代理就先报空，她拿到的是「在等子代理」 | 只看回合（Claude Code 的做法） |
 | 8 | 订阅：等的这边日志里一条效果，被等的那边只在 actor 内存里记。效果落了盘，执行器照账本新多出来的去订，载入、恢复撤销以后走同一条路 | 单订不花 token，也不进那边的日志。等的这边的日志是唯一的真相，撤销、作废都照它算。落了盘才订，通知不会赶在这边记下在等以前到，不用像 7-6 的回报那样退避着重交 | 两边都记日志（那边多一种事件，第 25 条定了不要） |
 | 9 | 通知带那一轮最后回复的第一行，200 字以内 | 照 Claude Code 的一行状态，她多半不用再去读 | 什么都不带。带整段回复（像子代理的回报） |
 | 10 | 12 小时作废，等的这边计时、内核照时刻查。作废、不在了只记下不叫醒 | 12 小时是设计 29 定的照 Claude Code。作废不是做出来的结果，照 `undone`、`aborted` 的回报 | 作废也叫醒她 |
@@ -549,23 +549,23 @@ No notice came within 12 hours, so the request was dropped.
 | 23 | 旧快照没有标签的会话收到别的会话的话，照人的话原样渲染（主会话认了，记进「还没有的」） | 照施工 7-10。第一次发布以前，旧会话只有开发时造的 | 旧快照的会话拒收 |
 | 24 | 收话那边的人看到灰色一行预览：来自哪个会话（短编号、标题）和第一行，点开看全文（主会话照推荐定，2026-10-01） | 和人说的话分得开，不刷屏，照 Claude Code | 整段照人说的话显示、上面标来处。不显示 |
 | 25 | 被等的那边不显示「有会话在等你空下来」（同上） | 单订不花 token、不留痕，那边的日志不动 | 显示一行，那边日志多记一条 |
-| 26 | `miyu ask` 不等「空了告诉我」的通知（同上） | 可能要几个小时，和后台命令一样。通知记下，`miyu ask -c` 接着说时她看到 | 等到通知来或者 `--timeout` |
+| 26 | `gqy ask` 不等「空了告诉我」的通知（同上） | 可能要几个小时，和后台命令一样。通知记下，`gqy ask -c` 接着说时她看到 | 等到通知来或者 `--timeout` |
 | 27 | 一次只搜一个会话（同上） | 设计 29 第一节第 2 条说的是和翻自己的日志一样。现在没有全文索引，全搜要把每个会话的日志读一遍 | `history` 的 `session` 写 `all` 搜全部 |
 | 28 | 账本知道自己是哪个会话：`Ledger::for_session(会话)`，内核造会话、载入都用它；`Ledger::default()` 不知道，不查订的是不是自己（施工 C-1，2026-10-01） | 日志里没有自己的编号，得由内核交给账本。只拿账本数东西的读者（撤销的回应算停掉的任务）用不着这一条，照旧 | `Ledger::new` 一律带编号（十几处测试跟着改，和同时施工的几步冲突）。由内核在追加之前查（载入的日志查不到） |
 | 29 | `peer.idle` 不认识的原因不查 `by`，照样算等到了头，只查在不在等（施工 C-1） | 新版本加的原因谁记由新版本定，旧核心要载入得了。照 `child.reported` 不认识的原因不拦 | 只许那个会话或者内核 |
 | 30 | 算不算在等照回合现算：每次订记一项（在哪一轮、从哪一刻），撤销、恢复不动记录；撤掉又订的那一轮，回到前一次的时刻（施工 C-1） | 撤了就跟没做过一样，前一次订它的那一轮没撤。恢复不用另记什么。收到通知清掉那个会话的，账本随订的次数长 | 撤掉又订的一律不在等。撤销时删掉记录（恢复就回不来了） |
-| 31 | 真造的编号的短编号测试放在造编号的 `miyu-session`（`clock/tests.rs`），内核的只测写死的（施工 C-1） | 内核不造编号，也没有 `uuid` 依赖，纯逻辑门禁只许白名单里的 | 内核加 `uuid` 的开发依赖 |
+| 31 | 真造的编号的短编号测试放在造编号的 `gqy-session`（`clock/tests.rs`），内核的只测写死的（施工 C-1） | 内核不造编号，也没有 `uuid` 依赖，纯逻辑门禁只许白名单里的 | 内核加 `uuid` 的开发依赖 |
 | 32 | 防刷屏三款的先后：一模一样的先查（不占限速的数），再限速，最后查没听到的上限（施工 C-2） | 第五条第 2 款写了一模一样的先于限速；没听到的上限不分发话方，放最后，被拒的原因说的是这个发话方自己的事的优先 | 上限最先查 |
 | 33 | 「没听到」：主对话的请求或者回复看到了才算听到；回顾这类辅助请求、压缩的摘要请求、暂停着没发出去的那一条不算（施工 C-2） | 照回报的规矩（`kernel/session.md`「回报」），她真在主对话里读到了才算。账本照日志算，载入得回来 | 照 `queued` 的规矩，辅助请求以外都算 |
 | 34 | 字的哈希是内容块照日志里的写法写成 JSON 的 SHA-256；账本收下的都记着，不按窗口删（施工 C-2） | 「一个字节都不差」照日志里的字节比最直接，内核本来就有 SHA-256。账本不知道窗口多长（窗口在策略里），由内核照策略去数；一句一个时刻、一个哈希，限速管着每个发话方的句数 | 只比正文的字（附件不同的也算一样）；账本按窗口删（要把策略交给账本） |
 | 35 | 父会话在账本和有效历史里各记一份，认别的会话同一个认法（`Ledger::is_peer`、`History::is_peer`，施工 C-2） | 内核照账本收话、防刷屏；组装和 `history` 只拿得到有效历史。和认子代理的 `subagent_in`、`subagent` 一样各一份 | 把关系记进事件（多一格，旧核心读不懂） |
-| 36 | 人这边的一条照谁发的包哪种外壳，主请求和回顾的请求共用一处（`miyu-assemble` 的 `render.rs` 的 `said`，施工 C-2） | 7-10 以后两处各写了一遍分派，加第三种外壳要改两处，漏一处回顾就对不上 | 两处各加一行 |
+| 36 | 人这边的一条照谁发的包哪种外壳，主请求和回顾的请求共用一处（`gqy-assemble` 的 `render.rs` 的 `said`，施工 C-2） | 7-10 以后两处各写了一遍分派，加第三种外壳要改两处，漏一处回顾就对不上 | 两处各加一行 |
 | 37 | 场景测试分两份：收话的 `scenario/peers.rs`，防刷屏的 `scenario/flood.rs`（施工 C-2） | 一个文件最多 500 行 | 一份 |
 | 38 | 随机测试里别的会话的话只在四分之一的种子里送（种子除以 4 余 3，避开多调写文件的种子），数调小成 3 句、20 秒、5 句，时刻在一分钟里随便取（施工 C-2） | 每个种子都送，三百例里「又打断就不等了」这样难得的路走不到了；数调小，三款和窗口过了又收在三百例里都走得到 | 每个种子都送 |
 | 39 | 快照里防刷屏的数 `peers` 排在最后，标签 `core.peers` 排在 `harness` 后面；以前造的快照两样都没有，读成没有、不写（施工 C-2） | 字段的先后就是字节的先后；照 `jobs`、`recap` 的放法，旧快照的字节不变 | — |
 | 40 | `sessions` 的说明 C-3 先写不点名的第二句，C-5 改名时补上「to use with send_message and history」（施工 C-3，2026-10-01 主会话定） | C-3 时还没有 `send_message`、`history` 的 `session`，点名就违反 J4。C-5 本来就冷一次工具面，多改这一句不多花缓存，只多量一次 | 照草稿原样写，C-3 到 C-5 之间点名一件不存在的工具 |
 | 41 | 列不出来（放会话的目录读不了、核心正在停）交 `sessions/failed.txt`，算出错（施工 C-3，2026-10-01 主会话定） | 每次调用都要有结果；照「没有别的会话」答是骗她。照 `history/no-log.txt` 的写法 | 当成没有别的会话 |
-| 42 | 认会话编号做成 `miyu-tool` 里的纯函数 `find_session`：会话表的端口只列（含调的那个会话自己），认 = 列出这个会话能看到的主会话，再对（施工 C-3） | 一个认法，C-4 的 `history`、C-5 的 `send_message` 都照它；不另开一个端口方法，会话表那一头只有一样事 | `SessionPort` 另加一个「认」 |
+| 42 | 认会话编号做成 `gqy-tool` 里的纯函数 `find_session`：会话表的端口只列（含调的那个会话自己），认 = 列出这个会话能看到的主会话，再对（施工 C-3） | 一个认法，C-4 的 `history`、C-5 的 `send_message` 都照它；不另开一个端口方法，会话表那一头只有一样事 | `SessionPort` 另加一个「认」 |
 | 43 | 撞了放长照整张列表比（她自己加全部别的会话），不只是这一页（施工 C-3） | 翻页时同一个会话的写法不变；她自己的编号也算进去，第一行和下面的对得上 | 只照这一页比 |
 | 44 | 工作目录日志里一条都没记的写 `~`；只有一段、它坏了的，最近一次动静是 `session.created` 的时刻（施工 C-3） | 和会话表载入时同一个认法（`protocol.md`「会话表」第 5 条），`cwd` 总有一格；第一条读得出来才列进去，它的时刻总是有的 | 不写 `cwd`。坏了的不列 |
 | 45 | 忙不忙：先拿着会话表的锁记下这时忙着的，放开锁再去读日志（施工 C-3） | 读日志慢，不能一直拿着表的锁挡住别的连接；忙不忙本来就是那一刻的 | 读完日志再看 |
@@ -574,7 +574,7 @@ No notice came within 12 hours, so the request was dropped.
 | 48 | 一个别的会话都没有时，写了 `offset` 也说 `none.txt`，不说过了结尾（施工 C-3） | 「没有别的会话」对她更有用，也不用她再改 `offset` | 照过了结尾说 |
 | 49 | `SessionsPort` 加一个方法 `open`，不新开端口；交回一个 `Log`，只包会话的目录，不读盘：读不读得到要等交回的 `Log` 真的读的时候才知道（施工 C-4） | 认、列、开日志是同一件事的三步，端口不用多开；`Log` 本来就是「一个只读入口」，和读自己的日志走同一条路，`history` 的 `look()` 不用分两套逻辑 | `SessionsPort` 另开 `read`，直接交回读好的内容（要在异步的那一半就把日志整个读完，撑不住叫停、大日志） |
 | 50 | 会话表这一头的 `read_log` 只算出会话的真实目录，不检查它是不是真的存在、是不是这个属主的（施工 C-4） | `history` 调它之前已经拿 `find_session` 认过：候选名单就是 `list()` 交回的（同一个属主、主会话）加她自己，认过的编号才会被拿来开日志。目录本身读不读得到，等 `ReadLog::read` 真的读的时候自然知道，照旧报「读不了日志」 | 会话表再核对一遍属主、是不是主会话（认的活重做一遍） |
-| 51 | 会话表实现 `read_log` 放在 `miyu-endpoint`，不把 `miyu-session` 自己那份 `LogDir`（`store.rs`）公开出来（施工 C-4） | `miyu-endpoint` 已经直接依赖 `miyu-store`（`peek` 早就这样用 `read_events`），照同一个先例自己写一个小的 `ReadLog` 实现比把下层的私有类型改成 `pub` 更小的改动面 | 把 `miyu-session::store::LogDir` 公开，`miyu-endpoint` 直接用它 |
+| 51 | 会话表实现 `read_log` 放在 `gqy-endpoint`，不把 `gqy-session` 自己那份 `LogDir`（`store.rs`）公开出来（施工 C-4） | `gqy-endpoint` 已经直接依赖 `gqy-store`（`peek` 早就这样用 `read_events`），照同一个先例自己写一个小的 `ReadLog` 实现比把下层的私有类型改成 `pub` 更小的改动面 | 把 `gqy-session::store::LogDir` 公开，`gqy-endpoint` 直接用它 |
 | 52 | 写了 `session` 的四种出错（找不到、对得上不止一个、这个会话不能读别的会话、列会话或者开日志失败）都不读这次调用自己的日志，也不去开任何别的日志（施工 C-4） | 「一条日志都不读」是设计定的（第二条第 1 款）：出错了就是出错了，不该有副作用，也不该让她以为读到的是自己的记录 | 找不到、拒绝的时候退回读自己的日志 |
 | 53 | 通知的命令编号是 `<被等的会话>/idle/<等的会话>/<等的那一边这次订的起算时刻，Unix 毫秒>`，不用被等的那边日志最后一条的序号（施工 C-6） | 同一次订再交一遍（载入、恢复撤销以后再订），编号一样，内核照编号只生效一次，不会记两条。照序号的话，那边一直闲着、日志没动，这边收到一次以后马上又订，第二次的通知和第一次同一个编号，被当成重的吞掉，这边一直等到作废 | 照图纸草稿的序号 |
 | 54 | 内核多两样查询：`vacant()`（「空了」）、`watch_hours()`（执行器计时）；`last_line()` 照向上回报记的那一轮最后说的话（`report.rs` 的 `Duty`）取（施工 C-6） | 「空了」的认法、作废的数都在内核和策略里，执行器只照着办；回报和通知拿正文是同一份账 | 执行器自己算；`watching()` 直接交到点的时刻 |
@@ -598,7 +598,7 @@ No notice came within 12 hours, so the request was dropped.
 1. 没标题的会话，列表里写「未命名」，不带第一句话的开头。施工 3-8 五补会给会话自动起标题。
 2. 别的会话发来的话，收话那边的人看到灰色一行预览，点开看全文。没选：整段照人说的话显示，不显示。
 3. 被等的那边不显示「有会话在等你空下来」。没选：显示一行。
-4. `miyu ask` 不等「空了告诉我」的通知。没选：等到通知来或者 `--timeout`。
+4. `gqy ask` 不等「空了告诉我」的通知。没选：等到通知来或者 `--timeout`。
 5. 一次只搜一个会话。没选：`history` 的 `session` 写 `all` 搜全部。
 
 ### 要跟着改的别的页

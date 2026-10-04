@@ -8,11 +8,11 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/glob.rs` | 参数、搜哪个目录、要碰的路径、结果 |
-| `crates/miyu-basesystem/src/pattern.rs` | 模式的规矩；绝对路径的模式拆出目录。`grep` 的 `glob` 也照它 |
-| `crates/miyu-basesystem/src/walk.rs` | 往下走目录：忽略文件、版本库目录、链接、数据根、排序。`grep` 也照它 |
-| `crates/miyu-basesystem/src/blocking.rs` | 在阻塞线程里干，叫停时举旗 |
-| `crates/miyu-basesystem/src/common.rs`、`common/shown.rs` | 几件共用的几句；路径怎么写 |
+| `crates/gqy-basesystem/src/glob.rs` | 参数、搜哪个目录、要碰的路径、结果 |
+| `crates/gqy-basesystem/src/pattern.rs` | 模式的规矩；绝对路径的模式拆出目录。`grep` 的 `glob` 也照它 |
+| `crates/gqy-basesystem/src/walk.rs` | 往下走目录：忽略文件、版本库目录、链接、数据根、排序。`grep` 也照它 |
+| `crates/gqy-basesystem/src/blocking.rs` | 在阻塞线程里干，叫停时举旗 |
+| `crates/gqy-basesystem/src/common.rs`、`common/shown.rs` | 几件共用的几句；路径怎么写 |
 | `resources/software/basesystem/tools/glob.json` | 说明和参数格式 |
 | `resources/software/basesystem/glob/*.txt`、`common/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -140,11 +140,11 @@ a.rs
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/glob.rs` | 从资源目录造、参数格式、报的路径（`undefined` 当没给、模式是绝对路径的报拆出来的目录）；只比文件名在任何一层、带 `/` 的比路径；时间一样照路径排；不在仓库里也遵守 `.gitignore`、`.ignore`；在仓库里上级的算、不在仓库里上级的不算；隐藏的照找、版本库目录不进；外面的写绝对路径、数据根不进；工作区在数据根里照样往下走；绝对路径的模式；多过 100 个；没找到不算出错、写错了算；搜的要是存在的目录 |
-| `crates/miyu-basesystem/src/pattern/tests.rs` | 模式的每一条规矩、写错了说哪里错、绝对路径的模式怎么拆（Windows 的前缀里的 `?`） |
-| `crates/miyu-basesystem/src/walk/tests.rs` | 丢掉这次调用，走目录就停 |
-| `crates/miyu-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
-| `crates/miyu-session/tests/search.rs` | 会话里真的调它：工作区里找得到；从上面搜下来不进数据根 |
+| `crates/gqy-basesystem/tests/glob.rs` | 从资源目录造、参数格式、报的路径（`undefined` 当没给、模式是绝对路径的报拆出来的目录）；只比文件名在任何一层、带 `/` 的比路径；时间一样照路径排；不在仓库里也遵守 `.gitignore`、`.ignore`；在仓库里上级的算、不在仓库里上级的不算；隐藏的照找、版本库目录不进；外面的写绝对路径、数据根不进；工作区在数据根里照样往下走；绝对路径的模式；多过 100 个；没找到不算出错、写错了算；搜的要是存在的目录 |
+| `crates/gqy-basesystem/src/pattern/tests.rs` | 模式的每一条规矩、写错了说哪里错、绝对路径的模式怎么拆（Windows 的前缀里的 `?`） |
+| `crates/gqy-basesystem/src/walk/tests.rs` | 丢掉这次调用，走目录就停 |
+| `crates/gqy-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
+| `crates/gqy-session/tests/search.rs` | 会话里真的调它：工作区里找得到；从上面搜下来不进数据根 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

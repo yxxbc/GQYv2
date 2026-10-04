@@ -2,7 +2,7 @@
 
 ### 是什么
 
-核心去抓别人家网页的地方。做成可选的软件包 `net`：crate `miyu-net`，经 `miyu-core` 的 cargo 开关 `net` 编进来，发行版默认打开。现在只有一件事：`link.preview`，头给一个网址，核心抓下那一页的标题、简介、图，交回一张卡片。认得的几个站（B 站、YouTube、MediaWiki 站）照各自的办法取，卡片多出是什么（视频、文章）、视频多长、作者是谁；人机验证、挡爬虫的页面不出卡片（W-7 再补）。以后 `web_fetch` 用同一份抓取和地址闸（设计 10 第四节）。没编进来的核心里没有这块代码，`link.preview` 回 `unknown_method`，头照原样留着链接。
+核心去抓别人家网页的地方。做成可选的软件包 `net`：crate `gqy-net`，经 `gqy-core` 的 cargo 开关 `net` 编进来，发行版默认打开。现在只有一件事：`link.preview`，头给一个网址，核心抓下那一页的标题、简介、图，交回一张卡片。认得的几个站（B 站、YouTube、MediaWiki 站）照各自的办法取，卡片多出是什么（视频、文章）、视频多长、作者是谁；人机验证、挡爬虫的页面不出卡片（W-7 再补）。以后 `web_fetch` 用同一份抓取和地址闸（设计 10 第四节）。没编进来的核心里没有这块代码，`link.preview` 回 `unknown_method`，头照原样留着链接。
 
 地址闸是安全边界：网址是模型写的、别人发来的，核心照它去连，等于把 SSRF 的靶子摆在核心上。闸只有这一份，网页软件不另做图片代理（`web-module.md`「起草时定的」第 14 条）。
 
@@ -12,24 +12,24 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-net/`（第 3 层，执行器） | 地址闸、钉住解析好的地址、代理、自己跟跳转、读到 `</head>`、挖元数据、认图 |
-| `crates/miyu-net/src/lib.rs` | `LinkPreview`：懒读规矩、记着抓过的、图存成 blob、交回卡片 |
-| `crates/miyu-net/src/rules.rs` | 读 `link_preview.json` |
-| `crates/miyu-net/src/guard.rs` | 地址闸三层：样子、解析、IP 段 |
-| `crates/miyu-net/src/proxy.rs` | 这一跳走不走代理：照环境变量，和请求模型同一套读法 |
-| `crates/miyu-net/src/fetch.rs`、`fetch/clients.rs` | 一跳一跳地抓：每一跳过闸、钉地址或者交给代理、自己跟跳转；客户端复用 |
-| `crates/miyu-net/src/body.rs` | 读到 `</head>` 或者 `<body` 为止，YouTube 读到要的几样都有为止；读一张图、一份接口的回应；照开头的魔数认图 |
-| `crates/miyu-net/src/html.rs` | 挖元数据：标题、简介、图、站名、图标；找某一个标签的某一格（站要的那几样） |
-| `crates/miyu-net/src/sites.rs` | 按站取：照地址认站、挑读页面的办法、人机验证页、把各站取到的合成一张卡片（W-7 再补） |
-| `crates/miyu-net/src/sites/bilibili.rs` | B 站：认 BV、av、短链；读页面脚本里的视频数据 |
-| `crates/miyu-net/src/sites/mediawiki.rs` | MediaWiki 站：认站、页面名、`api.php` 在哪、读回应、第一段 |
-| `crates/miyu-net/src/sites/youtube.rs` | YouTube：ISO 8601 的时长换成秒 |
-| `crates/miyu-net/src/rules/sites.rs` | 读 `link_preview.json` 的 `api`、`sites`、`challenge` 三段 |
-| `crates/miyu-net/src/remember.rs` | 抓过的记多久、满了整个清空 |
-| `crates/miyu-net/src/testkit.rs` | 测试用的口子：回环当公网、只照一张表解析、代理照给的值。`testkit` 开关打开才编进去 |
-| `crates/miyu-endpoint/src/queries.rs` | 登记的查询多一种「在后台答」：`register_background` |
-| `crates/miyu-endpoint/src/connection.rs` | 在后台答的方法交给一个后台任务，回应照 `id` 对上；连接断了这些任务一起停 |
-| `crates/miyu-core/src/packages.rs`、`packages/net.rs` | 登记 `link.preview`；参数怎么读、卡片怎么写成回应 |
+| `crates/gqy-net/`（第 3 层，执行器） | 地址闸、钉住解析好的地址、代理、自己跟跳转、读到 `</head>`、挖元数据、认图 |
+| `crates/gqy-net/src/lib.rs` | `LinkPreview`：懒读规矩、记着抓过的、图存成 blob、交回卡片 |
+| `crates/gqy-net/src/rules.rs` | 读 `link_preview.json` |
+| `crates/gqy-net/src/guard.rs` | 地址闸三层：样子、解析、IP 段 |
+| `crates/gqy-net/src/proxy.rs` | 这一跳走不走代理：照环境变量，和请求模型同一套读法 |
+| `crates/gqy-net/src/fetch.rs`、`fetch/clients.rs` | 一跳一跳地抓：每一跳过闸、钉地址或者交给代理、自己跟跳转；客户端复用 |
+| `crates/gqy-net/src/body.rs` | 读到 `</head>` 或者 `<body` 为止，YouTube 读到要的几样都有为止；读一张图、一份接口的回应；照开头的魔数认图 |
+| `crates/gqy-net/src/html.rs` | 挖元数据：标题、简介、图、站名、图标；找某一个标签的某一格（站要的那几样） |
+| `crates/gqy-net/src/sites.rs` | 按站取：照地址认站、挑读页面的办法、人机验证页、把各站取到的合成一张卡片（W-7 再补） |
+| `crates/gqy-net/src/sites/bilibili.rs` | B 站：认 BV、av、短链；读页面脚本里的视频数据 |
+| `crates/gqy-net/src/sites/mediawiki.rs` | MediaWiki 站：认站、页面名、`api.php` 在哪、读回应、第一段 |
+| `crates/gqy-net/src/sites/youtube.rs` | YouTube：ISO 8601 的时长换成秒 |
+| `crates/gqy-net/src/rules/sites.rs` | 读 `link_preview.json` 的 `api`、`sites`、`challenge` 三段 |
+| `crates/gqy-net/src/remember.rs` | 抓过的记多久、满了整个清空 |
+| `crates/gqy-net/src/testkit.rs` | 测试用的口子：回环当公网、只照一张表解析、代理照给的值。`testkit` 开关打开才编进去 |
+| `crates/gqy-endpoint/src/queries.rs` | 登记的查询多一种「在后台答」：`register_background` |
+| `crates/gqy-endpoint/src/connection.rs` | 在后台答的方法交给一个后台任务，回应照 `id` 对上；连接断了这些任务一起停 |
+| `crates/gqy-core/src/packages.rs`、`packages/net.rs` | 登记 `link.preview`；参数怎么读、卡片怎么写成回应 |
 | `resources/software/net/link_preview.json` | 规矩：时限、上限、请求头、记多久、客户端留多久；认得的站、人机验证页的认法（W-7 再补） |
 
 ### 对外的样子
@@ -125,7 +125,7 @@
 
 规矩照网页演示的桥（proto/web-demo 分支 `web-demo/bridge/src/link_preview/`），桥照的是旧版。和桥不一样的地方照这一页：代理（第 5 条）、图存成 blob（第 8 条）、在后台答（第 11 条）。
 
-1. 可选软件包 `net`：抓取和地址闸在 crate `miyu-net`，经 `miyu-core` 的 cargo 开关 `net` 编进来，发行版默认打开。核心起来时经 `crates/miyu-core/src/packages.rs` 往查询表里登记 `link.preview`；没编进来的回 `unknown_method`。第一次调才读 `link_preview.json`，读不懂的记一条 `WARN not ready`，回 `internal_error`，这个核心的生命周期里不再试（照 `mermaid.md` 第 2 条）。
+1. 可选软件包 `net`：抓取和地址闸在 crate `gqy-net`，经 `gqy-core` 的 cargo 开关 `net` 编进来，发行版默认打开。核心起来时经 `crates/gqy-core/src/packages.rs` 往查询表里登记 `link.preview`；没编进来的回 `unknown_method`。第一次调才读 `link_preview.json`，读不懂的记一条 `WARN not ready`，回 `internal_error`，这个核心的生命周期里不再试（照 `mermaid.md` 第 2 条）。
 2. 地址：去掉前后空白读成网址，读不成 `not_a_url`；不是 `http`、`https` 的 `unsupported_scheme`。这两种不抓、不记。
 3. 地址闸，每一跳都过：
    1. 样子：只认 `http`、`https`；不带用户名、密码；`localhost`、`*.localhost`、`*.local` 不去（末尾带点的也算）；主机写的就是 IP 的照第 3 层判（`127.1`、`0x7f000001`、`2130706433` 这些写法读网址时已经规整成 `127.0.0.1`）。
@@ -141,7 +141,7 @@
    - 代理本身在哪不过闸：它是人自己设的，常在本机。
 6. 页面：一跳 12 秒（连上、发出、读完都算在里面）；对方回 4xx、5xx 的 `unreachable`（人机验证页除外，第 13 条）；回的不是 HTML（`Content-Type` 里没有 `html`，没写的也算）的 `no_preview`；读到 `</head>` 或者 `<body` 就停（不分大小写，跨在两块之间的也认得），最多 2 MiB（**照解开以后的字节算**，W-7 补）。照 UTF-8 读，读不了的字换成替换符。
    - 读到 `</head>`、`<body` 这个记号时：这一截里已经有 `<title>` 或者不空的 `og:title` 了，就在那儿截住，跟以前一样；两个都没有的，不截，接着往下读，只看 `<meta …>`、`<link rel=icon …>`，找到不空的 `og:title` 就停，最多读到上限（YouTube 把 `og:*` 放在 `</head>` 后面，`</head>` 在第 71.8 万字节、`og:title` 在第 77.3 万字节上，W-7 补 2026-10-02 施工时定）。这个判断边读边做，不会为了判断把整段重新扫一遍。
-   - B 站不管请求带不带 `Accept-Encoding` 都压着发页面：`miyu-net` 的客户端开着 reqwest 的 `gzip`、`brotli`、`deflate`、`zstd` 特性，自动带上 `Accept-Encoding`、自动解开（W-7 补）。字节上限照**解开以后**的算，一个压得很小、解开很大的包照样在上限停，不会先整份解开再截（async-compression 的解码器本身是边读边解的流，不是一口气摊开）。
+   - B 站不管请求带不带 `Accept-Encoding` 都压着发页面：`gqy-net` 的客户端开着 reqwest 的 `gzip`、`brotli`、`deflate`、`zstd` 特性，自动带上 `Accept-Encoding`、自动解开（W-7 补）。字节上限照**解开以后**的算，一个压得很小、解开很大的包照样在上限停，不会先整份解开再截（async-compression 的解码器本身是边读边解的流，不是一口气摊开）。
 7. 挖元数据：标题、简介、图照 `og:*`、`twitter:*`、`<title>` 和 `<meta name=description>` 的先后（`og:*` 不管写在第几行都先算）；同一样写了好几遍的，排在前面的算。站名照 `og:site_name`，没有用主机名去掉 `www.`；图标照 `rel` 里有 `icon` 的、`apple-touch-icon`，都没有试 `/favicon.ico`；相对地址照最后落到的那一页算；常见的实体（`&amp;`、`&#8212;` 这些）解开；空白收拢，标题最多 120 个字、简介 300、站名 60，超出的截断加 `…`。一格里留着没填的模板（`{$0}`、`{$1}` 这样，`{$` 加数字加 `}`）的，那一格当没有（W-7 再补：B 站删了的视频页，og 的简介是没填的模板）。没有标题的 `no_preview`。
 8. 图：一张 8 秒、最多 3 MiB（对方报的长度超了的不读，读的超了整张不要），跳转、闸、代理照页面一样走。只收照开头的魔数认得出的五种（PNG、JPEG、GIF、WebP、ICO），对方说是什么类型不算；不收 SVG（它能带脚本）。存成这个账号的 blob，回应里写哈希和认出来的类型。图和图标一起抓。抓不到、认不出、存不进的那一格是 `null`，卡片照样成立。
 9. 抓过的记在核心的内存里，照地址（读成网址以后的写法）记：抓到了的记 6 小时，`no_preview` 记 15 分钟，`unreachable` 记 45 秒；最多 512 条，满了整个清空。记着的卡片指的 blob 没了的，那一格交 `null`。
@@ -182,7 +182,7 @@
 
 协议的拒绝照 `protocol.md`「出错」：`bad_params`（`url` 没写、不是字符串）、`internal_error`（`link_preview.json` 读不懂）。做不出卡片不是拒绝，是 `why`。
 
-运行日志（目标 `miyu::net`，一律英文）：
+运行日志（目标 `gqy::net`，一律英文）：
 
 | 级别 | 行 | 什么时候 |
 |---|---|---|
@@ -199,19 +199,19 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-net/src/guard/tests.rs` | IP 段的表（照桥的 `guard.rs` 测试，`198.18.0.0/15` 改成公网，映射、NAT64、6to4 照里面那个 IPv4 判）；地址的样子；主机写的就是 IP 的不查 DNS；解析出一个不是公网的整个不去 |
-| `crates/miyu-net/src/html/tests.rs` | 元数据的先后、站名、图标、相对地址、截断、实体；坏的标记不崩；`<head>` 里没挖到东西时接着往正文找 `og:title`；`<head>` 里已经有 `<title>` 的不去正文找；`meta_is_og_title` 的键、`name` 退路、内容不空 |
-| `crates/miyu-net/src/body/tests.rs` | 只收五种图、不收 SVG；读到 `</head>`、`<body` 就停；`HeadSignals` 边读边找 `<title>`、不空的 `og:title`，标签跨在接缝上不丢、处理过的不重扫 |
-| `crates/miyu-net/src/remember/tests.rs` | 三种结果各记多久；满了整个清空 |
-| `crates/miyu-net/src/rules/tests.rs` | 出厂的 `link_preview.json` 读得进、数对得上；多一格、是 0 的读不了 |
-| `crates/miyu-net/tests/preview.rs` | 本机的假服务器上整条走通：钉住的地址（系统解析不了的名字照样到了）、元数据、图存成 blob、`blob` 没了交 `null`、记着的不再抓；跳转每一跳过闸（内网、`localhost`、`ftp`、云的元数据地址）、最多 5 跳、没写 `Location`；不是 HTML、没写类型、没有标题、4xx、5xx；读到 `</head>`、`<body` 就停，最多 2 MiB；图只收五种、不收 SVG、最多 3 MiB（报了长度的、没报的）；`link_preview.json` 读不了。gzip、br 压过的页面不带 `Accept-Encoding` 也解得开（W-7 补）；一个压得很小解开很大的包照上限停，标题在上限前面的找得到、后面的找不到；`og:title` 挪到 `</head>` 后面的找得到，挪到上限以后的找不到；`og:title` 排在 `<head>` 里靠前、别的字段排在后面隔着一截填料的，不会因为先找到 `og:title` 就提前收手丢了后面的字段 |
-| `crates/miyu-net/src/sites/*/tests.rs`、`crates/miyu-net/src/rules/tests.rs` | 认主机（一样的、子域名、像而不是的 `notbilibili.com`）；BV、av 的样子；B 站页面脚本里的 `videoData`（读不成的照页面的 `<meta name="author">`）；ISO 8601 的时长；`wgPageName` 的 JSON 字符串（转义、中文）；`EditURI`；第一段 `<p>`（空的、`<sup>` 去掉，框、表格里的不算）；接口回应读出来的几格；`sites`、`challenge` 多一格少一格读不了 |
-| `crates/miyu-net/tests/sites.rs` | 本机的假服务器当 B 站、YouTube、维基百科、别的 MediaWiki 站：B 站 BV、av、短链跟跳转都认，页面脚本里有视频数据的卡片带封面、UP 主、时长、`kind: video`，没有的照页面的 og 和 `<meta name="author">`、还是 `kind: video`，不调接口，「视频没了」那一页 `no_preview`、同样的标题不在 B 站视频页上的照常、模板那一格当没有；MediaWiki 照列着的主机、照 `generator` 都认，`api.php` 的简介、缩略图、站名，没有 TextExtracts 退回第一段，标题去尾巴，`kind: article`，接口没成照页面；YouTube 读过 `</head>`、时长换成秒、频道名、读不到时长的是 `page`；人机验证的标题、头、403 和 503 的 HTML 都 `no_preview`，403 不是 HTML 的照旧 `unreachable`；不认得的站照旧 `kind: page`、不调接口；MediaWiki 站的 `EditURI` 指到内网的被闸拦住、照页面合成卡片 |
-| `crates/miyu-net/tests/live.rs`（`#[ignore]`，还要设 `MIYU_NET_LIVE=1` 才连外网：CI 的长跑用 `--ignored` 跑所有标了的测试） | 真网络：B 站视频、YouTube 视频、中英维基、ArchWiki、一个普通网页各出像样的卡片（`kind` 对、有简介），卡片印出来给人看（W-7 再补，施工单验收第 3 条） |
-| `crates/miyu-net/tests/proxy.rs` | 代理（照测试的口子给的值）：页面和图都经假代理、请求行写着整个地址；本机解析不出来的照样交给代理；解析出内网的、写的就是内网和回环的一律不交；`NO_PROXY` 里的直连、钉地址；不走代理、解析不出来的 `unreachable`；没开测试的口子时，回环上真在听的服务器也不去 |
-| `crates/miyu-endpoint/src/queries.rs` 里的测试 | 在后台答的只有照 `register_background` 登记的；同一个名字两种登记也 panic |
-| `crates/miyu-core/tests/packages.rs` | 查询表没登记 `link.preview` 回 `unknown_method`；登记了的读不成地址、不是 http 不碰网络就答；`url` 没写、不是字符串 `bad_params`；在后台答的不挡后面的请求、回应照 `id` 对上、连接断了它跟着停 |
-| `crates/miyu/tests/link_preview.rs` | 真的核心、环境变量里的代理：经假代理出卡片、图用 `blob.get` 读得回来，`kind` 写着、`duration`、`author` 没有的不写（W-7 再补）；慢的 `link.preview` 不挡同一个连接上后面的请求 |
+| `crates/gqy-net/src/guard/tests.rs` | IP 段的表（照桥的 `guard.rs` 测试，`198.18.0.0/15` 改成公网，映射、NAT64、6to4 照里面那个 IPv4 判）；地址的样子；主机写的就是 IP 的不查 DNS；解析出一个不是公网的整个不去 |
+| `crates/gqy-net/src/html/tests.rs` | 元数据的先后、站名、图标、相对地址、截断、实体；坏的标记不崩；`<head>` 里没挖到东西时接着往正文找 `og:title`；`<head>` 里已经有 `<title>` 的不去正文找；`meta_is_og_title` 的键、`name` 退路、内容不空 |
+| `crates/gqy-net/src/body/tests.rs` | 只收五种图、不收 SVG；读到 `</head>`、`<body` 就停；`HeadSignals` 边读边找 `<title>`、不空的 `og:title`，标签跨在接缝上不丢、处理过的不重扫 |
+| `crates/gqy-net/src/remember/tests.rs` | 三种结果各记多久；满了整个清空 |
+| `crates/gqy-net/src/rules/tests.rs` | 出厂的 `link_preview.json` 读得进、数对得上；多一格、是 0 的读不了 |
+| `crates/gqy-net/tests/preview.rs` | 本机的假服务器上整条走通：钉住的地址（系统解析不了的名字照样到了）、元数据、图存成 blob、`blob` 没了交 `null`、记着的不再抓；跳转每一跳过闸（内网、`localhost`、`ftp`、云的元数据地址）、最多 5 跳、没写 `Location`；不是 HTML、没写类型、没有标题、4xx、5xx；读到 `</head>`、`<body` 就停，最多 2 MiB；图只收五种、不收 SVG、最多 3 MiB（报了长度的、没报的）；`link_preview.json` 读不了。gzip、br 压过的页面不带 `Accept-Encoding` 也解得开（W-7 补）；一个压得很小解开很大的包照上限停，标题在上限前面的找得到、后面的找不到；`og:title` 挪到 `</head>` 后面的找得到，挪到上限以后的找不到；`og:title` 排在 `<head>` 里靠前、别的字段排在后面隔着一截填料的，不会因为先找到 `og:title` 就提前收手丢了后面的字段 |
+| `crates/gqy-net/src/sites/*/tests.rs`、`crates/gqy-net/src/rules/tests.rs` | 认主机（一样的、子域名、像而不是的 `notbilibili.com`）；BV、av 的样子；B 站页面脚本里的 `videoData`（读不成的照页面的 `<meta name="author">`）；ISO 8601 的时长；`wgPageName` 的 JSON 字符串（转义、中文）；`EditURI`；第一段 `<p>`（空的、`<sup>` 去掉，框、表格里的不算）；接口回应读出来的几格；`sites`、`challenge` 多一格少一格读不了 |
+| `crates/gqy-net/tests/sites.rs` | 本机的假服务器当 B 站、YouTube、维基百科、别的 MediaWiki 站：B 站 BV、av、短链跟跳转都认，页面脚本里有视频数据的卡片带封面、UP 主、时长、`kind: video`，没有的照页面的 og 和 `<meta name="author">`、还是 `kind: video`，不调接口，「视频没了」那一页 `no_preview`、同样的标题不在 B 站视频页上的照常、模板那一格当没有；MediaWiki 照列着的主机、照 `generator` 都认，`api.php` 的简介、缩略图、站名，没有 TextExtracts 退回第一段，标题去尾巴，`kind: article`，接口没成照页面；YouTube 读过 `</head>`、时长换成秒、频道名、读不到时长的是 `page`；人机验证的标题、头、403 和 503 的 HTML 都 `no_preview`，403 不是 HTML 的照旧 `unreachable`；不认得的站照旧 `kind: page`、不调接口；MediaWiki 站的 `EditURI` 指到内网的被闸拦住、照页面合成卡片 |
+| `crates/gqy-net/tests/live.rs`（`#[ignore]`，还要设 `GQY_NET_LIVE=1` 才连外网：CI 的长跑用 `--ignored` 跑所有标了的测试） | 真网络：B 站视频、YouTube 视频、中英维基、ArchWiki、一个普通网页各出像样的卡片（`kind` 对、有简介），卡片印出来给人看（W-7 再补，施工单验收第 3 条） |
+| `crates/gqy-net/tests/proxy.rs` | 代理（照测试的口子给的值）：页面和图都经假代理、请求行写着整个地址；本机解析不出来的照样交给代理；解析出内网的、写的就是内网和回环的一律不交；`NO_PROXY` 里的直连、钉地址；不走代理、解析不出来的 `unreachable`；没开测试的口子时，回环上真在听的服务器也不去 |
+| `crates/gqy-endpoint/src/queries.rs` 里的测试 | 在后台答的只有照 `register_background` 登记的；同一个名字两种登记也 panic |
+| `crates/gqy-core/tests/packages.rs` | 查询表没登记 `link.preview` 回 `unknown_method`；登记了的读不成地址、不是 http 不碰网络就答；`url` 没写、不是字符串 `bad_params`；在后台答的不挡后面的请求、回应照 `id` 对上、连接断了它跟着停 |
+| `crates/gqy/tests/link_preview.rs` | 真的核心、环境变量里的代理：经假代理出卡片、图用 `blob.get` 读得回来，`kind` 写着、`duration`、`author` 没有的不写（W-7 再补）；慢的 `link.preview` 不挡同一个连接上后面的请求 |
 
 ### 出处
 
@@ -244,11 +244,11 @@
 | 8 | 在后台答做成查询表的一种登记（`register_background`），端点照登记分；后台任务放在连接自己的一个 `JoinSet` 里，连接断了一起停 | 加东西只登记，不改中心（`web-module.md` 第 19 条）；连接走了还接着抓，核心就一直不算空闲 | 端点里写死 `link.preview` 这个名字；后台任务不管，抓完自己结束（连接断了还占着最多一分多钟） |
 | 9 | 图存进哪个账号，核心起来时登记就定了：`packages::register` 多收数据根和账号，现在是 `admin` | 现在连上来的都是管理员；端点的家底不用多公开一个方法 | `Core` 公开一个取 blob 的方法，每次照连接取（多用户来了再做） |
 | 10 | 运行日志只在真抓过、没做成时记 `link preview failed`；图存不进 blob 另记一行 | 记着的再记一遍只是刷屏；读不成地址的不是「抓」；存不进是磁盘出了事，不吞 | 每次都记 |
-| 11 | `miyu-net` 开 reqwest 的 gzip/brotli/deflate/zstd 特性（整个工作区合起来的），`miyu-http` 的客户端明确关掉（`no_gzip`/`no_brotli`/`no_deflate`/`no_zstd`，这几个方法不管特性开没开都存在）。`</head>`、`<body` 这个记号的「要不要接着往下读」判断边读边做，一个标签只处理一次，不整段重扫（W-7 补，2026-10-02 施工时定） | B 站不管请求带不带 `Accept-Encoding` 都压着发；YouTube 把 `og:*` 放在 `</head>` 后面；请求模型那条路要一个字节不变；边读边判断才不会把一次判断变成对着攒大的 `<head>` 整段重扫几十万次（压缩炸弹、慢速攻击都靠它防） | 只给 `miyu-net` 单独开一份不同版本的 reqwest（两份证书栈、两套 TLS 初始化，没必要）；读完整个 `<head>` 再判断一次要不要接着读（正常页面也要等读完才能判断，变慢） |
+| 11 | `gqy-net` 开 reqwest 的 gzip/brotli/deflate/zstd 特性（整个工作区合起来的），`gqy-http` 的客户端明确关掉（`no_gzip`/`no_brotli`/`no_deflate`/`no_zstd`，这几个方法不管特性开没开都存在）。`</head>`、`<body` 这个记号的「要不要接着往下读」判断边读边做，一个标签只处理一次，不整段重扫（W-7 补，2026-10-02 施工时定） | B 站不管请求带不带 `Accept-Encoding` 都压着发；YouTube 把 `og:*` 放在 `</head>` 后面；请求模型那条路要一个字节不变；边读边判断才不会把一次判断变成对着攒大的 `<head>` 整段重扫几十万次（压缩炸弹、慢速攻击都靠它防） | 只给 `gqy-net` 单独开一份不同版本的 reqwest（两份证书栈、两套 TLS 初始化，没必要）；读完整个 `<head>` 再判断一次要不要接着读（正常页面也要等读完才能判断，变慢） |
 | 12 | MediaWiki 站都走 `api.php`（维基百科也是），不走维基百科的 REST `page/summary`；站名放在同一个请求里（`meta=siteinfo`）（W-7 再补，2026-10-02 施工时定，下同） | 一条路认所有 MediaWiki 站，少一份代码；REST 只有维基媒体的站有，又不给站名 | 维基百科走 REST、别的走 `api.php`（两份读法；维基百科的站名还得另找） |
 | 13 | 没装 TextExtracts 的，第一段照 `action=parse&section=0` 的回应找，不回头再读页面的正文 | 第一段在正文里，离 `</head>` 很远；为它把每个 MediaWiki 页面都多读一截，或者回头再抓一遍，都比多调一次接口贵。`parse` 是 MediaWiki 本身就有的，不靠扩展 | 读页面时认出是 MediaWiki 就接着读到第一段（每页都多读）；回头再抓一遍页面 |
 | 14 | B 站读页面脚本里的视频数据（`__INITIAL_STATE__.videoData`），不调接口；短链先跟完跳转再认（2026-10-03 照项目主人实测改） | 接口 `x/web-interface/view` 对没登录的请求回 412，带上 `buvid3` 也一样；页面照常给，脚本里那份数据和接口的字段一样 | 先调接口、不行再读页面（每张卡多一个必挂的请求）；带登录的 cookie（要人的账号）；接口的签名（wbi，跟着 B 站改） |
 | 15 | YouTube 是不是视频照读没读到时长判，不照路径 | 读到了时长才是一个视频；`/watch`、`/shorts/`、`youtu.be` 这些路径以后还会变 | 照路径列一张表 |
 | 16 | 接口有自己的一份预算 `api`（时限、上限、`Accept`），数和页面一样 | 接口回的是 JSON，`Accept` 和页面的不一样；放一起改一个就动另一个 | 照页面的预算、`Accept` 写死在代码里 |
-| 17 | 真网络的实测是一个标了 `#[ignore]`、还要设 `MIYU_NET_LIVE=1` 的测试（`tests/live.rs`） | 站会变，CI 不该跟着外网红；要验的时候一条命令就能在人自己的机器上看到每张卡片 | 只靠人手点网页看（不留痕）；放进 CI（外网一抖就红） |
+| 17 | 真网络的实测是一个标了 `#[ignore]`、还要设 `GQY_NET_LIVE=1` 的测试（`tests/live.rs`） | 站会变，CI 不该跟着外网红；要验的时候一条命令就能在人自己的机器上看到每张卡片 | 只靠人手点网页看（不留痕）；放进 CI（外网一抖就红） |
 | 18 | 没填的模板（`{$` 加数字加 `}`）对所有站、所有格都算没有 | 哪个站留着没填的模板，那一格给人看都是坏的；只认 B 站反倒要多一个判断 | 只在 B 站退回读页面时认 |

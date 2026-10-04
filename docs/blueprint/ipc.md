@@ -8,17 +8,17 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-ipc/src/lib.rs` | `open`、`open_locked`：核心起来；`connect`：头连核心 |
-| `crates/miyu-ipc/src/place.rs` | 套接字放哪：`Dirs`、数据根的指纹、路径的上限 |
-| `crates/miyu-ipc/src/lock.rs` | 单实例锁 `run/core.lock` |
-| `crates/miyu-ipc/src/files.rs` | `run/token`、`run/socket` |
-| `crates/miyu-ipc/src/listener.rs` | 等连接的一头 `Listener`、连上的一个连接 `Connection` |
-| `crates/miyu-ipc/src/unix.rs` | Unix 域套接字：只有自己能进的目录、旧套接字、跟终端脱开 |
-| `crates/miyu-ipc/src/windows.rs` | 命名管道：等连接、连过去、核对另一头、跟终端脱开 |
-| `crates/miyu-ipc/src/ready.rs` | 核心说「好了」的那一行 |
-| `crates/miyu-ipc/src/start.rs` | `connect_or_start`：连不上就拉起核心；`connect_or_start_bare` 同样拉起、不读本机令牌（施工 W-8） |
-| `crates/miyu-ipc/src/error.rs` | 起不来、连不上、拉不起的几种情形和它们的话 |
-| `crates/miyu-pipe/src/lib.rs`、`windows.rs` | Windows 的安全接口：只对本人开放的管道实例，当前用户和管道另一头的 SID。整个仓库只有这个 crate 放开了 `unsafe`，每个 `unsafe` 块都写着为什么安全 |
+| `crates/gqy-ipc/src/lib.rs` | `open`、`open_locked`：核心起来；`connect`：头连核心 |
+| `crates/gqy-ipc/src/place.rs` | 套接字放哪：`Dirs`、数据根的指纹、路径的上限 |
+| `crates/gqy-ipc/src/lock.rs` | 单实例锁 `run/core.lock` |
+| `crates/gqy-ipc/src/files.rs` | `run/token`、`run/socket` |
+| `crates/gqy-ipc/src/listener.rs` | 等连接的一头 `Listener`、连上的一个连接 `Connection` |
+| `crates/gqy-ipc/src/unix.rs` | Unix 域套接字：只有自己能进的目录、旧套接字、跟终端脱开 |
+| `crates/gqy-ipc/src/windows.rs` | 命名管道：等连接、连过去、核对另一头、跟终端脱开 |
+| `crates/gqy-ipc/src/ready.rs` | 核心说「好了」的那一行 |
+| `crates/gqy-ipc/src/start.rs` | `connect_or_start`：连不上就拉起核心；`connect_or_start_bare` 同样拉起、不读本机令牌（施工 W-8） |
+| `crates/gqy-ipc/src/error.rs` | 起不来、连不上、拉不起的几种情形和它们的话 |
+| `crates/gqy-pipe/src/lib.rs`、`windows.rs` | Windows 的安全接口：只对本人开放的管道实例，当前用户和管道另一头的 SID。整个仓库只有这个 crate 放开了 `unsafe`，每个 `unsafe` 块都写着为什么安全 |
 
 ### 对外的样子
 
@@ -38,10 +38,10 @@
 
 | 平台 | 什么时候 | 位置 |
 |---|---|---|
-| Linux | 设了能用的 `$XDG_RUNTIME_DIR` | `$XDG_RUNTIME_DIR/miyu-<指纹>/core.sock` |
+| Linux | 设了能用的 `$XDG_RUNTIME_DIR` | `$XDG_RUNTIME_DIR/gqy-<指纹>/core.sock` |
 | Linux（没有能用的 `$XDG_RUNTIME_DIR`）、macOS | | `<数据根>/run/core.sock` |
-| Linux、macOS | 上面那个超过上限 | `$TMPDIR/miyu-<uid>/<指纹>.sock` |
-| Windows | | 命名管道 `\\.\pipe\miyu-<指纹>` |
+| Linux、macOS | 上面那个超过上限 | `$TMPDIR/gqy-<uid>/<指纹>.sock` |
+| Windows | | 命名管道 `\\.\pipe\gqy-<指纹>` |
 
 - **指纹**：数据根路径的 SHA-256 的前 4 个字节，写成 8 位小写十六进制。照数据根写的路径算，不追链接：同一个数据根换个写法算出来不一样也不要紧，头照 `run/socket` 去连。
 - **上限**按字节算：Linux 107，macOS 103（系统的上限 108、104 都算上了结尾的零）。临时目录下也放不下，或者没有用户编号：起不来。Windows 上没有上限。
@@ -55,7 +55,7 @@
 |---|---|
 | `Dirs` | 找套接字放哪要看的快照：`platform`、`runtime_dir`（核对过的 `$XDG_RUNTIME_DIR`）、`temp_dir`、`uid`（Unix 上是有效用户编号，Windows 上没有）。`Dirs::current` 从进程里读一次；测试喂一份快照，不改进程的环境变量 |
 | `Opened` | 核心起来了：`listener` 等连接，`token` 这一次的本机令牌。打出来时不带令牌 |
-| `Listener` | 等连接：`accept` 等下一个，`path` 套接字在哪。丢掉它：先删套接字文件，放在 `$XDG_RUNTIME_DIR/miyu-<指纹>/` 里的连这一层目录一起删，再放锁 |
+| `Listener` | 等连接：`accept` 等下一个，`path` 套接字在哪。丢掉它：先删套接字文件，放在 `$XDG_RUNTIME_DIR/gqy-<指纹>/` 里的连这一层目录一起删，再放锁 |
 | `Connection` | 连上的一个连接：异步的字节流，能读能写，交给协议端点（`protocol.md`） |
 | `Lock` | 拿着的单实例锁，丢掉就放开 |
 | `Ready` | 核心写的那一行：`Ready`、`Running`、`Failed(原因)` |
@@ -80,7 +80,7 @@
    - 套接字文件，试着连一下被拒绝的：上一个核心崩了留下的旧套接字，删掉，记一条 `INFO stale socket removed socket=…`，再绑。
    - 不是套接字的文件，或者连得上的套接字（别的程序正在听，例如指纹撞了的另一个数据根的核心）：`Occupied`，不动它。
 4. 套接字文件本身的权限不另外设：靠所在的目录挡住别人。
-5. 核心走的时候删套接字文件（`DEBUG socket file not removed error=…`）。放在 `$XDG_RUNTIME_DIR/miyu-<指纹>/` 里的，这一层目录空了一起删（`DEBUG runtime dir not removed error=…`）；数据根的 `run/`、临时目录下几个数据根共用的 `miyu-<uid>/` 不删（施工 5-11 补：以前留着这一层，一个数据根留一个）。
+5. 核心走的时候删套接字文件（`DEBUG socket file not removed error=…`）。放在 `$XDG_RUNTIME_DIR/gqy-<指纹>/` 里的，这一层目录空了一起删（`DEBUG runtime dir not removed error=…`）；数据根的 `run/`、临时目录下几个数据根共用的 `gqy-<uid>/` 不删（施工 5-11 补：以前留着这一层，一个数据根留一个）。
 
 **命名管道**（Windows）
 
@@ -152,8 +152,8 @@
 | `StartError::Connect` | 连不上 | 照 `ConnectError` 的话 |
 | `StartError::Io` | 读写出错，例如找不到程序、拉不起来 | 拉不起核心：<系统的原话> |
 
-- 这些话只有中文，不跟界面语言。头（`miyu ask`、`miyu undo`）照原样印在标准错误上，退出码 1；`miyu ask` 没有 key、核心又没在跑的另说，退出码 5（`cli/ask.md`）。
-- 运行日志（目标 `miyu::ipc`）：核心里记 `INFO listening socket=…`、`INFO stale socket removed socket=…`、`WARN XDG_RUNTIME_DIR not usable, using run/ dir=…`、`DEBUG socket file not removed error=…`（删套接字文件没删成）。头里发的 `DEBUG core not reaped error=…`（替拉起的核心收尸没收成）记不下来：头不装运行日志。
+- 这些话只有中文，不跟界面语言。头（`gqy ask`、`gqy undo`）照原样印在标准错误上，退出码 1；`gqy ask` 没有 key、核心又没在跑的另说，退出码 5（`cli/ask.md`）。
+- 运行日志（目标 `gqy::ipc`）：核心里记 `INFO listening socket=…`、`INFO stale socket removed socket=…`、`WARN XDG_RUNTIME_DIR not usable, using run/ dir=…`、`DEBUG socket file not removed error=…`（删套接字文件没删成）。头里发的 `DEBUG core not reaped error=…`（替拉起的核心收尸没收成）记不下来：头不装运行日志。
 
 ### 给人看的字
 
@@ -163,17 +163,17 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-ipc/src/place/tests.rs` | 指纹是前 8 位十六进制；Linux 放 `$XDG_RUNTIME_DIR` 下；没有的放 `run/`；macOS 不看它；太长的放临时目录；上限按字节、不算结尾的零；哪里都放不下；Windows 是命名管道 |
-| `crates/miyu-ipc/src/lock/tests.rs` | 第二把锁等第一把放开；两个数据根不共用锁 |
-| `crates/miyu-ipc/src/files/tests.rs` | 令牌是 64 位小写十六进制、读回来一样、每次换新的、只有自己能读（上次留下的临时文件不沿用）；位置是一行、读回来一样、相对路径不认、不是 UTF-8 的照原样 |
-| `crates/miyu-ipc/src/ready/tests.rs` | 三种写了读回来一样；原因只有一行；认不出的是起不来 |
-| `crates/miyu-ipc/src/start/tests.rs` | 听得到每一种；没说话就退了的；等太久的 |
-| `crates/miyu-ipc/src/unix/tests.rs` | `$XDG_RUNTIME_DIR` 要是绝对路径、只有自己能进；只有自己的真目录才算；别人的不算；新建的 0700，已经有的不动 |
-| `crates/miyu-ipc/tests/socket.rs` | 照 `run/socket` 连上、拿到令牌；Linux 在 `$XDG_RUNTIME_DIR` 下；太长的在临时目录下；一个数据根一个核心、走了删套接字、每次换令牌；旧套接字清掉；别的东西不动；别人进得来的目录不用、链接不用；临时目录也要只有自己能进；头不从别人进得来的目录连；没有核心时连不上 |
-| `crates/miyu-ipc/tests/pipe.rs` | Windows：照管道连上、拿到令牌，接走一个以后下一个在等；连上就走的不堵管道；一个数据根一个核心；名字被占了不动；没有核心时连不上 |
-| `crates/miyu-pipe/src/tests.rs` | 安全描述符的写法 |
-| `crates/miyu-pipe/src/windows/tests.rs` | Windows：管道只对本人开放；一个名字只有一个第一个实例；头看到另一头是自己；当前用户是一个 SID |
-| `crates/miyu/tests/core.rs` | 真的主程序：拉起、再连不拉起、两个头同时只拉起一个、起不来的说原因、没说话就退了的、已经在跑还没开始等连接的等着连上它、核心的工作目录是数据根 |
+| `crates/gqy-ipc/src/place/tests.rs` | 指纹是前 8 位十六进制；Linux 放 `$XDG_RUNTIME_DIR` 下；没有的放 `run/`；macOS 不看它；太长的放临时目录；上限按字节、不算结尾的零；哪里都放不下；Windows 是命名管道 |
+| `crates/gqy-ipc/src/lock/tests.rs` | 第二把锁等第一把放开；两个数据根不共用锁 |
+| `crates/gqy-ipc/src/files/tests.rs` | 令牌是 64 位小写十六进制、读回来一样、每次换新的、只有自己能读（上次留下的临时文件不沿用）；位置是一行、读回来一样、相对路径不认、不是 UTF-8 的照原样 |
+| `crates/gqy-ipc/src/ready/tests.rs` | 三种写了读回来一样；原因只有一行；认不出的是起不来 |
+| `crates/gqy-ipc/src/start/tests.rs` | 听得到每一种；没说话就退了的；等太久的 |
+| `crates/gqy-ipc/src/unix/tests.rs` | `$XDG_RUNTIME_DIR` 要是绝对路径、只有自己能进；只有自己的真目录才算；别人的不算；新建的 0700，已经有的不动 |
+| `crates/gqy-ipc/tests/socket.rs` | 照 `run/socket` 连上、拿到令牌；Linux 在 `$XDG_RUNTIME_DIR` 下；太长的在临时目录下；一个数据根一个核心、走了删套接字、每次换令牌；旧套接字清掉；别的东西不动；别人进得来的目录不用、链接不用；临时目录也要只有自己能进；头不从别人进得来的目录连；没有核心时连不上 |
+| `crates/gqy-ipc/tests/pipe.rs` | Windows：照管道连上、拿到令牌，接走一个以后下一个在等；连上就走的不堵管道；一个数据根一个核心；名字被占了不动；没有核心时连不上 |
+| `crates/gqy-pipe/src/tests.rs` | 安全描述符的写法 |
+| `crates/gqy-pipe/src/windows/tests.rs` | Windows：管道只对本人开放；一个名字只有一个第一个实例；头看到另一头是自己；当前用户是一个 SID |
+| `crates/gqy/tests/core.rs` | 真的主程序：拉起、再连不拉起、两个头同时只拉起一个、起不来的说原因、没说话就退了的、已经在跑还没开始等连接的等着连上它、核心的工作目录是数据根 |
 
 ### 出处
 
@@ -186,5 +186,5 @@
 
 - 浏览器、远程用 WebSocket，核心自己查 Origin 头；远程要登录（`04-核心协议.md` 第二节、第四节，P5、P6）。
 - 核心拉起的扩展、桥经标准输入输出连（`04-核心协议.md` 第二节）。
-- `miyu stdio`：替别的程序连上核心、出示令牌，之后原样转发（`22-命令行.md` 第四节）。
+- `gqy stdio`：替别的程序连上核心、出示令牌，之后原样转发（`22-命令行.md` 第四节）。
 - 沙盒里的命令连不上核心、读不到令牌（`11-权限与沙盒.md` 第五节，A6）：沙盒还没做（M5）。

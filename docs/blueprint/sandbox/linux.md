@@ -10,9 +10,9 @@ Linux 上助手怎么照规格收紧自己。各平台共用的（规格、助�
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/linux.rs` | `mechanisms`、`run`：查规格收不收得住，照规格收紧，再换成命令 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/linux/landlock.rs` | 建 Landlock 的规则集、加规则、收紧自己 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/linux/reads.rs` | 读怎么放：从根目录一级级往下，绕开藏起来的 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/linux.rs` | `mechanisms`、`run`：查规格收不收得住，照规格收紧，再换成命令 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/linux/landlock.rs` | 建 Landlock 的规则集、加规则、收紧自己 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/linux/reads.rs` | 读怎么放：从根目录一级级往下，绕开藏起来的 |
 
 ### 对外的样子
 
@@ -34,7 +34,7 @@ Linux 上助手怎么照规格收紧自己。各平台共用的（规格、助�
 - 收紧的时候设 `no_new_privs`：沙盒里的 setuid 程序（例如 `sudo`）拿不到更高的权限。
 - 连系统服务的套接字拦下（2026-09-29 项目主人定：能替命令在沙盒外读写的系统服务照样挡）：Landlock 第 9 版（内核 7.1）起，`write` 以外路径上的 Unix 套接字连不上（D-Bus、Docker 都是）；第 6 版（6.12）起，沙盒外建的抽象套接字也连不上。更老的内核拦不住。沙盒里要 ssh-agent 的 `git push`、桌面通知这类会失败。
 
-**收紧不成的那一句**（`sandbox.md` 定的写法：`miyu-sandbox: cannot confine: <原话>`，退出 125，不跑命令），原话是下面之一：
+**收紧不成的那一句**（`sandbox.md` 定的写法：`gqy-sandbox: cannot confine: <原话>`，退出 125，不跑命令），原话是下面之一：
 
 | 原话 | 什么时候 |
 |---|---|
@@ -58,9 +58,9 @@ Linux 上助手怎么照规格收紧自己。各平台共用的（规格、助�
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-sandbox/tests/linux.rs` | 真跑助手：规格外的哪儿都读得了（家目录、系统目录），写不了、删不了；能写的读得了、写得了、跨目录改名和硬链接得了；一条能写的都没有时哪儿都写不了，只有 `/dev/null` 写得进；藏起来的读不了、写不了，名字看得到；能写的落在藏起来的里面照样能写；藏起来的落在能写的里面拒绝执行（125、那一句）；一级级放行时的链接不跟过去；不在的路径跳过；设了 `no_new_privs`；规格外路径上的 Unix 套接字连不上（内核 7.1 起），沙盒外建的抽象套接字连不上（6.12 起），更老的内核上照连得上测；内核启用了 Landlock 的，探测报它。内核没有 Landlock 的机器上，只测拒绝执行；CI 上（设了 `CI`）必须探测到 Landlock |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/linux/tests.rs` | 查规格：本身、下面、旁边（`/a/bc` 和 `/a/b`）、上一级各算不算落在里面 |
-| `crates/miyu-sandbox/src/bin/miyu-sandbox/linux/reads/tests.rs` | 一级级放行：在一个临时目录里摆出几层，看放了哪些、跳过了哪些（藏起来的、链接、通向藏起来的那条路） |
+| `crates/gqy-sandbox/tests/linux.rs` | 真跑助手：规格外的哪儿都读得了（家目录、系统目录），写不了、删不了；能写的读得了、写得了、跨目录改名和硬链接得了；一条能写的都没有时哪儿都写不了，只有 `/dev/null` 写得进；藏起来的读不了、写不了，名字看得到；能写的落在藏起来的里面照样能写；藏起来的落在能写的里面拒绝执行（125、那一句）；一级级放行时的链接不跟过去；不在的路径跳过；设了 `no_new_privs`；规格外路径上的 Unix 套接字连不上（内核 7.1 起），沙盒外建的抽象套接字连不上（6.12 起），更老的内核上照连得上测；内核启用了 Landlock 的，探测报它。内核没有 Landlock 的机器上，只测拒绝执行；CI 上（设了 `CI`）必须探测到 Landlock |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/linux/tests.rs` | 查规格：本身、下面、旁边（`/a/bc` 和 `/a/b`）、上一级各算不算落在里面 |
+| `crates/gqy-sandbox/src/bin/gqy-sandbox/linux/reads/tests.rs` | 一级级放行：在一个临时目录里摆出几层，看放了哪些、跳过了哪些（藏起来的、链接、通向藏起来的那条路） |
 
 ### 出处
 

@@ -8,15 +8,15 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/subagent.rs` | 参数（`pool` 照端口列着的查，施工 8-8 补）、交给端口、结果和效果；以前的名字（`formerly`） |
-| `crates/miyu-tool/src/agents.rs` | 派子代理的端口 `AgentPort`（`tools/interface.md`）；名字 `SUBAGENT`、以前的名字 `SUBAGENT_FORMERLY`，`is_subagent` 两个都认 |
-| `crates/miyu-tool/src/catalog.rs` | 工具目录照以前的名字也找得到这一件（`tools/interface.md`「登记」） |
-| `crates/miyu-session/src/agents.rs` | 执行器这一头：照父会话填好子会话，经会话表的端口造出来、送交代（`session/tools.md`「派子代理」）；造会话时拼 `pool` 那一格、照快照读回列着的池（施工 8-8 补） |
-| `crates/miyu-policy/src/tools/choice.rs` | 拼 `pool` 那一格（`ToolEntry::offer`）、照快照读回（`ToolEntry::offered`），照原样的 JSON 搬，别的字节不动（施工 8-8 补） |
+| `crates/gqy-basesystem/src/subagent.rs` | 参数（`pool` 照端口列着的查，施工 8-8 补）、交给端口、结果和效果；以前的名字（`formerly`） |
+| `crates/gqy-tool/src/agents.rs` | 派子代理的端口 `AgentPort`（`tools/interface.md`）；名字 `SUBAGENT`、以前的名字 `SUBAGENT_FORMERLY`，`is_subagent` 两个都认 |
+| `crates/gqy-tool/src/catalog.rs` | 工具目录照以前的名字也找得到这一件（`tools/interface.md`「登记」） |
+| `crates/gqy-session/src/agents.rs` | 执行器这一头：照父会话填好子会话，经会话表的端口造出来、送交代（`session/tools.md`「派子代理」）；造会话时拼 `pool` 那一格、照快照读回列着的池（施工 8-8 补） |
+| `crates/gqy-policy/src/tools/choice.rs` | 拼 `pool` 那一格（`ToolEntry::offer`）、照快照读回（`ToolEntry::offered`），照原样的 JSON 搬，别的字节不动（施工 8-8 补） |
 | `resources/software/basesystem/tools/subagent.json` | 说明和参数格式 |
 | `resources/software/basesystem/agent/*.txt` | 输出里给她看的两句（目录照以前的名字，「以前的名字」） |
 | `resources/software/basesystem/human/{zh,en,ja}.json` | 显示名（`subagent`、`agent` 两个键）、结果那一句 |
-| `crates/miyu-endpoint/src/sessions/orphans.rs` | 认派到一半的空子会话：日志里两个名字的调用都算（`agents.md` 第一条第 8 条） |
+| `crates/gqy-endpoint/src/sessions/orphans.rs` | 认派到一半的空子会话：日志里两个名字的调用都算（`agents.md` 第一条第 8 条） |
 
 ### 对外的样子
 
@@ -41,8 +41,8 @@
 
 **会话开局时拼 `pool`**（施工 8-8 补，`models.md`「工具」，2026-10-01 项目主人定、技术细节主会话定）：
 
-1. 造会话时（`Agents::face`）照那时的配置列池：`subagent` 开着、至少有一个认得出的成员的，照名字的字节序排（`miyu_models::pools::offered`）。
-2. 一个都没有：参数格式里拿掉 `pool`，和施工 8-8 以前的字节一样。有的：`pool` 在 `type` 后面插 `enum`，`description` 后面每个池接一行 `\n<名字>: <说明>`，没写说明的只接 `\n<名字>`（`ToolEntry::offer`，`crates/miyu-policy/src/tools/choice.rs`）。别的格、别的参数一个字节不动。
+1. 造会话时（`Agents::face`）照那时的配置列池：`subagent` 开着、至少有一个认得出的成员的，照名字的字节序排（`gqy_models::pools::offered`）。
+2. 一个都没有：参数格式里拿掉 `pool`，和施工 8-8 以前的字节一样。有的：`pool` 在 `type` 后面插 `enum`，`description` 后面每个池接一行 `\n<名字>: <说明>`，没写说明的只接 `\n<名字>`（`ToolEntry::offer`，`crates/gqy-policy/src/tools/choice.rs`）。别的格、别的参数一个字节不动。
 3. 拼好的进快照，整个会话照它发，载入不重拼。列着的池造会话、载入时照快照读回一次（`ToolEntry::offered`，存在 `Agents.pools`），端口的 `pools()` 交出它。
 
 拼出来的样子（池 `fast` 带说明 `Small model for quick lookups.`，`flagship` 没带）：
@@ -53,7 +53,7 @@
 - 一条路径都不报：权限策略照访问类别判，读的放行（`session/guard.md`）。
 - 只有能派子代理的会话工具面里有它：在本机（场所 `local`）、还没到深度上限（`jobs.depth`，`agents.md`「对外的样子」）。场所会话、到了上限的会话造会话时就拿掉它，她调了照没有这件工具拒掉（`kernel/tools.md`）。
 
-**以前的名字**：`agent`（施工 7-5 再补改名，2026-10-01 项目主人定：在 Miyu 里「agent」可能指她自己、子代理、别的会话，叫 `subagent` 一看就知道是派子代理）。
+**以前的名字**：`agent`（施工 7-5 再补改名，2026-10-01 项目主人定：在 GQY 里「agent」可能指她自己、子代理、别的会话，叫 `subagent` 一看就知道是派子代理）。
 
 - 新造的会话工具面上只有 `subagent`，照名字排在 `shell` 和 `trash` 之间；说明、参数格式、访问类别和以前一字不差。她调 `agent` 照没有这件工具拒掉（`kernel/tools.md`）。
 - 以前造的会话，快照里冻着的工具面上是 `agent`（排在最前）：工具面是请求的前缀，照快照发，一个字节不变。她照旧调 `agent`，工具目录照以前的名字找到这一件（`Tool::formerly`、`Catalog::get`，`tools/interface.md`），照样派得出去，结果、效果和调 `subagent` 一样。
@@ -108,15 +108,15 @@ Started subagent j1: "查导出".
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/subagent.rs` | 声明标题、交代和池（资源里的 `pool` 没有 `enum`，施工 8-8 补）、访问类别是读、说明里那一句在；列着的池交给端口、不写和 `null` 交没有、不在列表里的照参数不对端口不派、原话照 `serde` 列出能写的几个、`tier` 不理；交给端口的原样，交回的字和 `job.started`；没有端口、端口派不了的交回派不了、不报效果；少了参数的端口不问；两种说法两种语言都换得出字；`subagent`、`agent` 两个显示名三种语言里都在、一样 |
-| `crates/miyu-session/tests/spawn.rs` | 执行器交给会话表的子会话抄对了每一样、交代记成父会话发的；一步里调两次派两个、各领各的编号；领了没派成的不回收、载入以后接着数；没有会话表的派不了；什么会话工具面里有 `subagent`、新会话里没有 `agent`（`session/tools.md`） |
-| `crates/miyu-session/tests/spawn/pool.rs` | 子会话的模型：写了 `pool` 的记 `@池`，不写的、写 `tier` 的抄父会话的；工具面照造会话时的配置拼、配置改了这个会话不变（连同载入以后）、新会话变，老会话里写新会话才列的池照参数不对（施工 8-8 补，取代 8-8 的 `tier.rs`） |
-| `crates/miyu-policy/src/tools/choice/tests.rs` | 拼 `pool`、读回列着的（施工 8-8 补） |
-| `crates/miyu-session/tests/spawn/renamed.rs` | 以前的名字：新会话调 `agent` 照没有的工具拒掉；拿改名以前的目录造的会话换现在的核心载入，工具面一个字节不变、调 `agent` 照样派得出去；两张工具面只差名字和它带来的先后 |
-| `crates/miyu-endpoint/tests/orphans.rs` | 改名以前造的父会话，派到一半的空子会话照样收掉 |
-| `crates/miyu-tool/src/catalog/tests.rs` | 目录照以前的名字找得到、以前的名字不进工具面、撞名的登记不上 |
-| `crates/miyu-endpoint/tests/spawn.rs` | 真核心走一遍：子会话的日志、快照、请求，`session.list` 的 `parent` |
-| `crates/miyu-basesystem/tests/budget.rs` | 工具面的预算 |
+| `crates/gqy-basesystem/tests/subagent.rs` | 声明标题、交代和池（资源里的 `pool` 没有 `enum`，施工 8-8 补）、访问类别是读、说明里那一句在；列着的池交给端口、不写和 `null` 交没有、不在列表里的照参数不对端口不派、原话照 `serde` 列出能写的几个、`tier` 不理；交给端口的原样，交回的字和 `job.started`；没有端口、端口派不了的交回派不了、不报效果；少了参数的端口不问；两种说法两种语言都换得出字；`subagent`、`agent` 两个显示名三种语言里都在、一样 |
+| `crates/gqy-session/tests/spawn.rs` | 执行器交给会话表的子会话抄对了每一样、交代记成父会话发的；一步里调两次派两个、各领各的编号；领了没派成的不回收、载入以后接着数；没有会话表的派不了；什么会话工具面里有 `subagent`、新会话里没有 `agent`（`session/tools.md`） |
+| `crates/gqy-session/tests/spawn/pool.rs` | 子会话的模型：写了 `pool` 的记 `@池`，不写的、写 `tier` 的抄父会话的；工具面照造会话时的配置拼、配置改了这个会话不变（连同载入以后）、新会话变，老会话里写新会话才列的池照参数不对（施工 8-8 补，取代 8-8 的 `tier.rs`） |
+| `crates/gqy-policy/src/tools/choice/tests.rs` | 拼 `pool`、读回列着的（施工 8-8 补） |
+| `crates/gqy-session/tests/spawn/renamed.rs` | 以前的名字：新会话调 `agent` 照没有的工具拒掉；拿改名以前的目录造的会话换现在的核心载入，工具面一个字节不变、调 `agent` 照样派得出去；两张工具面只差名字和它带来的先后 |
+| `crates/gqy-endpoint/tests/orphans.rs` | 改名以前造的父会话，派到一半的空子会话照样收掉 |
+| `crates/gqy-tool/src/catalog/tests.rs` | 目录照以前的名字找得到、以前的名字不进工具面、撞名的登记不上 |
+| `crates/gqy-endpoint/tests/spawn.rs` | 真核心走一遍：子会话的日志、快照、请求，`session.list` 的 `parent` |
+| `crates/gqy-basesystem/tests/budget.rs` | 工具面的预算 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

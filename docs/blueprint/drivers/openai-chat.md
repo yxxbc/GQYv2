@@ -8,20 +8,20 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-drivers/src/lib.rs` | `Call`、`Inputs`、`BlobBytes`、`Encoded`、`EncodeError`、`Ending` |
-| `crates/miyu-drivers/src/driver.rs` | 驱动的接口 `Driver`、`Decode`；`OpenAiChat`（`Anthropic` 也在这里，`drivers/anthropic.md`） |
-| `crates/miyu-drivers/src/openai_chat.rs` | 家族名、路径、`Compat` 的开关、顶层怎么写、要哪些 blob |
-| `crates/miyu-drivers/src/openai_chat/messages.rs` | 每条消息怎么写、附件挪到后面、接着写 |
-| `crates/miyu-drivers/src/media.rs` | 图片、文件发不了时换成的字（占位、替它看的图、文本文件、带名字的图片的标签）和要哪些 blob：施工 8-12 从 `openai_chat/messages.rs`、`openai_chat.rs` 挪出来，和 `anthropic` 共用；施工 8-13 把拼字（`join`）也挪进来，和 `openai-responses` 共用。这一页的样本一个字节没变 |
-| `crates/miyu-drivers/src/openai_chat/wire.rs` | 线上的 JSON 结构、工具面 |
-| `crates/miyu-drivers/src/openai_chat/decode.rs` | 解码：块、工具调用、`finish_reason`、流里的错 |
-| `crates/miyu-drivers/src/openai_chat/usage.rs` | 各家的用量归成四项 |
-| `crates/miyu-drivers/src/openai_chat/models.rs` | 列模型：`GET /models` 的回应读出模型名和报了的窗口（施工 8-7） |
-| `crates/miyu-drivers/src/sse.rs` | SSE 分帧 |
-| `crates/miyu-drivers/src/classify.rs` | 出错分类、要等多久、原话 |
-| `crates/miyu-drivers/src/texts.rs` | 给模型看的几句：五句占位，文本文件的三句（施工 3-9 三补），带名字的图片的三句（施工 3-9 四补），替它看的图的三句标签（施工 8-17） |
-| `crates/miyu-drivers/src/text_file.rs` | 什么算文本文件、最多给多少（施工 3-9 三补） |
-| `crates/miyu-drivers/src/base64.rs` | data URL 用的 base64 |
+| `crates/gqy-drivers/src/lib.rs` | `Call`、`Inputs`、`BlobBytes`、`Encoded`、`EncodeError`、`Ending` |
+| `crates/gqy-drivers/src/driver.rs` | 驱动的接口 `Driver`、`Decode`；`OpenAiChat`（`Anthropic` 也在这里，`drivers/anthropic.md`） |
+| `crates/gqy-drivers/src/openai_chat.rs` | 家族名、路径、`Compat` 的开关、顶层怎么写、要哪些 blob |
+| `crates/gqy-drivers/src/openai_chat/messages.rs` | 每条消息怎么写、附件挪到后面、接着写 |
+| `crates/gqy-drivers/src/media.rs` | 图片、文件发不了时换成的字（占位、替它看的图、文本文件、带名字的图片的标签）和要哪些 blob：施工 8-12 从 `openai_chat/messages.rs`、`openai_chat.rs` 挪出来，和 `anthropic` 共用；施工 8-13 把拼字（`join`）也挪进来，和 `openai-responses` 共用。这一页的样本一个字节没变 |
+| `crates/gqy-drivers/src/openai_chat/wire.rs` | 线上的 JSON 结构、工具面 |
+| `crates/gqy-drivers/src/openai_chat/decode.rs` | 解码：块、工具调用、`finish_reason`、流里的错 |
+| `crates/gqy-drivers/src/openai_chat/usage.rs` | 各家的用量归成四项 |
+| `crates/gqy-drivers/src/openai_chat/models.rs` | 列模型：`GET /models` 的回应读出模型名和报了的窗口（施工 8-7） |
+| `crates/gqy-drivers/src/sse.rs` | SSE 分帧 |
+| `crates/gqy-drivers/src/classify.rs` | 出错分类、要等多久、原话 |
+| `crates/gqy-drivers/src/texts.rs` | 给模型看的几句：五句占位，文本文件的三句（施工 3-9 三补），带名字的图片的三句（施工 3-9 四补），替它看的图的三句标签（施工 8-17） |
+| `crates/gqy-drivers/src/text_file.rs` | 什么算文本文件、最多给多少（施工 3-9 三补） |
+| `crates/gqy-drivers/src/base64.rs` | data URL 用的 base64 |
 | `resources/core/drivers/` | 那几句的原文 |
 
 ### 对外的样子
@@ -90,7 +90,7 @@
    - 为什么图片带名字（施工 3-9 四补，2026-09-30 网页演示接真核心实测撞见）：一句话附了一张图、一个 PDF、一个文本文件，问哪个是图片、只答文件名，她答不出，因为发给她的图没有名字。标签的写法照文本文件的 `<file name=…>`。
    - 文件，照这个先后，先对上的算：
      1. `Call.inputs.pdf` 是真的、媒体类型正好是 `application/pdf` 的：写成 data URL 放进 `file`，`filename` 是文件名。
-     2. 内容是文本文件（整份是合法的 UTF-8，又没有 NUL 字节；媒体类型、扩展名不看，`crates/miyu-drivers/src/text_file.rs`），快照里有文本文件的三句的（施工 3-9 三补）：照文字接上，`file-open.txt`（带文件名）、内容、`file-close.txt`。内容原样，不转义（和检查点里重读的文件一样，`kernel/request.md`）；末尾没有换行的补一个，空的只有开头收尾。最多给 64 KiB（65,536 字节），多的截在字的边界上，开头那一行后面先写 `file-cut.txt`：给了多少、一共多少字节。原文整份留在 blob 里。
+     2. 内容是文本文件（整份是合法的 UTF-8，又没有 NUL 字节；媒体类型、扩展名不看，`crates/gqy-drivers/src/text_file.rs`），快照里有文本文件的三句的（施工 3-9 三补）：照文字接上，`file-open.txt`（带文件名）、内容、`file-close.txt`。内容原样，不转义（和检查点里重读的文件一样，`kernel/request.md`）；末尾没有换行的补一个，空的只有开头收尾。最多给 64 KiB（65,536 字节），多的截在字的边界上，开头那一行后面先写 `file-cut.txt`：给了多少、一共多少字节。原文整份留在 blob 里。
      3. 别的：换成 `file-omitted.txt` 那一句，带文件名、媒体类型、大小（字节数），照文字接上。
    - 为什么文本文件照字给（施工 3-9 三补，2026-09-30 项目主人定附件现在就排）：哪个模型都读得了字，不用另有本事；64 KiB 的上限是一个附件不占掉大半个上下文，它每次请求都跟着。以前造的快照里没有那三句，文本文件照第 3 小条写占位（`file-omitted.txt` 那时也没有大小）。
    - data URL：`data:<媒体类型>;base64,<内容>`，base64 用 RFC 4648 的标准字母表，末尾补 `=`。字节由执行器照 `blobs_needed` 先取出来交进来，驱动不碰文件。
@@ -274,22 +274,22 @@ A file was attached here (报告.pdf, application/pdf, 15 bytes), but this model
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-drivers/tests/openai_chat.rs` | 只有文字；输出上限和用量两个开关；工具调用、编号、参数兜底、没有输出的占位；user 的换行；空工具面；不认识的块；空的 system 不发；每条消息的位置 |
-| `crates/miyu-drivers/tests/openai_chat_media.rs` | 图片、PDF 写成 data URL；不能收的占位；工具结果里的附件挪到后面、或者就地占位；思考的三种回传；缺 blob 报错；要哪些 blob（文件每一个都要） |
-| `crates/miyu-drivers/tests/openai_chat_files.rs` | 文本文件（施工 3-9 三补）：照字放进消息、带文件名，空的，二进制的、不是 UTF-8 的、读不了的 PDF 写占位带大小（样本）；能读 PDF 的照旧发 `file`；超过 64 KiB 的截掉、写明给了多少；工具结果里的照字进 `content`；以前造的快照没有那三句的写占位；缺 blob 报错 |
-| `crates/miyu-drivers/tests/openai_chat_image_names.rs` | 带名字的图片（施工 3-9 四补）：能看图的前后各一段标签，和挨着的字拼成一段；不能看图的占位写名字（两份样本）；工具结果里带名字的连同标签一起挪、就地的占位写名字；以前造的快照没有那三句的，带名字的和不带名字的一字不差，不带名字的出厂这一份也照旧 |
-| `crates/miyu-drivers/tests/openai_chat_described.rs`（施工 8-17） | 替它看的图：不能看图的换成带名字的标签和转述（样本 `image-descriptions.json`），转述原样、尖括号引号不转义，没转述的照旧占位；能看图的有没有转述一个字节不差；工具结果里不带名字的就地换、末尾有换行的不再补；以前造的快照没有标签的照旧写占位 |
-| `crates/miyu-drivers/src/text_file/tests.rs` | 什么算文本：空的、UTF-8、BOM 算，NUL（在后面的也算）、Latin-1、PDF 不算；截到 64 KiB、截在字的边界上 |
-| `crates/miyu-drivers/tests/openai_chat_effort.rs` | 思考强度（施工 8-18）：没写的不加；档位发 `reasoning_effort`、接在最后；`off`、`on` 照开关；没有开关的 `off` 发 `none`、`on` 不加；前面的字节一个不动 |
-| `crates/miyu-drivers/tests/openai_chat_continuation.rs` | DeepSeek 接着写（样本、路径、半截带思考）；没有开关或者没有记号一字不变；`partial` 的写法 |
-| `crates/miyu-drivers/tests/openai_chat_streams.rs` | 十三份流的样本；从哪里切开喂都一样；累积器一条都不拒；解出来的编码回去用供应商的编号；驱动的接口走一遍；`error` 是 `false`、`0`、`[]` 的是噪声，有内容的照旧出错；流里的限速连同要等多久交回；`finished()` 在 `finish_reason` 到了以后才说是 |
-| `crates/miyu-drivers/src/sse/tests.rs` | 三种换行、切开的 CRLF、几行 data 和注释、只有注释、事件名、切开的汉字、断在半条上、从哪里切开都一样 |
-| `crates/miyu-drivers/src/openai_chat/models/tests.rs` | 列模型：名字和报了的窗口、三种窗口的写法先后、坏的跳过；回应坏了说是模型列表（施工 8-7） |
-| `crates/miyu-drivers/src/classify/excess/tests.rs` | 超了多少的几种写法；报了的上限单独读，后半段说不出也交、0 不交（施工 8-7） |
-| `crates/miyu-drivers/src/classify/tests.rs` | 超长的交出上限、限速的不交（施工 8-7）；每一类的例子；提到 token 的限速不当超长；额度算认证失败；要等多久的四种写法；`x-should-retry`；原话和 2000 字节；HTTP 状态码另记一格，连不上的、流里报的没有（施工 3-5 三补） |
-| `crates/miyu-drivers/src/texts/tests.rs` | 文件名换进去、转义；以前的 `file-omitted` 没有大小照样换得出；文本文件带文件名、补换行、空的、截过的写明、文件名转义内容原样；没有那三句的交回空的；带名字的图片的标签、占位带名字、转义，不带名字的照旧，没有那三句的照不带名字的写（施工 3-9 四补）；不该有的字段报错 |
-| `crates/miyu-drivers/src/base64/tests.rs` | RFC 4648 的测试值，`+`、`/` |
-| `crates/miyu-assemble/tests/probe.rs`、`random_logs.rs` | 编码以后也是上一次的前缀延伸（接着写那一次拿不接着写的编码比） |
+| `crates/gqy-drivers/tests/openai_chat.rs` | 只有文字；输出上限和用量两个开关；工具调用、编号、参数兜底、没有输出的占位；user 的换行；空工具面；不认识的块；空的 system 不发；每条消息的位置 |
+| `crates/gqy-drivers/tests/openai_chat_media.rs` | 图片、PDF 写成 data URL；不能收的占位；工具结果里的附件挪到后面、或者就地占位；思考的三种回传；缺 blob 报错；要哪些 blob（文件每一个都要） |
+| `crates/gqy-drivers/tests/openai_chat_files.rs` | 文本文件（施工 3-9 三补）：照字放进消息、带文件名，空的，二进制的、不是 UTF-8 的、读不了的 PDF 写占位带大小（样本）；能读 PDF 的照旧发 `file`；超过 64 KiB 的截掉、写明给了多少；工具结果里的照字进 `content`；以前造的快照没有那三句的写占位；缺 blob 报错 |
+| `crates/gqy-drivers/tests/openai_chat_image_names.rs` | 带名字的图片（施工 3-9 四补）：能看图的前后各一段标签，和挨着的字拼成一段；不能看图的占位写名字（两份样本）；工具结果里带名字的连同标签一起挪、就地的占位写名字；以前造的快照没有那三句的，带名字的和不带名字的一字不差，不带名字的出厂这一份也照旧 |
+| `crates/gqy-drivers/tests/openai_chat_described.rs`（施工 8-17） | 替它看的图：不能看图的换成带名字的标签和转述（样本 `image-descriptions.json`），转述原样、尖括号引号不转义，没转述的照旧占位；能看图的有没有转述一个字节不差；工具结果里不带名字的就地换、末尾有换行的不再补；以前造的快照没有标签的照旧写占位 |
+| `crates/gqy-drivers/src/text_file/tests.rs` | 什么算文本：空的、UTF-8、BOM 算，NUL（在后面的也算）、Latin-1、PDF 不算；截到 64 KiB、截在字的边界上 |
+| `crates/gqy-drivers/tests/openai_chat_effort.rs` | 思考强度（施工 8-18）：没写的不加；档位发 `reasoning_effort`、接在最后；`off`、`on` 照开关；没有开关的 `off` 发 `none`、`on` 不加；前面的字节一个不动 |
+| `crates/gqy-drivers/tests/openai_chat_continuation.rs` | DeepSeek 接着写（样本、路径、半截带思考）；没有开关或者没有记号一字不变；`partial` 的写法 |
+| `crates/gqy-drivers/tests/openai_chat_streams.rs` | 十三份流的样本；从哪里切开喂都一样；累积器一条都不拒；解出来的编码回去用供应商的编号；驱动的接口走一遍；`error` 是 `false`、`0`、`[]` 的是噪声，有内容的照旧出错；流里的限速连同要等多久交回；`finished()` 在 `finish_reason` 到了以后才说是 |
+| `crates/gqy-drivers/src/sse/tests.rs` | 三种换行、切开的 CRLF、几行 data 和注释、只有注释、事件名、切开的汉字、断在半条上、从哪里切开都一样 |
+| `crates/gqy-drivers/src/openai_chat/models/tests.rs` | 列模型：名字和报了的窗口、三种窗口的写法先后、坏的跳过；回应坏了说是模型列表（施工 8-7） |
+| `crates/gqy-drivers/src/classify/excess/tests.rs` | 超了多少的几种写法；报了的上限单独读，后半段说不出也交、0 不交（施工 8-7） |
+| `crates/gqy-drivers/src/classify/tests.rs` | 超长的交出上限、限速的不交（施工 8-7）；每一类的例子；提到 token 的限速不当超长；额度算认证失败；要等多久的四种写法；`x-should-retry`；原话和 2000 字节；HTTP 状态码另记一格，连不上的、流里报的没有（施工 3-5 三补） |
+| `crates/gqy-drivers/src/texts/tests.rs` | 文件名换进去、转义；以前的 `file-omitted` 没有大小照样换得出；文本文件带文件名、补换行、空的、截过的写明、文件名转义内容原样；没有那三句的交回空的；带名字的图片的标签、占位带名字、转义，不带名字的照旧，没有那三句的照不带名字的写（施工 3-9 四补）；不该有的字段报错 |
+| `crates/gqy-drivers/src/base64/tests.rs` | RFC 4648 的测试值，`+`、`/` |
+| `crates/gqy-assemble/tests/probe.rs`、`random_logs.rs` | 编码以后也是上一次的前缀延伸（接着写那一次拿不接着写的编码比） |
 
 ### 出处
 
@@ -323,10 +323,10 @@ A file was attached here (报告.pdf, application/pdf, 15 bytes), but this model
    - 档案写了 `reasoning` 的照档案（DeepSeek 官方）；只管走这一页的模型。
    - 为什么：Zen 的 OpenAI 兼容模型 51 个里 39 个写着 `reasoning_content`，Go 是 23 个里 17 个。照默认不回传，工具循环里她每一步都丢了上一步的思路。2026-10-03 实测 Go 上的 `deepseek-v4.1-flash`：不带、带空串、带字都不报 400，回传是为了接上思路。
    - `always` 是真的：照 DeepSeek 官方实测过的那一种，没有思考的 assistant 也带空串（Go 上实测收）。
-   - 这是 `miyu_models` 的事：资料多一格 `interleaved`（只取第 1、2 层），路由造驱动时盖在档案的开关上（`Provider::for_model`）。驱动本身一行不改。
+   - 这是 `gqy_models` 的事：资料多一格 `interleaved`（只取第 1、2 层），路由造驱动时盖在档案的开关上（`Provider::for_model`）。驱动本身一行不改。
 5. **出错**：Go 缺 `x-opencode-session` 回 400 `MissingSessionID`，是 `other`；带上了就不会遇到。Zen 免费档的 403 `FreeTierError` 照分类表是 `auth`。
 6. **用量**：照「解码」那张表。
-7. **守着它的**：`miyu-models` 的资料测试（`driver` 照模型、`interleaved` 第 1、2 层取、第 3、4 层不取、档案写了的照档案、认不得的写法不取）；档案的头（值里只认 `{session_digest}`）；路由的测试（同一家的模型照资料造三种驱动、没有驱动的模型 `no_model`、别的照常、请求带头）。
+7. **守着它的**：`gqy-models` 的资料测试（`driver` 照模型、`interleaved` 第 1、2 层取、第 3、4 层不取、档案写了的照档案、认不得的写法不取）；档案的头（值里只认 `{session_digest}`）；路由的测试（同一家的模型照资料造三种驱动、没有驱动的模型 `no_model`、别的照常、请求带头）。
 8. **真模型实测**：项目主人给的 Go key：`deepseek-v4.1-flash` 带工具的会话跑三轮，思考回传；走 `anthropic`、`openai-responses` 的 Go 模型各问一句。
 
 **起草时定的**（2026-10-02，10-03 收窄时照改）：

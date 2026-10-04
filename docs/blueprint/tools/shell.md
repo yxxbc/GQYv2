@@ -8,13 +8,13 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/shell.rs` | 参数、超时、结果那一句 |
-| `crates/miyu-basesystem/src/shell/program.rs` | 用哪个 shell、怎么起 |
-| `crates/miyu-basesystem/src/shell/env.rs` | 命令拿得到哪些环境变量 |
-| `crates/miyu-basesystem/src/shell/process.rs` | 起命令、读输出、等它结束、整组杀 |
-| `crates/miyu-basesystem/src/shell/background.rs` | 后台命令：起好交出去的输出和进程（`miyu_tool::Background`），等它、整组杀（施工 7-3） |
-| `crates/miyu-basesystem/src/shell/output.rs` | 输出：边读边解成字、内存里只留头尾、截成头尾两段；后台的边读边换行尾（`Crlf`） |
-| `crates/miyu-basesystem/src/load.rs` | 说明是一段模板，核心起来时换进 shell 的名字 |
+| `crates/gqy-basesystem/src/shell.rs` | 参数、超时、结果那一句 |
+| `crates/gqy-basesystem/src/shell/program.rs` | 用哪个 shell、怎么起 |
+| `crates/gqy-basesystem/src/shell/env.rs` | 命令拿得到哪些环境变量 |
+| `crates/gqy-basesystem/src/shell/process.rs` | 起命令、读输出、等它结束、整组杀 |
+| `crates/gqy-basesystem/src/shell/background.rs` | 后台命令：起好交出去的输出和进程（`gqy_tool::Background`），等它、整组杀（施工 7-3） |
+| `crates/gqy-basesystem/src/shell/output.rs` | 输出：边读边解成字、内存里只留头尾、截成头尾两段；后台的边读边换行尾（`Crlf`） |
+| `crates/gqy-basesystem/src/load.rs` | 说明是一段模板，核心起来时换进 shell 的名字 |
 | `resources/software/basesystem/tools/shell.json` | 说明和参数格式 |
 | `resources/software/basesystem/shell/*.txt`、`common/bad-args.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -89,7 +89,7 @@
 
 1. 这次调用没有任务端口（`Call.jobs` 是空的，会话外面的调用，例如测试）：不跑，说这里不能放到后台，让她在前台跑、慢的放宽 `timeout`；出错。会话里的调用总有。
 2. 照前台一样造命令：同一个 shell、同一份环境变量白名单、同一个沙盒（`Call.sandbox`），在这一轮的工作目录里；标准输入接空的，标准输出、标准错误接到同一根管道上，自成一组（上面第 3、4 条）。起不来、造不成的照前台说起不来。
-3. 起来了，把输出和进程（`miyu_tool::Background`）交给任务端口，拿回编号。端口收不下（输出的文件建不起来、会话已经停了）：任务表已经整组杀掉了它，照起不来说，原因是端口的原话；出错，不报效果。
+3. 起来了，把输出和进程（`gqy_tool::Background`）交给任务端口，拿回编号。端口收不下（输出的文件建不起来、会话已经停了）：任务表已经整组杀掉了它，照起不来说，原因是端口的原话；出错，不报效果。
 4. 交上了：给她的字是 `started.txt` 换进编号，说法 `shell/background`（字段 `job`），效果 `job.started`（`job` 是编号，`what` 是 `command`，`title` 是 `description`，没有 `session`）。
 5. 从起命令到交回结果一个 `await` 都没有：交上了就一定交回，不会交上了却被掐掉、没人知道它在跑。
 6. 交出去的输出一段一段读：一次读 8192 字节，照 UTF-8 边读边解，一个字切在两段中间的留到下一段，读完了剩下的换成 `�`；`\r\n` 换成 `\n`，一段以 `\r` 结尾的留着它看下一段，单独的 `\r` 不动；不截。读不了的当读完了，记一行 `DEBUG` `command output not readable`。
@@ -183,7 +183,7 @@ Exit code 2
 
 ### 给人看的字
 
-显示名：执行命令（Run），后面跟 `command` 的值；符号 `$`；`block` 是 `command`：`miyu ask` 里写成 `$ 命令`，不写显示名，下面印她看到的输出（`cli/ask.md`「执行命令那一块」）。
+显示名：执行命令（Run），后面跟 `command` 的值；符号 `$`；`block` 是 `command`：`gqy ask` 里写成 `$ 命令`，不写显示名，下面印她看到的输出（`cli/ask.md`「执行命令那一块」）。
 
 | 说法 | 中文 | 英文 |
 |---|---|---|
@@ -213,20 +213,20 @@ Exit code 2
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/background.rs`（施工 7-3） | 真的起进程、三个平台：当场返回编号、说法、`job.started`（标题是 `description`），命令接着跑；标准错误合进来、`\r\n` 换成 `\n`；退出码；`timeout` 不管后台的；白名单一样；杀掉就停；没有任务端口的不跑；端口收不下的说起不来、不报效果。Unix：整组杀连它放到后台的、自己退出以后组里剩下的也停了、信号照原样、单独的 `\r` 不动、最后半个字换成 `�` |
-| `crates/miyu-basesystem/src/shell/output/tests.rs` 的 `line_ends_are_made_unix_across_pieces`（施工 7-3） | `\r\n` 切在两段中间也换，和一整段换出来的一样 |
-| `crates/miyu-basesystem/tests/shell_sandbox.rs` 的 `a_sandboxed_background_command_runs_through_the_helper`（施工 7-3） | 后台命令一样经沙盒的助手起 |
-| `crates/miyu-basesystem/tests/shell.rs` | 说明里写的是这台机器的 shell、换过字段、不报路径；在工作目录里跑；标准错误合进来、照先后；退出码；没有输出；超时整组杀、说法的秒数；只拿到白名单上的变量、`GIT_TERMINAL_PROMPT` 是 0；中文照原样；太长截成头尾、一共多少个字，尾巴从行首起的不多丢一行；参数不对、要放后台的不跑、没写 `description` 参数不对；工作目录不在、`~` 开头的照家目录接；输出边跑边推、最后半个字换成 `�`；Unix：放到后台的在命令退出以后停了、叫停时整组停了、被信号杀掉 |
-| `crates/miyu-basesystem/src/shell/tests.rs` | 超时的上下限；秒数怎么写；参数格式里写的上限、默认值和代码一样；每一段以换行结尾 |
-| `crates/miyu-basesystem/src/shell/output/tests.rs` | 数行、数字；`\r\n`；内存只留头尾；截在行尾；中间丢过的照样数；一整行很长的照字数截；正好 30000 个字的整段给；切开的字等配齐；离截处太远的换行不用 |
-| `crates/miyu-basesystem/src/shell/program/tests.rs` | 各系统用哪个 shell、找不到时用什么；名字带版本；不读启动文件、只带给的变量；zsh 带 `+o nomatch`、没匹配到的通配符原样传下去（macOS）；PowerShell 的编码和前面那一句；带了沙盒的四种 shell 都经助手起、参数照先后、工作目录和环境变量照旧，规格写不成 JSON 的起不来（施工 5-1） |
-| `crates/miyu-basesystem/tests/shell_sandbox.rs` | 带了沙盒的真跑一次（Unix）：假助手 `/bin/echo` 收到的是 `run --spec <规格> -- <shell> <参数…>`；规格写不成 JSON 的说起不来，命令没跑（施工 5-1） |
-| `crates/miyu-basesystem/src/shell/process/tests.rs` | 杀不掉的命令，最多再等那么久就交回超时 |
-| `crates/miyu-basesystem/tests/log.rs` | 运行日志的来源是 `shell`；输出还没关那一行在阻塞线程里发，带会话编号（Linux） |
-| `crates/miyu-basesystem/src/shell/env/tests.rs` | 只传名单上的；`GIT_TERMINAL_PROMPT` 总是 0；Windows 上名字不分大小写；前缀只看开头 |
-| `crates/miyu-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
-| `crates/miyu-session/tests/write.rs` | 会话里真的跑：结果进日志，给她的是输出加退出码，说法里有退出码，没有效果 |
-| `crates/miyu-session/tests/guard.rs` | 工作区这一级执行命令不问、只读时问（没人能确认就拒绝） |
+| `crates/gqy-basesystem/tests/background.rs`（施工 7-3） | 真的起进程、三个平台：当场返回编号、说法、`job.started`（标题是 `description`），命令接着跑；标准错误合进来、`\r\n` 换成 `\n`；退出码；`timeout` 不管后台的；白名单一样；杀掉就停；没有任务端口的不跑；端口收不下的说起不来、不报效果。Unix：整组杀连它放到后台的、自己退出以后组里剩下的也停了、信号照原样、单独的 `\r` 不动、最后半个字换成 `�` |
+| `crates/gqy-basesystem/src/shell/output/tests.rs` 的 `line_ends_are_made_unix_across_pieces`（施工 7-3） | `\r\n` 切在两段中间也换，和一整段换出来的一样 |
+| `crates/gqy-basesystem/tests/shell_sandbox.rs` 的 `a_sandboxed_background_command_runs_through_the_helper`（施工 7-3） | 后台命令一样经沙盒的助手起 |
+| `crates/gqy-basesystem/tests/shell.rs` | 说明里写的是这台机器的 shell、换过字段、不报路径；在工作目录里跑；标准错误合进来、照先后；退出码；没有输出；超时整组杀、说法的秒数；只拿到白名单上的变量、`GIT_TERMINAL_PROMPT` 是 0；中文照原样；太长截成头尾、一共多少个字，尾巴从行首起的不多丢一行；参数不对、要放后台的不跑、没写 `description` 参数不对；工作目录不在、`~` 开头的照家目录接；输出边跑边推、最后半个字换成 `�`；Unix：放到后台的在命令退出以后停了、叫停时整组停了、被信号杀掉 |
+| `crates/gqy-basesystem/src/shell/tests.rs` | 超时的上下限；秒数怎么写；参数格式里写的上限、默认值和代码一样；每一段以换行结尾 |
+| `crates/gqy-basesystem/src/shell/output/tests.rs` | 数行、数字；`\r\n`；内存只留头尾；截在行尾；中间丢过的照样数；一整行很长的照字数截；正好 30000 个字的整段给；切开的字等配齐；离截处太远的换行不用 |
+| `crates/gqy-basesystem/src/shell/program/tests.rs` | 各系统用哪个 shell、找不到时用什么；名字带版本；不读启动文件、只带给的变量；zsh 带 `+o nomatch`、没匹配到的通配符原样传下去（macOS）；PowerShell 的编码和前面那一句；带了沙盒的四种 shell 都经助手起、参数照先后、工作目录和环境变量照旧，规格写不成 JSON 的起不来（施工 5-1） |
+| `crates/gqy-basesystem/tests/shell_sandbox.rs` | 带了沙盒的真跑一次（Unix）：假助手 `/bin/echo` 收到的是 `run --spec <规格> -- <shell> <参数…>`；规格写不成 JSON 的说起不来，命令没跑（施工 5-1） |
+| `crates/gqy-basesystem/src/shell/process/tests.rs` | 杀不掉的命令，最多再等那么久就交回超时 |
+| `crates/gqy-basesystem/tests/log.rs` | 运行日志的来源是 `shell`；输出还没关那一行在阻塞线程里发，带会话编号（Linux） |
+| `crates/gqy-basesystem/src/shell/env/tests.rs` | 只传名单上的；`GIT_TERMINAL_PROMPT` 总是 0；Windows 上名字不分大小写；前缀只看开头 |
+| `crates/gqy-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
+| `crates/gqy-session/tests/write.rs` | 会话里真的跑：结果进日志，给她的是输出加退出码，说法里有退出码，没有效果 |
+| `crates/gqy-session/tests/guard.rs` | 工作区这一级执行命令不问、只读时问（没人能确认就拒绝） |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

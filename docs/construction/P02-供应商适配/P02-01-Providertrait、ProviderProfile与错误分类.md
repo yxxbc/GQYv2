@@ -109,14 +109,14 @@ pub struct ModelsConfig { pub default: ModelRef, pub roles: BTreeMap<ModelRole, 
 
 1. `gqy-core` 的五个新模块按 04/06 草案写类型（**先写 serde 往返与字段齐全性测试**，草案缺字段的地方回设计文档补齐再写代码）。
 2. `gqy-provider` 骨架 + trait + 错误类型；`cargo xtask arch` 核对层序（L2 → L0/L1）。
-3. `classify` 与 `overflow`：先写夹具表（06 §8.1/§8.3 逐条；每条特征带来源注释），再实现；`retry-after` 支持 `retry-after-ms`、秒（可小数）、`try again in 20s`/`500ms` 文案（参考 miyu 3-4（下））。
+3. `classify` 与 `overflow`：先写夹具表（06 §8.1/§8.3 逐条；每条特征带来源注释），再实现；`retry-after` 支持 `retry-after-ms`、秒（可小数）、`try again in 20s`/`500ms` 文案（参考 gqy 3-4（下））。
 4. `gqy-config` 的 `[providers]`/`[models]`：默认值（06 §16）与模板 patch 机制；密封测试。
 5. `cargo xtask check --fast`、`cargo test -p gqy-core -p gqy-provider -p gqy-config`；提交：`feat(provider): trait、画像与错误分类`。
 
 ## 测试与守护
 
 - **类型往返**：`ProviderProfile`/`ModelBinding`/`RequestPlan`/`LedgerEntry` 的 serde 往返（规范 JSON 写出器）逐字段；`FieldPresence` 的 `Absent` / `Empty` 各一例。
-- **分类表（夹具）**：401/403→`Auth`；402→`QuotaExhausted`；429 带 `retry-after: 5`/`retry-after-ms: 250`/文案 `try again in 20s` → `RateLimited{retry_after}`；529/503→`Overloaded`；400 空体（低占用）→`BadRequest`；413 空体+估算 ≥0.9 窗口 → `ContextOverflow`；数字 `code` 不当状态码（miyu 教训）；限速文案不被误判为溢出（06 §8.3 规则 1 的“排除优先”案例：`Too many tokens, please wait`）。
+- **分类表（夹具）**：401/403→`Auth`；402→`QuotaExhausted`；429 带 `retry-after: 5`/`retry-after-ms: 250`/文案 `try again in 20s` → `RateLimited{retry_after}`；529/503→`Overloaded`；400 空体（低占用）→`BadRequest`；413 空体+估算 ≥0.9 窗口 → `ContextOverflow`；数字 `code` 不当状态码（gqy 教训）；限速文案不被误判为溢出（06 §8.3 规则 1 的“排除优先”案例：`Too many tokens, please wait`）。
 - **溢出特征表**：06 §8.3 每条特征一个用例；表项带来源注释；去掉“排除优先”步骤，限速用例必红。
 - **配置**：缺省全默认；`template` 解析（未知模板报错并给编辑距离提示）；`key_ref` 只接受 `secret:` 前缀（明文报错，12 §4）；`PerRequest` + `keepalive=true` 校验失败（06 §17）。
 - 先红后绿对照（PR 贴输出）：改坏“排除优先”、去掉 `retry-after-ms` 分支各一次。

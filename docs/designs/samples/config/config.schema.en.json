@@ -5,7 +5,7 @@
       "properties": {
         "level": {
           "default": "info",
-          "description": "How much the runtime log records. Set debug when chasing a problem. MIYU_LOG, when set, wins for that launch. Allowed: error, warn, info, debug, trace or off. Only in the system config. Takes effect at once.",
+          "description": "How much the runtime log records. Set debug when chasing a problem. GQY_LOG, when set, wins for that launch. Allowed: error, warn, info, debug, trace or off. Only in the system config. Takes effect at once.",
           "enum": [
             "error",
             "warn",
@@ -239,7 +239,7 @@
           },
           "keys": {
             "default": [],
-            "description": "Write { secret = \"name\" } (saved with miyu login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header. Allowed: a list of { secret = \"…\" } or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
+            "description": "Write { secret = \"name\" } (saved with gqy login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header. Allowed: a list of { secret = \"…\" } or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
             "items": {
               "oneOf": [
                 {

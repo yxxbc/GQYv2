@@ -10,23 +10,23 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-policy/src/lib.rs` | 对外的几样 |
-| `crates/miyu-policy/src/compose.rs` | 拼快照：system 怎么拼、重启以后接着干几次 |
-| `crates/miyu-policy/src/snapshot.rs` | 快照的类型、字节、哈希、读回来、造会话的那一条、造策略、驱动的占位 |
-| `crates/miyu-policy/src/facts.rs` | 快照里事实的模板 `FactTexts`，造成内核的 `FactTemplates`（施工 2-7 补从 `snapshot.rs` 挪出来） |
-| `crates/miyu-policy/src/drivers.rs` | 快照里驱动的几句占位 `DriverPlaceholders`，读成驱动的占位（施工 3-9 四补从 `snapshot.rs` 挪出来） |
-| `crates/miyu-policy/src/tools.rs` | 工具面：排序、拆成两份；执行器替工具写的两句 |
-| `crates/miyu-policy/src/tools/choice.rs` | 工具面上一件的一个参数照会话开局时的配置填上能选的几个（`ToolEntry::offer`：插 `enum`、说明后面一行一个，一个都没有的拿掉这个参数），照快照读回能选的（`ToolEntry::offered`）；照原样的 JSON 搬，别的字节不动（施工 8-8 补，`subagent` 的 `pool`） |
-| `crates/miyu-policy/src/guard.rs` | 权限策略拒绝时写的三句 |
-| `crates/miyu-policy/src/image_name.rs` | 带名字的图片的三句（施工 3-9 四补） |
-| `crates/miyu-policy/src/recap.rs` | 回顾的字 `RecapTexts`、数 `RecapNumbers` 和出厂的数 `RECAP`，交给组装器的样子（施工 3-8 四补） |
-| `crates/miyu-policy/src/vision.rs` | 替看不了图的模型看图的字（施工 8-17）：转述请求的两份 `VisionTexts`、图的位置的三句标签 `ImageDescriptionTexts`，交给组装器、驱动的样子 |
-| `crates/miyu-policy/src/title.rs` | 起标题的字 `TitleTexts`、数 `TitleNumbers` 和出厂的数 `TITLE`，交给组装器、内核的样子（施工 3-8 五补） |
-| `crates/miyu-policy/src/jobs.rs` | 回报的写法、任务用的数；子会话回报的正文怎么截（`reports()`，施工 3-8 五补从 `snapshot.rs` 挪来，那边放不下了） |
-| `crates/miyu-policy/src/peers.rs` | 别的会话发来的话：防刷屏的数 `PeerNumbers` 和出厂的数 `PEERS`，交给内核的样子；标签的两份 `PeerTexts`，交给组装器的样子（施工 C-2）。「空了告诉我」的两个数和通知的五份字 `PeerIdleTexts`，作废那一句照快照的小时数换好（施工 C-6） |
-| `crates/miyu-store/src/resources.rs` | 从资源目录读原文（`store/resources.md`） |
-| `crates/miyu-store/src/blob.rs` | 存 blob、取 blob（`store.md`） |
-| `crates/miyu-session/src/open.rs` | 造会话时存、载入时取 |
+| `crates/gqy-policy/src/lib.rs` | 对外的几样 |
+| `crates/gqy-policy/src/compose.rs` | 拼快照：system 怎么拼、重启以后接着干几次 |
+| `crates/gqy-policy/src/snapshot.rs` | 快照的类型、字节、哈希、读回来、造会话的那一条、造策略、驱动的占位 |
+| `crates/gqy-policy/src/facts.rs` | 快照里事实的模板 `FactTexts`，造成内核的 `FactTemplates`（施工 2-7 补从 `snapshot.rs` 挪出来） |
+| `crates/gqy-policy/src/drivers.rs` | 快照里驱动的几句占位 `DriverPlaceholders`，读成驱动的占位（施工 3-9 四补从 `snapshot.rs` 挪出来） |
+| `crates/gqy-policy/src/tools.rs` | 工具面：排序、拆成两份；执行器替工具写的两句 |
+| `crates/gqy-policy/src/tools/choice.rs` | 工具面上一件的一个参数照会话开局时的配置填上能选的几个（`ToolEntry::offer`：插 `enum`、说明后面一行一个，一个都没有的拿掉这个参数），照快照读回能选的（`ToolEntry::offered`）；照原样的 JSON 搬，别的字节不动（施工 8-8 补，`subagent` 的 `pool`） |
+| `crates/gqy-policy/src/guard.rs` | 权限策略拒绝时写的三句 |
+| `crates/gqy-policy/src/image_name.rs` | 带名字的图片的三句（施工 3-9 四补） |
+| `crates/gqy-policy/src/recap.rs` | 回顾的字 `RecapTexts`、数 `RecapNumbers` 和出厂的数 `RECAP`，交给组装器的样子（施工 3-8 四补） |
+| `crates/gqy-policy/src/vision.rs` | 替看不了图的模型看图的字（施工 8-17）：转述请求的两份 `VisionTexts`、图的位置的三句标签 `ImageDescriptionTexts`，交给组装器、驱动的样子 |
+| `crates/gqy-policy/src/title.rs` | 起标题的字 `TitleTexts`、数 `TitleNumbers` 和出厂的数 `TITLE`，交给组装器、内核的样子（施工 3-8 五补） |
+| `crates/gqy-policy/src/jobs.rs` | 回报的写法、任务用的数；子会话回报的正文怎么截（`reports()`，施工 3-8 五补从 `snapshot.rs` 挪来，那边放不下了） |
+| `crates/gqy-policy/src/peers.rs` | 别的会话发来的话：防刷屏的数 `PeerNumbers` 和出厂的数 `PEERS`，交给内核的样子；标签的两份 `PeerTexts`，交给组装器的样子（施工 C-2）。「空了告诉我」的两个数和通知的五份字 `PeerIdleTexts`，作废那一句照快照的小时数换好（施工 C-6） |
+| `crates/gqy-store/src/resources.rs` | 从资源目录读原文（`store/resources.md`） |
+| `crates/gqy-store/src/blob.rs` | 存 blob、取 blob（`store.md`） |
+| `crates/gqy-session/src/open.rs` | 造会话时存、载入时取 |
 
 ### 对外的样子
 
@@ -108,7 +108,7 @@
 3. 哈希：规范字节的 SHA-256，写成 `sha256:` 加 64 位小写十六进制。存成 blob 用的、`session.created` 记的，都是它。
 4. 读回来：不认识的字段不理。缺了 `tools`、`core.permissions`、`core.tool_results.unavailable`、`core.tool_results.crashed` 的，读成空的：没有工具的会话用不到它们。缺了 `step_limit` 的读成不限。缺了别的，读不回来。格式改了不背兼容。
 
-**造会话**（`crates/miyu-session/src/open.rs` 的 `create`，在阻塞线程里做）
+**造会话**（`crates/gqy-session/src/open.rs` 的 `create`，在阻塞线程里做）
 
 1. 照人格读原文；拼快照，带上核心工具目录里每一件的规格（名字、说明、参数格式、访问类别）。人格是 `session.create` 写的，不写是 `engineer`；`attended` 是握手时头报的能不能输入（`protocol.md`）。不能派子代理的会话（不在本机、到了深度上限）不带 `subagent`；子会话带上场所说明（施工 7-5，`session/tools.md`「工具面」）。快照的格式不变：施工 8-8 给 `subagent` 加了参数 `tier`，施工 8-8 补换成 `pool`：`pool` 那一格照造会话时的配置拼好（列哪几个池、每个一行说明，一个都没有的拿掉，`session/tools.md`「工具面」、`tools/subagent.md`「会话开局时拼 `pool`」），快照里存的是拼好的。以前造的照旧，前缀一个字节不变；同一个核心上开着的几个会话，这一格可以不一样。施工 8-15 目录里多了 `session_usage`：新造的本机会话工具面多这一件，群里的没有；以前造的快照没有它，照快照发，前缀一个字节不变。
 2. 先造一遍策略、驱动的占位、执行器的两句、权限策略的三句：哪一样造不出来，会话造不成，什么都不存。
@@ -192,22 +192,22 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-policy/src/snapshot/tests.rs`、`snapshot/tests/facts.rs` | 软件工程师的 system 就是那一句、`step_limit`、`resumes`；同样的原文同样的字节和哈希，读得回来，开头结尾的样子，改一个字哈希就变；坏字节读不回来；造得出策略，坏模板说是哪一类；`session.created` 带着哈希；开关照给的带；五句占位各是各的，带名字的图片的三句也是，以前造的快照没有这三句的读回来一字不差、照不带名字的写（施工 3-9 四补）；会话编号的模板进快照、造的策略写得出那一块、坏了说是事实的模板，以前造的快照没有这一格的读进来再写出去一字不差、没有那一块（`facts.rs`，施工 1-13 再补）；切了级别以后的那一份一样：进快照、写得出那一块、坏了说是事实的模板，以前造的没有这一格的读回来一字不差、没有那一块（`facts.rs`，施工 2-7 补） |
-| `crates/miyu-policy/src/compose.rs`（内嵌的测试） | system 每块去掉末尾空白、空的不要、空一行；场所说明接在人设后面、空的不留空行（施工 7-5）；核心的几行排在人设、场所说明后面，一行一句，工具面是空的不带权限那一句，没接它的 system 和原来一样、空的几行不留空行（施工 2-7 补） |
-| `crates/miyu-policy/src/tools/tests.rs` | 工具面照名字排、读回来一样、交进来的先后不影响字节；没有工具的不写 `tools`，带上空的字节不变；造策略时拆成两份；同名的造不出（读回来的也造不出）；执行器的两句带名字、转义、说法；坏的说是哪一类；缺了这两格的快照读成空的 |
-| `crates/miyu-policy/src/tools/choice/tests.rs` | 拼：一个都没有的拿掉这个参数、和资源去掉它一字不差；有的插 `enum`、说明一行一个、没写说明的只写名字；别的字节不动；读回的和拼进去的一样，没有这一格、写坏的是空的（施工 8-8 补） |
-| `crates/miyu-policy/src/snapshot/tests/recap.rs`（施工 3-8 四补） | 回顾进快照：出厂的快照带着五份字和两个数，造出的组装器回顾得出来；字、数少一样都不回顾；快照里的数照快照的；以前造的快照没有这两格，读进来再写出去一字不差，不回顾 |
-| `crates/miyu-policy/src/snapshot/tests/vision.rs`（施工 8-17） | 替看图进快照：出厂的快照带着两份字和三句标签，造出的组装器交得出转述的请求、驱动写得出带标签的转述；以前造的快照没有这两格，读进来再写出去一字不差，不转述、照旧写占位 |
-| `crates/miyu-policy/src/snapshot/tests/title.rs`（施工 3-8 五补） | 起标题进快照：出厂的快照带着指令和三个数，造出的组装器起得出标题、内核拿到 `tries`、`chars`；字、数少一样都不起，没有回顾的标签的组装器也不起；快照里的数照快照的；以前造的快照没有这两格，读进来再写出去一字不差，不起 |
-| `crates/miyu-policy/src/snapshot/tests/jobs.rs`（施工 3-8 五补从 `tests.rs` 挪出来） | 子会话回报的正文怎么截：出厂的 30000 和截在中间的那一行；以前造的快照没有，读成出厂的数、空的那一行，读写一字不差；快照里的数照快照的 |
-| `crates/miyu-policy/src/peers/tests.rs`（施工 C-2、C-6） | 空了的通知（C-6）：出厂的快照多两个数、通知的五份字（平铺在 `core.peers` 里），作废那一句照快照的小时数换；通知的字坏了照名字报；C-2 时造的快照没有这几格，数照出厂的、通知不出、读回写出一字不差。别的会话发来的话进快照：出厂的快照带着三个数（排在最后）和两份标签，造出的策略照出厂的数、组装器渲染出带短编号的标签；快照里的数照快照的；标签坏了照名字报；以前造的快照没有这两格，读进来再写出去一字不差，照出厂的数防刷屏，那种话和人的话一字不差 |
-| `crates/miyu-policy/src/jobs/tests.rs` | 人停的那一句：出厂的快照带着、交给组装器；以前造的快照没有，读成空的，读回来一字不差（施工 7-2 补） |
-| `crates/miyu-policy/src/guard/tests.rs` | 三句带路径和原因、转义；说法；坏的说是哪一类；缺了 `permissions` 的快照读成空的 |
-| `crates/miyu-store/tests/snapshot.rs` | 从源码树的资源拼出快照，存成 blob，哈希就是快照的哈希；取回来一样；两份策略跑同一个剧本，每一次请求逐字节一样 |
-| `crates/miyu-store/src/resources/tests.rs` | 读出软件工程师的一句和随核心附带的字（会话编号的模板是它那份文件，施工 1-13 再补；回顾的五份各是各的文件，施工 3-8 四补；切了级别以后的权限那一份也是，施工 2-7 补；起标题的指令，施工 3-8 五补）；没有的人格说是哪个文件，坏编号被拒 |
-| `crates/miyu-session/tests/actor.rs` | 造会话先存快照：`session.created` 记的哈希取得出快照 |
-| `crates/miyu-endpoint/tests/tools.rs` | 协议上造的会话，工具面照核心的目录存进快照；换一份核心以后载入，照新核心的目录执行 |
-| `crates/miyu-endpoint/tests/endpoint.rs` | 不能输入的头造的会话，快照里没人能确认 |
+| `crates/gqy-policy/src/snapshot/tests.rs`、`snapshot/tests/facts.rs` | 软件工程师的 system 就是那一句、`step_limit`、`resumes`；同样的原文同样的字节和哈希，读得回来，开头结尾的样子，改一个字哈希就变；坏字节读不回来；造得出策略，坏模板说是哪一类；`session.created` 带着哈希；开关照给的带；五句占位各是各的，带名字的图片的三句也是，以前造的快照没有这三句的读回来一字不差、照不带名字的写（施工 3-9 四补）；会话编号的模板进快照、造的策略写得出那一块、坏了说是事实的模板，以前造的快照没有这一格的读进来再写出去一字不差、没有那一块（`facts.rs`，施工 1-13 再补）；切了级别以后的那一份一样：进快照、写得出那一块、坏了说是事实的模板，以前造的没有这一格的读回来一字不差、没有那一块（`facts.rs`，施工 2-7 补） |
+| `crates/gqy-policy/src/compose.rs`（内嵌的测试） | system 每块去掉末尾空白、空的不要、空一行；场所说明接在人设后面、空的不留空行（施工 7-5）；核心的几行排在人设、场所说明后面，一行一句，工具面是空的不带权限那一句，没接它的 system 和原来一样、空的几行不留空行（施工 2-7 补） |
+| `crates/gqy-policy/src/tools/tests.rs` | 工具面照名字排、读回来一样、交进来的先后不影响字节；没有工具的不写 `tools`，带上空的字节不变；造策略时拆成两份；同名的造不出（读回来的也造不出）；执行器的两句带名字、转义、说法；坏的说是哪一类；缺了这两格的快照读成空的 |
+| `crates/gqy-policy/src/tools/choice/tests.rs` | 拼：一个都没有的拿掉这个参数、和资源去掉它一字不差；有的插 `enum`、说明一行一个、没写说明的只写名字；别的字节不动；读回的和拼进去的一样，没有这一格、写坏的是空的（施工 8-8 补） |
+| `crates/gqy-policy/src/snapshot/tests/recap.rs`（施工 3-8 四补） | 回顾进快照：出厂的快照带着五份字和两个数，造出的组装器回顾得出来；字、数少一样都不回顾；快照里的数照快照的；以前造的快照没有这两格，读进来再写出去一字不差，不回顾 |
+| `crates/gqy-policy/src/snapshot/tests/vision.rs`（施工 8-17） | 替看图进快照：出厂的快照带着两份字和三句标签，造出的组装器交得出转述的请求、驱动写得出带标签的转述；以前造的快照没有这两格，读进来再写出去一字不差，不转述、照旧写占位 |
+| `crates/gqy-policy/src/snapshot/tests/title.rs`（施工 3-8 五补） | 起标题进快照：出厂的快照带着指令和三个数，造出的组装器起得出标题、内核拿到 `tries`、`chars`；字、数少一样都不起，没有回顾的标签的组装器也不起；快照里的数照快照的；以前造的快照没有这两格，读进来再写出去一字不差，不起 |
+| `crates/gqy-policy/src/snapshot/tests/jobs.rs`（施工 3-8 五补从 `tests.rs` 挪出来） | 子会话回报的正文怎么截：出厂的 30000 和截在中间的那一行；以前造的快照没有，读成出厂的数、空的那一行，读写一字不差；快照里的数照快照的 |
+| `crates/gqy-policy/src/peers/tests.rs`（施工 C-2、C-6） | 空了的通知（C-6）：出厂的快照多两个数、通知的五份字（平铺在 `core.peers` 里），作废那一句照快照的小时数换；通知的字坏了照名字报；C-2 时造的快照没有这几格，数照出厂的、通知不出、读回写出一字不差。别的会话发来的话进快照：出厂的快照带着三个数（排在最后）和两份标签，造出的策略照出厂的数、组装器渲染出带短编号的标签；快照里的数照快照的；标签坏了照名字报；以前造的快照没有这两格，读进来再写出去一字不差，照出厂的数防刷屏，那种话和人的话一字不差 |
+| `crates/gqy-policy/src/jobs/tests.rs` | 人停的那一句：出厂的快照带着、交给组装器；以前造的快照没有，读成空的，读回来一字不差（施工 7-2 补） |
+| `crates/gqy-policy/src/guard/tests.rs` | 三句带路径和原因、转义；说法；坏的说是哪一类；缺了 `permissions` 的快照读成空的 |
+| `crates/gqy-store/tests/snapshot.rs` | 从源码树的资源拼出快照，存成 blob，哈希就是快照的哈希；取回来一样；两份策略跑同一个剧本，每一次请求逐字节一样 |
+| `crates/gqy-store/src/resources/tests.rs` | 读出软件工程师的一句和随核心附带的字（会话编号的模板是它那份文件，施工 1-13 再补；回顾的五份各是各的文件，施工 3-8 四补；切了级别以后的权限那一份也是，施工 2-7 补；起标题的指令，施工 3-8 五补）；没有的人格说是哪个文件，坏编号被拒 |
+| `crates/gqy-session/tests/actor.rs` | 造会话先存快照：`session.created` 记的哈希取得出快照 |
+| `crates/gqy-endpoint/tests/tools.rs` | 协议上造的会话，工具面照核心的目录存进快照；换一份核心以后载入，照新核心的目录执行 |
+| `crates/gqy-endpoint/tests/endpoint.rs` | 不能输入的头造的会话，快照里没人能确认 |
 
 ### 出处
 

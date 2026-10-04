@@ -20,10 +20,10 @@
 
 | 文件 | 装什么 |
 |---|---|
-| `crates/miyu-session/src/http.rs`（新） | `HttpModel`：请求模型的端口的真实现。造的时候交进来：HTTP 客户端、端点（地址、key、另配的头）、驱动、这一次调用要定的（模型名、输出上限、能收哪些输入）、端点的编号、会话属主的 blob 目录、空闲超时。`call()` 起一个任务：取 blob、编码、发、把回报交回 actor |
-| `crates/miyu-http/src/testkit.rs`（新，从 `tests/support/` 挪来） | 本机的假服务器，放在 `testkit` 开关后面：miyu-http 自己的测试、miyu-session 的测试都用它 |
-| `crates/miyu-http/Cargo.toml` | `testkit` 开关（连带打开 tokio 的 `net`、`io-util`）；自己的 dev-dependencies 里打开它 |
-| `crates/miyu-session/Cargo.toml` | 依赖 `miyu-drivers`、`miyu-http`；dev-dependencies 里打开 `miyu-http` 的 `testkit` |
+| `crates/gqy-session/src/http.rs`（新） | `HttpModel`：请求模型的端口的真实现。造的时候交进来：HTTP 客户端、端点（地址、key、另配的头）、驱动、这一次调用要定的（模型名、输出上限、能收哪些输入）、端点的编号、会话属主的 blob 目录、空闲超时。`call()` 起一个任务：取 blob、编码、发、把回报交回 actor |
+| `crates/gqy-http/src/testkit.rs`（新，从 `tests/support/` 挪来） | 本机的假服务器，放在 `testkit` 开关后面：gqy-http 自己的测试、gqy-session 的测试都用它 |
+| `crates/gqy-http/Cargo.toml` | `testkit` 开关（连带打开 tokio 的 `net`、`io-util`）；自己的 dev-dependencies 里打开它 |
+| `crates/gqy-session/Cargo.toml` | 依赖 `gqy-drivers`、`gqy-http`；dev-dependencies 里打开 `gqy-http` 的 `testkit` |
 | `docs/designs/05-内核接口.md` 第七节 | 「编码要的 blob 取不出来」 |
 | 施工图 | 3-7（下）那一张 |
 
@@ -31,7 +31,7 @@
 
 1. 照驱动列出的清单，在阻塞线程里取 blob。
 2. 编码：纯函数，得到请求字节和发到哪条路径。
-3. `miyu_http::send`：发之前报「发出去了」（端点、模型、字节的哈希），读到的增量一段段交回，收场报「说完了」（用量，或者出错的分类、原话、供应商说要等多久）；被叫停的什么都不再报。
+3. `gqy_http::send`：发之前报「发出去了」（端点、模型、字节的哈希），读到的增量一段段交回，收场报「说完了」（用量，或者出错的分类、原话、供应商说要等多久）；被叫停的什么都不再报。
 
 ### 不做什么
 
@@ -41,15 +41,15 @@
 
 ### 我定的
 
-- **`HttpModel` 住在 miyu-session**：它就是「请求模型」这个动作的执行器，和 actor 的别的执行器（写盘、到点叫醒）放在一起，不另开 crate。
+- **`HttpModel` 住在 gqy-session**：它就是「请求模型」这个动作的执行器，和 actor 的别的执行器（写盘、到点叫醒）放在一起，不另开 crate。
 - **取 blob、编码都在派出去的任务里做**：取 blob 要读盘，放阻塞线程；编码是纯函数。都不占 actor。
 - **取不出来的 blob 由编码报**（施工中改的）：取的时候取不出来就不放进去，编码时驱动报缺的是哪一个。原先取 blob 那一步也查一遍，和编码时查的是同一件事，删了。
 - **编码要的 blob 取不出来，算出错**：丢了、坏了、读不了，直接报说完了，分类 `other`（`05-内核接口.md` 第七节的「其他」），原话写哪一个 blob 取不出来；不报「发出去了」，因为没发出去。重试也没用，内核照出错收场。
 - **叫停直接交给 `send`**：会话不要这次请求了，或者会话停了（施工 3-7 中），HTTP 马上停，丢掉连接。
 - **会话的 span 带进任务**：`tokio::spawn(任务.instrument(Span::current()))`，HTTP 的 `DEBUG` 两行写在会话编号后面，一路追得上。
-- **假服务器挪进 miyu-http 的 `testkit` 开关**：跨 crate 用的测试夹具照内核执行器替身的做法（施工 2-9）。包在自己的 dev-dependencies 里打开自己的开关，自己的集成测试照样用得上；平常编译不带它。
+- **假服务器挪进 gqy-http 的 `testkit` 开关**：跨 crate 用的测试夹具照内核执行器替身的做法（施工 2-9）。包在自己的 dev-dependencies 里打开自己的开关，自己的集成测试照样用得上；平常编译不带它。
 - **空闲超时**：造 `HttpModel` 时交进来；出厂 180 秒（`05-内核接口.md` 第七节）。
-- **本机交叉 clippy 再多排除 `miyu-session`**：它现在依赖 miyu-http，ring 的 C 代码在本机编不了 Windows、macOS 的；三个平台照旧由 CI 真编真跑。
+- **本机交叉 clippy 再多排除 `gqy-session`**：它现在依赖 gqy-http，ring 的 C 代码在本机编不了 Windows、macOS 的；三个平台照旧由 CI 真编真跑。
 
 ### 验收
 
@@ -66,9 +66,9 @@
 3. 故意改坏 13 处，全都有测试变红：
    - 端口的任务 13 处：不带会话的 span、叫停不交给 send、发出去了不报、增量不交、供应商说的等待不传、出错的分类丢了、用量丢了、缺 blob 算可重试、路径不照编码交回的、空闲超时不照交进来的、取 blob 什么都不取、记下的端点不对、缺 blob 的原话不写是哪一个。
    - 起初测不出来的 4 处，补了测试：供应商说的等待不传（Retry-After 写 1 秒和内核自己第一次重试一样长，改成 2 秒）、路径不照编码交回的（补了说到一半断了、接着写的那条路径）、空闲超时不照交进来的（补了停住的那一个）、取 blob 什么都不取（补了真发一张图）。
-4. `cargo xtask check` 七项全过；推之前本机用 `cargo clippy --workspace --exclude miyu-http --exclude miyu-session --target` 查 Windows、macOS。
+4. `cargo xtask check` 七项全过；推之前本机用 `cargo clippy --workspace --exclude gqy-http --exclude gqy-session --target` 查 Windows、macOS。
 
 ### 风险
 
-- **挪假服务器时改坏 miyu-http 的测试**：挪完先单独跑 miyu-http 的测试，测试数不变、全过，再往下做。
+- **挪假服务器时改坏 gqy-http 的测试**：挪完先单独跑 gqy-http 的测试，测试数不变、全过，再往下做。
 - **图大的时候取 blob 慢**：在阻塞线程里读，不卡 actor，也不卡别的请求。

@@ -8,35 +8,35 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-session/src/open.rs` | 造会话、载入：备好磁盘上的，交给内核，起 actor |
-| `crates/miyu-session/src/open/error.rs` | 造不成、载入不了的几种（施工 3-8 七补从 `open.rs` 挪出来） |
-| `crates/miyu-session/src/actor.rs` | actor 本身：收件箱、一批批送进内核、每个动作怎么回、停下 |
-| `crates/miyu-session/src/actor/mail.rs` | 人的那条收件箱里的一封怎么办；数着拿着订阅的头，交内核 `Watched`（施工 7-9 从 `actor.rs` 挪出来） |
-| `crates/miyu-session/src/actor/back.rs` | 执行器的那条收件箱里的一封，写成内核的输入（施工 C-6 从 `actor.rs` 挪出来：那个文件到了行数上限） |
-| `crates/miyu-session/src/actor/watchers.rs` | 「空了告诉我」被等的这一边：谁在等这个会话空下来，每送完一批看空没空，空了发通知（施工 C-6，下面「被等的名单」） |
-| `crates/miyu-session/src/peers.rs` | 「空了告诉我」等的这一边：照内核在等的去订、计时，到点、不在了交回（施工 C-6，`session/tools.md`「订、计时、再订」） |
-| `crates/miyu-session/src/actor/model.rs` | 请求模型：交给端口、叫停、说完了记一行；回顾的请求也在这里（施工 3-8 四补）；替它看图交给端口（施工 8-17） |
-| `crates/miyu-session/src/actor/stop.rs` | 有计划地停下：要重启了、后台命令记 `restarted`、落了盘再整组杀（施工 7-3） |
-| `crates/miyu-session/src/actor/store.rs` | 写盘；撤掉压缩时读回日志（施工 6-9） |
-| `crates/miyu-session/src/handle.rs` | `Handle`：发命令、订阅、停下；推送和订阅；订阅放下时告诉 actor（施工 7-9） |
-| `crates/miyu-session/src/backlog.rs` | 订阅时要补发的那一截：补到哪一条、在阻塞线程里读出来（施工 3-8 六补） |
-| `crates/miyu-session/src/config.rs` | 会话从哪取配置（`ConfigSource`、`Configs`、`fixed`），回合开始时冻结的一份（`TurnConfig`）；造会话、载入时先取一份（施工 8-4）；一次性调用照端点交的一份冻结（`Turn::new`，施工 8-20） |
-| `crates/miyu-session/src/port.rs` | 请求模型的端口：`Models`、`ModelPort`、`Reports`（辅助请求的回报另走一路，`Reports::aside`，施工 3-8 四补；五补起回顾、起标题共用，`purpose()` 交回用途）、`Cancel`；`Models::one_shot()` 交回模型调用口的一次性入口（施工 8-20，测试照剧本回的端口没有） |
-| `crates/miyu-session/src/route.rs`、`route/send.rs`、`route/pool.rs`、`route/choice.rs`、`route/ended.rs` | 端口的真实现：每个会话的路由，照配置挑供应商、钉 key，经驱动和 HTTP 执行器请求（施工 8-6 取代 `http.rs`）；池里挑成员、池的限额（`route/pool.rs`，施工 8-8）；排候选、挑没在冷却的（`route/choice.rs`），说完了记冷却、换端点、成了才钉（`route/ended.rs`，施工 8-9）。施工 8-20 起它是模型调用口的会话入口（`models.md`「怎么走」第十二条）：挑、发、记冷却调底子（`route/base.rs`、`route/choice.rs`、`route/pool.rs`、`route/exchange.rs`、`route/ended.rs` 的 `Attempt`），会话自己的（退回 `models.chat`、钉 key、钉成员、说到一半断了、限额）在 `route.rs`、`route/send.rs` 的 `Tried` |
-| `crates/miyu-session/src/route/once.rs`、`once/reply.rs` | 模型调用口的一次性入口 `OneShot`（施工 8-20）：不属于哪个会话，和会话的路由共用底子；协议的 `model.call` 调它 |
-| `crates/miyu-session/src/route/sight.rs` | 会话入口替看不了图的模型看图（施工 8-17）：取 `models.vision`，经一次性入口发，结果交给 `Sight`（第 8 条第 6 款） |
-| `crates/miyu-session/src/clock.rs` | 会话的时钟、新的会话编号 |
-| `crates/miyu-session/src/store.rs` | 写盘的端口：平时是会话日志，每落一批顺手更新会话列表的索引（`Indexed`，施工 3-8 七补），测试里换成写不进去的；也从这里读回日志（施工 6-9） |
-| `crates/miyu-session/src/kinds.rs`、`lines.rs` | 运行日志里的输入、动作种类名，和几种写法 |
-| `crates/miyu-session/src/blocking.rs` | 在阻塞线程里做完磁盘上的事 |
-| `crates/miyu-session/src/tools.rs`、`effects.rs`、`restore.rs` | 执行工具、效果、改回文件（`session/tools.md`） |
-| `crates/miyu-session/src/jobs.rs`、`job_ids.rs` | 执行器的任务表、任务编号（`session/tools.md` 第 5 条，施工 7-3）；列出、读、停（第 6 条，施工 7-4） |
-| `crates/miyu-session/src/actor/halt.rs` | 停掉任务：人停一个、父会话停下时全停（施工 7-4）；撤销停掉那几轮派出去的、人删了的子代理当场记回报（施工 7-8） |
-| `crates/miyu-session/src/reread.rs` | 压完重读文件、照 blob 取回原文（`compaction.md` 第九条） |
-| `crates/miyu-session/src/guard.rs` | 权限策略（`session/guard.md`） |
-| `crates/miyu-session/src/spawn.rs`、`agents.rs`、`job_ids.rs` | 造子会话的端口、派子代理、领任务编号（施工 7-5，`session/tools.md`「派子代理」） |
-| `crates/miyu-session/src/report.rs` | 向上回报：子会话把内核交出的回报经端口交给父会话；父会话载入以后叫起还没回报的子会话（施工 7-6） |
-| `crates/miyu-session/src/testkit.rs` | 测试用的、照剧本回的端口，`testkit` 开关打开才有。起标题的请求另排剧本（`Script::titles`），记在 `titled()` 里，不占主剧本；没排的只记下、不回（施工 3-8 五补：它每一轮答完自己来，不管标题的测试不用替它排） |
+| `crates/gqy-session/src/open.rs` | 造会话、载入：备好磁盘上的，交给内核，起 actor |
+| `crates/gqy-session/src/open/error.rs` | 造不成、载入不了的几种（施工 3-8 七补从 `open.rs` 挪出来） |
+| `crates/gqy-session/src/actor.rs` | actor 本身：收件箱、一批批送进内核、每个动作怎么回、停下 |
+| `crates/gqy-session/src/actor/mail.rs` | 人的那条收件箱里的一封怎么办；数着拿着订阅的头，交内核 `Watched`（施工 7-9 从 `actor.rs` 挪出来） |
+| `crates/gqy-session/src/actor/back.rs` | 执行器的那条收件箱里的一封，写成内核的输入（施工 C-6 从 `actor.rs` 挪出来：那个文件到了行数上限） |
+| `crates/gqy-session/src/actor/watchers.rs` | 「空了告诉我」被等的这一边：谁在等这个会话空下来，每送完一批看空没空，空了发通知（施工 C-6，下面「被等的名单」） |
+| `crates/gqy-session/src/peers.rs` | 「空了告诉我」等的这一边：照内核在等的去订、计时，到点、不在了交回（施工 C-6，`session/tools.md`「订、计时、再订」） |
+| `crates/gqy-session/src/actor/model.rs` | 请求模型：交给端口、叫停、说完了记一行；回顾的请求也在这里（施工 3-8 四补）；替它看图交给端口（施工 8-17） |
+| `crates/gqy-session/src/actor/stop.rs` | 有计划地停下：要重启了、后台命令记 `restarted`、落了盘再整组杀（施工 7-3） |
+| `crates/gqy-session/src/actor/store.rs` | 写盘；撤掉压缩时读回日志（施工 6-9） |
+| `crates/gqy-session/src/handle.rs` | `Handle`：发命令、订阅、停下；推送和订阅；订阅放下时告诉 actor（施工 7-9） |
+| `crates/gqy-session/src/backlog.rs` | 订阅时要补发的那一截：补到哪一条、在阻塞线程里读出来（施工 3-8 六补） |
+| `crates/gqy-session/src/config.rs` | 会话从哪取配置（`ConfigSource`、`Configs`、`fixed`），回合开始时冻结的一份（`TurnConfig`）；造会话、载入时先取一份（施工 8-4）；一次性调用照端点交的一份冻结（`Turn::new`，施工 8-20） |
+| `crates/gqy-session/src/port.rs` | 请求模型的端口：`Models`、`ModelPort`、`Reports`（辅助请求的回报另走一路，`Reports::aside`，施工 3-8 四补；五补起回顾、起标题共用，`purpose()` 交回用途）、`Cancel`；`Models::one_shot()` 交回模型调用口的一次性入口（施工 8-20，测试照剧本回的端口没有） |
+| `crates/gqy-session/src/route.rs`、`route/send.rs`、`route/pool.rs`、`route/choice.rs`、`route/ended.rs` | 端口的真实现：每个会话的路由，照配置挑供应商、钉 key，经驱动和 HTTP 执行器请求（施工 8-6 取代 `http.rs`）；池里挑成员、池的限额（`route/pool.rs`，施工 8-8）；排候选、挑没在冷却的（`route/choice.rs`），说完了记冷却、换端点、成了才钉（`route/ended.rs`，施工 8-9）。施工 8-20 起它是模型调用口的会话入口（`models.md`「怎么走」第十二条）：挑、发、记冷却调底子（`route/base.rs`、`route/choice.rs`、`route/pool.rs`、`route/exchange.rs`、`route/ended.rs` 的 `Attempt`），会话自己的（退回 `models.chat`、钉 key、钉成员、说到一半断了、限额）在 `route.rs`、`route/send.rs` 的 `Tried` |
+| `crates/gqy-session/src/route/once.rs`、`once/reply.rs` | 模型调用口的一次性入口 `OneShot`（施工 8-20）：不属于哪个会话，和会话的路由共用底子；协议的 `model.call` 调它 |
+| `crates/gqy-session/src/route/sight.rs` | 会话入口替看不了图的模型看图（施工 8-17）：取 `models.vision`，经一次性入口发，结果交给 `Sight`（第 8 条第 6 款） |
+| `crates/gqy-session/src/clock.rs` | 会话的时钟、新的会话编号 |
+| `crates/gqy-session/src/store.rs` | 写盘的端口：平时是会话日志，每落一批顺手更新会话列表的索引（`Indexed`，施工 3-8 七补），测试里换成写不进去的；也从这里读回日志（施工 6-9） |
+| `crates/gqy-session/src/kinds.rs`、`lines.rs` | 运行日志里的输入、动作种类名，和几种写法 |
+| `crates/gqy-session/src/blocking.rs` | 在阻塞线程里做完磁盘上的事 |
+| `crates/gqy-session/src/tools.rs`、`effects.rs`、`restore.rs` | 执行工具、效果、改回文件（`session/tools.md`） |
+| `crates/gqy-session/src/jobs.rs`、`job_ids.rs` | 执行器的任务表、任务编号（`session/tools.md` 第 5 条，施工 7-3）；列出、读、停（第 6 条，施工 7-4） |
+| `crates/gqy-session/src/actor/halt.rs` | 停掉任务：人停一个、父会话停下时全停（施工 7-4）；撤销停掉那几轮派出去的、人删了的子代理当场记回报（施工 7-8） |
+| `crates/gqy-session/src/reread.rs` | 压完重读文件、照 blob 取回原文（`compaction.md` 第九条） |
+| `crates/gqy-session/src/guard.rs` | 权限策略（`session/guard.md`） |
+| `crates/gqy-session/src/spawn.rs`、`agents.rs`、`job_ids.rs` | 造子会话的端口、派子代理、领任务编号（施工 7-5，`session/tools.md`「派子代理」） |
+| `crates/gqy-session/src/report.rs` | 向上回报：子会话把内核交出的回报经端口交给父会话；父会话载入以后叫起还没回报的子会话（施工 7-6） |
+| `crates/gqy-session/src/testkit.rs` | 测试用的、照剧本回的端口，`testkit` 开关打开才有。起标题的请求另排剧本（`Script::titles`），记在 `titled()` 里，不占主剧本；没排的只记下、不回（施工 3-8 五补：它每一轮答完自己来，不管标题的测试不用替它排） |
 
 ### 对外的样子
 
@@ -61,7 +61,7 @@
 |---|---|
 | `id()` | 会话编号 |
 | `busy()` | 有没有在跑的回合：核心看它决定能不能空闲退出（`core.md`）。停了的会话不算 |
-| `oneshot()` | 一次性的会话：`miyu ask` 开的（施工 C-5，`cross-session.md` 第三条第 4 款）：`send_message` 发给它的时候，照它和 `watched()` 决定说送到了还是存下了 |
+| `oneshot()` | 一次性的会话：`gqy ask` 开的（施工 C-5，`cross-session.md` 第三条第 4 款）：`send_message` 发给它的时候，照它和 `watched()` 决定说送到了还是存下了 |
 | `watched()` | 这时有没有至少一个头订阅着（施工 C-5）：和 `busy()` 一样是一面共用的旗，拿着订阅的头从没有到有、从有到没有时（见下面「人的那条收件箱」第 6 条）一起写；造会话、载入以后是假的，和内核一样当没人看着 |
 | `limits()` | 给头看的限额：窗口、压缩线（`kernel/session.md` 的 `ContextLimits`）。造会话、载入时交完限额向内核要的；和 actor 共用（`Shown`），钉住的池出错换了成员（施工 8-9，第 7 条第 8 款）、回合开始重新解析换了的（施工 8-10，第 4 条「跑回合开始的挂接点」）跟着换；协议照它回 `subscribe`（`protocol.md`，施工 6-3 补） |
 | `next()` | 会话接下来请求的模型（`Next`，施工 8-10）：引用、接下来发给谁（轮换的池、解析不出的没有）、那个模型真用的思考强度（施工 8-18）。和 `limits()` 住在同一份 `Shown` 里，一起写；协议照它写 `subscribe` 回应的 `model` |
@@ -70,7 +70,7 @@
 | `subscribe_after(after)` | 订阅，连同补发（协议的 `subscribe` 带 `after`，施工 3-8 六补）：交回从这一刻起推的订阅，和日志里序号大于 `after`、这一刻落了盘的那一截（`Backlog`，第 6 条） |
 | `stop()` | 有计划地停下，停好了才回 |
 | `stop_job(编号, 谁, 命令编号)` | 人停掉派出去的一个任务（协议的 `job.stop`，施工 7-4）：回报落了盘才回；没有、已经结束了的交回 `JobError` |
-| `job_output(编号)` | 头读一条后台命令到这时为止的输出（协议的 `job.output`，施工 7-4 补）：交回读得到的字（`miyu_tool::Output`）、还在不在跑，和她用 `jobs` 读的是同一份（`session/tools.md` 第 6 条第 3 款）；没有这个任务、是子代理的交回 `Unreadable`。不进内核、不写盘 |
+| `job_output(编号)` | 头读一条后台命令到这时为止的输出（协议的 `job.output`，施工 7-4 补）：交回读得到的字（`gqy_tool::Output`）、还在不在跑，和她用 `jobs` 读的是同一份（`session/tools.md` 第 6 条第 3 款）；没有这个任务、是子代理的交回 `Unreadable`。不进内核、不写盘 |
 | `stop_jobs(谁, 命令编号)` | 停掉这个会话派出去、还没结束的全部，连它们派的（父会话停下它时，会话表经端口来调，施工 7-4）：都带 `by_model`、不叫醒它，停好了才回 |
 | `delete()` | 删会话之前停下（施工 3-8 三补）：内核说删不了的交回原因（`TurnRunning`、`Restoring`），会话照常；删得了的停下，日志关了才回（第 9 条） |
 | `discard()` | 同 `delete()`，只是不问删不删得了：父会话被删，子会话一起停（`agents.md` 第七条第 5 条） |
@@ -113,7 +113,7 @@
 
 **3. 收件箱**
 
-1. 一个会话一个 tokio 任务，带着会话的 span：`error_span!`，目标 `miyu::session`，名字 `session`，一格 `session` 是会话编号。开在 `ERROR` 级，调到 `WARN` 也筛不掉，底下的行都带着会话编号（`log.md`）。外面再套一个看着它的任务。
+1. 一个会话一个 tokio 任务，带着会话的 span：`error_span!`，目标 `gqy::session`，名字 `session`，一格 `session` 是会话编号。开在 `ERROR` 级，调到 `WARN` 也筛不掉，底下的行都带着会话编号（`log.md`）。外面再套一个看着它的任务。
 2. 两条通道，都不设上限：
    - 人的：`Handle` 发来的命令、订阅、放下了订阅（施工 7-9）、停下、删之前停下（施工 3-8 三补）、环境变了、读后台命令的输出（施工 7-4 补）、别的会话在等它空下来（施工 C-6，会话表经 `Handle::watch` 交）。拿着 `Handle` 的都放下了，它就关了：订阅放下时往里送一声拿的是弱的一头，不因为还有订阅就不关。
    - 执行器的回报：请求的回报、到点了、工具的回报、后台命令结束了（施工 7-3）、等的会话等不到了（施工 C-6）。actor 自己也拿着一头，它不会自己关。
@@ -127,9 +127,9 @@
    | 放下了订阅（施工 7-9） | `Subscription` 被丢掉时自己送来（要订阅、送进来了、没等到回答就不等了的也送）。拿着订阅的头从有变成没有，送 `Watched { watched: false }` 进内核；别的不进内核。造会话、载入时是 0 个，和内核一样当没人看着（`kernel/session.md`「回报」第 6 条），`Handle::watched()` 同一时刻也是假的 |
    | 环境变了 | 送进内核：不当场注入，到下一个边界再查（`kernel/session.md`） |
    | 停下 | 第 9 条 |
-   | 停掉任务（施工 7-4） | 后台命令当场在阻塞线程里杀、存，回报当场交进内核、落了盘再回；子代理另起一个任务经会话表去停，回报送回来落了盘再回：不在收件箱里等，回报才送得进来（`crates/miyu-session/src/actor/halt.rs`，`session/tools.md` 第 6 条）。人删了的子代理（施工 7-8）：它已经停了，回报当场作为子会话交来的命令交进内核、落了盘再回（`session/tools.md` 第 6 条第 10 款） |
+   | 停掉任务（施工 7-4） | 后台命令当场在阻塞线程里杀、存，回报当场交进内核、落了盘再回；子代理另起一个任务经会话表去停，回报送回来落了盘再回：不在收件箱里等，回报才送得进来（`crates/gqy-session/src/actor/halt.rs`，`session/tools.md` 第 6 条）。人删了的子代理（施工 7-8）：它已经停了，回报当场作为子会话交来的命令交进内核、落了盘再回（`session/tools.md` 第 6 条第 10 款） |
    | 删之前停下 | 第 9 条 |
-   | 读后台命令的输出（施工 7-4 补） | 当场照名册看是什么，另起一个任务开文件、交回：不进内核、不写盘，不在收件箱里等（`crates/miyu-session/src/actor/mail.rs`，`session/tools.md` 第 6 条第 3 款） |
+   | 读后台命令的输出（施工 7-4 补） | 当场照名册看是什么，另起一个任务开文件、交回：不进内核、不写盘，不在收件箱里等（`crates/gqy-session/src/actor/mail.rs`，`session/tools.md` 第 6 条第 3 款） |
    | 有会话在等它空下来（施工 C-6） | 记进名单（「被等的名单」），不进内核、不写盘；上不上膛照「被等的名单」第 3 款判（2026-10-01 改：不是这时已经空了就当场发） |
 
 5. 执行器的一封，照 actor 的时钟记下到的时刻：
@@ -234,7 +234,7 @@
 1. 一个核心一份：HTTP 客户端（连接跨请求复用）、供应商的档案、模型资料、空闲超时（`core.md`「模型」）。给每个会话造一个路由，驱动的占位用这个会话快照里的。
 2. 造路由时（造会话、载入）记下这个会话用的引用：`ForSession.reference`（施工 8-8：造的是解析好的 `session.created.model`，载入的照内核从日志算的，施工 8-10；没有的照那一刻的 `models.chat`），照它定限额：窗口（手写的压过模型资料）、最大输出、一张图怎么算（照档案）；钉住的池这时就钉上一个成员（载入的照 `ForSession.sent`：最近一条发出去了的 `model.called`），轮换的池取成员里小的（`models.md`「怎么走」第三条第 6、7 条，`route/pool.rs`）。解析不出的限额都没有，`request` 那一行写 `endpoint=none model=none`。钉住的池出错换了成员、成了以后，限额跟着换成它的（施工 8-9，第 7 条第 8 款）；回合开始照这一轮的配置重新解析（施工 8-10，`route/turn.rs`）：内核交了引用的换成它，没交的照路由记在内存里的；解析不出的退回这一轮的 `models.chat`、记一行 `INFO model fallback`，内核交了引用的交回 `replaced`；钉住的池钉着的成员还在的照旧；限额照解析出的重算。端口的 `reference()` 交出钉着的引用，派子代理不写池时照它抄（施工 8-8；8-8 补以前是挡位）。思考强度（施工 8-18，`route/effort.rs`；8-18（补）起不认会话那一层）：每次请求挑好端点以后照真发的那个模型配置的默认（`facts.effort.value`），交给驱动（`Call.effort`），空闲超时照它放大；`effort()` 照限额里的模型现算给头看的那一档，连同从配置的哪一层来。
 3. 每一次请求照这一轮冻结的配置（`TurnConfig`，`config.md` 第八条第 3 条）重新解析：钉着的引用解析得出就用它（是池的照钉住、轮换挑成员，这时用不了的跳到下一个，施工 8-8）；解析不出的（没配、那一家没了、用不了）退回这一轮的 `models.chat`，退得回去的以后就钉在它上面（只在内存里）；都不行的当场报说完了，分类 `no_model`，原话照 `models.md`「出错」，没发出去，不报发出去了，记一行 `WARN no model why=…`。`request` 那一行写这个会话上一次解析出来的那一个。
-4. key：这一家写了几个，照会话编号钉一个（`miyu_models::keys`：会话编号的 SHA-256 前 8 个字节、大端、对个数取余），取不到值的照写的先后取下一个；一个都取不到也是 `no_model`（`provider "<编号>" has no usable key`）。没写 key 的不带认证头。key 照这一轮的配置取（`{ secret }` 密钥文件、`{ env }` 核心的环境），只在内存里。
+4. key：这一家写了几个，照会话编号钉一个（`gqy_models::keys`：会话编号的 SHA-256 前 8 个字节、大端、对个数取余），取不到值的照写的先后取下一个；一个都取不到也是 `no_model`（`provider "<编号>" has no usable key`）。没写 key 的不带认证头。key 照这一轮的配置取（`{ secret }` 密钥文件、`{ env }` 核心的环境），只在内存里。
    - 出错换 key、换端点（施工 8-9，`models.md`「怎么走」第四条、第五条）：一个候选是一家、一个 key、一个模型，照先后排（出错换过去、成了的 key 在前，池照成员的先后）；取排在最前、没在冷却的，上一次主请求说到一半断了的还发给它，不止一个候选、全在冷却的当场报说完了，分类 `cooling`，没发出去。冷却表核心一份（`ModelData`）。
 5. 一次请求派一个任务，带着会话的 span：HTTP 的几行写在会话编号后面（`log.md`）。任务里：
    1. 照驱动列的清单，在阻塞线程里从属主的 blob 取编码要的图片、文件。取不出来的（没有、坏了、读不了）不放进去。
@@ -345,36 +345,36 @@ actor 退出以后：等着回应的命令、要订阅的、要停下的，都�
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-session/tests/route_vision.rs`、`vision_log.rs`（施工 8-17） | 替它看图：会话的模型看不了图，经一次性入口问 `models.vision`（指令、那一行、人这一轮说的那句、图的字节，不带工具），内核记一条 `image.described`，主请求里图的位置是带标签的转述、不发图；同一张图下一轮不再问；会话的模型看得了图的不问、照发原图；没配 `models.vision` 的照旧占位、主请求照发；没成的记一行 `image not described`（会话编号、图、为什么），成了的不另记、一次性入口那一行带会话编号 |
-| `crates/miyu-session/tests/watch.rs`（施工 C-6） | 被等的名单：订进来时已经空着不当场发、等它下一次忙完才发（2026-10-01 改）、起算时刻不晚于上一次忙完的时刻的照样当场发、正忙时订了忙完才发（编号、`by`、带的那一行）、同一个会话只记一个、子代理没报完不发、报完被叫醒的那一轮做完了才发；等的这一边见 `session/tools.md`「订、计时、再订」。真核心见 `crates/miyu-endpoint/tests/watch.rs`（被重启打断的不算空：停的时候不发，再起来做完才发） |
-| `crates/miyu-session/tests/delete.rs`（施工 3-8 三补） | 删之前停下：空闲的，后台命令回之前整组杀掉、不记回报，日志一条不多，回了以后连打断都收不到；有回合在进行的说删不了、会话照常、打断以后删得了；`discard` 停下停在请求上的会话，后台命令杀掉、不记，那一轮不收尾 |
-| `crates/miyu-endpoint/tests/delete.rs`、`delete_children.rs`（施工 3-8 三补） | 真核心走一遍：目录挪得走；子会话不问忙不忙一起停（`protocol.md`「守着它的」） |
-| `crates/miyu-session/tests/jobs.rs`（施工 7-3） | 有计划地停下先记 `restarted`、杀的时候已经落了盘；没人拿着了停下的，整组杀掉不记、再载入补 `aborted`（`session/tools.md`「守着它的」） |
-| `crates/miyu-session/tests/actor.rs` | 造会话先存快照、第一条是 `session.created`；一轮先落盘、再推送、再回应，增量在回复落盘之前推过来；能重试的错到点才再请求、原样重发；打断叫停路上的请求；停下再载入接着干；同一个命令两次回两次、只生效一次；停在一轮中间的，落了盘、载入后接着干；载入的会话时刻不往回走；没人拿着了叫停路上的请求；换了工作目录下一轮才看到 |
-| `crates/miyu-session/tests/session_fact.rs`（施工 1-13 再补） | 会话编号交给内核：第一轮注入的就是这个会话的编号，排在人那一句前面；停下再载入，编号一样、不重发；子会话注入它自己的编号，不是父会话的 |
-| `crates/miyu-session/tests/limits.rs` | 造会话、载入以后先交限额，到线就压，没有窗口的不压（施工 6-3 上）；`Handle` 带着端口交的窗口和内核算的压缩线，载入的也一样，没报窗口的两格都没有（施工 6-3 补） |
-| `crates/miyu-session/src/actor/tests.rs` | 写不进去就停下：等着的命令收到「会话停了」、记一行 `WARN`、不再算在跑、订阅不了、日志里没有对话的字 |
-| `crates/miyu-session/tests/read_back_log.rs`（施工 6-9） | 撤掉压缩时日志读不回来：会话停下，撤销收到「会话停了」，记一行 `read back failed, stopped` |
-| `crates/miyu-session/tests/undo_compaction.rs`（施工 6-9） | 真的会话：撤掉压缩所在的那一轮再恢复，不请求模型，检查点回来、重读的原文照 blob 取回；撤掉以后停了再载入，请求回到压缩前，那次压缩不算了 |
-| `crates/miyu-session/tests/report_up.rs`（施工 7-6） | 子会话把回报交给父会话：命令编号照报的那一轮、`by` 是子会话、任务编号照造它的命令读回；父会话先拒两次 `unknown_job` 再收，同一份交了三次；停了再载入同一份再交一次；父会话载入以后叫起还没回报的子会话，交代不再送 |
-| `crates/miyu-session/src/handle/tests.rs` | 掉过一次队就一直是掉队；会话停了读完剩下的；`try_next` 只拿已经到了的 |
-| `crates/miyu-session/tests/backlog.rs`（施工 3-8 六补） | 补发：补到订阅那一刻落了盘的最后一条，订阅以后、读之前又落了盘的不读进来，从订阅推过来、从下一条起；`after` 是 0、中间、最后一条、比最后一条大的，补的是序号大于它的 |
-| `crates/miyu-session/tests/watched.rs`（施工 7-9） | 有没有头看着：一次性会话有头订阅着，后台命令结束叫醒她；走了一个头还有一个照样叫醒；订阅都放下了只记下；造会话以后没人订阅过的当没人看着，后来有头订阅也不因为以前的开轮 |
-| `crates/miyu-session/src/clock/tests.rs` | 时钟不往回走、1970 年以前当 0、出了范围停在最后一刻；会话编号是那一刻的 UUIDv7；同一毫秒里连造一千个照先后 |
-| `crates/miyu-session/tests/http.rs` | 经路由请求假服务器回复（施工 8-6 起配置指到它）；限速照服务器说的等；打断断开连接；缺 blob 出错、不发；回复断了接着说（开关照档案）；卡住的回复照空闲超时；图片照字节发出去 |
-| `crates/miyu-session/tests/route.rs`（施工 8-6） | key 照会话编号挑、重启（停了再载入、换一个路由）还是它；钉着的取不到照写的先后取下一个；没配 `models.chat`、key 一个都取不到、供应商没有、推不出驱动和地址的当场 `no_model`、不发；没写 key 的不带认证头；开着的会话钉着造它时的模型，`models.chat` 改了只影响新会话；钉着的那一家没了，退回这一轮的 `models.chat`、以后钉在它上面；造的时候没配的，配好以后下一轮用上；窗口照配置 |
-| `crates/miyu-session/tests/route_failover.rs`（施工 8-9） | 换端点：429 换到别的 key 当场再来、成了以后一直用它；钉住的池换到下一个成员、成了才钉、推 `model.changed`、`Handle` 的限额跟着换；轮换的池跳过冷却中的成员、不推；说到一半断了还发给原来那一个；只有一个候选的照旧在它上面再来；全在冷却的不发、交 `cooling`、原话列出每个候选；换端点数进 5 次；请求本身有错的不换、不记冷却（`models.md`「守着它的」） |
-| `crates/miyu-session/tests/failover_log.rs`（施工 8-9） | `endpoint cooling`、`failover` 两行带会话编号，key 只写第几个，值不在日志里 |
-| `crates/miyu-session/tests/route_effort.rs`（施工 8-18；8-18（补）去掉会话那一层） | 一次请求照配置的默认、都没有；换模型以后用新模型自己的；轮换的池里每个成员用自己的、不带给头看的；个人设置压着系统配置、下一轮生效，`from` 跟着从 `system` 换成 `personal`；空闲超时照那一档放大（`effort_log.rs` 的 `WARN` 测试随会话那一层删掉了） |
-| `crates/miyu-session/tests/route_turn.rs`（施工 8-10） | 回合开始重新解析：换了模型的下一轮发给新的、推一条 `model.changed`（`why` 是 `turn`）、`Handle` 的限额和模型跟着换、没再变的不推；钉着的那一家没了退回这一轮的 `models.chat`、内核在那一轮里记下、以后钉在它上面；`models.chat` 也没有的不记、当场 `no_model`；只改了窗口的下一轮用上、也推；换成轮换的池推的没有端点、限额取小的；载入照换过的引用造路由 |
-| `crates/miyu-session/tests/once.rs`、`once_pools.rs`、`once_shared.rs`（施工 8-20） | 一次性入口：模型、`@池`、不写照 `models.chat`；消息照先后发、不带工具、`max_tokens`；带图、模型不收图的不发；四种出错；配置的默认强度；key 照用途钉；429 当场换、最多换 5 次；钉住的池照指针取成员、出错换下一个，轮换的池一次走一个；冷却和会话的路由共用，两个方向（`models.md`「守着它的」）。会话的路由那几份测试拆出底子以后一个不改照旧全过 |
-| `crates/miyu-session/tests/fallback_log.rs`（施工 8-10） | `model fallback` 一行带会话编号，写原来的和退回的 |
-| `crates/miyu-session/tests/route_pools.rs`（施工 8-8） | 池：钉住的一个会话一直发给一个成员、新会话照指针分开、认不出的成员跳过；载入照日志认回钉着的、指针写进 `pools.json` 重启读回；轮换的一次一个；这时用不了的跳过、钉到下一个；池没了退回 `chat`；限额照钉着的、轮换的取小的；`session.created` 记下会话的引用（`models.md`「守着它的」） |
-| `crates/miyu-session/tests/log.rs` | 会话造、请求、出错、重试、收场、停下、载入、没人拿着、端口 panic 的几行；手动压缩的 `compacted` 写 `trigger=manual`（施工 6-8）；撤销以后 `changed=message:0:user`；`DEBUG` 的输入和动作、增量在 `TRACE`；没有对话的字 |
-| `crates/miyu-session/tests/recap_log.rs`（施工 3-8 四补） | 回顾的请求记 `recap request`、`recap ended`、`recap failed`，`seen` 是照到的那一条，格和主请求的一样；没有对话的字 |
-| `crates/miyu-session/tests/title_log.rs`（施工 3-8 五补） | 起标题的请求记 `title request`、`title ended`、`title failed`，`seen` 是照到的那一条；两次都没起成，第三轮不再试；没有对话的字 |
-| `crates/miyu-session/tests/http_log.rs` | HTTP 的两行带会话编号，key 不在日志里 |
-| `crates/miyu-session/tests/index_log.rs`（施工 3-8 七补） | 每落一批，索引里那一行照到日志的末尾；表没了，更新失败只记一行带会话编号的 `session index not updated`，会话照常说完下一轮（`store/index.md`「守着它的」） |
+| `crates/gqy-session/tests/route_vision.rs`、`vision_log.rs`（施工 8-17） | 替它看图：会话的模型看不了图，经一次性入口问 `models.vision`（指令、那一行、人这一轮说的那句、图的字节，不带工具），内核记一条 `image.described`，主请求里图的位置是带标签的转述、不发图；同一张图下一轮不再问；会话的模型看得了图的不问、照发原图；没配 `models.vision` 的照旧占位、主请求照发；没成的记一行 `image not described`（会话编号、图、为什么），成了的不另记、一次性入口那一行带会话编号 |
+| `crates/gqy-session/tests/watch.rs`（施工 C-6） | 被等的名单：订进来时已经空着不当场发、等它下一次忙完才发（2026-10-01 改）、起算时刻不晚于上一次忙完的时刻的照样当场发、正忙时订了忙完才发（编号、`by`、带的那一行）、同一个会话只记一个、子代理没报完不发、报完被叫醒的那一轮做完了才发；等的这一边见 `session/tools.md`「订、计时、再订」。真核心见 `crates/gqy-endpoint/tests/watch.rs`（被重启打断的不算空：停的时候不发，再起来做完才发） |
+| `crates/gqy-session/tests/delete.rs`（施工 3-8 三补） | 删之前停下：空闲的，后台命令回之前整组杀掉、不记回报，日志一条不多，回了以后连打断都收不到；有回合在进行的说删不了、会话照常、打断以后删得了；`discard` 停下停在请求上的会话，后台命令杀掉、不记，那一轮不收尾 |
+| `crates/gqy-endpoint/tests/delete.rs`、`delete_children.rs`（施工 3-8 三补） | 真核心走一遍：目录挪得走；子会话不问忙不忙一起停（`protocol.md`「守着它的」） |
+| `crates/gqy-session/tests/jobs.rs`（施工 7-3） | 有计划地停下先记 `restarted`、杀的时候已经落了盘；没人拿着了停下的，整组杀掉不记、再载入补 `aborted`（`session/tools.md`「守着它的」） |
+| `crates/gqy-session/tests/actor.rs` | 造会话先存快照、第一条是 `session.created`；一轮先落盘、再推送、再回应，增量在回复落盘之前推过来；能重试的错到点才再请求、原样重发；打断叫停路上的请求；停下再载入接着干；同一个命令两次回两次、只生效一次；停在一轮中间的，落了盘、载入后接着干；载入的会话时刻不往回走；没人拿着了叫停路上的请求；换了工作目录下一轮才看到 |
+| `crates/gqy-session/tests/session_fact.rs`（施工 1-13 再补） | 会话编号交给内核：第一轮注入的就是这个会话的编号，排在人那一句前面；停下再载入，编号一样、不重发；子会话注入它自己的编号，不是父会话的 |
+| `crates/gqy-session/tests/limits.rs` | 造会话、载入以后先交限额，到线就压，没有窗口的不压（施工 6-3 上）；`Handle` 带着端口交的窗口和内核算的压缩线，载入的也一样，没报窗口的两格都没有（施工 6-3 补） |
+| `crates/gqy-session/src/actor/tests.rs` | 写不进去就停下：等着的命令收到「会话停了」、记一行 `WARN`、不再算在跑、订阅不了、日志里没有对话的字 |
+| `crates/gqy-session/tests/read_back_log.rs`（施工 6-9） | 撤掉压缩时日志读不回来：会话停下，撤销收到「会话停了」，记一行 `read back failed, stopped` |
+| `crates/gqy-session/tests/undo_compaction.rs`（施工 6-9） | 真的会话：撤掉压缩所在的那一轮再恢复，不请求模型，检查点回来、重读的原文照 blob 取回；撤掉以后停了再载入，请求回到压缩前，那次压缩不算了 |
+| `crates/gqy-session/tests/report_up.rs`（施工 7-6） | 子会话把回报交给父会话：命令编号照报的那一轮、`by` 是子会话、任务编号照造它的命令读回；父会话先拒两次 `unknown_job` 再收，同一份交了三次；停了再载入同一份再交一次；父会话载入以后叫起还没回报的子会话，交代不再送 |
+| `crates/gqy-session/src/handle/tests.rs` | 掉过一次队就一直是掉队；会话停了读完剩下的；`try_next` 只拿已经到了的 |
+| `crates/gqy-session/tests/backlog.rs`（施工 3-8 六补） | 补发：补到订阅那一刻落了盘的最后一条，订阅以后、读之前又落了盘的不读进来，从订阅推过来、从下一条起；`after` 是 0、中间、最后一条、比最后一条大的，补的是序号大于它的 |
+| `crates/gqy-session/tests/watched.rs`（施工 7-9） | 有没有头看着：一次性会话有头订阅着，后台命令结束叫醒她；走了一个头还有一个照样叫醒；订阅都放下了只记下；造会话以后没人订阅过的当没人看着，后来有头订阅也不因为以前的开轮 |
+| `crates/gqy-session/src/clock/tests.rs` | 时钟不往回走、1970 年以前当 0、出了范围停在最后一刻；会话编号是那一刻的 UUIDv7；同一毫秒里连造一千个照先后 |
+| `crates/gqy-session/tests/http.rs` | 经路由请求假服务器回复（施工 8-6 起配置指到它）；限速照服务器说的等；打断断开连接；缺 blob 出错、不发；回复断了接着说（开关照档案）；卡住的回复照空闲超时；图片照字节发出去 |
+| `crates/gqy-session/tests/route.rs`（施工 8-6） | key 照会话编号挑、重启（停了再载入、换一个路由）还是它；钉着的取不到照写的先后取下一个；没配 `models.chat`、key 一个都取不到、供应商没有、推不出驱动和地址的当场 `no_model`、不发；没写 key 的不带认证头；开着的会话钉着造它时的模型，`models.chat` 改了只影响新会话；钉着的那一家没了，退回这一轮的 `models.chat`、以后钉在它上面；造的时候没配的，配好以后下一轮用上；窗口照配置 |
+| `crates/gqy-session/tests/route_failover.rs`（施工 8-9） | 换端点：429 换到别的 key 当场再来、成了以后一直用它；钉住的池换到下一个成员、成了才钉、推 `model.changed`、`Handle` 的限额跟着换；轮换的池跳过冷却中的成员、不推；说到一半断了还发给原来那一个；只有一个候选的照旧在它上面再来；全在冷却的不发、交 `cooling`、原话列出每个候选；换端点数进 5 次；请求本身有错的不换、不记冷却（`models.md`「守着它的」） |
+| `crates/gqy-session/tests/failover_log.rs`（施工 8-9） | `endpoint cooling`、`failover` 两行带会话编号，key 只写第几个，值不在日志里 |
+| `crates/gqy-session/tests/route_effort.rs`（施工 8-18；8-18（补）去掉会话那一层） | 一次请求照配置的默认、都没有；换模型以后用新模型自己的；轮换的池里每个成员用自己的、不带给头看的；个人设置压着系统配置、下一轮生效，`from` 跟着从 `system` 换成 `personal`；空闲超时照那一档放大（`effort_log.rs` 的 `WARN` 测试随会话那一层删掉了） |
+| `crates/gqy-session/tests/route_turn.rs`（施工 8-10） | 回合开始重新解析：换了模型的下一轮发给新的、推一条 `model.changed`（`why` 是 `turn`）、`Handle` 的限额和模型跟着换、没再变的不推；钉着的那一家没了退回这一轮的 `models.chat`、内核在那一轮里记下、以后钉在它上面；`models.chat` 也没有的不记、当场 `no_model`；只改了窗口的下一轮用上、也推；换成轮换的池推的没有端点、限额取小的；载入照换过的引用造路由 |
+| `crates/gqy-session/tests/once.rs`、`once_pools.rs`、`once_shared.rs`（施工 8-20） | 一次性入口：模型、`@池`、不写照 `models.chat`；消息照先后发、不带工具、`max_tokens`；带图、模型不收图的不发；四种出错；配置的默认强度；key 照用途钉；429 当场换、最多换 5 次；钉住的池照指针取成员、出错换下一个，轮换的池一次走一个；冷却和会话的路由共用，两个方向（`models.md`「守着它的」）。会话的路由那几份测试拆出底子以后一个不改照旧全过 |
+| `crates/gqy-session/tests/fallback_log.rs`（施工 8-10） | `model fallback` 一行带会话编号，写原来的和退回的 |
+| `crates/gqy-session/tests/route_pools.rs`（施工 8-8） | 池：钉住的一个会话一直发给一个成员、新会话照指针分开、认不出的成员跳过；载入照日志认回钉着的、指针写进 `pools.json` 重启读回；轮换的一次一个；这时用不了的跳过、钉到下一个；池没了退回 `chat`；限额照钉着的、轮换的取小的；`session.created` 记下会话的引用（`models.md`「守着它的」） |
+| `crates/gqy-session/tests/log.rs` | 会话造、请求、出错、重试、收场、停下、载入、没人拿着、端口 panic 的几行；手动压缩的 `compacted` 写 `trigger=manual`（施工 6-8）；撤销以后 `changed=message:0:user`；`DEBUG` 的输入和动作、增量在 `TRACE`；没有对话的字 |
+| `crates/gqy-session/tests/recap_log.rs`（施工 3-8 四补） | 回顾的请求记 `recap request`、`recap ended`、`recap failed`，`seen` 是照到的那一条，格和主请求的一样；没有对话的字 |
+| `crates/gqy-session/tests/title_log.rs`（施工 3-8 五补） | 起标题的请求记 `title request`、`title ended`、`title failed`，`seen` 是照到的那一条；两次都没起成，第三轮不再试；没有对话的字 |
+| `crates/gqy-session/tests/http_log.rs` | HTTP 的两行带会话编号，key 不在日志里 |
+| `crates/gqy-session/tests/index_log.rs`（施工 3-8 七补） | 每落一批，索引里那一行照到日志的末尾；表没了，更新失败只记一行带会话编号的 `session index not updated`，会话照常说完下一轮（`store/index.md`「守着它的」） |
 
 ### 出处
 

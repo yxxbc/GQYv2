@@ -8,9 +8,9 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/block.rs` | 五种块 `Block`、驱动私有数据 `Private`、不认识的块 |
-| `crates/miyu-kernel/src/raw.rs` | 原样的 JSON `RawJson`；照 `type` 或 `kind` 分派的读法 `read_tagged`，块、`by`、效果都用它 |
-| `crates/miyu-kernel/src/text_enum.rs` | 生成字符串取值的宏 `text_enum!`，内核里的十一种取值都由它生成 |
+| `crates/gqy-kernel/src/block.rs` | 五种块 `Block`、驱动私有数据 `Private`、不认识的块 |
+| `crates/gqy-kernel/src/raw.rs` | 原样的 JSON `RawJson`；照 `type` 或 `kind` 分派的读法 `read_tagged`，块、`by`、效果都用它 |
+| `crates/gqy-kernel/src/text_enum.rs` | 生成字符串取值的宏 `text_enum!`，内核里的十一种取值都由它生成 |
 
 ### 对外的样子
 
@@ -55,7 +55,7 @@
 
 **字符串取值**（宏 `text_enum!`）：每一种列出认识的几个值，再多一种 `Other(String)`，放不认识的。`as_str()` 是它在 JSON 里的写法。
 
-| 取值 | 在哪（`crates/miyu-kernel/src/` 下） | 认识的值 | 见 |
+| 取值 | 在哪（`crates/gqy-kernel/src/` 下） | 认识的值 | 见 |
 |---|---|---|---|
 | `Access` | `tool.rs` | `read`、`write`、`execute`、`network`、`outbound` | `kernel/tools.md` |
 | `Level` | `event/session.rs` | `workspace`、`full` | `kernel/events-bodies.md` |
@@ -96,7 +96,7 @@
 13. 调用编号由内核分，照这条回复的序号写成 `call_<序号>_<第几个>`（`kernel/request.md` 的流式累积器）；供应商自己的编号放在 `private` 里。中途换模型、换供应商，编号照样一致。
 14. 图片、文件本身不进事件：块里只放 blob 的内容哈希，内容存成 blob（`store.md`）。图片块的宽、高必有：量得出尺寸才当图片。造它们的：`read` 读图片造图片块（施工 4-13，`tools/read.md`），人附的附件造图片块、文件块（施工 3-9 三补，`protocol.md` 的 `blob.put`、`session.send`），都是进来时量好。图片块的名字（施工 3-9 四补）：人附的图片带，是 `blob.put` 回应里的那个名字，她分得清一句话里的几张图哪张是哪个文件；`read` 读出来的不带，那一次调用本来写着路径。以前的日志里图片块没有这一格，照读，写出去也没有。
 15. 格式上哪一种块放在哪里都读得进来。谁放什么，见各种事件的 `blocks`（`kernel/events-bodies.md`）。
-16. 投影跳过不认识的块：给模型看的只有认识的五种（`crates/miyu-assemble/src/render.rs` 的 `known`，`kernel/request.md`）。
+16. 投影跳过不认识的块：给模型看的只有认识的五种（`crates/gqy-assemble/src/render.rs` 的 `known`，`kernel/request.md`）。
 
 **字符串取值**：
 
@@ -106,13 +106,13 @@
 
 | 取值 | 读到不认识的 | 在哪 |
 |---|---|---|
-| `Access` | 算写入：只读时当场拦下；不和别的调用一起跑 | `crates/miyu-kernel/src/tool.rs` 的 `writes`，`crates/miyu-kernel/src/session/step.rs` 的 `ready`（`kernel/tools.md`） |
-| `Level` | 按最严的算：实际生效的是只读，告诉她的也是 `read_only`，执行前的链也按只读判。切级别的命令带着不认识的级别，拒绝，原因码 `unknown_level` | `crates/miyu-kernel/src/session/permission.rs` 的 `rank`、`set_permission`，`crates/miyu-kernel/src/facts.rs` 的 `effective_level`，`crates/miyu-session/src/guard.rs` 的 `effective` |
-| `EndReason` | 投影不写回合没走完的那一句（`resources/core/turn-ended/` 下的几句一句都不用），和 `completed` 一样 | `crates/miyu-assemble/src/texts.rs` 的 `for_reason` |
-| `ToolStatus` | 投影里算没成（tool 消息的 `error` 是真） | `crates/miyu-assemble/src/render.rs` |
-| `Decision` | 回答确认的命令带着不认识的决定，拒绝，原因码 `unknown_decision` | `crates/miyu-kernel/src/session/approval.rs` 的 `answer` |
-| `ErrorClass` | 不重试 | `crates/miyu-kernel/src/session/retry.rs` 的 `retryable` |
-| `RestoreAction`、`RestoreOutcome` | 改回文件时不当「改成了」：下一次撤销、恢复照上一次的地方找 | `crates/miyu-kernel/src/session/restore.rs` 的 `where_is`（`kernel/history.md`） |
+| `Access` | 算写入：只读时当场拦下；不和别的调用一起跑 | `crates/gqy-kernel/src/tool.rs` 的 `writes`，`crates/gqy-kernel/src/session/step.rs` 的 `ready`（`kernel/tools.md`） |
+| `Level` | 按最严的算：实际生效的是只读，告诉她的也是 `read_only`，执行前的链也按只读判。切级别的命令带着不认识的级别，拒绝，原因码 `unknown_level` | `crates/gqy-kernel/src/session/permission.rs` 的 `rank`、`set_permission`，`crates/gqy-kernel/src/facts.rs` 的 `effective_level`，`crates/gqy-session/src/guard.rs` 的 `effective` |
+| `EndReason` | 投影不写回合没走完的那一句（`resources/core/turn-ended/` 下的几句一句都不用），和 `completed` 一样 | `crates/gqy-assemble/src/texts.rs` 的 `for_reason` |
+| `ToolStatus` | 投影里算没成（tool 消息的 `error` 是真） | `crates/gqy-assemble/src/render.rs` |
+| `Decision` | 回答确认的命令带着不认识的决定，拒绝，原因码 `unknown_decision` | `crates/gqy-kernel/src/session/approval.rs` 的 `answer` |
+| `ErrorClass` | 不重试 | `crates/gqy-kernel/src/session/retry.rs` 的 `retryable` |
+| `RestoreAction`、`RestoreOutcome` | 改回文件时不当「改成了」：下一次撤销、恢复照上一次的地方找 | `crates/gqy-kernel/src/session/restore.rs` 的 `where_is`（`kernel/history.md`） |
 | `Part`、`MessageRole`、`CallResult` | 内核只写不读 | — |
 
 ### 出错
@@ -123,10 +123,10 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/block/tests.rs` | 五种读写一字不差、认得出种类，图片块带名字、不带名字的都一字不差（`every_block_from_the_drawing_round_trips`）；驱动私有数据一字不差（`private_data_is_kept_byte_for_byte`）；第 11、12 条工具名和参数照原文（`tool_call_keeps_name_and_args_as_the_model_wrote_them`）；第 7 条（`unknown_block_is_kept_byte_for_byte`）；第 3、5 条的坏写法，图片块的名字带路径的也算（`broken_blocks_are_errors`） |
-| `crates/miyu-kernel/src/text_enum/tests.rs` | 第 17、18 条：认识的读成对应的一种、不认识的原样留着、只收字符串 |
-| `crates/miyu-kernel/src/event/*/tests.rs`、`crates/miyu-kernel/src/tool/tests.rs` | `Level`、`EndReason`、`ToolStatus`、`Decision`、`ErrorClass`、`Access` 每个认识的值读成自己那一种，不认识的原样留着（`each_…_reads_into_its_own_variant`、`an_unknown_…_is_kept_as_it_is`、`access_is_written_as_text_and_unknown_kinds_are_kept`）；`RestoreAction`、`RestoreOutcome` 读几个认识的、不认识的原样留着（`every_field_reads_back_as_written`、`a_new_action_or_outcome_is_kept_as_it_is`）；`Part`、`MessageRole`、`CallResult` 只查了几个值的写法，没有不认识的值的测试 |
-| `crates/miyu-kernel/src/tool/tests.rs` 的 `writing_files_and_unknown_kinds_count_as_writing`；`crates/miyu-kernel/src/session/tests/permission.rs` 的 `an_unknown_level_is_rejected`；`crates/miyu-kernel/src/facts/tests.rs` 的 `the_permission_block_names_the_level_in_effect`；`crates/miyu-session/src/guard/tests.rs`；`crates/miyu-kernel/src/session/tests/approval.rs` 的 `answers_that_do_not_fit_are_rejected` | 第 19 条表里的 `Access`、`Level`、`Decision` 几行 |
+| `crates/gqy-kernel/src/block/tests.rs` | 五种读写一字不差、认得出种类，图片块带名字、不带名字的都一字不差（`every_block_from_the_drawing_round_trips`）；驱动私有数据一字不差（`private_data_is_kept_byte_for_byte`）；第 11、12 条工具名和参数照原文（`tool_call_keeps_name_and_args_as_the_model_wrote_them`）；第 7 条（`unknown_block_is_kept_byte_for_byte`）；第 3、5 条的坏写法，图片块的名字带路径的也算（`broken_blocks_are_errors`） |
+| `crates/gqy-kernel/src/text_enum/tests.rs` | 第 17、18 条：认识的读成对应的一种、不认识的原样留着、只收字符串 |
+| `crates/gqy-kernel/src/event/*/tests.rs`、`crates/gqy-kernel/src/tool/tests.rs` | `Level`、`EndReason`、`ToolStatus`、`Decision`、`ErrorClass`、`Access` 每个认识的值读成自己那一种，不认识的原样留着（`each_…_reads_into_its_own_variant`、`an_unknown_…_is_kept_as_it_is`、`access_is_written_as_text_and_unknown_kinds_are_kept`）；`RestoreAction`、`RestoreOutcome` 读几个认识的、不认识的原样留着（`every_field_reads_back_as_written`、`a_new_action_or_outcome_is_kept_as_it_is`）；`Part`、`MessageRole`、`CallResult` 只查了几个值的写法，没有不认识的值的测试 |
+| `crates/gqy-kernel/src/tool/tests.rs` 的 `writing_files_and_unknown_kinds_count_as_writing`；`crates/gqy-kernel/src/session/tests/permission.rs` 的 `an_unknown_level_is_rejected`；`crates/gqy-kernel/src/facts/tests.rs` 的 `the_permission_block_names_the_level_in_effect`；`crates/gqy-session/src/guard/tests.rs`；`crates/gqy-kernel/src/session/tests/approval.rs` 的 `answers_that_do_not_fit_are_rejected` | 第 19 条表里的 `Access`、`Level`、`Decision` 几行 |
 
 ### 出处
 

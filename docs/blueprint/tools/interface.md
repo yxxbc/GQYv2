@@ -8,22 +8,22 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-tool/src/lib.rs` | 规格 `Spec`、接口 `Tool` |
-| `crates/miyu-tool/src/run.rs` | 一次调用：`Call`、`Seen`、`Target`、`Done`、`Effect`、`Progress`、`Running` |
-| `crates/miyu-tool/src/agents.rs` | 派子代理的端口 `AgentPort`、`Spawned`、`NotSpawned`，那件工具的名字 `SUBAGENT`、以前的名字 `SUBAGENT_FORMERLY`、两个都认的 `is_subagent`（施工 7-5，7-5 再补） |
-| `crates/miyu-tool/src/messages.rs` | 留言的端口 `MessagePort`、发给谁 `Recipient`、没送出去 `NotSent`，那件工具的名字 `MESSAGE_AGENT`（施工 7-7） |
-| `crates/miyu-tool/src/sessions.rs` | 列会话的端口 `SessionsPort`、列出来的一个 `MainSession`，那件工具的名字 `SESSIONS`；认会话编号的 `find_session`、`Found`（施工 C-3） |
-| `crates/miyu-tool/src/usage.rs` | 查用量的端口 `UsagePort`、上下文 `ContextUse`、用量和金额 `Spent`，那件工具的名字 `SESSION_USAGE`（施工 8-15） |
-| `crates/miyu-tool/src/catalog.rs` | 工具目录，登记时查的几条；改过名的照以前的名字也找得到（施工 7-5 再补） |
-| `crates/miyu-tool/src/jobs.rs` | 任务端口 `JobPort`、交出去的后台命令 `Background`、它的进程 `Process`、怎么结束的 `Exit`（施工 7-3）；列出来的 `Listed`、读到的 `Output`、读不了停不了的 `JobError`（施工 7-4） |
-| `crates/miyu-tool/src/testkit.rs` | 测试用的假工具（`testkit` 开关打开时才编）；`testkit/held.rs` 是假的后台命令 `Held`（施工 7-3）；`testkit/renamed.rs` 是换了名字的一件 `Renamed`，造改名以前的核心的目录（施工 7-5 再补） |
-| `crates/miyu-core/src/lib.rs` | `tools()`：核心起来时登记基础系统 |
-| `crates/miyu-session/src/open.rs` | 造会话时照目录把工具面写进策略快照 |
-| `crates/miyu-session/src/tools.rs` | 执行工具的端口：造 `Call`、跑、量用时、叫停、没有的、崩了的 |
-| `crates/miyu-session/src/effects.rs` | 效果存成 blob、换成内核的效果；她看过的 |
-| `crates/miyu-session/src/guard.rs` | 权限策略：照 `targets` 判 |
-| `crates/miyu-policy/src/tools.rs` | 快照里的工具面；执行器替工具写的两句 |
-| `crates/miyu-store/src/human.rs` | 给人看的字：读 `human/<语言>.json`，把说法换成字 |
+| `crates/gqy-tool/src/lib.rs` | 规格 `Spec`、接口 `Tool` |
+| `crates/gqy-tool/src/run.rs` | 一次调用：`Call`、`Seen`、`Target`、`Done`、`Effect`、`Progress`、`Running` |
+| `crates/gqy-tool/src/agents.rs` | 派子代理的端口 `AgentPort`、`Spawned`、`NotSpawned`，那件工具的名字 `SUBAGENT`、以前的名字 `SUBAGENT_FORMERLY`、两个都认的 `is_subagent`（施工 7-5，7-5 再补） |
+| `crates/gqy-tool/src/messages.rs` | 留言的端口 `MessagePort`、发给谁 `Recipient`、没送出去 `NotSent`，那件工具的名字 `MESSAGE_AGENT`（施工 7-7） |
+| `crates/gqy-tool/src/sessions.rs` | 列会话的端口 `SessionsPort`、列出来的一个 `MainSession`，那件工具的名字 `SESSIONS`；认会话编号的 `find_session`、`Found`（施工 C-3） |
+| `crates/gqy-tool/src/usage.rs` | 查用量的端口 `UsagePort`、上下文 `ContextUse`、用量和金额 `Spent`，那件工具的名字 `SESSION_USAGE`（施工 8-15） |
+| `crates/gqy-tool/src/catalog.rs` | 工具目录，登记时查的几条；改过名的照以前的名字也找得到（施工 7-5 再补） |
+| `crates/gqy-tool/src/jobs.rs` | 任务端口 `JobPort`、交出去的后台命令 `Background`、它的进程 `Process`、怎么结束的 `Exit`（施工 7-3）；列出来的 `Listed`、读到的 `Output`、读不了停不了的 `JobError`（施工 7-4） |
+| `crates/gqy-tool/src/testkit.rs` | 测试用的假工具（`testkit` 开关打开时才编）；`testkit/held.rs` 是假的后台命令 `Held`（施工 7-3）；`testkit/renamed.rs` 是换了名字的一件 `Renamed`，造改名以前的核心的目录（施工 7-5 再补） |
+| `crates/gqy-core/src/lib.rs` | `tools()`：核心起来时登记基础系统 |
+| `crates/gqy-session/src/open.rs` | 造会话时照目录把工具面写进策略快照 |
+| `crates/gqy-session/src/tools.rs` | 执行工具的端口：造 `Call`、跑、量用时、叫停、没有的、崩了的 |
+| `crates/gqy-session/src/effects.rs` | 效果存成 blob、换成内核的效果；她看过的 |
+| `crates/gqy-session/src/guard.rs` | 权限策略：照 `targets` 判 |
+| `crates/gqy-policy/src/tools.rs` | 快照里的工具面；执行器替工具写的两句 |
+| `crates/gqy-store/src/human.rs` | 给人看的字：读 `human/<语言>.json`，把说法换成字 |
 | `resources/core/tool-results/unavailable.txt`、`crashed.txt` | 执行器替工具写的两句 |
 
 ### 对外的样子
@@ -53,7 +53,7 @@
 | `args` | 修正过的参数：一个 JSON 对象的原文 |
 | `cwd` | 这一轮的工作目录：回合开始时的那一个，原样的字 |
 | `home` | 系统的家目录；读不出来的是空的 |
-| `data_root` | Miyu 的数据根；不知道的是空的（会话里总有） |
+| `data_root` | GQY 的数据根；不知道的是空的（会话里总有） |
 | `seen` | 她这个会话里看过的文件（`Arc<Seen>`） |
 | `stop` | 叫停的旗（`Stop`）：执行器「叫它停」时举起来，future 被丢掉时也举起来 |
 | `sandbox` | 要关进沙盒的：助手的路径、规格、要设的环境变量（`Sandboxed`，`sandbox.md`）；空的照旧直接跑。施工 5-1 加的，5-4（上）起执行器照这一刻实际生效的级别带（`session/tools.md`） |
@@ -111,20 +111,20 @@
 
 #### 一、登记
 
-1. 核心起来时（`miyu-core` 的 `tools()`）：照资源目录造出基础系统的七件（`tools/read.md` 等），交给 `Catalog::new`。字读不出来、写法不对，或者登记查不过：核心起不来，说是哪一份、哪一件、哪一条。
+1. 核心起来时（`gqy-core` 的 `tools()`）：照资源目录造出基础系统的七件（`tools/read.md` 等），交给 `Catalog::new`。字读不出来、写法不对，或者登记查不过：核心起不来，说是哪一份、哪一件、哪一条。
 2. 照交进来的先后一件件查，每件依次查下面四条，有一件不过，整个目录登记不上，报排在前面的那一件：
    1. 名字：1 到 64 个字节，只用 ASCII 字母、数字、`_`、`-`。不合的，每次请求都会被供应商拒收。
    2. 参数格式：读得成 JSON，顶层的 `type` 是字符串 `"object"`。`{"type":["object","null"]}`、没有 `type` 的都不算。
    3. 已经有一件同名的：她调的是哪一件，说不清。别的工具以前的名字也算。
    4. 它以前的名字（`formerly()`，施工 7-5 再补）一个个跟着它现在的名字登记，只查同名：撞上已经登记的（别的工具现在的、以前的名字），报那个以前的名字。
 3. 目录照名字排，交进来的先后不影响。以前的名字不进 `specs()`：只有 `get` 认它。登记完就冻结，核心跑着的时候不变。现在没有预设，目录里的全开。
-4. 造会话时（`crates/miyu-session/src/open.rs`）：每件的名字、说明、参数格式、访问类别写进策略快照，照名字排（`crates/miyu-policy/src/tools.rs`）。这个会话以后一直照快照发，核心换了目录也不变：工具改了名，以前造的会话照旧发旧名字，她照旧名字调，`get` 照以前的名字找到它（施工 7-5 再补）。
+4. 造会话时（`crates/gqy-session/src/open.rs`）：每件的名字、说明、参数格式、访问类别写进策略快照，照名字排（`crates/gqy-policy/src/tools.rs`）。这个会话以后一直照快照发，核心换了目录也不变：工具改了名，以前造的会话照旧发旧名字，她照旧名字调，`get` 照以前的名字找到它（施工 7-5 再补）。
 
 #### 二、一次调用
 
 1. 内核先查（`kernel/`）：工具面上没有这个名字的、参数不是 JSON 对象的，当场记出错的结果；只读时写文件的（访问类别是 `write` 和不认识的）当场拦下。别的照参数格式修正参数：被写成字符串的数组、对象、整数、数字、布尔还原回去，声明成字符串的一个字节不碰，什么都没写的当成 `{}`。
-2. 轮到的先过权限策略（`crates/miyu-session/src/guard.rs`）：目录里没有这件工具的放行（执行时报用不了）；照 `targets` 报的路径判；一条都不报的，照访问类别判。交给 `targets` 的 `Call` 里 `seen` 是空的：报路径只看参数。
-3. 派出去（`crates/miyu-session/src/tools.rs`）：
+2. 轮到的先过权限策略（`crates/gqy-session/src/guard.rs`）：目录里没有这件工具的放行（执行时报用不了）；照 `targets` 报的路径判；一条都不报的，照访问类别判。交给 `targets` 的 `Call` 里 `seen` 是空的：报路径只看参数。
+3. 派出去（`crates/gqy-session/src/tools.rs`）：
    1. 造 `Call`：`args` 是修正过的参数；`cwd` 是回合开始时的工作目录；`home` 是核心起来时读的系统家目录；`data_root` 是数据根；`seen` 是这个会话她看过的文件，共享一份；`log` 照会话的目录造，`offset` 是会话现在的时区（施工 6-4）；`agents` 照这一轮的工作目录、加进来的目录、派出去那一刻的权限造（施工 7-5，会话表交进来了端口才有）；`messages` 照内核这一刻交的派出去的子代理造（施工 7-7，同上）；`sessions` 本机的主会话才造（施工 C-3，同上）；`usage` 派的是 `session_usage`、开着用量汇总的才造（施工 8-15）。
    2. 快照里有、核心的目录里没有这件（核心升级拿掉了，老会话照样调）：不派，当场交回出错的结果（下面「执行器替工具写的两句」），没有用时。
    3. 在自己的任务里跑 `run` 交回的 future，记下开始跑的那一刻。
@@ -169,15 +169,15 @@
 
 1. 说法是一个编号加几个字段，字段的值都是字符串。基础系统的编号是 `software/basesystem/<名字>`；内核和执行器写的以 `core/` 开头。
 2. 记进 `tool.result` 的 `human`，不发给模型，前缀不受影响；老日志里没有这一格。
-3. 头照自己的界面语言换成字（`crates/miyu-store/src/human.rs`）：
+3. 头照自己的界面语言换成字（`crates/gqy-store/src/human.rs`）：
    - 字在内核的 `resources/core/human/{zh,en}.json` 和每个软件包自己的 `human/` 下（基础系统的是 `resources/software/basesystem/human/{zh,en}.json`），一种语言一份，先有 `zh`、`en`。每份两样：`tools` 是每件工具的显示名 `name`、显示名后面跟哪个参数的值 `subject`、最前面的符号 `icon`、标题下面印哪一块 `block`；`said` 是每一种说法的模板，编号照这一份所在的地方往下写。
    - 哪一份没有这种语言的，照英文那一份；英文也没有，那一处没有字。
    - 换进去的字段不转义，控制字符换成 `�`。模板要的字段说法里没有的，这一句换不出字。
-4. `miyu ask` 怎么印：`cli/ask.md`「每一步那一行」。
+4. `gqy ask` 怎么印：`cli/ask.md`「每一步那一行」。
 
 #### 六、执行器替工具写的两句
 
-造会话、载入会话时从快照里拿（`crates/miyu-policy/src/tools.rs`），字段 `name` 是她调的工具名，照模板的规矩转义。
+造会话、载入会话时从快照里拿（`crates/gqy-policy/src/tools.rs`），字段 `name` 是她调的工具名，照模板的规矩转义。
 
 | 什么时候 | 给她的字 | 说法 |
 |---|---|---|
@@ -198,7 +198,7 @@
 | 参数格式 | `tool "<名字>": the parameters must be a JSON Schema of type "object"` |
 | 同名 | `tool "<名字>": another tool has the same name` |
 
-运行日志（target `miyu::session`，记在会话的 span 里）：
+运行日志（target `gqy::session`，记在会话的 span 里）：
 
 | 什么时候 | 级别 | 那一行 |
 |---|---|---|
@@ -223,21 +223,21 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-tool/src/catalog/tests.rs` | 照名字排、空目录、同名、名字的写法（空的、65 个字节、空格、中文、`.`、`/`；64 个字节的行）、参数格式不是对象、报排在前面的那一件、参数格式一字不差；照以前的名字找得到、以前的名字不进工具面、以前的名字撞名（施工 7-5 再补） |
-| `crates/miyu-policy/src/tools/tests.rs` | 快照里的工具面照名字排、读得回来；没有工具的快照字节不变；两件同名造不出策略；两句带上工具名；两句写坏了说是哪一份 |
-| `crates/miyu-session/tests/tools.rs` | 请求照名字带工具面、载入的老会话照快照发、在这一轮的工作目录里跑、出错的结果、执行中的输出推给头不落盘、两件只读的一起跑、打断丢掉在跑的、目录里没有的、崩了会话照常、会话停了丢掉在跑的 |
-| `crates/miyu-session/tests/tool_log.rs` | 运行日志的那几行，参数和结果的字不进日志 |
-| `crates/miyu-session/tests/stop.rs` | 叫它停只举旗、停在改之前的记「已取消」、已经改完的照记、不停的又打断一次就掐掉 |
-| `crates/miyu-tool/src/stop.rs`、`crates/miyu-basesystem/tests/stop.rs` | 克隆出来的是同一面旗；三件写的工具旗举了什么都不改，旗前面的核对照旧先答 |
-| `crates/miyu-session/src/effects/tests.rs` | 改前改后换成 blob、存不下来的照样有哈希、她看过的读的和写的、从日志重建；派出去的任务照原样过去、不算看过的（施工 7-3） |
-| `crates/miyu-tool/src/sessions/tests.rs` | 认会话编号：整个编号、至少 8 位的后缀，别的写法对不上，撞了是不止一个（施工 C-3，`tools/sessions.md`） |
-| `crates/miyu-basesystem/tests/background.rs`、`crates/miyu-session/src/jobs/tests.rs` | 任务端口的两头：`shell` 交出去的输出、进程（`tools/shell.md`），任务表收下、收不下（`session/tools.md`）（施工 7-3） |
-| `crates/miyu-session/tests/write.rs` | 重新载入以后她读过的照样算、改完接着改不用重读、删了的不再算看过 |
-| `crates/miyu-session/tests/restore.rs` | 撤掉的回合里读过的不算、恢复以后又算 |
-| `crates/miyu-store/tests/human.rs` | 内核的每一句两种语言都有、照语言换成字、显示名和跟的参数、控制字符换掉、坏了的说是哪一份 |
-| `crates/miyu-basesystem/tests/human.rs` | 基础系统每一种结果都带说法，两种语言都换得出字 |
+| `crates/gqy-tool/src/catalog/tests.rs` | 照名字排、空目录、同名、名字的写法（空的、65 个字节、空格、中文、`.`、`/`；64 个字节的行）、参数格式不是对象、报排在前面的那一件、参数格式一字不差；照以前的名字找得到、以前的名字不进工具面、以前的名字撞名（施工 7-5 再补） |
+| `crates/gqy-policy/src/tools/tests.rs` | 快照里的工具面照名字排、读得回来；没有工具的快照字节不变；两件同名造不出策略；两句带上工具名；两句写坏了说是哪一份 |
+| `crates/gqy-session/tests/tools.rs` | 请求照名字带工具面、载入的老会话照快照发、在这一轮的工作目录里跑、出错的结果、执行中的输出推给头不落盘、两件只读的一起跑、打断丢掉在跑的、目录里没有的、崩了会话照常、会话停了丢掉在跑的 |
+| `crates/gqy-session/tests/tool_log.rs` | 运行日志的那几行，参数和结果的字不进日志 |
+| `crates/gqy-session/tests/stop.rs` | 叫它停只举旗、停在改之前的记「已取消」、已经改完的照记、不停的又打断一次就掐掉 |
+| `crates/gqy-tool/src/stop.rs`、`crates/gqy-basesystem/tests/stop.rs` | 克隆出来的是同一面旗；三件写的工具旗举了什么都不改，旗前面的核对照旧先答 |
+| `crates/gqy-session/src/effects/tests.rs` | 改前改后换成 blob、存不下来的照样有哈希、她看过的读的和写的、从日志重建；派出去的任务照原样过去、不算看过的（施工 7-3） |
+| `crates/gqy-tool/src/sessions/tests.rs` | 认会话编号：整个编号、至少 8 位的后缀，别的写法对不上，撞了是不止一个（施工 C-3，`tools/sessions.md`） |
+| `crates/gqy-basesystem/tests/background.rs`、`crates/gqy-session/src/jobs/tests.rs` | 任务端口的两头：`shell` 交出去的输出、进程（`tools/shell.md`），任务表收下、收不下（`session/tools.md`）（施工 7-3） |
+| `crates/gqy-session/tests/write.rs` | 重新载入以后她读过的照样算、改完接着改不用重读、删了的不再算看过 |
+| `crates/gqy-session/tests/restore.rs` | 撤掉的回合里读过的不算、恢复以后又算 |
+| `crates/gqy-store/tests/human.rs` | 内核的每一句两种语言都有、照语言换成字、显示名和跟的参数、控制字符换掉、坏了的说是哪一份 |
+| `crates/gqy-basesystem/tests/human.rs` | 基础系统每一种结果都带说法，两种语言都换得出字 |
 | `xtask/src/ledger.rs`（`cargo xtask check` 的「文档」） | 给模型看的每一份字在登记簿里、指纹对得上 |
-| `crates/miyu-basesystem/tests/budget.rs` | 工具面的几份说明加起来不超过预算的字节数 |
+| `crates/gqy-basesystem/tests/budget.rs` | 工具面的几份说明加起来不超过预算的字节数 |
 
 ### 出处
 

@@ -8,11 +8,11 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/edit.rs` | 参数的几种写法、要碰的路径、读原文、核对、查重叠、换、结果和效果 |
-| `crates/miyu-basesystem/src/edit/find.rs` | 找位置：精确的、宽松的、`replace_all`、不唯一、最接近的几行 |
-| `crates/miyu-basesystem/src/text.rs` | 认编码、BOM、换行；严格地解成字；照原来的编码、BOM 写回 |
-| `crates/miyu-basesystem/src/common.rs` | 改之前核对她看过的；几件共用的几句 |
-| `crates/miyu-fs/src/replace.rs` | 整体换成新的内容（`fs.md` 第五节） |
+| `crates/gqy-basesystem/src/edit.rs` | 参数的几种写法、要碰的路径、读原文、核对、查重叠、换、结果和效果 |
+| `crates/gqy-basesystem/src/edit/find.rs` | 找位置：精确的、宽松的、`replace_all`、不唯一、最接近的几行 |
+| `crates/gqy-basesystem/src/text.rs` | 认编码、BOM、换行；严格地解成字；照原来的编码、BOM 写回 |
+| `crates/gqy-basesystem/src/common.rs` | 改之前核对她看过的；几件共用的几句 |
+| `crates/gqy-fs/src/replace.rs` | 整体换成新的内容（`fs.md` 第五节） |
 | `resources/software/basesystem/tools/edit.json` | 说明和参数格式 |
 | `resources/software/basesystem/edit/*.txt`、`common/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -172,13 +172,13 @@ The closest text is at lines 2-2:
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/edit.rs` | 报要写的路径；几处一起改、对照原文件、前面变长不影响后面；顶层一处的写法、`edits` 写成对象、`path` 和驼峰的字段名、没给要改的；重叠的、有一处没对上的一处都不改；CRLF、BOM、UTF-16 照原来的，新加的行照 CRLF；宽松对上只换那一段；最接近的几行、不唯一的行号、`replace_all`；没读过、改过了、没有、目录、不是文本、空的、一样的 |
-| `crates/miyu-basesystem/tests/write.rs` | FIFO 说不是普通文件、不卡住（和 `write` 一起测） |
-| `crates/miyu-basesystem/src/edit/find/tests.rs` | 精确的位置；LF 对 CRLF 连着 `\r`；宽松的几种；宽松多出来的不算进去；精确的不唯一不往宽松找、重叠的也算不唯一；`replace_all` 不重叠；最多 10 个行号；最接近的几行、开头空行、没有像的、全是空白；Dice 系数 |
-| `crates/miyu-basesystem/src/text/tests.rs` | 严格地解：解不开的、落单的字节、落单的代理项 |
-| `crates/miyu-basesystem/tests/stop.rs` | 旗举了不改，文件照旧 |
-| `crates/miyu-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
-| `crates/miyu-session/tests/write.rs` | 会话里读一次、连着改两次，不用重读 |
+| `crates/gqy-basesystem/tests/edit.rs` | 报要写的路径；几处一起改、对照原文件、前面变长不影响后面；顶层一处的写法、`edits` 写成对象、`path` 和驼峰的字段名、没给要改的；重叠的、有一处没对上的一处都不改；CRLF、BOM、UTF-16 照原来的，新加的行照 CRLF；宽松对上只换那一段；最接近的几行、不唯一的行号、`replace_all`；没读过、改过了、没有、目录、不是文本、空的、一样的 |
+| `crates/gqy-basesystem/tests/write.rs` | FIFO 说不是普通文件、不卡住（和 `write` 一起测） |
+| `crates/gqy-basesystem/src/edit/find/tests.rs` | 精确的位置；LF 对 CRLF 连着 `\r`；宽松的几种；宽松多出来的不算进去；精确的不唯一不往宽松找、重叠的也算不唯一；`replace_all` 不重叠；最多 10 个行号；最接近的几行、开头空行、没有像的、全是空白；Dice 系数 |
+| `crates/gqy-basesystem/src/text/tests.rs` | 严格地解：解不开的、落单的字节、落单的代理项 |
+| `crates/gqy-basesystem/tests/stop.rs` | 旗举了不改，文件照旧 |
+| `crates/gqy-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
+| `crates/gqy-session/tests/write.rs` | 会话里读一次、连着改两次，不用重读 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

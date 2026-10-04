@@ -12,23 +12,23 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-drivers/src/anthropic.rs` | 家族名、路径、版本、顶层怎么写、输出上限、打点怎么接、要哪些 blob、`unmarked`（只在 `testkit`） |
-| `crates/miyu-drivers/src/driver.rs` | `Anthropic` 和它的 `impl Driver`、`impl Decode` |
-| `crates/miyu-drivers/src/anthropic/messages.rs` | 每条消息怎么写：块、合并相邻同角色的、工具调用和结果、思考块回传 |
-| `crates/miyu-drivers/src/anthropic/marks.rs` | 缓存打点放在哪几块 |
-| `crates/miyu-drivers/src/anthropic/effort.rs` | 思考强度换成 `thinking`、`output_config` |
-| `crates/miyu-drivers/src/anthropic/wire.rs` | 线上的 JSON 结构 |
-| `crates/miyu-drivers/src/anthropic/decode.rs` | 解码：事件、块、签名、`stop_reason`、流里的错 |
-| `crates/miyu-drivers/src/anthropic/usage.rs` | 用量归成四项 |
-| `crates/miyu-drivers/src/anthropic/models.rs` | 列模型：`GET /models?limit=1000` 读出模型名和窗口 |
-| `crates/miyu-drivers/src/media.rs` | 图片、文件发不了时换成的字（占位、替它看的图、文本文件、带名字的图片的标签）、要哪些 blob：从 `openai_chat/messages.rs`、`openai_chat.rs` 挪出来，几个驱动共用，openai-chat 的样本一个字节不变 |
-| `crates/miyu-drivers/src/sse.rs`、`classify.rs`、`texts.rs`、`text_file.rs`、`base64.rs` | 和 openai-chat 共用（`drivers/openai-chat.md`） |
+| `crates/gqy-drivers/src/anthropic.rs` | 家族名、路径、版本、顶层怎么写、输出上限、打点怎么接、要哪些 blob、`unmarked`（只在 `testkit`） |
+| `crates/gqy-drivers/src/driver.rs` | `Anthropic` 和它的 `impl Driver`、`impl Decode` |
+| `crates/gqy-drivers/src/anthropic/messages.rs` | 每条消息怎么写：块、合并相邻同角色的、工具调用和结果、思考块回传 |
+| `crates/gqy-drivers/src/anthropic/marks.rs` | 缓存打点放在哪几块 |
+| `crates/gqy-drivers/src/anthropic/effort.rs` | 思考强度换成 `thinking`、`output_config` |
+| `crates/gqy-drivers/src/anthropic/wire.rs` | 线上的 JSON 结构 |
+| `crates/gqy-drivers/src/anthropic/decode.rs` | 解码：事件、块、签名、`stop_reason`、流里的错 |
+| `crates/gqy-drivers/src/anthropic/usage.rs` | 用量归成四项 |
+| `crates/gqy-drivers/src/anthropic/models.rs` | 列模型：`GET /models?limit=1000` 读出模型名和窗口 |
+| `crates/gqy-drivers/src/media.rs` | 图片、文件发不了时换成的字（占位、替它看的图、文本文件、带名字的图片的标签）、要哪些 blob：从 `openai_chat/messages.rs`、`openai_chat.rs` 挪出来，几个驱动共用，openai-chat 的样本一个字节不变 |
+| `crates/gqy-drivers/src/sse.rs`、`classify.rs`、`texts.rs`、`text_file.rs`、`base64.rs` | 和 openai-chat 共用（`drivers/openai-chat.md`） |
 
 每个文件不超过 500 行。
 
 ### 对外的样子
 
-**`Anthropic`** 实现 `Driver`（`crates/miyu-drivers/src/driver.rs`），执行器照它调，和 `OpenAiChat` 一样由路由挑好端点以后造（`route/base.rs`）：
+**`Anthropic`** 实现 `Driver`（`crates/gqy-drivers/src/driver.rs`），执行器照它调，和 `OpenAiChat` 一样由路由挑好端点以后造（`route/base.rs`）：
 
 | 方法 | 做什么 |
 |---|---|
@@ -85,7 +85,7 @@
 2. **打在哪一块**：那一条消息里最后一个能打的块：`text`、`image`、`document`、`tool_use`、`tool_result`。思考块（`thinking`、`redacted_thinking`）不能打，往前找；整条都没有能打的，这一处不打。
 3. **怎么写**：块的最后一格加 `"cache_control":{"type":"ephemeral"}`，5 分钟的。一份请求里打点的写法只有这一种。
 4. **为什么是这四处**：第 1、2 处是会话里不变的前缀，策略不变就一直读得到；第 4 处让下一次请求从这里读；第 3 处是保险：这一家每个打点最多往回找 20 块，这一次新加的块超过 20 块（一长串事实、很多张图）时，第 4 处找不到上一次存的那一份，第 3 处正好落在上一次存的地方，照样读到。一串连着的 `tool_use`、一串连着的 `tool_result` 在这一家只算一块。
-5. **打点会挪，不算改写**：第 3、4 处每次请求往后挪，上一次打过的块这一次可能没有了打点。缓存的键不含打点，前缀照样命中。查线上的前缀延伸时（请求形状探针、随机日志，`crates/miyu-assemble/tests/support`）先去掉打点再比：`anthropic::unmarked(&Encoded)` 去掉每一处 `,"cache_control":{"type":"ephemeral"}`、重算每条消息的位置，只在 `testkit` 开关打开时编进去。这一串字在 JSON 的字符串里出现不了（引号都转义了）。
+5. **打点会挪，不算改写**：第 3、4 处每次请求往后挪，上一次打过的块这一次可能没有了打点。缓存的键不含打点，前缀照样命中。查线上的前缀延伸时（请求形状探针、随机日志，`crates/gqy-assemble/tests/support`）先去掉打点再比：`anthropic::unmarked(&Encoded)` 去掉每一处 `,"cache_control":{"type":"ephemeral"}`、重算每条消息的位置，只在 `testkit` 开关打开时编进去。这一串字在 JSON 的字符串里出现不了（引号都转义了）。
 6. **不用自动缓存**（顶层的 `cache_control`）：它只放一处，位置由服务端定；显式的四处我们自己定、样本里看得见。有的兼容接口不认顶层那一格。
 7. **怎么让同一个会话相邻两次请求的前缀逐字节一样**：
    - 统一的请求本身只追加（内核不变量，`08-上下文投影.md` 第七节）；编码是纯函数，字段先后固定，紧凑 JSON，工具的参数格式、调用的参数原文一个字节不改。
@@ -114,7 +114,7 @@
 | `off` | `"thinking":{"type":"disabled"}` |
 | `on` | `"thinking":{"type":"adaptive","display":"summarized"}` |
 
-1. **开关是接口自带的**：`thinking` 写 `disabled` 就是关。目录里标了开关的只有 Sonnet 5；Opus 5.5、Sonnet 5.5、Fable 收 `disabled` 报 400，它们目录里没有开关，不会多出 `off`（2026-10-03 审图时照官方文档查的）。所以这一家不用档案写 `compat.toggle`，目录有 `toggle` 的模型（例如 Sonnet 5）就多一档 `off`；只有开关、没有档位的是 `off`、`on`。这要改 `miyu_models` 认开关的地方：openai-chat 照档案的 `compat.toggle`，anthropic 自带，openai-responses 没有（「要跟着改的别的页」）。
+1. **开关是接口自带的**：`thinking` 写 `disabled` 就是关。目录里标了开关的只有 Sonnet 5；Opus 5.5、Sonnet 5.5、Fable 收 `disabled` 报 400，它们目录里没有开关，不会多出 `off`（2026-10-03 审图时照官方文档查的）。所以这一家不用档案写 `compat.toggle`，目录有 `toggle` 的模型（例如 Sonnet 5）就多一档 `off`；只有开关、没有档位的是 `off`、`on`。这要改 `gqy_models` 认开关的地方：openai-chat 照档案的 `compat.toggle`，anthropic 自带，openai-responses 没有（「要跟着改的别的页」）。
 2. **`display`**：Opus 4.7 起默认不给思考的字（`omitted`），只给签名。写了思考的就写 `summarized`，头上看得到思考的摘要。不多花钱：思考照样算钱，`display` 只管给不给看。
 3. **思考预算**（`budget_tokens`）：不读、不写（`models.md`「还没有的」）。只有预算的模型（Haiku 4.5、Sonnet 4.5）目录里没有档位，请求里不带思考。
 4. **思考块怎么回传**：见「编码」第 5 条。同一家的原样带签名回传，每一轮都带，不剥；别家的、没签名的丢掉。工具循环里最后那条 assistant 开着思考时一定以思考块开头，原样回传就满足。
@@ -238,24 +238,24 @@ SSE 分帧共用 `sse.rs`（`drivers/openai-chat.md`「解码」）。一条事�
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-drivers/tests/anthropic.rs` | 只有文字；顶层的先后；`max_tokens` 两种来源；system 写成一块；工具面三种情形；合并相邻同角色的、空消息不发；工具调用编号、参数兜底、`is_error`、没有输出的占位；每条消息的位置 |
-| `crates/miyu-drivers/tests/anthropic_marks.rs` | 四处打点各在哪；第一次请求、system 空、`stable` 是 0 的；思考块不打、往前找；同一块只打一次、最多 4 处；`unmarked` 去掉以后，一段随机的会话每次请求都是上一次的前缀延伸 |
-| `crates/miyu-drivers/tests/anthropic_thinking.rs` | 思考块回传：带签名、只有签名、`redacted`、断了没签名的丢掉、别家的丢掉；思考强度四种写法，接在最后，没写的一个字节不加 |
-| `crates/miyu-drivers/tests/anthropic_media.rs` | 图片、PDF、媒体类型不对的占位；工具结果里的图、PDF 在 `tool_result` 里；文本文件、带名字的图片、替它看的图和 openai-chat 一样换成字；缺 blob 报错 |
-| `crates/miyu-drivers/tests/anthropic_streams.rs` | 流的样本；从哪里切开喂都一样；解出来的编码回去：编号、签名原样；驱动的接口走一遍；`finished()` 在 `stop_reason` 到了以后才说是 |
-| `crates/miyu-drivers/src/anthropic/models/tests.rs` | 列模型：名字和窗口、坏的跳过、回应坏了说是模型列表 |
-| `crates/miyu-drivers/src/classify/tests.rs` | 加：`exceed context limit` 算超长；这一家的错误体几类各一个例子 |
-| `crates/miyu-assemble/tests/probe.rs`、`random_logs.rs`、`tests/support` | 加 Anthropic 的脸：每个探针、每段随机日志的每一次请求编码以后去掉打点，是上一次的前缀延伸；主会话（`terminal`）的存档多 `anthropic/` |
-| `crates/miyu-session/tests/route_anthropic.rs` | 路由照供应商的 `driver` 造驱动：发到 `/messages`、带 `x-api-key` 和版本头、不带 `Bearer`；输出上限照一次性入口写的、模型资料的、8192，openai-chat 照旧不写；思考强度照这一家的写法；回来的流照这一家解 |
-| `crates/miyu-models/src/provider/tests.rs`、`facts/tests.rs` | `anthropic` 认得了；能不能关思考 openai-chat 照档案、anthropic 自带，目录有开关的模型多 `off`；要不要替它填输出上限 |
-| `crates/miyu-core/src/models/tests.rs` | 出厂的档案有 `[providers.anthropic]` |
+| `crates/gqy-drivers/tests/anthropic.rs` | 只有文字；顶层的先后；`max_tokens` 两种来源；system 写成一块；工具面三种情形；合并相邻同角色的、空消息不发；工具调用编号、参数兜底、`is_error`、没有输出的占位；每条消息的位置 |
+| `crates/gqy-drivers/tests/anthropic_marks.rs` | 四处打点各在哪；第一次请求、system 空、`stable` 是 0 的；思考块不打、往前找；同一块只打一次、最多 4 处；`unmarked` 去掉以后，一段随机的会话每次请求都是上一次的前缀延伸 |
+| `crates/gqy-drivers/tests/anthropic_thinking.rs` | 思考块回传：带签名、只有签名、`redacted`、断了没签名的丢掉、别家的丢掉；思考强度四种写法，接在最后，没写的一个字节不加 |
+| `crates/gqy-drivers/tests/anthropic_media.rs` | 图片、PDF、媒体类型不对的占位；工具结果里的图、PDF 在 `tool_result` 里；文本文件、带名字的图片、替它看的图和 openai-chat 一样换成字；缺 blob 报错 |
+| `crates/gqy-drivers/tests/anthropic_streams.rs` | 流的样本；从哪里切开喂都一样；解出来的编码回去：编号、签名原样；驱动的接口走一遍；`finished()` 在 `stop_reason` 到了以后才说是 |
+| `crates/gqy-drivers/src/anthropic/models/tests.rs` | 列模型：名字和窗口、坏的跳过、回应坏了说是模型列表 |
+| `crates/gqy-drivers/src/classify/tests.rs` | 加：`exceed context limit` 算超长；这一家的错误体几类各一个例子 |
+| `crates/gqy-assemble/tests/probe.rs`、`random_logs.rs`、`tests/support` | 加 Anthropic 的脸：每个探针、每段随机日志的每一次请求编码以后去掉打点，是上一次的前缀延伸；主会话（`terminal`）的存档多 `anthropic/` |
+| `crates/gqy-session/tests/route_anthropic.rs` | 路由照供应商的 `driver` 造驱动：发到 `/messages`、带 `x-api-key` 和版本头、不带 `Bearer`；输出上限照一次性入口写的、模型资料的、8192，openai-chat 照旧不写；思考强度照这一家的写法；回来的流照这一家解 |
+| `crates/gqy-models/src/provider/tests.rs`、`facts/tests.rs` | `anthropic` 认得了；能不能关思考 openai-chat 照档案、anthropic 自带，目录有开关的模型多 `off`；要不要替它填输出上限 |
+| `crates/gqy-core/src/models/tests.rs` | 出厂的档案有 `[providers.anthropic]` |
 
 ### 真模型实测
 
 合并前主会话做，结果记进施工单：
 
 1. **要什么**：一个 Anthropic 官方的 key（或者 opencode Zen 的 key，走 Zen 上的 Claude，收费）。这两样仓库里都没有，要项目主人给一个 key 或者端点。没有的时候能先做的：DeepSeek 的 Anthropic 兼容接口（地址写 `https://api.deepseek.com/anthropic/v1`，用现成的 DeepSeek key）测通编码、解码、工具、思考；它的缓存是自动的，不认打点，测不了第 3 条。
-2. **怎么配**：`[providers.anthropic]` 写 `driver = "anthropic"`、地址 `https://api.anthropic.com/v1`、`keys = [{ secret = "anthropic" }]`，`miyu login anthropic` 存 key；`models.chat` 指一个现役的模型。临时的 `MIYU_HOME`，不碰真实数据。
+2. **怎么配**：`[providers.anthropic]` 写 `driver = "anthropic"`、地址 `https://api.anthropic.com/v1`、`keys = [{ secret = "anthropic" }]`，`gqy login anthropic` 存 key；`models.chat` 指一个现役的模型。临时的 `GQY_HOME`，不碰真实数据。
 3. **缓存命中**：终端里一个带工具的会话跑三轮，每轮让她读一两个文件。照 `model.called` 的用量填一张表：每次请求的没命中、命中、写入。要看到：同一轮工具循环里，后一次的命中约等于前一次的整个输入；第二、三轮的第一次请求命中约等于上一轮最后一次的整个输入；写入只是新加的那一截。命中掉成 0 的，拿两次请求的字节去掉打点比，找第一处不同。
 4. **思考**：给模型配一档（例如 `low`），跑一轮工具循环：不报 400（签名原样回传了），头上看得到思考的摘要。有开关的模型（Sonnet 5）配 `off`，确认不思考。
 5. **附件**：人附一张图、一个 PDF；让她用 `read` 读一张图（工具结果里的图）。
@@ -327,10 +327,10 @@ SSE 分帧共用 `sse.rs`（`drivers/openai-chat.md`「解码」）。一条事�
 
 | 页 | 改什么 |
 |---|---|
-| `models.md` | 认得的驱动多 `anthropic`（`miyu_models::provider::Driver`、`parse`）；「十一、思考强度」第 1 条和「模型的资料」的档位名一条：开关 openai-chat 照档案、anthropic 自带；路由给 anthropic 填 `Call.max_output`（「十二、模型调用口」第 1 条的底子）；档案加 `[providers.anthropic]`（驱动、地址）；「驱动要守的约定」第 11、13 条写上这一家的取法 |
+| `models.md` | 认得的驱动多 `anthropic`（`gqy_models::provider::Driver`、`parse`）；「十一、思考强度」第 1 条和「模型的资料」的档位名一条：开关 openai-chat 照档案、anthropic 自带；路由给 anthropic 填 `Call.max_output`（「十二、模型调用口」第 1 条的底子）；档案加 `[providers.anthropic]`（驱动、地址）；「驱动要守的约定」第 11、13 条写上这一家的取法 |
 | `drivers/openai-chat.md` | 「在哪」：换成字的那几步挪到 `media.rs`；「出错分类」第 4 条超长的说法加 `exceed context limit`（23 句）；「还没有的」删掉 Anthropic |
 | `http.md` | 认证头一条写上 Anthropic 的两个头 |
 | `kernel/request.md` | 缓存标记两处照这一页落成四处打点，指过来 |
 | `05-内核接口.md` 第七节 | 加「Anthropic 的消息接口怎么编码、解码」两张表，照这一页 |
-| `crates/miyu-assemble/tests/support` | 探针、随机日志多一张 Anthropic 的脸，去掉打点比前缀 |
+| `crates/gqy-assemble/tests/support` | 探针、随机日志多一张 Anthropic 的脸，去掉打点比前缀 |
 | `docs/construction/施工图.html` | 8-12 那一块 |

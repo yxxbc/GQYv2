@@ -11,7 +11,7 @@
 - `tools/shell.md`：前台（没写 `run_in_background`）的命令，照 `&&`、`||`、`;`、`|`、换行切段，第一段去掉空白后整段正好是 `sleep <秒数>`（bash、zsh，小数也认），或者 PowerShell 的 `Start-Sleep <秒数>`、`Start-Sleep -Seconds <秒数>`、`Start-Sleep -s <秒数>`、`sleep <秒数>`，秒数不小于 25 的：不跑，交回出错。小于 25 的、第一段不是纯 sleep 的（比如 `until …; do sleep 2; done`）照跑。放到后台的不查。门槛 25 秒照 Claude Code 2.1.280。
 - 给她的那一句（英文，原文进 `resources/software/basesystem/shell/`，主会话量 token、登记）：草稿「Not run: sleep {seconds} in the foreground. Background jobs report to you when they end. If you need a result now, run that command in the foreground instead.」，施工时照 26 的文风定准，报给主会话量。
 - 给人看的那一行（两种语言，照 `shell` 现有的说法）：这一步没跑、为什么。
-- `miyu ask` 里照拦（项目主人定），和别的场所一套规矩。
+- `gqy ask` 里照拦（项目主人定），和别的场所一套规矩。
 - 不加常驻的字、不加等待工具（2026-09-26 定过不设「等它做完」）。
 
 ### 验收
@@ -22,7 +22,7 @@
 
 ### 实测（2026-10-01，主会话，开发端点的 `deepseek-v4.1-flash`；代码写完、CI 全绿，拦下时那一句 36 个 token）
 
-**第一次：`miyu ask` 里只放一条后台命令**（「把 ./test.sh 放到后台跑，然后告诉我测试结果」），三次：
+**第一次：`gqy ask` 里只放一条后台命令**（「把 ./test.sh 放到后台跑，然后告诉我测试结果」），三次：
 
 | 次 | 拦下 | 她接着做了什么 | 这一次拿到结果 | 请求、输入 |
 |---|---|---|---|---|
@@ -30,9 +30,9 @@
 | 2 | 没睡 | 结束这一轮，说跑完会回报 | 没有 | 3 次、6,933 |
 | 3 | `sleep 25` 被拦 | 查一次 `jobs` 就结束这一轮 | 没有 | 5 次、12,481 |
 
-没有一次照那一句改成前台跑。这个场景对拦不公平：`miyu ask` 一结束这一轮就退出，后台命令的回报只记下、叫不醒她，要在这一次交出结果只能等；那一句又指她去前台重跑，没指她结束这一轮。
+没有一次照那一句改成前台跑。这个场景对拦不公平：`gqy ask` 一结束这一轮就退出，后台命令的回报只记下、叫不醒她，要在这一次交出结果只能等；那一句又指她去前台重跑，没指她结束这一轮。
 
-**第二次：会话有人看着**（照 M7 自测第 1 条，同时派一个先睡 45 秒的子代理，`miyu ask` 在等它），拦下时那一句换成「… Background jobs report to you when they end, so end your turn now and continue when the report arrives.」，和不拦的 main 各三次：
+**第二次：会话有人看着**（照 M7 自测第 1 条，同时派一个先睡 45 秒的子代理，`gqy ask` 在等它），拦下时那一句换成「… Background jobs report to you when they end, so end your turn now and continue when the report arrives.」，和不拦的 main 各三次：
 
 | | 不拦 | 拦 |
 |---|---|---|
@@ -41,4 +41,4 @@
 | 请求、输入 | 6–7 次、17,373–23,350 | 6–8 次、17,008–27,038 |
 | 答对失败的那条 | 3/3 | 3/3 |
 
-结论：有人看着的会话里，不拦她也不干等（六次一次 `sleep` 都没有，M7 那次 `sleep 26` 是偶发的）；没人看着的 `miyu ask` 里，拦下反而逼出更贵的轮询、或者交不出结果。拦没有用处，撤回（项目主人定）。以后实际用的时候常撞见她干等，再从这里接着想，比如 `miyu ask` 也等这一次放到后台的命令。
+结论：有人看着的会话里，不拦她也不干等（六次一次 `sleep` 都没有，M7 那次 `sleep 26` 是偶发的）；没人看着的 `gqy ask` 里，拦下反而逼出更贵的轮询、或者交不出结果。拦没有用处，撤回（项目主人定）。以后实际用的时候常撞见她干等，再从这里接着想，比如 `gqy ask` 也等这一次放到后台的命令。

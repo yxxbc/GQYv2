@@ -10,24 +10,24 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/request.rs` | 统一的请求、规范的字节、哈希、指纹、第一处不同 |
-| `crates/miyu-kernel/src/assemble.rs` | 组装的接口 `Assembler` |
-| `crates/miyu-assemble/src/lib.rs` | 默认的组装器：稳定区、`stable`、接着写的记号 |
-| `crates/miyu-assemble/src/render.rs` | 有效历史渲染成消息；人这一边的块合成一条 user |
-| `crates/miyu-assemble/src/texts.rs` | 检查点的包装、回合没走完的五句、回报的写法、别的 harness 发来的话的标签（施工 7-10）、别的会话发来的话的标签（施工 C-2）、空了的通知（施工 C-6） |
-| `crates/miyu-assemble/src/jobs.rs` | 两种回报渲染成带标签的事实（施工 7-2）；子代理发来的留言包一层标签（施工 7-7） |
-| `crates/miyu-assemble/src/harness.rs` | 别的 harness 发来的话包一层带名字的标签（施工 7-10） |
-| `crates/miyu-assemble/src/peers.rs` | 别的会话发来的话包一层带短编号的标签（施工 C-2）；空了的通知那一块（施工 C-6）；人这边的一条照谁发的包哪种外壳在 `render.rs` 的 `said`，主请求和回顾的请求共用 |
-| `crates/miyu-assemble/src/recap.rs` | 回顾的请求：取最近几轮的对话正文、截到上限、接在回顾的指令后面（施工 3-8 四补，下面「回顾的请求」） |
-| `crates/miyu-assemble/src/title.rs` | 起标题的请求：取第一轮的对话正文，照回顾的写法截到上限、接在起标题的指令后面（施工 3-8 五补，下面「起标题的请求」） |
-| `crates/miyu-assemble/src/vision.rs` | 转述一张图的请求：指令、人这一轮最近说的那一句、这张图（施工 8-17，下面「替它看的图」） |
-| `crates/miyu-kernel/src/session/sight.rs` | 什么时候转述、这个会话转述过哪些图、把转述放进请求（施工 8-17，`kernel/session.md`「替它看图」） |
-| `crates/miyu-assemble/src/tag.rs` | 一块带标签的事实：开头、原话、收尾，字以外的块接在后面（子代理的留言、别的 harness、别的会话发来的话共用，施工 7-10 从 `jobs.rs` 拿出来） |
-| `crates/miyu-kernel/src/facts.rs` | 五份事实模板、会话的环境、一个边界上该注入哪几块（权限比级别、切了用哪份模板） |
-| `crates/miyu-kernel/src/session/turn.rs`、`permission.rs`、`retry.rs`、`tools.rs`、`call.rs` | 什么时候注入事实、什么时候组装、算第一处不同、记进 `model.called` |
-| `crates/miyu-kernel/src/template.rs` | 模板的写法、换字段、转义 |
-| `crates/miyu-kernel/src/accumulate.rs` | 增量、累积器 |
-| `crates/miyu-kernel/src/time.rs` | 环境块里钟点和时区的写法 |
+| `crates/gqy-kernel/src/request.rs` | 统一的请求、规范的字节、哈希、指纹、第一处不同 |
+| `crates/gqy-kernel/src/assemble.rs` | 组装的接口 `Assembler` |
+| `crates/gqy-assemble/src/lib.rs` | 默认的组装器：稳定区、`stable`、接着写的记号 |
+| `crates/gqy-assemble/src/render.rs` | 有效历史渲染成消息；人这一边的块合成一条 user |
+| `crates/gqy-assemble/src/texts.rs` | 检查点的包装、回合没走完的五句、回报的写法、别的 harness 发来的话的标签（施工 7-10）、别的会话发来的话的标签（施工 C-2）、空了的通知（施工 C-6） |
+| `crates/gqy-assemble/src/jobs.rs` | 两种回报渲染成带标签的事实（施工 7-2）；子代理发来的留言包一层标签（施工 7-7） |
+| `crates/gqy-assemble/src/harness.rs` | 别的 harness 发来的话包一层带名字的标签（施工 7-10） |
+| `crates/gqy-assemble/src/peers.rs` | 别的会话发来的话包一层带短编号的标签（施工 C-2）；空了的通知那一块（施工 C-6）；人这边的一条照谁发的包哪种外壳在 `render.rs` 的 `said`，主请求和回顾的请求共用 |
+| `crates/gqy-assemble/src/recap.rs` | 回顾的请求：取最近几轮的对话正文、截到上限、接在回顾的指令后面（施工 3-8 四补，下面「回顾的请求」） |
+| `crates/gqy-assemble/src/title.rs` | 起标题的请求：取第一轮的对话正文，照回顾的写法截到上限、接在起标题的指令后面（施工 3-8 五补，下面「起标题的请求」） |
+| `crates/gqy-assemble/src/vision.rs` | 转述一张图的请求：指令、人这一轮最近说的那一句、这张图（施工 8-17，下面「替它看的图」） |
+| `crates/gqy-kernel/src/session/sight.rs` | 什么时候转述、这个会话转述过哪些图、把转述放进请求（施工 8-17，`kernel/session.md`「替它看图」） |
+| `crates/gqy-assemble/src/tag.rs` | 一块带标签的事实：开头、原话、收尾，字以外的块接在后面（子代理的留言、别的 harness、别的会话发来的话共用，施工 7-10 从 `jobs.rs` 拿出来） |
+| `crates/gqy-kernel/src/facts.rs` | 五份事实模板、会话的环境、一个边界上该注入哪几块（权限比级别、切了用哪份模板） |
+| `crates/gqy-kernel/src/session/turn.rs`、`permission.rs`、`retry.rs`、`tools.rs`、`call.rs` | 什么时候注入事实、什么时候组装、算第一处不同、记进 `model.called` |
+| `crates/gqy-kernel/src/template.rs` | 模板的写法、换字段、转义 |
+| `crates/gqy-kernel/src/accumulate.rs` | 增量、累积器 |
+| `crates/gqy-kernel/src/time.rs` | 环境块里钟点和时区的写法 |
 | `resources/core/` | 给模型看的字：事实的模板、检查点的包装、回合没走完的五句、回报的写法（`jobs/`，施工 7-2）、别的 harness 发来的话的标签（`harness/`，施工 7-10）、别的会话发来的话的标签和空了的通知（`peers/`，施工 C-2、C-6）、回顾的请求的几份（`recap/`，施工 3-8 四补）、起标题的指令（`title/`，施工 3-8 五补）、转述一张图的指令和人的话前面那一行（`vision/`，施工 8-17） |
 
 ### 对外的样子
@@ -90,7 +90,7 @@
 | | `title` | `Title`：起标题的指令（`core/title/instruction.txt`），整份最多约多少 token `tokens`（施工 3-8 五补，下面「起标题的请求」）。标签、截断的记号借 `recap` 的，两样都有才起标题。以前造的快照里没有的，是没有：不起标题 |
 | | `vision` | `Vision`：转述一张图的指令（`core/vision/instruction.txt`）、人的话前面那一行（`question.txt`）（施工 8-17，下面「替它看的图」）。以前造的快照里没有的，是没有：不转述 |
 
-默认的 `summarize`：截到第 `upto` 条照平常组装；最后一条是 user 的，指令并进这一条做最后一块，不是的另起一条 user；`continuation` 是假。指令是一个文本块：`summarize_task`；有要求的接 `summarize_instructions` 和要求（原样，不转义，末尾没有换行的补一个）；最后是 `summarize_end`（施工 6-8，`compaction.md` 第七条第 3 条）。默认的 `summary`：只看正文块，有 `<summary>` 的取到 `</summary>` 或者末尾，没有的去掉 `<analysis>…</analysis>`，前后空白去掉，空的是 `None`（`crates/miyu-assemble/src/summary.rs`）。
+默认的 `summarize`：截到第 `upto` 条照平常组装；最后一条是 user 的，指令并进这一条做最后一块，不是的另起一条 user；`continuation` 是假。指令是一个文本块：`summarize_task`；有要求的接 `summarize_instructions` 和要求（原样，不转义，末尾没有换行的补一个）；最后是 `summarize_end`（施工 6-8，`compaction.md` 第七条第 3 条）。默认的 `summary`：只看正文块，有 `<summary>` 的取到 `</summary>` 或者末尾，没有的去掉 `<analysis>…</analysis>`，前后空白去掉，空的是 `None`（`crates/gqy-assemble/src/summary.rs`）。
 
 **事实**：
 
@@ -98,7 +98,7 @@
 - `env(此刻, &Environment)`、`permission(&Permission)`、`reply_cut()`：各交回一块 `ContextInjected { kind, text }`，`kind` 是 `env`、`permission`、`reply_cut`。`session(&SessionId)` 交回 `kind` 是 `session` 的一块，没有这份模板的交回 `None`。`permission_changed(&Permission, 上一级)` 交回切换那一份写的一块，`kind` 也是 `permission`，没有这份模板的交回 `None`（施工 2-7 补）。
 - `boundary(有效历史, 此刻, &Environment, &Permission, &SessionId)`：一个边界上该注入的几块，照环境、权限、会话编号的先后，没有编号模板的不查编号。环境、编号交给 `changed` 比；权限比级别、挑模板（「事实」第 2 条，施工 2-7 补）。回合开始、这一轮切过级别以后的边界都用它。
 - `effective_level(&Permission)`：实际生效的那一级的写法（「事实」第 6 条）。`history` 列切权限的那一条也用它（`tools/history.md`，施工 2-7 补）。
-- `Environment { offset, cwd }`：时区（`UtcOffset`，按分钟，−14:00 到 +14:00，东边是正的）；工作目录，头报上来的写法，例如 `~/src/miyu`，内核不改写。造会话、载入时交进来，执行器报「环境变了」就整个换掉。
+- `Environment { offset, cwd }`：时区（`UtcOffset`，按分钟，−14:00 到 +14:00，东边是正的）；工作目录，头报上来的写法，例如 `~/src/gqy`，内核不改写。造会话、载入时交进来，执行器报「环境变了」就整个换掉。
 - `changed(有效历史, by, 几块)`：这几块里该注入的，照原来的先后，逐字节比原文。边界上的权限那一块不走它。
 
 **模板** `Template`：`parse(原文)`、`render(字段)`、`fill(字段, 清理)`、`fields()`；另有 `escape(值)`。字段用 `BTreeMap<&str, &str>` 交进来。
@@ -327,8 +327,8 @@
 | `turn-ended/interrupted.txt` | `<turn-ended reason="interrupted">The user interrupted this turn.</turn-ended>` | 人这一边 |
 | `turn-ended/error.txt` | `<turn-ended reason="error">This turn stopped on an error.</turn-ended>` | 人这一边 |
 | `turn-ended/step_limit.txt` | `<turn-ended reason="step_limit">This turn stopped at the step limit.</turn-ended>` | 人这一边 |
-| `turn-ended/aborted.txt` | `<turn-ended reason="aborted">Miyu stopped unexpectedly and this turn did not finish.</turn-ended>` | 人这一边 |
-| `turn-ended/restarted.txt` | `<turn-ended reason="restarted">A planned restart of Miyu stopped this turn.</turn-ended>` | 人这一边 |
+| `turn-ended/aborted.txt` | `<turn-ended reason="aborted">GQY stopped unexpectedly and this turn did not finish.</turn-ended>` | 人这一边 |
+| `turn-ended/restarted.txt` | `<turn-ended reason="restarted">A planned restart of GQY stopped this turn.</turn-ended>` | 人这一边 |
 
 回顾的请求的几份（`core/recap/`，施工 3-8 四补，「回顾的请求」），只在那一次辅助请求里，不进主对话：
 
@@ -370,7 +370,7 @@
 | `jobs/subagent-close.txt` | `</subagent-report>` | 收尾 |
 | `jobs/stopped-by-user.txt` | `The user stopped this.` | 人停的（`stopped`、不带 `by_model`），两种回报共用，紧跟标签那一行（施工 7-2 补） |
 
-每种原因（停掉的分她停的、人停的，施工 7-2 补）、截过的、人插过话的、没说话的各一份样本，在 `docs/designs/samples/reports/`，由出厂的字渲染出来逐字节比（`crates/miyu-assemble/src/jobs/tests.rs`）。
+每种原因（停掉的分她停的、人停的，施工 7-2 补）、截过的、人插过话的、没说话的各一份样本，在 `docs/designs/samples/reports/`，由出厂的字渲染出来逐字节比（`crates/gqy-assemble/src/jobs/tests.rs`）。
 
 子代理发来的留言的标签（`core/jobs/`，施工 7-7，「子代理的留言」），标签里的两个字段是 `job`、`title`：
 
@@ -379,7 +379,7 @@
 | `jobs/subagent-message-open.txt` | `<subagent-message job="{job}" title="{title}">` | 子代理发来的留言，开头 |
 | `jobs/subagent-message-close.txt` | `</subagent-message>` | 收尾 |
 
-样本 `docs/designs/samples/reports/subagent-message.txt`（子代理中途问一句，`crates/miyu-assemble/src/jobs/tests/messages.rs` 逐字节比）：
+样本 `docs/designs/samples/reports/subagent-message.txt`（子代理中途问一句，`crates/gqy-assemble/src/jobs/tests/messages.rs` 逐字节比）：
 
 ```text
 <subagent-message job="j2" title="查 CI 为什么红">
@@ -394,7 +394,7 @@ macOS 上的临时目录要换成真实路径，还是只改测试？
 | `harness/message-open.txt` | `<agent-message from="{name}">` | 别的 harness 发来的话，开头 |
 | `harness/message-close.txt` | `</agent-message>` | 收尾 |
 
-样本 `docs/designs/samples/harness/message.txt`（Claude Code 发来一句，`crates/miyu-assemble/src/harness/tests.rs` 逐字节比）：
+样本 `docs/designs/samples/harness/message.txt`（Claude Code 发来一句，`crates/gqy-assemble/src/harness/tests.rs` 逐字节比）：
 
 ```text
 <agent-message from="claude-code">
@@ -422,7 +422,7 @@ CI 修好了：macOS 上的临时目录换成了真实路径。你那边再跑�
 | `peers/idle-gone.txt` | `The session no longer exists.` | 通知，不在了 |
 | `peers/idle-close.txt` | `</session-idle>` | 通知，收尾 |
 
-样本 `docs/designs/samples/peers/message.txt`（会话 `22334455` 发来一句，`crates/miyu-assemble/src/peers/tests.rs` 逐字节比）：
+样本 `docs/designs/samples/peers/message.txt`（会话 `22334455` 发来一句，`crates/gqy-assemble/src/peers/tests.rs` 逐字节比）：
 
 ```text
 <session-message from="22334455">
@@ -496,7 +496,7 @@ Carry on from where the summary leaves off, without redoing work it records as d
 
 ### 出错
 
-报错给写模板的人、查问题的人看，不给模型看。模板的几句是英文，写进运行日志（施工 4-9 再补四中：原来是中文）；增量对不上的那一句记进 `model.called` 的原话，`miyu ask` 印给人看，还是中文，等界面语言那一步。
+报错给写模板的人、查问题的人看，不给模型看。模板的几句是英文，写进运行日志（施工 4-9 再补四中：原来是中文）；增量对不上的那一句记进 `model.called` 的原话，`gqy ask` 印给人看，还是中文，等界面语言那一步。
 
 | 什么时候 | 怎么说 |
 |---|---|
@@ -513,37 +513,37 @@ Carry on from where the summary leaves off, without redoing work it records as d
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/request/tests.rs` | 同样的请求字节、哈希一样；参数格式一个字节不改；消息以角色开头；第一处不同的四种情形 |
-| `crates/miyu-kernel/tests/request_sample.rs` | 样本 `second-step.json` 就是规范的字节；哈希是它的 SHA-256 |
-| `crates/miyu-assemble/src/tests.rs` | 工具面照名字排；示范对话在前、算进 `stable`；接着写的记号什么时候真、什么时候假 |
-| `crates/miyu-assemble/src/render/tests.rs` | 每种事件渲染成什么；回合开始的事实和触发放到回合开始的地方；等重试时切了级别，事实排在触发后面；早到的触发；重启以后接着干；检查点在最前、摘要不转义；回合没走完的五句；没有触发的那一轮出错、打断、崩了、重启都不出那一句（施工 6-8）；清空的检查点不出字，压缩过再清空的摘要也跟着没了（`render/tests/clear.rs`，施工 6-8 补）；不认识的块和不进上下文的种类 |
-| `crates/miyu-assemble/tests/sample_session.rs` | 样本会话组装出两份样本请求；撤回的、确认和提问的事件不进请求；样本里的两种回报渲染成带标签的事实（施工 7-2） |
-| `crates/miyu-assemble/tests/probe.rs` | 一段八轮的终端会话由真内核跑出来，每次请求和存档（`requests/`、`openai-chat/`）逐字节一样；五条性质；什么都没收到的再来一字不差。有回报的会话（施工 7-2）一样和存档比、查五条性质；回报开的那一轮最后一块是那条回报，回合中途到的单独一条 user 排在工具结果后面，只记下的在人那一句前面。清空过的会话（施工 6-8 补）一样和存档比、查五条性质；清空以后的那一次算改写过，只剩工具面、system 和一条 user：三块事实、那一句。子代理的会话（施工 7-5）和同一份剧本的主会话比，只多 system 里的场所说明，会话编号那一块写的是它自己的（施工 1-13 再补）。有别的 harness 来话的会话（施工 7-10，`tests/probe_harness.rs`）一样和存档比、查五条性质，和换成人说的同一份剧本比，每次请求只多标签那两段。有别的会话来话的会话（施工 C-2，`tests/probe_peers.rs`）一样：和存档比、查五条性质，和换成人说的同一份剧本比，每次请求只多标签那两段。人切了权限级别的会话（施工 2-7 补，`tests/probe_permission.rs`）一样和存档比、查五条性质；切换那一块在第二轮开头、紧挨着那句话，回合中途切的单独一条 user 排在工具结果后面；和以前造的快照（没有切换那一份）跑同一份剧本比，每次请求只差切换那几块，换回平常那一份一字不差 |
-| `crates/miyu-assemble/src/jobs/tests.rs` | 两种回报（施工 7-2）：出厂的字渲染出来和样本逐字节一样（每种原因、截过的、人插过话的、没说话的；停掉的分她停的、人停的，施工 7-2 补）；人停的那一句紧跟标签那一行；旧快照没有那一句的，人停的照原来的写；负的退出码照原样、没存下输出的不写字数；标题照规矩转义；开这一轮的那条挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；派它的那一轮撤掉了的不渲染；派它的那一条压缩掉了照样有标题；旧快照没有写法的不渲染 |
-| `crates/miyu-assemble/src/jobs/tests/messages.rs`（施工 7-7） | 子代理的留言：出厂的字渲染出来和样本一字不差、末尾有换行的不再补；人、别的会话发来的原样；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；派它的那一轮撤掉了的不渲染；旧快照没有标签的只剩它的话 |
-| `crates/miyu-assemble/src/harness/tests.rs`（施工 7-10） | 别的 harness 发来的话：出厂的字渲染出来和两份样本一字不差（带转义的名字）、末尾有换行的不再补；附件接在标签那一块后面；只有附件的是开头接收尾；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；旧快照没有标签的和人的话一字不差；别的 `by` 原样 |
-| `crates/miyu-assemble/src/peers/tests.rs`（施工 C-2、C-6） | 空了的通知（C-6）：和两份样本一字不差；没说话的、不在了的、不认识的原因各是什么样；开这一轮的挪到回合开始、回合中途到的排在工具结果后面；没有通知的字的一块都不出。别的会话发来的话：出厂的字渲染出来和样本一字不差、末尾有换行的不再补；附件接在标签那一块后面；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；旧快照没有标签的和人的话一字不差；子会话里父会话的话原样、别的会话的照样包 |
-| `crates/miyu-assemble/src/recap/tests.rs`（施工 3-8 四补） | 回顾的请求：一条 user、没有 system 和工具面，照到的是回复；只取人的话和她每一轮最后一条有正文的回复，中间一步说的、工具、思考、事实不要，最后只有思考的取前面那条；别的 harness 的话带外壳；挨着的人的话并成一段；没答的最新那句带上、照到的是它；没有回复、只有调用、快照里没有字的组装不出来；最多几轮；最老只有回答的也留；放不下先整轮去掉最老的、再截中间，没答的那句和最新的回答一定留；上限算上指令；标签放不下的整份截、只在字的边界上截；截一段头尾各一半 |
-| `crates/miyu-assemble/src/render/tests/recap.rs`、`src/tests.rs` 的 `a_recap_after_the_notice_still_continues`（施工 3-8 四补） | 回顾的两条不渲染，落在回合开始的那几块中间也不挪动开始时注入的事实；被打断的那一句后面记了回顾照样接着写 |
-| `crates/miyu-assemble/tests/probe_recap.rs`（施工 3-8 四补） | 回顾这张脸：真内核照剧本跑，回顾的请求（`recaps/`）和主请求一样和存档（`docs/designs/samples/probe/recap/`）逐字节比；它是单独的一次，一条 user、指令在最前，工具的输出、中间一步说的不在里面，正答着时最后是没答的那一句；中间没有新内容的第三次交回上一句、不请求；主请求照查五条性质 |
-| `crates/miyu-assemble/src/title/tests.rs`（施工 3-8 五补） | 起标题的请求：一条 user、没有 system 和工具面，只有第一轮，照到的是第一个回答；那一轮中间一步说的、工具、思考、事实不要；第一轮没答出正文的，两句人的话并成一段、照到第二轮的回答；别的 harness 的话带外壳；没有回答、没有起标题的字或者回顾的标签的没有；放不下两段各截中间，连指令正好到上限，小到连标签都放不下的整份截到上限 |
-| `crates/miyu-assemble/src/tests.rs` 的 `a_title_after_the_notice_still_continues`（施工 3-8 五补） | 被打断的那一句后面内核起了标题，照样接着写 |
-| `crates/miyu-assemble/tests/probe_title.rs`（施工 3-8 五补） | 起标题这张脸：真内核照剧本跑，起标题的请求（`titles/`）和主请求一样和存档（`docs/designs/samples/probe/title/`）逐字节比；它是单独的一次，一条 user，指令接第一轮的话和回答，工具的输出、中间一步说的不在里面；只起一次；主请求照查五条性质，第二轮接着第一轮往后长 |
-| `crates/miyu-assemble/src/vision/tests.rs`（施工 8-17） | 转述的请求：一条 user、没有 system 和工具面，指令在前、图在后、图去掉了名字；有人的话的接那一行和原话、原样不转义；快照里没有字的没有 |
-| `crates/miyu-kernel/src/request/tests.rs` 的转述那几条（施工 8-17） | `described` 空的不写进字节、哈希不变，有的写在最后；不算进指纹 |
-| `crates/miyu-assemble/tests/probe_vision.rs`（施工 8-17） | 看不了图的那张脸：真内核照剧本跑，人附了一张图、她又读出一张，各转述一次，主请求和存档（`docs/designs/samples/probe/vision/`）逐字节比、线上的字节里图的位置是带标签的转述；第二轮不再转述，前缀照查五条性质 |
-| `crates/miyu-assemble/src/summary/tests.rs` | 摘要指令怎么拼：没附要求的和原来的整份一字不差；附了的夹在中间、原样、补换行；旧快照没有那两份的（施工 6-8）；取摘要的每一种 |
-| `crates/miyu-assemble/tests/random_logs.rs` | 五百份随机会话（有手动压缩单开的那一轮，施工 6-8），每次请求查五条性质：同样的日志同样的字节、前缀延伸（统一的请求和线上的字节两层；中间撤销、恢复、压缩过的那一次不查）、调用和结果成对、没有连着的 user、回合第一次请求的最后一块是触发；CI 长跑两万份；重试的回合里，一半在等着重试时切一下只读 |
-| `crates/miyu-kernel/src/facts/tests.rs` | 模板造的时候查（会话编号的模板只要 `id`）；三块的写法、目录转义、实际生效的级别；一个边界上查哪几块、先后；以前的模板没有会话编号的，边界上只有两块（施工 1-13 再补）；该不该注入的八种情形 |
-| `crates/miyu-kernel/src/facts/tests/permission.rs`（施工 2-7 补） | 切换那一份造的时候查；它写出现在的一级和上一级；边界上比级别：没有上一块的写平常那一份，一样的不写，不一样的用切换那一份、带上一级（只读开着写只读）；上一块是切换那一份的算它新的那一级；以前的模板照旧写平常那一份；认不出的上一块照原文比；模块注入的不算；压缩以后、撤掉带着它们的几轮以后照剩下的算 |
-| `crates/miyu-kernel/tests/sample_facts.rs` | 用出厂模板（少切换那一份：样本会话造在施工 2-7 补以前），样本会话每个边界该注入的几块 |
-| `crates/miyu-kernel/src/session/tests/turn.rs`、`permission.rs`、`reply.rs`、`scenario/retrying.rs` | 回合开始注入、切级别以后在哪个边界注入、第二轮只注入变了的、断了以后追加 `reply_cut` |
-| `crates/miyu-kernel/src/session/tests/scenario/permission_changed.rs`（施工 2-7 补） | 人切了级别：空闲时切的，下一轮开头用切换那一份、带上一级；一个边界之前切过去又切回来的（空闲时、工具在跑时）不注入；回合中途切的，排在工具结果后面、这一轮下一次请求看得到；连着切的写她最近看到的那一级；压缩以后写平常那一份；撤掉切到完全放开的那一轮以后，上一级是她还看得到的工作区；撤掉所有带着权限的轮以后写平常那一份；撤掉的回合里切的，载入以后照样算；崩了载入以后不重发；以前的快照写平常那一份 |
-| `crates/miyu-kernel/src/session/tests/scenario/session_fact.rs`（施工 1-13 再补） | 会话编号：第一轮排在环境、权限后面注入，第二轮不注入；压缩以后再注入一次；撤掉带着它的那一轮以后下一轮重新注入；崩了载入以后编号一样、不重发；子会话写它自己的编号；以前的快照没有模板的不注入 |
-| `crates/miyu-kernel/src/session/tests/difference.rs` | 第一处不同交给执行器、记进 `model.called` |
-| `crates/miyu-kernel/src/time/tests.rs` | 钟点到小时、星期、时区的写法和范围 |
-| `crates/miyu-kernel/src/template/tests.rs` | 换字段、双写的大括号、每种要转的字、转出来是一行合法的 JSON 字符串、伪造属性和记录和标签都失效、`fields()`、`fill`、坏模板、少了字段 |
-| `crates/miyu-kernel/src/accumulate/tests.rs` | 三种块拼对、调用编号、空块、交错、被打断、对不上的增量、随机切片拼出来一样；每一块带着它在流里是第几块（施工 2-3 补） |
+| `crates/gqy-kernel/src/request/tests.rs` | 同样的请求字节、哈希一样；参数格式一个字节不改；消息以角色开头；第一处不同的四种情形 |
+| `crates/gqy-kernel/tests/request_sample.rs` | 样本 `second-step.json` 就是规范的字节；哈希是它的 SHA-256 |
+| `crates/gqy-assemble/src/tests.rs` | 工具面照名字排；示范对话在前、算进 `stable`；接着写的记号什么时候真、什么时候假 |
+| `crates/gqy-assemble/src/render/tests.rs` | 每种事件渲染成什么；回合开始的事实和触发放到回合开始的地方；等重试时切了级别，事实排在触发后面；早到的触发；重启以后接着干；检查点在最前、摘要不转义；回合没走完的五句；没有触发的那一轮出错、打断、崩了、重启都不出那一句（施工 6-8）；清空的检查点不出字，压缩过再清空的摘要也跟着没了（`render/tests/clear.rs`，施工 6-8 补）；不认识的块和不进上下文的种类 |
+| `crates/gqy-assemble/tests/sample_session.rs` | 样本会话组装出两份样本请求；撤回的、确认和提问的事件不进请求；样本里的两种回报渲染成带标签的事实（施工 7-2） |
+| `crates/gqy-assemble/tests/probe.rs` | 一段八轮的终端会话由真内核跑出来，每次请求和存档（`requests/`、`openai-chat/`）逐字节一样；五条性质；什么都没收到的再来一字不差。有回报的会话（施工 7-2）一样和存档比、查五条性质；回报开的那一轮最后一块是那条回报，回合中途到的单独一条 user 排在工具结果后面，只记下的在人那一句前面。清空过的会话（施工 6-8 补）一样和存档比、查五条性质；清空以后的那一次算改写过，只剩工具面、system 和一条 user：三块事实、那一句。子代理的会话（施工 7-5）和同一份剧本的主会话比，只多 system 里的场所说明，会话编号那一块写的是它自己的（施工 1-13 再补）。有别的 harness 来话的会话（施工 7-10，`tests/probe_harness.rs`）一样和存档比、查五条性质，和换成人说的同一份剧本比，每次请求只多标签那两段。有别的会话来话的会话（施工 C-2，`tests/probe_peers.rs`）一样：和存档比、查五条性质，和换成人说的同一份剧本比，每次请求只多标签那两段。人切了权限级别的会话（施工 2-7 补，`tests/probe_permission.rs`）一样和存档比、查五条性质；切换那一块在第二轮开头、紧挨着那句话，回合中途切的单独一条 user 排在工具结果后面；和以前造的快照（没有切换那一份）跑同一份剧本比，每次请求只差切换那几块，换回平常那一份一字不差 |
+| `crates/gqy-assemble/src/jobs/tests.rs` | 两种回报（施工 7-2）：出厂的字渲染出来和样本逐字节一样（每种原因、截过的、人插过话的、没说话的；停掉的分她停的、人停的，施工 7-2 补）；人停的那一句紧跟标签那一行；旧快照没有那一句的，人停的照原来的写；负的退出码照原样、没存下输出的不写字数；标题照规矩转义；开这一轮的那条挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；派它的那一轮撤掉了的不渲染；派它的那一条压缩掉了照样有标题；旧快照没有写法的不渲染 |
+| `crates/gqy-assemble/src/jobs/tests/messages.rs`（施工 7-7） | 子代理的留言：出厂的字渲染出来和样本一字不差、末尾有换行的不再补；人、别的会话发来的原样；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；派它的那一轮撤掉了的不渲染；旧快照没有标签的只剩它的话 |
+| `crates/gqy-assemble/src/harness/tests.rs`（施工 7-10） | 别的 harness 发来的话：出厂的字渲染出来和两份样本一字不差（带转义的名字）、末尾有换行的不再补；附件接在标签那一块后面；只有附件的是开头接收尾；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；旧快照没有标签的和人的话一字不差；别的 `by` 原样 |
+| `crates/gqy-assemble/src/peers/tests.rs`（施工 C-2、C-6） | 空了的通知（C-6）：和两份样本一字不差；没说话的、不在了的、不认识的原因各是什么样；开这一轮的挪到回合开始、回合中途到的排在工具结果后面；没有通知的字的一块都不出。别的会话发来的话：出厂的字渲染出来和样本一字不差、末尾有换行的不再补；附件接在标签那一块后面；开这一轮的挪到回合开始的地方、事实在前；回合中途到的排在那一步的工具结果后面；旧快照没有标签的和人的话一字不差；子会话里父会话的话原样、别的会话的照样包 |
+| `crates/gqy-assemble/src/recap/tests.rs`（施工 3-8 四补） | 回顾的请求：一条 user、没有 system 和工具面，照到的是回复；只取人的话和她每一轮最后一条有正文的回复，中间一步说的、工具、思考、事实不要，最后只有思考的取前面那条；别的 harness 的话带外壳；挨着的人的话并成一段；没答的最新那句带上、照到的是它；没有回复、只有调用、快照里没有字的组装不出来；最多几轮；最老只有回答的也留；放不下先整轮去掉最老的、再截中间，没答的那句和最新的回答一定留；上限算上指令；标签放不下的整份截、只在字的边界上截；截一段头尾各一半 |
+| `crates/gqy-assemble/src/render/tests/recap.rs`、`src/tests.rs` 的 `a_recap_after_the_notice_still_continues`（施工 3-8 四补） | 回顾的两条不渲染，落在回合开始的那几块中间也不挪动开始时注入的事实；被打断的那一句后面记了回顾照样接着写 |
+| `crates/gqy-assemble/tests/probe_recap.rs`（施工 3-8 四补） | 回顾这张脸：真内核照剧本跑，回顾的请求（`recaps/`）和主请求一样和存档（`docs/designs/samples/probe/recap/`）逐字节比；它是单独的一次，一条 user、指令在最前，工具的输出、中间一步说的不在里面，正答着时最后是没答的那一句；中间没有新内容的第三次交回上一句、不请求；主请求照查五条性质 |
+| `crates/gqy-assemble/src/title/tests.rs`（施工 3-8 五补） | 起标题的请求：一条 user、没有 system 和工具面，只有第一轮，照到的是第一个回答；那一轮中间一步说的、工具、思考、事实不要；第一轮没答出正文的，两句人的话并成一段、照到第二轮的回答；别的 harness 的话带外壳；没有回答、没有起标题的字或者回顾的标签的没有；放不下两段各截中间，连指令正好到上限，小到连标签都放不下的整份截到上限 |
+| `crates/gqy-assemble/src/tests.rs` 的 `a_title_after_the_notice_still_continues`（施工 3-8 五补） | 被打断的那一句后面内核起了标题，照样接着写 |
+| `crates/gqy-assemble/tests/probe_title.rs`（施工 3-8 五补） | 起标题这张脸：真内核照剧本跑，起标题的请求（`titles/`）和主请求一样和存档（`docs/designs/samples/probe/title/`）逐字节比；它是单独的一次，一条 user，指令接第一轮的话和回答，工具的输出、中间一步说的不在里面；只起一次；主请求照查五条性质，第二轮接着第一轮往后长 |
+| `crates/gqy-assemble/src/vision/tests.rs`（施工 8-17） | 转述的请求：一条 user、没有 system 和工具面，指令在前、图在后、图去掉了名字；有人的话的接那一行和原话、原样不转义；快照里没有字的没有 |
+| `crates/gqy-kernel/src/request/tests.rs` 的转述那几条（施工 8-17） | `described` 空的不写进字节、哈希不变，有的写在最后；不算进指纹 |
+| `crates/gqy-assemble/tests/probe_vision.rs`（施工 8-17） | 看不了图的那张脸：真内核照剧本跑，人附了一张图、她又读出一张，各转述一次，主请求和存档（`docs/designs/samples/probe/vision/`）逐字节比、线上的字节里图的位置是带标签的转述；第二轮不再转述，前缀照查五条性质 |
+| `crates/gqy-assemble/src/summary/tests.rs` | 摘要指令怎么拼：没附要求的和原来的整份一字不差；附了的夹在中间、原样、补换行；旧快照没有那两份的（施工 6-8）；取摘要的每一种 |
+| `crates/gqy-assemble/tests/random_logs.rs` | 五百份随机会话（有手动压缩单开的那一轮，施工 6-8），每次请求查五条性质：同样的日志同样的字节、前缀延伸（统一的请求和线上的字节两层；中间撤销、恢复、压缩过的那一次不查）、调用和结果成对、没有连着的 user、回合第一次请求的最后一块是触发；CI 长跑两万份；重试的回合里，一半在等着重试时切一下只读 |
+| `crates/gqy-kernel/src/facts/tests.rs` | 模板造的时候查（会话编号的模板只要 `id`）；三块的写法、目录转义、实际生效的级别；一个边界上查哪几块、先后；以前的模板没有会话编号的，边界上只有两块（施工 1-13 再补）；该不该注入的八种情形 |
+| `crates/gqy-kernel/src/facts/tests/permission.rs`（施工 2-7 补） | 切换那一份造的时候查；它写出现在的一级和上一级；边界上比级别：没有上一块的写平常那一份，一样的不写，不一样的用切换那一份、带上一级（只读开着写只读）；上一块是切换那一份的算它新的那一级；以前的模板照旧写平常那一份；认不出的上一块照原文比；模块注入的不算；压缩以后、撤掉带着它们的几轮以后照剩下的算 |
+| `crates/gqy-kernel/tests/sample_facts.rs` | 用出厂模板（少切换那一份：样本会话造在施工 2-7 补以前），样本会话每个边界该注入的几块 |
+| `crates/gqy-kernel/src/session/tests/turn.rs`、`permission.rs`、`reply.rs`、`scenario/retrying.rs` | 回合开始注入、切级别以后在哪个边界注入、第二轮只注入变了的、断了以后追加 `reply_cut` |
+| `crates/gqy-kernel/src/session/tests/scenario/permission_changed.rs`（施工 2-7 补） | 人切了级别：空闲时切的，下一轮开头用切换那一份、带上一级；一个边界之前切过去又切回来的（空闲时、工具在跑时）不注入；回合中途切的，排在工具结果后面、这一轮下一次请求看得到；连着切的写她最近看到的那一级；压缩以后写平常那一份；撤掉切到完全放开的那一轮以后，上一级是她还看得到的工作区；撤掉所有带着权限的轮以后写平常那一份；撤掉的回合里切的，载入以后照样算；崩了载入以后不重发；以前的快照写平常那一份 |
+| `crates/gqy-kernel/src/session/tests/scenario/session_fact.rs`（施工 1-13 再补） | 会话编号：第一轮排在环境、权限后面注入，第二轮不注入；压缩以后再注入一次；撤掉带着它的那一轮以后下一轮重新注入；崩了载入以后编号一样、不重发；子会话写它自己的编号；以前的快照没有模板的不注入 |
+| `crates/gqy-kernel/src/session/tests/difference.rs` | 第一处不同交给执行器、记进 `model.called` |
+| `crates/gqy-kernel/src/time/tests.rs` | 钟点到小时、星期、时区的写法和范围 |
+| `crates/gqy-kernel/src/template/tests.rs` | 换字段、双写的大括号、每种要转的字、转出来是一行合法的 JSON 字符串、伪造属性和记录和标签都失效、`fields()`、`fill`、坏模板、少了字段 |
+| `crates/gqy-kernel/src/accumulate/tests.rs` | 三种块拼对、调用编号、空块、交错、被打断、对不上的增量、随机切片拼出来一样；每一块带着它在流里是第几块（施工 2-3 补） |
 
 ### 出处
 

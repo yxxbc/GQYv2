@@ -12,16 +12,16 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-drivers/src/openai_responses.rs` | 家族名、路径、顶层怎么写、要哪些 blob |
-| `crates/miyu-drivers/src/driver.rs` | `OpenAiResponses` 和它的 `impl Driver`、`impl Decode` |
-| `crates/miyu-drivers/src/openai_responses/input.rs` | 统一的请求里的消息写成 `input` 里的一项项 |
-| `crates/miyu-drivers/src/openai_responses/effort.rs` | 思考强度换成 `reasoning`、`include` |
-| `crates/miyu-drivers/src/openai_responses/wire.rs` | 线上的 JSON 结构、工具面 |
-| `crates/miyu-drivers/src/openai_responses/decode.rs` | 解码：事件、每一项开一块、加密的思考、收尾 |
-| `crates/miyu-drivers/src/openai_responses/usage.rs` | 用量归成四项 |
-| `crates/miyu-drivers/src/media.rs` | 图片、文件发不了时换成的字、要哪些 blob，三个驱动共用（`drivers/anthropic.md`「在哪」）；8-13 起 user 的字照 openai-chat 拼的那一步（`join`）也挪进来，openai-chat 的样本一个字节不变 |
-| `crates/miyu-drivers/src/sse.rs`、`classify.rs`、`texts.rs`、`text_file.rs`、`base64.rs` | 和 openai-chat 共用 |
-| `crates/miyu-drivers/src/openai_chat/models.rs` | 列模型：OpenAI 的 `/models` 写法一样，共用 `parse_models` |
+| `crates/gqy-drivers/src/openai_responses.rs` | 家族名、路径、顶层怎么写、要哪些 blob |
+| `crates/gqy-drivers/src/driver.rs` | `OpenAiResponses` 和它的 `impl Driver`、`impl Decode` |
+| `crates/gqy-drivers/src/openai_responses/input.rs` | 统一的请求里的消息写成 `input` 里的一项项 |
+| `crates/gqy-drivers/src/openai_responses/effort.rs` | 思考强度换成 `reasoning`、`include` |
+| `crates/gqy-drivers/src/openai_responses/wire.rs` | 线上的 JSON 结构、工具面 |
+| `crates/gqy-drivers/src/openai_responses/decode.rs` | 解码：事件、每一项开一块、加密的思考、收尾 |
+| `crates/gqy-drivers/src/openai_responses/usage.rs` | 用量归成四项 |
+| `crates/gqy-drivers/src/media.rs` | 图片、文件发不了时换成的字、要哪些 blob，三个驱动共用（`drivers/anthropic.md`「在哪」）；8-13 起 user 的字照 openai-chat 拼的那一步（`join`）也挪进来，openai-chat 的样本一个字节不变 |
+| `crates/gqy-drivers/src/sse.rs`、`classify.rs`、`texts.rs`、`text_file.rs`、`base64.rs` | 和 openai-chat 共用 |
+| `crates/gqy-drivers/src/openai_chat/models.rs` | 列模型：OpenAI 的 `/models` 写法一样，共用 `parse_models` |
 
 每个文件不超过 500 行。
 
@@ -195,21 +195,21 @@ SSE 分帧共用 `sse.rs`。这一家没有 `[DONE]`：说完是 `response.compl
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-drivers/tests/openai_responses.rs` | 只有文字；顶层的先后；`instructions` 空的不发；工具面三种情形、`strict:false`；工具调用的编号、参数兜底、没有输出的占位；assistant 的几项照块的先后；每一项的位置 |
-| `crates/miyu-drivers/tests/openai_responses_reasoning.rs` | 加密的思考回传、空摘要、别家的和没有加密内容的不写；思考强度两种写法接在最后，没写的一个字节不加 |
-| `crates/miyu-drivers/tests/openai_responses_media.rs` | 图片、PDF、不能收的占位；工具结果里的图、PDF；文本文件、带名字的图片、替它看的图和 openai-chat 一样；缺 blob 报错 |
-| `crates/miyu-drivers/tests/openai_responses_streams.rs` | 流的样本；从哪里切开喂都一样；解出来的编码回去：`call_id`、加密内容原样；驱动的接口走一遍；`finished()` 在收尾事件以后才说是 |
-| `crates/miyu-assemble/tests/probe.rs`、`random_logs.rs`、`tests/support` | 加 Responses 的脸：每个探针、每段随机日志的每一次请求编码以后是上一次的前缀延伸；主会话（`terminal`）的存档多 `openai-responses/` |
-| `crates/miyu-session/tests/route_responses.rs` | 路由照供应商的 `driver` 造驱动：发到 `/responses`、带 `Bearer`；输出上限不替它填、写了的照它；思考强度照这一家的写法；回来的流照这一家解 |
-| `crates/miyu-models/src/provider/tests.rs`、`facts/tests.rs` | `openai-responses` 认得了、没有开关，目录有开关的模型也不多 `off` |
-| `crates/miyu-core/src/models/tests.rs` | 出厂的档案有 `[providers.openai]` |
+| `crates/gqy-drivers/tests/openai_responses.rs` | 只有文字；顶层的先后；`instructions` 空的不发；工具面三种情形、`strict:false`；工具调用的编号、参数兜底、没有输出的占位；assistant 的几项照块的先后；每一项的位置 |
+| `crates/gqy-drivers/tests/openai_responses_reasoning.rs` | 加密的思考回传、空摘要、别家的和没有加密内容的不写；思考强度两种写法接在最后，没写的一个字节不加 |
+| `crates/gqy-drivers/tests/openai_responses_media.rs` | 图片、PDF、不能收的占位；工具结果里的图、PDF；文本文件、带名字的图片、替它看的图和 openai-chat 一样；缺 blob 报错 |
+| `crates/gqy-drivers/tests/openai_responses_streams.rs` | 流的样本；从哪里切开喂都一样；解出来的编码回去：`call_id`、加密内容原样；驱动的接口走一遍；`finished()` 在收尾事件以后才说是 |
+| `crates/gqy-assemble/tests/probe.rs`、`random_logs.rs`、`tests/support` | 加 Responses 的脸：每个探针、每段随机日志的每一次请求编码以后是上一次的前缀延伸；主会话（`terminal`）的存档多 `openai-responses/` |
+| `crates/gqy-session/tests/route_responses.rs` | 路由照供应商的 `driver` 造驱动：发到 `/responses`、带 `Bearer`；输出上限不替它填、写了的照它；思考强度照这一家的写法；回来的流照这一家解 |
+| `crates/gqy-models/src/provider/tests.rs`、`facts/tests.rs` | `openai-responses` 认得了、没有开关，目录有开关的模型也不多 `off` |
+| `crates/gqy-core/src/models/tests.rs` | 出厂的档案有 `[providers.openai]` |
 
 ### 真模型实测
 
 合并前主会话做，结果记进施工单：
 
 1. **要什么**：一个 OpenAI 官方的 key，或者 opencode Zen 的 key（Zen 上的 GPT 走这个驱动；它的免费模型里也有走这种写法的，免费名单常变，到时候照目录挑）。仓库里都没有，要项目主人给一个 key 或者端点。走 Zen 的要等 8-14 的头和占位工具，或者先在配置里手写固定的 `x-opencode-*` 头、在带 `shell`、`read` 的终端会话里测。
-2. **怎么配**：`[providers.openai]` 写 `driver = "openai-responses"`、地址 `https://api.openai.com/v1`、`keys = [{ secret = "openai" }]`，`miyu login openai`；`models.chat` 指一个现役的会思考的模型。临时的 `MIYU_HOME`。
+2. **怎么配**：`[providers.openai]` 写 `driver = "openai-responses"`、地址 `https://api.openai.com/v1`、`keys = [{ secret = "openai" }]`，`gqy login openai`；`models.chat` 指一个现役的会思考的模型。临时的 `GQY_HOME`。
 3. **缓存命中**：带工具的会话跑三轮（system 加工具面够 1024 token），照 `model.called` 的用量填表：后一次请求的命中约等于前一次的输入（按 128 取整）。命中掉了的，拿两次请求的字节比，找第一处不同。
 4. **思考**：配一档（例如 `low`），跑一轮工具循环：不报 400（加密的思考原样回传了，没有「找不到这一项」的错），头上看得到摘要；配 `off`（目录写 `none` 的模型），确认不思考。
 5. **附件**：人附一张图、一个 PDF；让她用 `read` 读一张图。
@@ -271,9 +271,9 @@ SSE 分帧共用 `sse.rs`。这一家没有 `[DONE]`：说完是 `response.compl
 
 | 页 | 改什么 |
 |---|---|
-| `models.md` | 认得的驱动多 `openai-responses`（`miyu_models::provider::Driver`、`parse`）；「十一、思考强度」第 1 条：这一家没有开关，`off` 只从目录的 `none` 来；档案加 `[providers.openai]`（驱动、地址）；「驱动要守的约定」第 13 条写上这一家的写法 |
+| `models.md` | 认得的驱动多 `openai-responses`（`gqy_models::provider::Driver`、`parse`）；「十一、思考强度」第 1 条：这一家没有开关，`off` 只从目录的 `none` 来；档案加 `[providers.openai]`（驱动、地址）；「驱动要守的约定」第 13 条写上这一家的写法 |
 | `drivers/openai-chat.md` | 「还没有的」删掉 Responses |
 | `kernel/request.md` | 缓存标记两处这一家不用，指过来 |
 | `05-内核接口.md` 第七节 | 加「Responses 接口怎么编码、解码」两张表，照这一页 |
-| `crates/miyu-assemble/tests/support` | 探针、随机日志多一张 Responses 的脸 |
+| `crates/gqy-assemble/tests/support` | 探针、随机日志多一张 Responses 的脸 |
 | `docs/construction/施工图.html` | 8-13 那一块 |

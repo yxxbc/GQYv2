@@ -8,14 +8,14 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/read.rs` | 参数、要碰的路径、读文件还是列目录、结果和效果 |
-| `crates/miyu-basesystem/src/read/lines.rs` | 按行读：编码、二进制、分页、行号、截长行、整份的哈希 |
-| `crates/miyu-basesystem/src/read/dir.rs` | 列目录 |
-| `crates/miyu-basesystem/src/read/image.rs` | 读图片：太大、太宽太高、量不出的各说什么（施工 4-13） |
-| `crates/miyu-tool/src/picture.rs` | 认图片、量宽高、上限：和人附的附件共用一份（施工 3-9 三补挪过去，`protocol.md` 的 `blob.put`） |
-| `crates/miyu-basesystem/src/common.rs` | 几件共用的几句：没有这个文件、读的时候出错、参数不对 |
-| `crates/miyu-basesystem/src/common/shown.rs`、`similar.rs` | 路径怎么写给她看；相近的名字 |
-| `crates/miyu-basesystem/src/load.rs` | 从资源目录读说明、参数格式和几句字 |
+| `crates/gqy-basesystem/src/read.rs` | 参数、要碰的路径、读文件还是列目录、结果和效果 |
+| `crates/gqy-basesystem/src/read/lines.rs` | 按行读：编码、二进制、分页、行号、截长行、整份的哈希 |
+| `crates/gqy-basesystem/src/read/dir.rs` | 列目录 |
+| `crates/gqy-basesystem/src/read/image.rs` | 读图片：太大、太宽太高、量不出的各说什么（施工 4-13） |
+| `crates/gqy-tool/src/picture.rs` | 认图片、量宽高、上限：和人附的附件共用一份（施工 3-9 三补挪过去，`protocol.md` 的 `blob.put`） |
+| `crates/gqy-basesystem/src/common.rs` | 几件共用的几句：没有这个文件、读的时候出错、参数不对 |
+| `crates/gqy-basesystem/src/common/shown.rs`、`similar.rs` | 路径怎么写给她看；相近的名字 |
+| `crates/gqy-basesystem/src/load.rs` | 从资源目录读说明、参数格式和几句字 |
 | `resources/software/basesystem/tools/read.json` | 说明和参数格式 |
 | `resources/software/basesystem/read/*.txt`、`common/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -171,7 +171,7 @@ Did you mean "notes.txt"?
 | `common/failed`（`path`、`error`） | 读的时候出错 | `读不了：{error}` | `can't read it: {error}` |
 | `common/bad-args`（`error`） | 参数不对 | `参数不对：{error}` | `bad arguments: {error}` |
 
-`miyu ask` 怎么印这一行：`cli/ask.md`「每一步那一行」。
+`gqy ask` 怎么印这一行：`cli/ask.md`「每一步那一行」。
 
 ### 三个平台
 
@@ -185,13 +185,13 @@ Did you mean "notes.txt"?
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/read.rs` | 从资源目录造、参数格式一字不差、报的路径；资源坏了说是哪一份；行号和翻页；`path`、`filePath`；`~`、空的、二进制；列目录、翻页、过了结尾；没有的、参数不对、FIFO；相近的名字；一次最多 2000 行；`file.read` 的范围和整份的哈希，二进制的也报、没有范围，目录、没有的不报；读过的二进制 `write` 盖得了 |
-| `crates/miyu-basesystem/tests/read_image.rs` | 四种格式交回图片、不另写字、扩展名不算数；说法和宽高；太大的（正好 5 MiB 的照读）、太宽太高的（正好 8000 的照读）拦下、照样报读过、整份的哈希；量不出的当二进制；`offset`、`limit` 不管；说明写着图片（施工 4-13） |
-| `crates/miyu-basesystem/src/read/image/tests.rs` | 开头的字节认格式，差一点的不算；大小写成 MiB 一位小数 |
-| `crates/miyu-basesystem/src/read/lines/tests.rs` | 行号加制表符、CRLF、过了结尾、结尾的换行；空的、二进制、BOM；UTF-16 两种字节序；截长行；64 KiB；整份的哈希 |
-| `crates/miyu-basesystem/src/common/tests.rs` | Windows 的前缀怎么去；相近的名字怎么算 |
-| `crates/miyu-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
-| `crates/miyu-session/tests/read.rs` | 会话里真的调它：读得到、带行号、下一次请求里有；边界以外的也读得到（施工 5-4 上）；数据根里的被拒 |
+| `crates/gqy-basesystem/tests/read.rs` | 从资源目录造、参数格式一字不差、报的路径；资源坏了说是哪一份；行号和翻页；`path`、`filePath`；`~`、空的、二进制；列目录、翻页、过了结尾；没有的、参数不对、FIFO；相近的名字；一次最多 2000 行；`file.read` 的范围和整份的哈希，二进制的也报、没有范围，目录、没有的不报；读过的二进制 `write` 盖得了 |
+| `crates/gqy-basesystem/tests/read_image.rs` | 四种格式交回图片、不另写字、扩展名不算数；说法和宽高；太大的（正好 5 MiB 的照读）、太宽太高的（正好 8000 的照读）拦下、照样报读过、整份的哈希；量不出的当二进制；`offset`、`limit` 不管；说明写着图片（施工 4-13） |
+| `crates/gqy-basesystem/src/read/image/tests.rs` | 开头的字节认格式，差一点的不算；大小写成 MiB 一位小数 |
+| `crates/gqy-basesystem/src/read/lines/tests.rs` | 行号加制表符、CRLF、过了结尾、结尾的换行；空的、二进制、BOM；UTF-16 两种字节序；截长行；64 KiB；整份的哈希 |
+| `crates/gqy-basesystem/src/common/tests.rs` | Windows 的前缀怎么去；相近的名字怎么算 |
+| `crates/gqy-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
+| `crates/gqy-session/tests/read.rs` | 会话里真的调它：读得到、带行号、下一次请求里有；边界以外的也读得到（施工 5-4 上）；数据根里的被拒 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

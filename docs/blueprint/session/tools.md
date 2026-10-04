@@ -8,28 +8,28 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-session/src/tools.rs` | 执行工具的端口：找、派、量用时、叫停、收回报；改回文件交给阻塞线程 |
-| `crates/miyu-session/src/sandbox.rs` | 照这一刻实际生效的级别给一次调用写沙盒的规格（施工 5-4 上） |
-| `crates/miyu-session/src/agents.rs` | 派子代理：一个会话一份要照抄的，每一次调用一个端口（施工 7-5）；子会话用哪个模型（`Inherit`，施工 8-8）；造会话时定的工具面（施工 7-7 从 `open.rs` 挪来），`subagent` 的 `pool` 那一格照那时的配置拼、列着的池照快照读回（施工 8-8 补） |
-| `crates/miyu-session/src/messages.rs` | 父子之间留言：每一次调用照内核交的派出去的子代理造一个端口（施工 7-7） |
-| `crates/miyu-session/src/peers.rs` | 「空了告诉我」等的这一边：照内核在等的去订、计时（施工 C-6，「1c2. 订、计时、再订」） |
-| `crates/miyu-session/src/sessions.rs` | 列会话：本机的主会话每一次调用造一个端口，经会话表要这个会话的属主的主会话（施工 C-3） |
-| `crates/miyu-session/src/usage.rs` | 查用量（施工 8-15）：派 `session_usage` 那一刻 actor 向内核要上下文（`asked`），交给端口；端口先补这个会话、再只查它（`Ledger`，`tools/session_usage.md`） |
-| `crates/miyu-session/src/job_ids.rs` | 领任务编号（施工 7-5） |
-| `crates/miyu-session/src/spawn.rs` | 造子会话、给别的会话发命令的端口 `SessionPort`，会话表交进来（施工 7-5） |
-| `crates/miyu-session/src/effects.rs` | 效果存成 blob；她看过的：记下、从日志重建 |
-| `crates/miyu-session/src/restore.rs` | 改回文件：一步步先核对再动手 |
-| `crates/miyu-session/src/jobs.rs` | 执行器的任务表 `Jobs`（核心里一张）、一个会话 actor 的那一份 `SessionJobs`：报 `restarted`、停下时整组杀（施工 7-3） |
-| `crates/miyu-session/src/jobs/run.rs` | 交给一次调用的任务端口：领编号、建输出文件、登记，读输出的线程、等它结束的线程 |
-| `crates/miyu-session/src/jobs/output.rs` | 一条后台命令的输出文件：边跑边写，结束了存成 blob、数字 |
-| `crates/miyu-session/src/jobs/roster.rs` | 这个会话派出去的任务，照日志记着：`jobs` 列出、读、停时查（施工 7-4） |
-| `crates/miyu-session/src/jobs/query.rs`、`stop.rs` | 任务端口的列出、读、停；停后台命令、停子代理（施工 7-4）；头读后台命令的输出（`command_output`，施工 7-4 补） |
-| `crates/miyu-session/src/jobs/peek.rs` | 照子会话的日志算它在做什么（施工 7-4） |
-| `crates/miyu-session/src/actor/halt.rs` | 人停一个、父会话停下时全停（施工 7-4）；撤销停掉那几轮派出去的（`undo_jobs`）、人删了的子代理当场记回报（`Halt::Deleted`）（施工 7-8） |
-| `crates/miyu-session/src/job_ids.rs` | 任务编号的分配器 `JobIds`：一个会话 actor 一份，照日志往后数（施工 7-3、7-5 共用），子会话的带上它在父会话里的编号（施工 7-1 补） |
-| `crates/miyu-store` 的 `jobs` | 输出文件放在哪：会话目录下的 `jobs/<编号>.out`（`store.md`） |
-| `crates/miyu-session/src/blocking.rs` | 在阻塞线程里做完 |
-| `crates/miyu-fs` 的 `replace`、`trash` | 写回、进出回收站，和写的工具用的是同一份（`fs.md`） |
+| `crates/gqy-session/src/tools.rs` | 执行工具的端口：找、派、量用时、叫停、收回报；改回文件交给阻塞线程 |
+| `crates/gqy-session/src/sandbox.rs` | 照这一刻实际生效的级别给一次调用写沙盒的规格（施工 5-4 上） |
+| `crates/gqy-session/src/agents.rs` | 派子代理：一个会话一份要照抄的，每一次调用一个端口（施工 7-5）；子会话用哪个模型（`Inherit`，施工 8-8）；造会话时定的工具面（施工 7-7 从 `open.rs` 挪来），`subagent` 的 `pool` 那一格照那时的配置拼、列着的池照快照读回（施工 8-8 补） |
+| `crates/gqy-session/src/messages.rs` | 父子之间留言：每一次调用照内核交的派出去的子代理造一个端口（施工 7-7） |
+| `crates/gqy-session/src/peers.rs` | 「空了告诉我」等的这一边：照内核在等的去订、计时（施工 C-6，「1c2. 订、计时、再订」） |
+| `crates/gqy-session/src/sessions.rs` | 列会话：本机的主会话每一次调用造一个端口，经会话表要这个会话的属主的主会话（施工 C-3） |
+| `crates/gqy-session/src/usage.rs` | 查用量（施工 8-15）：派 `session_usage` 那一刻 actor 向内核要上下文（`asked`），交给端口；端口先补这个会话、再只查它（`Ledger`，`tools/session_usage.md`） |
+| `crates/gqy-session/src/job_ids.rs` | 领任务编号（施工 7-5） |
+| `crates/gqy-session/src/spawn.rs` | 造子会话、给别的会话发命令的端口 `SessionPort`，会话表交进来（施工 7-5） |
+| `crates/gqy-session/src/effects.rs` | 效果存成 blob；她看过的：记下、从日志重建 |
+| `crates/gqy-session/src/restore.rs` | 改回文件：一步步先核对再动手 |
+| `crates/gqy-session/src/jobs.rs` | 执行器的任务表 `Jobs`（核心里一张）、一个会话 actor 的那一份 `SessionJobs`：报 `restarted`、停下时整组杀（施工 7-3） |
+| `crates/gqy-session/src/jobs/run.rs` | 交给一次调用的任务端口：领编号、建输出文件、登记，读输出的线程、等它结束的线程 |
+| `crates/gqy-session/src/jobs/output.rs` | 一条后台命令的输出文件：边跑边写，结束了存成 blob、数字 |
+| `crates/gqy-session/src/jobs/roster.rs` | 这个会话派出去的任务，照日志记着：`jobs` 列出、读、停时查（施工 7-4） |
+| `crates/gqy-session/src/jobs/query.rs`、`stop.rs` | 任务端口的列出、读、停；停后台命令、停子代理（施工 7-4）；头读后台命令的输出（`command_output`，施工 7-4 补） |
+| `crates/gqy-session/src/jobs/peek.rs` | 照子会话的日志算它在做什么（施工 7-4） |
+| `crates/gqy-session/src/actor/halt.rs` | 人停一个、父会话停下时全停（施工 7-4）；撤销停掉那几轮派出去的（`undo_jobs`）、人删了的子代理当场记回报（`Halt::Deleted`）（施工 7-8） |
+| `crates/gqy-session/src/job_ids.rs` | 任务编号的分配器 `JobIds`：一个会话 actor 一份，照日志往后数（施工 7-3、7-5 共用），子会话的带上它在父会话里的编号（施工 7-1 补） |
+| `crates/gqy-store` 的 `jobs` | 输出文件放在哪：会话目录下的 `jobs/<编号>.out`（`store.md`） |
+| `crates/gqy-session/src/blocking.rs` | 在阻塞线程里做完 |
+| `crates/gqy-fs` 的 `replace`、`trash` | 写回、进出回收站，和写的工具用的是同一份（`fs.md`） |
 | `resources/core/tool-results/unavailable.txt`、`crashed.txt` | 替工具写给她的两句 |
 
 ### 对外的样子
@@ -43,7 +43,7 @@
 | 改回了 | 一步一项的结局 |
 | 后台命令结束了（施工 7-3） | `job.reported` 的 `by`、`cause`、`body`，交进内核是输入 `JobEnded`，时刻是到 actor 的那一刻 |
 
-交给工具的一次调用（`Call`，`tools/interface.md`）：修正过的参数、这一轮的工作目录、系统的家目录、Miyu 的数据根、她看过的文件、要关进的沙盒（施工 5-4 上）、派子代理的端口（施工 7-5）、留言的端口（施工 7-7）、任务端口（施工 7-3）、列会话的端口（施工 C-3，本机的主会话才有）。
+交给工具的一次调用（`Call`，`tools/interface.md`）：修正过的参数、这一轮的工作目录、系统的家目录、GQY 的数据根、她看过的文件、要关进的沙盒（施工 5-4 上）、派子代理的端口（施工 7-5）、留言的端口（施工 7-7）、任务端口（施工 7-3）、列会话的端口（施工 C-3，本机的主会话才有）。
 
 ### 怎么走
 
@@ -70,7 +70,7 @@ The tool "{name}" is not available right now.
 The tool "{name}" stopped because of an internal error. It may have been partly done.
 ```
 
-**1a. 一次调用带的沙盒**（`crates/miyu-session/src/sandbox.rs`，施工 5-4 上；`sandbox.md`、`11-权限与沙盒.md` 第四节）
+**1a. 一次调用带的沙盒**（`crates/gqy-session/src/sandbox.rs`，施工 5-4 上；`sandbox.md`、`11-权限与沙盒.md` 第四节）
 
 1. 这台机器上的沙盒用不了（核心起来时没探到手段，`core.md`）：不带。执行命令在这之前已经问过人了（`session/guard.md`）。
 2. 实际生效的那一级（和权限策略同一个算法：只读开关开着是只读；级别不认识的按只读）：
@@ -78,7 +78,7 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
    - 工作区：能写这一轮的工作目录、加进来的目录（施工 5-10 上）、临时目录；藏数据根。
    - 只读：哪儿都不能写（`/dev/null` 助手总放）；藏数据根。
 3. 工作目录、加进来的目录照权限策略的办法换成真实的位置（`~` 接家目录）；换不成的照原样。数据根、临时目录也换成真实的位置。
-4. 数据根落在临时目录里（测试、`MIYU_HOME` 指到那里）：藏起来的落在能写的里面，Linux 上挖不了洞，助手会拒绝。这时不放整个临时目录，改放沙盒自己的一个：数据根旁边的 `<数据根>-sandbox-tmp`，环境变量 `TMPDIR` 指过去（`Sandboxed.env`）。
+4. 数据根落在临时目录里（测试、`GQY_HOME` 指到那里）：藏起来的落在能写的里面，Linux 上挖不了洞，助手会拒绝。这时不放整个临时目录，改放沙盒自己的一个：数据根旁边的 `<数据根>-sandbox-tmp`，环境变量 `TMPDIR` 指过去（`Sandboxed.env`）。
    - 放在数据根旁边，不放在临时目录下面：测试的场地删掉时一起删，也不和别的用户在共用的临时目录里抢名字。
    - 没有就建，只给本人（0700）。已经有的，要是目录、不是链接、和数据根同一个属主、组和别人一点权限都没有；Windows 上只看是不是目录（临时目录在本人的用户目录里）。
 5. 工具链的缓存用沙盒自己的一份（施工 5-4 下，`11-权限与沙盒.md` 第四节）：只在工作区这一级。造会话、载入时交进来了沙盒的缓存（`<缓存目录>/sandbox/<属主>`，`core.md`）的，多放它能写，没有就建（只给本人，和第 4 条一样查），再照白名单之后设五个环境变量（`Sandboxed.env`，同名的盖掉）：
@@ -96,7 +96,7 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
 6. 在阻塞线程里算，在跑这次调用的任务里：换真实的位置、建目录、建链接都碰磁盘。
 7. 写不成（沙盒自己的临时目录、缓存建不成，或者有了却不是只给本人的）：不跑，不会不经沙盒就跑。记一行 `ERROR` `sandbox not set up`（`call`、`error`），再照工具崩了交回（第 1 条第 7 步）。
 
-**1b. 派子代理**（`crates/miyu-session/src/agents.rs`，施工 7-5；`agents.md` 第一条）
+**1b. 派子代理**（`crates/gqy-session/src/agents.rs`，施工 7-5；`agents.md` 第一条）
 
 1. 任务编号：一个会话一份（`JobIds`），造会话、载入以后照内核的 `last_job_number()`（日志里用过的编号最后一段最大的数，撤掉的、不认识的种类也算，没有是 0）往下数。几次调用一起跑的，各领各的，不重不漏。领了没派成的不回收；载入以后照日志里记下的数，没记下的那几个号没人用过，照样可以再发。
    - 子会话领的号前面带上它自己在父会话里的编号（施工 7-1 补，`agents.md`「对外的样子」）：造会话时照 `Create` 的命令编号、载入时照 `session.created` 的 `cause`，读 `<父会话>/<编号>`（`agents::job_in`，和向上回报读的是同一个）。`j2` 这个子会话领的是 `j2.1`、`j2.2`；主会话、读不出编号的子会话没有前缀，领的是 `j1`、`j2`。以前的日志里子会话派的 `j1` 照样占着 1：接着领的是 `j2.2`。
@@ -109,7 +109,7 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
    4. 记一行 `INFO` `subagent started`（`job`、`child`），交回编号和子会话的编号。
 5. 标题、交代的字一个都不进运行日志。
 
-**1c. 发话**（`crates/miyu-session/src/messages.rs`，施工 7-7、C-5；`agents.md` 第六条、`cross-session.md` 第三条，`tools/send_message.md`）
+**1c. 发话**（`crates/gqy-session/src/messages.rs`，施工 7-7、C-5；`agents.md` 第六条、`cross-session.md` 第三条，`tools/send_message.md`）
 
 1. 每一次调用（第 1 条第 3 步），actor 照内核这一刻交的这个会话派出去的子代理（`Session::subagents`：编号、子会话、被停掉了没有，派它的那一轮撤掉了的不在）和这次调用的编号，从 `Agents` 造一个发话的端口交给工具。会话表没交端口的，`messages` 是空的。`to` 当会话编号认（父子之外的别的会话）由工具自己照列会话的端口（1d）做，执行器这一头拿到的已经是认出来的整个编号。
 2. 工具调它 `send(to, message)`：
@@ -120,26 +120,26 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
    5. 回应是拒绝、原因是限速、一模一样、对方没看的太多（只在发给别的会话时才会碰到，`cross-session.md` 第五条）：译成对应的拒绝，记一行 `WARN` `message not delivered`（`refused: <原因码>`）。回应是别的拒绝、会话停了、核心正在停：记一行 `WARN` `message not delivered`（`to`、`error`），交回送不到。
 3. 留言的字一个都不进运行日志。她认错了的（没有父、不是她派的、被停掉了、找不到会话、撞了、是她自己、这个会话不能发话）不记：结果里说了，这几种在工具那一层就拦下了，端口不会被问到。
 4. 抄来的是派这次调用那一刻的：那以后才派的她还不知道编号；送出去之前刚被停掉的，送过去它照样收，父会话不再认它的回报（`agents.md` 第六条第 6 条）。
-5. `held` 怎么算（施工 C-5）：会话表这一头（`miyu-endpoint/src/spawn.rs`）拿到会话编号，经会话表查这个会话这时的 `Handle`（刚经 `command` 载入过，一定在表里）；`Handle::oneshot()` 是不是 `miyu ask` 开的一次性会话（造会话时定，不变）；`Handle::watched()` 这时有没有至少一个头订阅着，和 `busy()` 一样由 actor 的 `watchers` 数算出来、共用一面旗（`session/actor.md` 第 3 条）。两个都是才算 `held`；核心正在停、这个会话不在表里的，当不是。
+5. `held` 怎么算（施工 C-5）：会话表这一头（`gqy-endpoint/src/spawn.rs`）拿到会话编号，经会话表查这个会话这时的 `Handle`（刚经 `command` 载入过，一定在表里）；`Handle::oneshot()` 是不是 `gqy ask` 开的一次性会话（造会话时定，不变）；`Handle::watched()` 这时有没有至少一个头订阅着，和 `busy()` 一样由 actor 的 `watchers` 数算出来、共用一面旗（`session/actor.md` 第 3 条）。两个都是才算 `held`；核心正在停、这个会话不在表里的，当不是。
 
-**1c2. 订、计时、再订**（`crates/miyu-session/src/peers.rs`，施工 C-6；`cross-session.md` 第六条第 3、8、9 款）
+**1c2. 订、计时、再订**（`crates/gqy-session/src/peers.rs`，施工 C-6；`cross-session.md` 第六条第 3、8、9 款）
 
 1. 工具只报效果 `peer.watch`，执行器把它照原样换成内核的（`effects.rs`）。订是执行器的事：每送完一批（这一批追加的都落了盘了，`session/actor.md` 第 3 条第 7 点），照内核的 `watching()` 和这里订过的比。
 2. 新多出来的（没订过的、起算时刻变了的：又订了一次、撤掉又订回到前一次），经会话表的 `SessionPort::watch(被等的会话, 这个会话, 起算时刻)` 起一个任务去订，同时起一个计时：起算时刻加 `watch_hours()` 小时到点，交回「到点了」，内核照账本判（`kernel/session.md`「空了的通知」第 3 条）。已经到点的不订，计时当场到。
 3. 不在等了的（收到了通知、订它的那一轮撤掉了、作废了），撤掉它的计时；那边的名单不管，发来的通知内核拒。
 4. 订不上：会话表说那个会话不在了（找不到，`NotWatched::Gone`），交回「不在了」，内核记 `gone`；别的（它停了、核心正在停）记一行 `WARN watch not placed`，写短编号和原因，计时照走，到点作废。不重订：下次这边载入还会再订。
 5. 载入、恢复撤销以后，账本里在等的都算新多出来的，走的是同一条路；actor 停了，计时一起撤掉。
-6. 会话表那一头（`crates/miyu-endpoint/src/spawn.rs` 的 `watch`）：照会话表找被等的会话（没在跑的先载入），把「谁在等」交给它的 actor（`Handle::watch`，`session/actor.md`「被等的名单」）；找不到的是不在了，载入不了、它停了、核心正在停的交回原因，停了的从表里拿掉。
+6. 会话表那一头（`crates/gqy-endpoint/src/spawn.rs` 的 `watch`）：照会话表找被等的会话（没在跑的先载入），把「谁在等」交给它的 actor（`Handle::watch`，`session/actor.md`「被等的名单」）；找不到的是不在了，载入不了、它停了、核心正在停的交回原因，停了的从表里拿掉。
 
-**1d. 列会话**（`crates/miyu-session/src/sessions.rs`，施工 C-3；`cross-session.md` 第一条，`tools/sessions.md`）
+**1d. 列会话**（`crates/gqy-session/src/sessions.rs`，施工 C-3；`cross-session.md` 第一条，`tools/sessions.md`）
 
 1. 每一次调用（第 1 条第 3 步），这个会话有 `Agents`（会话表交了端口）、又是本机的主会话（场所 `local`、没有父会话，`Agents::lists_sessions`，和工具面同一个判断）的，造一个列会话的端口交给工具；别的 `sessions` 是空的。
 2. 工具调它 `list(旗)`：经会话表的端口 `sessions(属主, 旗)` 要这个会话的属主的主会话（会话表交回的含这个会话自己），拿掉这个会话自己交回，不排先后。列不出来：记一行 `WARN` `sessions not listed`（`error`），把原因交回工具。
 3. `this()` 是这个会话的编号。
 
-**会话表那一头**（`crates/miyu-endpoint/src/spawn.rs`、`sessions.rs`）：造会话、载入时交给会话一份端口，拿着核心的弱引用（会话由会话表拿着，再强拿着核心就成了环）；核心没了的说 `the core is shutting down`。造子会话照交来的填：`by` 是父会话，`oneshot` 是假的，时区是核心所在机器这一刻的，模型、工具目录、家目录、沙盒照核心的，沙盒的缓存照属主；造好了放进会话表，工作目录记成交来的那一个（父会话这一轮实际干活的，已经定过宽不宽）。发命令照会话表找会话（没在跑的先载入），停了的从表里拿掉。停下子会话（施工 7-4）：照会话表找它（没在跑的先载入），先发打断（排着的退回；没有在跑的回合被拒不要紧），再 `stop_jobs`；停了的从表里拿掉，交回出错。看子会话（施工 7-4）：在阻塞线程里只读地读它的日志（属主是管理员），照 `peek.rs` 算，不载入它。列主会话（施工 C-3）：先拿着表的锁记下这时忙着的（`Sessions::busy_ids`），再在阻塞线程里照 `session.list` 的 `scan` 读属主的会话，只要 `session.created` 不带 `parent` 的（`protocol.md`「`session.list`」）；放会话的目录读不了交回 `sessions not listed: <原因>`。认一个会话这时是不是没人看着的一次性会话（施工 C-5，`SessionPort::held`）：对方刚经 `command` 载入过，再经会话表查一次它的 `Handle`，`oneshot() && !watched()`；核心正在停、这个会话不在表里的，当不是。订「空了告诉我」（施工 C-6，`SessionPort::watch`）：见「1c2. 订、计时、再订」第 6 条。
+**会话表那一头**（`crates/gqy-endpoint/src/spawn.rs`、`sessions.rs`）：造会话、载入时交给会话一份端口，拿着核心的弱引用（会话由会话表拿着，再强拿着核心就成了环）；核心没了的说 `the core is shutting down`。造子会话照交来的填：`by` 是父会话，`oneshot` 是假的，时区是核心所在机器这一刻的，模型、工具目录、家目录、沙盒照核心的，沙盒的缓存照属主；造好了放进会话表，工作目录记成交来的那一个（父会话这一轮实际干活的，已经定过宽不宽）。发命令照会话表找会话（没在跑的先载入），停了的从表里拿掉。停下子会话（施工 7-4）：照会话表找它（没在跑的先载入），先发打断（排着的退回；没有在跑的回合被拒不要紧），再 `stop_jobs`；停了的从表里拿掉，交回出错。看子会话（施工 7-4）：在阻塞线程里只读地读它的日志（属主是管理员），照 `peek.rs` 算，不载入它。列主会话（施工 C-3）：先拿着表的锁记下这时忙着的（`Sessions::busy_ids`），再在阻塞线程里照 `session.list` 的 `scan` 读属主的会话，只要 `session.created` 不带 `parent` 的（`protocol.md`「`session.list`」）；放会话的目录读不了交回 `sessions not listed: <原因>`。认一个会话这时是不是没人看着的一次性会话（施工 C-5，`SessionPort::held`）：对方刚经 `command` 载入过，再经会话表查一次它的 `Handle`，`oneshot() && !watched()`；核心正在停、这个会话不在表里的，当不是。订「空了告诉我」（施工 C-6，`SessionPort::watch`）：见「1c2. 订、计时、再订」第 6 条。
 
-**工具面**（`crates/miyu-session/src/agents.rs` 的 `Agents::face`，造会话时 `open.rs` 叫它）：造会话时，只有本机（场所 `local`）、还没到深度上限（`jobs.depth`，第几层小于它）的会话，工具面里有 `subagent`（以前叫 `agent`，施工 7-5 再补改名：以前造的会话照快照发 `agent`，`tools/subagent.md`「以前的名字」）；本机的会话都有 `send_message`，到了深度上限的也有，只能发给父（施工 7-7）；场所会话（群）两件都拿掉：派不了子代理，也没有父。只有本机的主会话有 `sessions`（施工 C-3，`cross-session.md` 第九条）：子会话的事经它的父会话，群里的人不可信。本机的会话（主会话、子会话）都有 `session_usage`，群里的没有（施工 8-15，`tools/session_usage.md`）：花了多少钱是属主的事。别的工具照给。`subagent` 的 `pool` 那一格照造会话时的配置拼（施工 8-8 补，`tools/subagent.md`「会话开局时拼 `pool`」）：开着开关、有认得出的成员的池照名字排进 `enum`，一个都没有的拿掉 `pool`；配置照 `create` 取的那一份（`Turning::start`），子会话造的时候照它那时的配置拼它自己的。子会话（带着父会话）的 system 在人设后面接上场所说明（`policy.md`「拼」）。
+**工具面**（`crates/gqy-session/src/agents.rs` 的 `Agents::face`，造会话时 `open.rs` 叫它）：造会话时，只有本机（场所 `local`）、还没到深度上限（`jobs.depth`，第几层小于它）的会话，工具面里有 `subagent`（以前叫 `agent`，施工 7-5 再补改名：以前造的会话照快照发 `agent`，`tools/subagent.md`「以前的名字」）；本机的会话都有 `send_message`，到了深度上限的也有，只能发给父（施工 7-7）；场所会话（群）两件都拿掉：派不了子代理，也没有父。只有本机的主会话有 `sessions`（施工 C-3，`cross-session.md` 第九条）：子会话的事经它的父会话，群里的人不可信。本机的会话（主会话、子会话）都有 `session_usage`，群里的没有（施工 8-15，`tools/session_usage.md`）：花了多少钱是属主的事。别的工具照给。`subagent` 的 `pool` 那一格照造会话时的配置拼（施工 8-8 补，`tools/subagent.md`「会话开局时拼 `pool`」）：开着开关、有认得出的成员的池照名字排进 `enum`，一个都没有的拿掉 `pool`；配置照 `create` 取的那一份（`Turning::start`），子会话造的时候照它那时的配置拼它自己的。子会话（带着父会话）的 system 在人设后面接上场所说明（`policy.md`「拼」）。
 
 **2. 效果存成 blob**（跑完、交进内核之前，在阻塞线程里）
 
@@ -249,31 +249,31 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-session/tests/tools.rs` | 请求里的工具照名字排，载入以后照快照发；没有工具的不发；调用在这一轮的工作目录里跑、结果落盘、她接着说；出错的工具给出错的结果；执行中的输出推送、不落盘；两件只读的同时跑；打断掐掉在跑的；目录里没有的说现在用不了；panic 的给出错的结果、会话照常；停下会话、没人拿着了，在跑的都掐掉；工具交回的图片成了图片块、接在字后面、blob 存下了、下一次请求带着它（施工 4-13） |
-| `crates/miyu-session/tests/tool_log.rs` | 开始跑、跑完、出错、叫停、崩了、目录里没有各一行；停在改之前的带 `stopped=true`；叫它停过又掐掉的多一行 `WARN`；参数、工具交回的字不进日志 |
-| `crates/miyu-session/tests/stop.rs` | 打断时在跑的写：叫它停只举旗、不掐，停在改之前的记「已取消」；叫它停的时候已经改完的照记；不停的，又打断一次就掐掉 |
-| `crates/miyu-session/src/effects/tests.rs` | 改前改后存成 blob、别的照原样过去；存不成的照样有哈希；读过的记整份的哈希、写过的记改后的、删了的拿掉、后来的盖前面的；从日志重建的和一路记下的一样 |
-| `crates/miyu-session/src/pictures/tests.rs` | 交回的图片存成 blob，块里是哈希、媒体类型、宽高，照先后；存不下来的交回空的（施工 4-13） |
-| `crates/miyu-session/tests/write.rs` | 先读后写，日志里两次结果的效果对得上、blob 里存着改前改后；重新载入以后读过的照样算；改完一次接着改不用重读；删了的不再算看过；执行的命令（完全放开）记进日志、退出码在说法里 |
-| `crates/miyu-session/tests/read.rs`、`search.rs` | 真的 `read`、`glob`、`grep` 在会话里跑：工作区里的读得到、搜得到；边界以外的也读得到、搜得到，没人能确认也不用问（施工 5-4 上）；数据根里的读被拒；从上面往下搜不进数据根 |
-| `crates/miyu-session/tests/sandbox.rs` | 执行器写的沙盒（施工 5-4 上）：工具链的缓存只在工作区这一级放、设五个变量、建出来只给本人、cargo 配置的链接（有的建、指错了的换、没有的不建）、没交进来缓存的不设（施工 5-4 下）；工作区能写工作目录、临时目录，藏数据根；只读（连同不认识的级别）哪儿都不能写；完全放开不带；数据根在临时目录里的用 `<数据根>-sandbox-tmp`、`TMPDIR` 指过去，建出来是 0700，有了照用；别人进得去的不用，这次调用不跑、照崩了交回；Unix 上有收紧手段的，真的经助手跑 `shell`：工作区里写得进，外面写不进、读得到，数据根读不到，只读时写不进；加进来的目录在工作区这一级能写、排在工作目录后面、`~` 接家目录，只读的哪儿都写不了（施工 5-10 上） |
-| `crates/miyu-session/tests/sandbox_log.rs` | 沙盒写不成：记一行 `ERROR sandbox not set up`，带原因，再照崩了记一行，没跑（施工 5-4 上） |
-| `crates/miyu-session/tests/spawn.rs` | 派子代理（施工 7-5）：交给会话表的子会话抄对了父会话的每一样（属主、场所、权限连同只读、能不能确认、工作目录、加进来的目录、第几层、命令编号、人格），交代原样、`by` 是父会话；一步里调两次派两个、各领各的编号；造不成的不送交代、编号不回收，载入以后接着数、照日志和快照抄；子会话派的带上它在父会话里的编号，载入以后照 `cause` 读回（施工 7-1 补）；没有会话表的派不了；主会话和第 1 层有 `subagent`、没有 `agent`，第 2 层、群里没有、调了照没有的工具拒掉，子会话的 system 接上场所说明；`spawn/renamed.rs`：新会话调 `agent` 照没有的工具拒掉，改名以前造的会话换现在的核心载入以后工具面一个字节不变、调 `agent` 照样派得出去（施工 7-5 再补） |
-| `crates/miyu-session/tests/spawn/pool.rs` | 子会话用哪个模型（施工 8-8 补，取代 8-8 的 `tier.rs`）：写了 `pool` 的记 `@池`，没写的、写 `tier` 的抄父会话钉着的引用；工具面照造会话时的配置拼，配置改了这个会话（连同载入以后）一字不变、新会话变，老会话里写新会话才列的池照参数不对 |
-| `crates/miyu-session/tests/spawn_log.rs` | 派出去、造不成、交代被拒各一行，标题、交代的字不进日志（施工 7-5） |
-| `crates/miyu-session/src/job_ids.rs` | 编号接着用过的往下数；几个线程一起领，不重不漏（施工 7-5）；带前缀的、孙会话的三段、旧日志里的 `j1` 占着 1（施工 7-1 补） |
-| `crates/miyu-session/tests/restore.rs` | 改过的写回去、恢复时再改回来；之后被人改过的不动、记下现在的哈希；撤掉的那一轮里读过的不算、恢复以后又算；已经回到原样的算改回了；改前没存下来的记 `unsaved` |
-| `crates/miyu-session/src/jobs/tests.rs`（施工 7-3） | 假的后台命令：编号照日志往后数；输出一段段写进 `jobs/<编号>.out`；自己退出了存成 blob、字数按字数、`by` 是那次调用、`cause` 是那一轮的；落了盘才从表里拿掉；被信号杀掉的写信号；停下时只报还在跑的（`restarted`、`by` 是内核、到这时的输出、落盘之前不杀），报过的自己结束了不再报，杀的只是还在跑的，停了以后不收新的、收不下的整组杀掉；actor 停了只杀它的、别的会话的不动；输出文件建不起来的不收 |
-| `crates/miyu-session/src/job_ids.rs` | 从用过的往后数；并行领的不重 |
-| `crates/miyu-session/tests/jobs.rs`（施工 7-3） | 真的 `shell` 放到后台：这一轮结束了命令还在跑，结束了记 `job.reported`（退出码、`by`、`cause`、不带回合编号、输出的 blob、字数、`jobs/j1.out`），闲着的她被它叫醒；撤掉、重新载入以后编号接着往后数；孙会话的后台命令三段、输出在 `jobs/j2.1.1.out`，旧日志里子会话的 `j1` 照认、`jobs` 照它列出来、接着领 `j2.2`（施工 7-1 补）；有计划地停下先记 `restarted`、落了盘再杀；没记就停了的再载入补 `aborted`、不开轮；Unix 上有收紧手段的，后台命令照样关在沙盒里 |
-| `crates/miyu-session/tests/messages.rs`、`messages_log.rs`（施工 7-7） | 留言：送到 `j1` 的子会话、`by` 是这个会话、命令编号照这次调用、原话一块字、`job.messaged` 记进日志；到了深度上限的发给父；主会话写 `parent`、没派过的、派它的那一轮撤掉了的、被停掉的、对方拒收、没有会话表各一句；本机的主会话、子会话工具面里有 `send_message`，群里没有；送到、送不到各一行运行日志，留言的字不进日志 |
-| `crates/miyu-session/tests/messages_peer.rs`（施工 C-5） | 发给别的会话：命令编号、`by` 照这个会话；没人看着的一次性会话交回 `held`；限速、一模一样、对方没看的太多三种拒绝译成对应的说法 |
-| `crates/miyu-session/tests/sessions.rs`（施工 C-3） | 列会话：照这个会话的属主要、拿掉她自己；没有会话表的照没有别的；载入的主会话照样列；本机主会话的工具面有 `sessions`、子会话和群没有、别的一件不少；子会话调它照没有的工具拒、端口不问 |
-| `crates/miyu-session/tests/jobs_stop.rs`、`jobs_stop/agents.rs`（施工 7-4） | 真的 `jobs` 在会话里：读到这时的输出、说还在跑，停掉（`by` 是那次调用、`cause` 是那一轮的、`by_model`、用时和到这时的输出、整组杀了），列出来是停掉的，不叫醒她；人停的叫醒她、回应之前推过了、`by` 是人、`cause` 是那条命令，再停、没有的交回已经结束了、没有；自己先退出了的停不了、不记第二条；子代理最近的回答和在跑的工具，停掉它（经会话表停、命令编号、回报记成它交来的、正文、`by_model`、不叫醒）；人停子代理叫醒她、停过的不再停；全停连后台命令和子代理、都带 `by_model`、不叫醒；太长的回答照向上回报的截法截（施工 7-4） |
-| `crates/miyu-endpoint/tests/job_output.rs`（施工 7-4 补） | 头经协议读后台命令的输出：跑着的读到这时的、和她用 `jobs` 读的一样；结束了的读 blob，和 `jobs` 读的一字不差；子代理、没有的读不了（`protocol.md`） |
-| `crates/miyu-session/tests/jobs_stop/undo.rs`（施工 7-8） | 撤销停掉那一轮派出去的：后台命令回应之前就整组杀了、记 `undone`、`by` 是撤销的人、`cause` 是撤销的命令、到这时的输出；子代理经会话表停、回报记成它交来的 `undone`；都不叫醒；停了以后自己退出不再报；恢复不重起；自己退出了的不再杀 |
-| `crates/miyu-session/src/jobs/roster/tests.rs`、`peek/tests.rs` | 名册照事件样本记、用时三种算法、最近结束的 5 个；报过以后又被留了言的记回在跑，留言发出以后到的回报算回了、被停掉的不记回（施工 3-8 三补）；子代理最近的回答、这一轮完没完、在跑的工具（施工 7-4） |
-| `crates/miyu-session/tests/restore/linux.rs` | 新建的、改过的、删掉的撤销后都回到原样，恢复后又回到她改完的样子；恢复时位置变了，再撤销照新位置；被人动过的、回收站里没了的、收不了的都不动；恢复时上级目录没了的建上；移回来读不了的照样算移回来了、恢复时照样移进回收站 |
+| `crates/gqy-session/tests/tools.rs` | 请求里的工具照名字排，载入以后照快照发；没有工具的不发；调用在这一轮的工作目录里跑、结果落盘、她接着说；出错的工具给出错的结果；执行中的输出推送、不落盘；两件只读的同时跑；打断掐掉在跑的；目录里没有的说现在用不了；panic 的给出错的结果、会话照常；停下会话、没人拿着了，在跑的都掐掉；工具交回的图片成了图片块、接在字后面、blob 存下了、下一次请求带着它（施工 4-13） |
+| `crates/gqy-session/tests/tool_log.rs` | 开始跑、跑完、出错、叫停、崩了、目录里没有各一行；停在改之前的带 `stopped=true`；叫它停过又掐掉的多一行 `WARN`；参数、工具交回的字不进日志 |
+| `crates/gqy-session/tests/stop.rs` | 打断时在跑的写：叫它停只举旗、不掐，停在改之前的记「已取消」；叫它停的时候已经改完的照记；不停的，又打断一次就掐掉 |
+| `crates/gqy-session/src/effects/tests.rs` | 改前改后存成 blob、别的照原样过去；存不成的照样有哈希；读过的记整份的哈希、写过的记改后的、删了的拿掉、后来的盖前面的；从日志重建的和一路记下的一样 |
+| `crates/gqy-session/src/pictures/tests.rs` | 交回的图片存成 blob，块里是哈希、媒体类型、宽高，照先后；存不下来的交回空的（施工 4-13） |
+| `crates/gqy-session/tests/write.rs` | 先读后写，日志里两次结果的效果对得上、blob 里存着改前改后；重新载入以后读过的照样算；改完一次接着改不用重读；删了的不再算看过；执行的命令（完全放开）记进日志、退出码在说法里 |
+| `crates/gqy-session/tests/read.rs`、`search.rs` | 真的 `read`、`glob`、`grep` 在会话里跑：工作区里的读得到、搜得到；边界以外的也读得到、搜得到，没人能确认也不用问（施工 5-4 上）；数据根里的读被拒；从上面往下搜不进数据根 |
+| `crates/gqy-session/tests/sandbox.rs` | 执行器写的沙盒（施工 5-4 上）：工具链的缓存只在工作区这一级放、设五个变量、建出来只给本人、cargo 配置的链接（有的建、指错了的换、没有的不建）、没交进来缓存的不设（施工 5-4 下）；工作区能写工作目录、临时目录，藏数据根；只读（连同不认识的级别）哪儿都不能写；完全放开不带；数据根在临时目录里的用 `<数据根>-sandbox-tmp`、`TMPDIR` 指过去，建出来是 0700，有了照用；别人进得去的不用，这次调用不跑、照崩了交回；Unix 上有收紧手段的，真的经助手跑 `shell`：工作区里写得进，外面写不进、读得到，数据根读不到，只读时写不进；加进来的目录在工作区这一级能写、排在工作目录后面、`~` 接家目录，只读的哪儿都写不了（施工 5-10 上） |
+| `crates/gqy-session/tests/sandbox_log.rs` | 沙盒写不成：记一行 `ERROR sandbox not set up`，带原因，再照崩了记一行，没跑（施工 5-4 上） |
+| `crates/gqy-session/tests/spawn.rs` | 派子代理（施工 7-5）：交给会话表的子会话抄对了父会话的每一样（属主、场所、权限连同只读、能不能确认、工作目录、加进来的目录、第几层、命令编号、人格），交代原样、`by` 是父会话；一步里调两次派两个、各领各的编号；造不成的不送交代、编号不回收，载入以后接着数、照日志和快照抄；子会话派的带上它在父会话里的编号，载入以后照 `cause` 读回（施工 7-1 补）；没有会话表的派不了；主会话和第 1 层有 `subagent`、没有 `agent`，第 2 层、群里没有、调了照没有的工具拒掉，子会话的 system 接上场所说明；`spawn/renamed.rs`：新会话调 `agent` 照没有的工具拒掉，改名以前造的会话换现在的核心载入以后工具面一个字节不变、调 `agent` 照样派得出去（施工 7-5 再补） |
+| `crates/gqy-session/tests/spawn/pool.rs` | 子会话用哪个模型（施工 8-8 补，取代 8-8 的 `tier.rs`）：写了 `pool` 的记 `@池`，没写的、写 `tier` 的抄父会话钉着的引用；工具面照造会话时的配置拼，配置改了这个会话（连同载入以后）一字不变、新会话变，老会话里写新会话才列的池照参数不对 |
+| `crates/gqy-session/tests/spawn_log.rs` | 派出去、造不成、交代被拒各一行，标题、交代的字不进日志（施工 7-5） |
+| `crates/gqy-session/src/job_ids.rs` | 编号接着用过的往下数；几个线程一起领，不重不漏（施工 7-5）；带前缀的、孙会话的三段、旧日志里的 `j1` 占着 1（施工 7-1 补） |
+| `crates/gqy-session/tests/restore.rs` | 改过的写回去、恢复时再改回来；之后被人改过的不动、记下现在的哈希；撤掉的那一轮里读过的不算、恢复以后又算；已经回到原样的算改回了；改前没存下来的记 `unsaved` |
+| `crates/gqy-session/src/jobs/tests.rs`（施工 7-3） | 假的后台命令：编号照日志往后数；输出一段段写进 `jobs/<编号>.out`；自己退出了存成 blob、字数按字数、`by` 是那次调用、`cause` 是那一轮的；落了盘才从表里拿掉；被信号杀掉的写信号；停下时只报还在跑的（`restarted`、`by` 是内核、到这时的输出、落盘之前不杀），报过的自己结束了不再报，杀的只是还在跑的，停了以后不收新的、收不下的整组杀掉；actor 停了只杀它的、别的会话的不动；输出文件建不起来的不收 |
+| `crates/gqy-session/src/job_ids.rs` | 从用过的往后数；并行领的不重 |
+| `crates/gqy-session/tests/jobs.rs`（施工 7-3） | 真的 `shell` 放到后台：这一轮结束了命令还在跑，结束了记 `job.reported`（退出码、`by`、`cause`、不带回合编号、输出的 blob、字数、`jobs/j1.out`），闲着的她被它叫醒；撤掉、重新载入以后编号接着往后数；孙会话的后台命令三段、输出在 `jobs/j2.1.1.out`，旧日志里子会话的 `j1` 照认、`jobs` 照它列出来、接着领 `j2.2`（施工 7-1 补）；有计划地停下先记 `restarted`、落了盘再杀；没记就停了的再载入补 `aborted`、不开轮；Unix 上有收紧手段的，后台命令照样关在沙盒里 |
+| `crates/gqy-session/tests/messages.rs`、`messages_log.rs`（施工 7-7） | 留言：送到 `j1` 的子会话、`by` 是这个会话、命令编号照这次调用、原话一块字、`job.messaged` 记进日志；到了深度上限的发给父；主会话写 `parent`、没派过的、派它的那一轮撤掉了的、被停掉的、对方拒收、没有会话表各一句；本机的主会话、子会话工具面里有 `send_message`，群里没有；送到、送不到各一行运行日志，留言的字不进日志 |
+| `crates/gqy-session/tests/messages_peer.rs`（施工 C-5） | 发给别的会话：命令编号、`by` 照这个会话；没人看着的一次性会话交回 `held`；限速、一模一样、对方没看的太多三种拒绝译成对应的说法 |
+| `crates/gqy-session/tests/sessions.rs`（施工 C-3） | 列会话：照这个会话的属主要、拿掉她自己；没有会话表的照没有别的；载入的主会话照样列；本机主会话的工具面有 `sessions`、子会话和群没有、别的一件不少；子会话调它照没有的工具拒、端口不问 |
+| `crates/gqy-session/tests/jobs_stop.rs`、`jobs_stop/agents.rs`（施工 7-4） | 真的 `jobs` 在会话里：读到这时的输出、说还在跑，停掉（`by` 是那次调用、`cause` 是那一轮的、`by_model`、用时和到这时的输出、整组杀了），列出来是停掉的，不叫醒她；人停的叫醒她、回应之前推过了、`by` 是人、`cause` 是那条命令，再停、没有的交回已经结束了、没有；自己先退出了的停不了、不记第二条；子代理最近的回答和在跑的工具，停掉它（经会话表停、命令编号、回报记成它交来的、正文、`by_model`、不叫醒）；人停子代理叫醒她、停过的不再停；全停连后台命令和子代理、都带 `by_model`、不叫醒；太长的回答照向上回报的截法截（施工 7-4） |
+| `crates/gqy-endpoint/tests/job_output.rs`（施工 7-4 补） | 头经协议读后台命令的输出：跑着的读到这时的、和她用 `jobs` 读的一样；结束了的读 blob，和 `jobs` 读的一字不差；子代理、没有的读不了（`protocol.md`） |
+| `crates/gqy-session/tests/jobs_stop/undo.rs`（施工 7-8） | 撤销停掉那一轮派出去的：后台命令回应之前就整组杀了、记 `undone`、`by` 是撤销的人、`cause` 是撤销的命令、到这时的输出；子代理经会话表停、回报记成它交来的 `undone`；都不叫醒；停了以后自己退出不再报；恢复不重起；自己退出了的不再杀 |
+| `crates/gqy-session/src/jobs/roster/tests.rs`、`peek/tests.rs` | 名册照事件样本记、用时三种算法、最近结束的 5 个；报过以后又被留了言的记回在跑，留言发出以后到的回报算回了、被停掉的不记回（施工 3-8 三补）；子代理最近的回答、这一轮完没完、在跑的工具（施工 7-4） |
+| `crates/gqy-session/tests/restore/linux.rs` | 新建的、改过的、删掉的撤销后都回到原样，恢复后又回到她改完的样子；恢复时位置变了，再撤销照新位置；被人动过的、回收站里没了的、收不了的都不动；恢复时上级目录没了的建上；移回来读不了的照样算移回来了、恢复时照样移进回收站 |
 
 ### 出处
 

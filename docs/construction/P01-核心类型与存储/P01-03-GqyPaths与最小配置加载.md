@@ -18,7 +18,7 @@
 
 - 做：
   - `paths`：`GqyPaths` 与 10 §3 布局的**全部**访问器（`config/`、`personas/`、`extensions*/`、`kb/`、`files/`、`data/`、`data/blobs/`、`run/`、`logs/`、`backups/`、`cache/`、`import/` 以及 `gqy.db` 三件套、锁/令牌文件路径）；`GqyPaths::at(root)`（测试与内部使用）与 `from_snapshot(&EnvSnapshot)`。
-  - `resolve`：`EnvSnapshot`（家目录、`GQY2_HOME`、平台）——**解析是纯函数**，测试喂快照就能在任意机器上验证三平台行为（参考 miyu 3-1 的实测做法；不改进程环境变量，避免并行测试互相污染）。规则：`GQY2_HOME` 必须绝对，相对 → 报错；空 → 当未设；家目录找不到 → 报错不猜；Linux/macOS 默认 `$HOME/.gqy2`；Windows 默认 `%LOCALAPPDATA%\gqy2`（仅保证编译与单测）。
+  - `resolve`：`EnvSnapshot`（家目录、`GQY2_HOME`、平台）——**解析是纯函数**，测试喂快照就能在任意机器上验证三平台行为（参考 gqy 3-1 的实测做法；不改进程环境变量，避免并行测试互相污染）。规则：`GQY2_HOME` 必须绝对，相对 → 报错；空 → 当未设；家目录找不到 → 报错不猜；Linux/macOS 默认 `$HOME/.gqy2`；Windows 默认 `%LOCALAPPDATA%\gqy2`（仅保证编译与单测）。
   - `ensure()`：**只认自己的数据根**（10 §3）——根已存在、非空且无 `.gqy2-root` 标记 → `NotOurs` 报错、什么都不建；新建骨架时写 `.gqy2-root`（一行 `This directory is a GQYv2 data root (layout 1).`）并同步目录。创建缺失目录（幂等）、新目录 Unix `0700`、已有目录比 `0700` 宽时收紧并 `warn`（只处理本树内、非符号链接条目）；符号链接指向树外 → `PathEscapes`。`umask(0o077)` 助手（Unix；接线在 P05-05 启动时调用）。
   - `config`：最小 `Config { store: StoreConfig }`（10 §12 全键与默认值；**默认值只出现在 `Default` 实现里**，12 §3.3）；`load(path) -> Result<Config, ConfigError>`：文件缺失 → 全默认；坏 TOML → 带路径的错误；未知键不报错（保留写回在 P11-01，本单只读）。
   - `testkit`（feature `testkit`，dev-dependencies 开启）：`TestHome::new()` = `tempfile::TempDir` + `GqyPaths::at`（10 §3、19 §4.1）。
@@ -83,7 +83,7 @@ impl GqyPaths {
 // gqy-config/src/resolve.rs
 
 /// 解析数据根要看的环境事实，进程里读一次。
-/// 测试喂快照：三平台的默认位置在任何一台机器上都测得到（参考 miyu 3-1）。
+/// 测试喂快照：三平台的默认位置在任何一台机器上都测得到（参考 gqy 3-1）。
 pub struct EnvSnapshot {
     pub home: Option<PathBuf>,
     pub gqy2_home: Option<String>,     // 原样；相对/空在解析里处置

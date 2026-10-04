@@ -5,7 +5,7 @@
       "properties": {
         "level": {
           "default": "info",
-          "description": "运行日志记到哪一级。排查问题时调成 debug。设了环境变量 MIYU_LOG 的，那一次启动照它。能写：error、warn、info、debug、trace 或 off。只能写在系统配置里。当场生效。",
+          "description": "运行日志记到哪一级。排查问题时调成 debug。设了环境变量 GQY_LOG 的，那一次启动照它。能写：error、warn、info、debug、trace 或 off。只能写在系统配置里。当场生效。",
           "enum": [
             "error",
             "warn",
@@ -239,7 +239,7 @@
           },
           "keys": {
             "default": [],
-            "description": "写 { secret = \"名字\" }（用 miyu login 存）或 { env = \"环境变量\" }，一个会话钉在其中一个上。空的不带认证头。能写：{ secret = \"…\" } 或 { env = \"…\" } 的列表。只能写在系统配置或个人设置里。下一轮生效。",
+            "description": "写 { secret = \"名字\" }（用 gqy login 存）或 { env = \"环境变量\" }，一个会话钉在其中一个上。空的不带认证头。能写：{ secret = \"…\" } 或 { env = \"…\" } 的列表。只能写在系统配置或个人设置里。下一轮生效。",
             "items": {
               "oneOf": [
                 {

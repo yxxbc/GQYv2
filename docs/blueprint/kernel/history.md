@@ -14,25 +14,25 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/ledger.rs` | 账本：查规矩、记下变化 |
-| `crates/miyu-kernel/src/ledger/undo.rs` | 账本里撤销、恢复的几条：撤的是哪几轮、能不能恢复 |
-| `crates/miyu-kernel/src/ledger/jobs.rs` | 账本里任务的几条：编号不重复、回报对得上派出去的任务、子会话的 `parent`、`depth`（施工 7-1）；从账本读任务的几样（`last_job_number`、`running_jobs` 这些，施工 C-1 从 `ledger.rs` 挪来） |
-| `crates/miyu-kernel/src/ledger/peers.rs` | 账本里跨会话的几条：在等哪几个会话的通知、订的不是自己、`peer.idle` 只认在等的（施工 C-1，`cross-session.md`）；最近收下的别的会话的话、还没听到的（施工 C-2） |
-| `crates/miyu-kernel/src/history.rs` | 有效历史：收事件、压缩、撤回、排先后、落到检查点上 |
-| `crates/miyu-kernel/src/history/undo.rs` | 撤掉的拿走、放回；跟着撤的话 |
-| `crates/miyu-kernel/src/history/jobs.rs` | 派出去过的任务：标题、种类、派它的那一轮撤掉了没有（施工 7-2）；在哪几轮里派的（施工 7-8） |
-| `crates/miyu-kernel/src/session/jobs.rs` 的 `stop_undone` | 撤销时停哪几个（施工 7-8）：撤掉的那几轮里派的、还在跑的 |
-| `crates/miyu-kernel/src/session/revert.rs` | 撤销、恢复两个命令，改回文件的来回，撤掉压缩时读回日志的来回，取回重读的原文 |
-| `crates/miyu-kernel/src/session/redo.rs` | 重做（施工 4-7 再补）：能不能重做，撤销记下以后重发开那一轮的话、开新的一轮 |
-| `crates/miyu-kernel/src/session/load.rs` | 载入：整份过账本，从还算数的最近一次压缩起重建有效历史（`kernel/session.md`） |
-| `crates/miyu-kernel/src/session/restore.rs` | 改回的几步怎么算 |
-| `crates/miyu-kernel/src/event/restore.rs` | `files.restored` 的每一格 |
+| `crates/gqy-kernel/src/ledger.rs` | 账本：查规矩、记下变化 |
+| `crates/gqy-kernel/src/ledger/undo.rs` | 账本里撤销、恢复的几条：撤的是哪几轮、能不能恢复 |
+| `crates/gqy-kernel/src/ledger/jobs.rs` | 账本里任务的几条：编号不重复、回报对得上派出去的任务、子会话的 `parent`、`depth`（施工 7-1）；从账本读任务的几样（`last_job_number`、`running_jobs` 这些，施工 C-1 从 `ledger.rs` 挪来） |
+| `crates/gqy-kernel/src/ledger/peers.rs` | 账本里跨会话的几条：在等哪几个会话的通知、订的不是自己、`peer.idle` 只认在等的（施工 C-1，`cross-session.md`）；最近收下的别的会话的话、还没听到的（施工 C-2） |
+| `crates/gqy-kernel/src/history.rs` | 有效历史：收事件、压缩、撤回、排先后、落到检查点上 |
+| `crates/gqy-kernel/src/history/undo.rs` | 撤掉的拿走、放回；跟着撤的话 |
+| `crates/gqy-kernel/src/history/jobs.rs` | 派出去过的任务：标题、种类、派它的那一轮撤掉了没有（施工 7-2）；在哪几轮里派的（施工 7-8） |
+| `crates/gqy-kernel/src/session/jobs.rs` 的 `stop_undone` | 撤销时停哪几个（施工 7-8）：撤掉的那几轮里派的、还在跑的 |
+| `crates/gqy-kernel/src/session/revert.rs` | 撤销、恢复两个命令，改回文件的来回，撤掉压缩时读回日志的来回，取回重读的原文 |
+| `crates/gqy-kernel/src/session/redo.rs` | 重做（施工 4-7 再补）：能不能重做，撤销记下以后重发开那一轮的话、开新的一轮 |
+| `crates/gqy-kernel/src/session/load.rs` | 载入：整份过账本，从还算数的最近一次压缩起重建有效历史（`kernel/session.md`） |
+| `crates/gqy-kernel/src/session/restore.rs` | 改回的几步怎么算 |
+| `crates/gqy-kernel/src/event/restore.rs` | `files.restored` 的每一格 |
 
 ### 对外的样子
 
 **账本**（`Ledger`）：`Ledger::default()` 是一个还没有事件的会话。只记查规矩要用的几样，不留事件本身：下一条的序号、正在进行的回合、上一条回复的序号、这一轮还没有结果的调用和其中在等确认的、在等回答的、排着队的消息、开过还没撤掉的回合（压缩以前的也在）、还算数的几次压缩各在哪一轮、替代到哪、还能恢复的几次撤销各撤了哪几轮和跟着撤掉的压缩、派出去过的任务（施工 7-1：编号，是后台命令还是子代理，子代理的会话，后台命令结束了没有，子代理还会不会再报；撤掉的回合里派的也在）、在等别的会话的通知（施工 C-1：每个被等的会话，上一次收到它的通知以后订的几次，各在哪一轮、从哪一刻算起）、收下的别的会话的话和还没听到的（施工 C-2：父会话是哪个，每个发话方照先后记时刻和字的哈希，还没听到的序号）。
 
-- 知道自己是哪个会话的账本（施工 C-1）：`Ledger::for_session(会话)`，和 `Ledger::default()` 一样是空的，只是查 `peer.watch` 订的不是自己。内核造会话、载入都用它；只拿账本数东西的读者（撤销的回应算停掉的任务，`crates/miyu-endpoint/src/undo/jobs.rs`）用 `default`，不查这一条。
+- 知道自己是哪个会话的账本（施工 C-1）：`Ledger::for_session(会话)`，和 `Ledger::default()` 一样是空的，只是查 `peer.watch` 订的不是自己。内核造会话、载入都用它；只拿账本数东西的读者（撤销的回应算停掉的任务，`crates/gqy-endpoint/src/undo/jobs.rs`）用 `default`，不查这一条。
 - 从账本读的两样（施工 7-3）：`last_job()` 派出去过的任务编号最后一段最大的数（施工 7-1 补：子会话的编号带着前缀，以前的日志里又有不带的，照整个编号排最大的那个不一定数得最大，`j5.8` 排在 `j7` 前面），撤掉的回合里派的也算，没派过的是 0（`Session::last_job_number` 交给执行器往后数）；`running_commands()` 还没报过结束的后台命令，照编号（载入时补 `aborted`，`kernel/session.md`「载入和崩溃」第 9 条）。施工 7-7 多三样：`waiting_children()` 欠着一份回报的子代理的子会话（一次都没报过的，留了言还没报的）；`subagent_in(会话)` 在那个会话里跑的子代理的编号（认子代理发来的留言，被停掉的、撤掉的回合里派的也认）；`subagents()` 派出去过的子代理：编号、子会话、被停掉了没有。施工 7-8 多一样：`running_jobs()` 还在跑的任务，照编号：还没报过结束的后台命令，没被停掉、欠着一份回报的子代理（一次都没报过的，报过以后又被留了言的）；撤掉的回合里派的也在。撤销停哪几个、撤销的回应列哪几个都照它。施工 C-1 多一样：`watching()` 在等哪几个会话的通知、各从哪一刻算起，照编号（下面「在等的通知」）；施工 C-6 的执行器照它去订、计时。施工 C-2 多三样（下面「最近收下的别的会话的话」）：`is_peer(会话)` 那个会话发来的是不是别的会话的话；`peer_said(会话, 毫秒)` 那个发话方收下的话里时刻不早于它的那几句的哈希；`unheard_from_peers()` 还没听到的别的会话的话有几句。
 - 回合的编号一轮一个（8 个字节），压缩一次一项：撤销能撤掉压缩、撤到压缩以前的回合，压缩以前的回合也要记着（施工 6-9）。任务一个一项：编号不回收要看整份日志（施工 7-1）。账本只随回合数、任务数长，不随日志的字节长：十万轮约 0.8 MB，一个活动会话的预算是 5 MB（`23-性能预算.md`，2026-09-29 项目主人定）。
 - 还没撤掉的回合照先后排：撤销从某一轮起拿走后面的全部，恢复原样放回，开一轮接在最后。
@@ -330,37 +330,37 @@
 | `nothing_to_revert` | 没有能撤销的回合。 | There is no turn to undo. |
 | `not_redoable` | 无法重做 | Cannot redo. |
 
-给人看的话由核心照头的语言配（`crates/miyu-endpoint/src/refusal.rs`）。`not_redoable` 一个原因码管两种（最后一轮不是人的话开的、一轮都没有），说法 2026-09-30 项目主人定，头当一条提示通知显示。
+给人看的话由核心照头的语言配（`crates/gqy-endpoint/src/refusal.rs`）。`not_redoable` 一个原因码管两种（最后一轮不是人的话开的、一轮都没有），说法 2026-09-30 项目主人定，头当一条提示通知显示。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/ledger/tests.rs` | 一整个会话追加得进；序号；只有第 1 条是会话创建；回合开始；`turn` 是正在进行的；调用编号；结果要有在等的调用；回合结束时调用都有结果；压缩只前进，撤掉的压缩不算；不带 `turn` 的压缩不收；回复、`model.called` 的 `seen`；只能撤回排着的；请求和决定、题和回答跟着调用 |
-| `crates/miyu-kernel/src/ledger/tests/manual.rs` | 没有 `trigger` 的回合开始也收，别的回合的规矩照查（施工 6-8）；摘要是空的只许清空，没写原因、别的几种、不认识的都拦下（施工 6-8 补） |
-| `crates/miyu-kernel/src/ledger/tests/model.rs`（施工 3-8 四补从 `tests.rs` 分出来） | `model.called` 的 `seen`；回顾的两条不带回合编号，有回合在进行时也收；`session.recapped` 照到的在它之前；回顾的 `model.called` 照到了排着的那句，那句照样撤得回，主请求的照到了就撤不回；`replaced` 只和 `model` 一起出现，空闲时、回合里都收（施工 8-10） |
-| `crates/miyu-kernel/src/ledger/tests/jobs.rs`、`jobs/reports.rs`、`jobs/numbers.rs` | 施工 7-1 的每一条各一个被拦下的例子、一个放行的例子：编号不重复（同一条里、后来的、撤掉的回合里的；照整个编号比、用过的最大编号照最后一段数，`jobs/numbers.rs` 的 `prefixed_job_ids_count_by_their_last_part`，施工 7-1 补）；`agent` 带会话、`command` 不带、不认识的种类不管；后台命令只报一次结束、回报对不上的；子代理的回报对得上会话和 `by`、报好几次、停了的不再报、`aborted` 以后还能报；两种回报带 `turn` 的要是正在进行的那一轮；子会话的 `depth`、`parent` |
-| `crates/miyu-kernel/src/ledger/tests/jobs.rs` 的 `a_message_to_a_subagent_makes_it_owe_a_report`、`a_report_that_arrives_while_the_message_is_on_its_way_answers_it`（施工 7-7） | `job.messaged` 只能给这个会话派的子代理（后台命令、不认识的种类、没派过的拦下）；留了言欠一份回报、报了不欠；调用发出以后到的回报算回了；`subagent_in`、`subagents` |
-| `crates/miyu-kernel/src/ledger/tests/peers.rs`（施工 C-1） | 订的是自己的拒、同一条结果里有一个是自己的整条不收、不知道自己是谁的账本不查（`a_session_cannot_watch_itself`）；`peer.idle` 只认在等的：没订过的、订了别的、等到过的都拒，订它的那一轮还在进行时到的照收（`a_notice_is_taken_only_while_watching`）；`by` 对得上原因、不认识的原因不查、哪一种都算等到了头（`a_notice_is_by_the_session_or_by_the_kernel`）；撤掉订它的那一轮不算在等、恢复了照原来的时刻又算、恢复不了了一直不算（`undoing_the_watching_turn_stops_the_watch`）；又订从新的时刻算、撤掉又订的回到前一次、等到过以后再订的撤掉就不在等（`watching_again_counts_from_the_new_moment`） |
-| `crates/miyu-kernel/src/ledger/tests/said.rs`（施工 C-2） | 别的会话不是父会话、不是派的子代理，还不知道父会话的哪个都算；只有别的会话的话记下、照时刻数（含正好那一刻）、哈希一字不差；还没听到的：回顾的请求不算听到，主请求看到哪里算到哪里，回复看到了也算 |
-| `crates/miyu-kernel/src/session/tests/peers.rs`（施工 C-1） | 会话知道自己是谁：造的会话订自己当场停下，载入的日志订自己拒绝，订别的会话的照收、载入以后照样在等 |
-| `crates/miyu-kernel/src/ledger/tests/undo.rs` | 压缩以前的也能撤，撤的范围里的压缩不再算数，恢复了跟着回来；`read_back_from` 从哪一条起、撤不到压缩的没有；撤一轮和它以后的全部；回合进行中不能撤；只恢复最近一次；下一轮开始、压缩以后不能恢复；改回文件只在回合之间 |
-| `crates/miyu-kernel/src/history/tests.rs` | 压缩重开有效历史；被动压缩的尾巴；最新的检查点换掉旧的；照请求看到的范围排（图上那一轮、请求在路上时来的话、压缩以后的尾巴）；撤回的和撤回本身都不留 |
-| `crates/miyu-kernel/src/history/tests/undo.rs` | 撤掉回合和触发它的话；重做一起重发的几句一起撤、别的命令的不撤（施工 4-7 再补）；没有触发的那一轮不拿别的（施工 6-8）；暂停着没发出去的请求不算听到过（施工 6-8）；撤以后的几轮；别处来的留着；接过去的排着的一起撤；上一轮听到过的留着；出错的请求也算听到过；崩了的排着的归那一轮；恢复放回原处、一次一次地恢复；下一轮、压缩丢掉放在一边的 |
-| `crates/miyu-kernel/src/session/tests/scenario/undo_jobs.rs`、`random/watch/jobs.rs` 的 `stop_checked`（施工 7-8） | 撤销停掉那几轮派出去、还在跑的：`StopJobs` 的编号、`by`、`cause`，排在改回文件前面；结束了的、别的回合派的不停，报过以后又被留了言的照停；`undone` 只记下；恢复不停也不起；重做一样；随机测试里停的正好是那几个（`agents.md`「守着它的」） |
-| `crates/miyu-kernel/src/history/tests/jobs.rs`（施工 7-2） | 派出去过的任务：标题、种类压缩掉派它的那一条也在；撤掉派它的那一轮标上、恢复去掉、恢复不了了照样标着；只记任务不留事件，换一份照原来的；由上一轮里到的回报接着开的一轮撤掉，带走上一轮排着的话、回报留着；闲着时由回报开的一轮撤掉，不拿别的 |
-| `crates/miyu-kernel/src/history/tests/settle.rs`（施工 6-9） | 落到检查点上：最近的压缩当检查点、比它早的一起丢、原文清掉、没有压缩的不动；从日志的一段重建：撤掉的回合里的压缩放在一边，恢复放回来换检查点；没有撤掉过压缩的日志，重建的和一条条收的一样；留着一切的那一份恢复了压缩照先后留成一条 |
-| `crates/miyu-kernel/src/session/tests/revert.rs` | 撤最后一轮、从前面的一轮撤；回合进行中拒绝；没有、撤掉了的拒绝；恢复以后请求接着往下长；两次撤销一次一次恢复；下一轮以后没得恢复；载入以后一样；撤过的重启轮不接 |
-| `crates/miyu-kernel/src/session/tests/restore.rs` | 改过文件的撤销等改完才回应、改的时候拒绝命令（手动压缩也拒绝，施工 6-8）、不算空闲；恢复一样；没改过文件的照旧；过时的结局不理；交回的少了一项，补一项 `failed` |
-| `crates/miyu-kernel/src/session/restore/tests.rs` | 撤销倒着来、只读的跳过；恢复正着来、只把真移回来的再移进去；来回以后用最新的位置；做成了的结局；对照交回的结局：对得上的照原样，移进回收站成了没带位置的、先后反了的、做的不是那一步的、编号路径对不上的 `failed`，少了的补、多出来的不要 |
-| `crates/miyu-kernel/src/session/tests/redo.rs`、`scenario/redo.rs`（施工 4-7 再补） | 重做最后一轮：一批里撤掉、原话再发、新开一轮，落了盘才回应、附撤销和重发的几句；换了话的只换开这一轮的那一句、附件照带；只换附件的字照原来的、不要附件的只剩字、字和附件都换的；换过一块都不剩的拒 `empty_message`（原来只有字换成空的、原来只有图不要附件）；排着接过来的几句一起重发、照先后；重做过的再重做、再撤销都带着全部几句；改过文件的先改回再发；撤掉压缩的先读回再发，读回以后才看得出不能重做的照样拒绝；回报叫醒的、手动压缩、清空、重启接着干的、没说过话、都撤掉了的拒 `not_redoable`，有回合在进行的拒 `turn_running`；重做以后不能恢复；同一个编号再来照上一次回应；载入以后一样 |
-| `crates/miyu-assemble/tests/redo.rs`（施工 4-7 再补） | 重做以后新的一轮的第一次请求和撤掉的那一轮的第一次请求一字不差（统一的请求、编码成线上的字节都比）：空闲时说的一句、排着接过来的几句 |
-| `crates/miyu-kernel/src/session/tests/revert/compaction.rs`（施工 6-9） | 撤掉压缩：先读回、读回的时候拒绝命令、不算空闲；读回来的对不上的（少一条、起点不对、中间断了）不理；撤销记在读回来的那一刻；回到前一个检查点、一次都没有的从头；撤不到压缩的不读；改回的文件照读回的那一段算；恢复不读磁盘、不请求模型、放回压缩；一次撤掉几次压缩；载入时认出哪次还算数，载入以后照样能恢复；不带回合的压缩载入不了 |
-| `crates/miyu-kernel/src/session/tests/scenario/rebuild.rs` | 检查点换了取回重读的原文：撤到没有检查点的不取，恢复了、载入以后、撤掉后来的一次回到它的，都取回它那几份（施工 6-9） |
-| `crates/miyu-kernel/src/session/tests/scenario.rs` | 撤销、恢复、再说一句；压缩以后事实重新注入（替身的压缩单开一轮，施工 6-9） |
-| `crates/miyu-kernel/src/session/tests/random/watch/undo.rs`、`watch/redo.rs`、`watch/restore.rs`、`random/restoring.rs`、`random/undoing.rs`（施工 6-9；重做施工 4-7 再补） | 随机输入里撤销、恢复、重做、改回文件照规矩接受或拒绝；重做重发的正好是撤掉的人的话、由最后一句开一轮；撤销、恢复、压缩随机交错：撤掉压缩的先读回、恢复不读、换回来的检查点取回原文；请求照撤销、恢复以后的历史；只交出改过的文件；结局只记一条；过时的、对不上的读回不理 |
-| `crates/miyu-kernel/src/session/tests/random/watch/jobs.rs`（施工 7-1） | 执行器替身在工具结果里派任务，后台命令和子代理轮着来，编号接着用过的最大的往下数，每隔两个接在前缀 `j9` 后面（带前缀的和不带的混在一份日志里，施工 7-1 补）：随机的撤销、恢复、压缩、崩了载入里账本照收（载入时整份日志再过一遍）。两种回报施工 7-2 接上（`watch/reports.rs`，`kernel/session.md`「守着它的」） |
-| `crates/miyu-kernel/src/facts/tests.rs`、`crates/miyu-kernel/tests/sample_facts.rs` | 事实照有效历史比：压缩、撤销以后重新注入 |
+| `crates/gqy-kernel/src/ledger/tests.rs` | 一整个会话追加得进；序号；只有第 1 条是会话创建；回合开始；`turn` 是正在进行的；调用编号；结果要有在等的调用；回合结束时调用都有结果；压缩只前进，撤掉的压缩不算；不带 `turn` 的压缩不收；回复、`model.called` 的 `seen`；只能撤回排着的；请求和决定、题和回答跟着调用 |
+| `crates/gqy-kernel/src/ledger/tests/manual.rs` | 没有 `trigger` 的回合开始也收，别的回合的规矩照查（施工 6-8）；摘要是空的只许清空，没写原因、别的几种、不认识的都拦下（施工 6-8 补） |
+| `crates/gqy-kernel/src/ledger/tests/model.rs`（施工 3-8 四补从 `tests.rs` 分出来） | `model.called` 的 `seen`；回顾的两条不带回合编号，有回合在进行时也收；`session.recapped` 照到的在它之前；回顾的 `model.called` 照到了排着的那句，那句照样撤得回，主请求的照到了就撤不回；`replaced` 只和 `model` 一起出现，空闲时、回合里都收（施工 8-10） |
+| `crates/gqy-kernel/src/ledger/tests/jobs.rs`、`jobs/reports.rs`、`jobs/numbers.rs` | 施工 7-1 的每一条各一个被拦下的例子、一个放行的例子：编号不重复（同一条里、后来的、撤掉的回合里的；照整个编号比、用过的最大编号照最后一段数，`jobs/numbers.rs` 的 `prefixed_job_ids_count_by_their_last_part`，施工 7-1 补）；`agent` 带会话、`command` 不带、不认识的种类不管；后台命令只报一次结束、回报对不上的；子代理的回报对得上会话和 `by`、报好几次、停了的不再报、`aborted` 以后还能报；两种回报带 `turn` 的要是正在进行的那一轮；子会话的 `depth`、`parent` |
+| `crates/gqy-kernel/src/ledger/tests/jobs.rs` 的 `a_message_to_a_subagent_makes_it_owe_a_report`、`a_report_that_arrives_while_the_message_is_on_its_way_answers_it`（施工 7-7） | `job.messaged` 只能给这个会话派的子代理（后台命令、不认识的种类、没派过的拦下）；留了言欠一份回报、报了不欠；调用发出以后到的回报算回了；`subagent_in`、`subagents` |
+| `crates/gqy-kernel/src/ledger/tests/peers.rs`（施工 C-1） | 订的是自己的拒、同一条结果里有一个是自己的整条不收、不知道自己是谁的账本不查（`a_session_cannot_watch_itself`）；`peer.idle` 只认在等的：没订过的、订了别的、等到过的都拒，订它的那一轮还在进行时到的照收（`a_notice_is_taken_only_while_watching`）；`by` 对得上原因、不认识的原因不查、哪一种都算等到了头（`a_notice_is_by_the_session_or_by_the_kernel`）；撤掉订它的那一轮不算在等、恢复了照原来的时刻又算、恢复不了了一直不算（`undoing_the_watching_turn_stops_the_watch`）；又订从新的时刻算、撤掉又订的回到前一次、等到过以后再订的撤掉就不在等（`watching_again_counts_from_the_new_moment`） |
+| `crates/gqy-kernel/src/ledger/tests/said.rs`（施工 C-2） | 别的会话不是父会话、不是派的子代理，还不知道父会话的哪个都算；只有别的会话的话记下、照时刻数（含正好那一刻）、哈希一字不差；还没听到的：回顾的请求不算听到，主请求看到哪里算到哪里，回复看到了也算 |
+| `crates/gqy-kernel/src/session/tests/peers.rs`（施工 C-1） | 会话知道自己是谁：造的会话订自己当场停下，载入的日志订自己拒绝，订别的会话的照收、载入以后照样在等 |
+| `crates/gqy-kernel/src/ledger/tests/undo.rs` | 压缩以前的也能撤，撤的范围里的压缩不再算数，恢复了跟着回来；`read_back_from` 从哪一条起、撤不到压缩的没有；撤一轮和它以后的全部；回合进行中不能撤；只恢复最近一次；下一轮开始、压缩以后不能恢复；改回文件只在回合之间 |
+| `crates/gqy-kernel/src/history/tests.rs` | 压缩重开有效历史；被动压缩的尾巴；最新的检查点换掉旧的；照请求看到的范围排（图上那一轮、请求在路上时来的话、压缩以后的尾巴）；撤回的和撤回本身都不留 |
+| `crates/gqy-kernel/src/history/tests/undo.rs` | 撤掉回合和触发它的话；重做一起重发的几句一起撤、别的命令的不撤（施工 4-7 再补）；没有触发的那一轮不拿别的（施工 6-8）；暂停着没发出去的请求不算听到过（施工 6-8）；撤以后的几轮；别处来的留着；接过去的排着的一起撤；上一轮听到过的留着；出错的请求也算听到过；崩了的排着的归那一轮；恢复放回原处、一次一次地恢复；下一轮、压缩丢掉放在一边的 |
+| `crates/gqy-kernel/src/session/tests/scenario/undo_jobs.rs`、`random/watch/jobs.rs` 的 `stop_checked`（施工 7-8） | 撤销停掉那几轮派出去、还在跑的：`StopJobs` 的编号、`by`、`cause`，排在改回文件前面；结束了的、别的回合派的不停，报过以后又被留了言的照停；`undone` 只记下；恢复不停也不起；重做一样；随机测试里停的正好是那几个（`agents.md`「守着它的」） |
+| `crates/gqy-kernel/src/history/tests/jobs.rs`（施工 7-2） | 派出去过的任务：标题、种类压缩掉派它的那一条也在；撤掉派它的那一轮标上、恢复去掉、恢复不了了照样标着；只记任务不留事件，换一份照原来的；由上一轮里到的回报接着开的一轮撤掉，带走上一轮排着的话、回报留着；闲着时由回报开的一轮撤掉，不拿别的 |
+| `crates/gqy-kernel/src/history/tests/settle.rs`（施工 6-9） | 落到检查点上：最近的压缩当检查点、比它早的一起丢、原文清掉、没有压缩的不动；从日志的一段重建：撤掉的回合里的压缩放在一边，恢复放回来换检查点；没有撤掉过压缩的日志，重建的和一条条收的一样；留着一切的那一份恢复了压缩照先后留成一条 |
+| `crates/gqy-kernel/src/session/tests/revert.rs` | 撤最后一轮、从前面的一轮撤；回合进行中拒绝；没有、撤掉了的拒绝；恢复以后请求接着往下长；两次撤销一次一次恢复；下一轮以后没得恢复；载入以后一样；撤过的重启轮不接 |
+| `crates/gqy-kernel/src/session/tests/restore.rs` | 改过文件的撤销等改完才回应、改的时候拒绝命令（手动压缩也拒绝，施工 6-8）、不算空闲；恢复一样；没改过文件的照旧；过时的结局不理；交回的少了一项，补一项 `failed` |
+| `crates/gqy-kernel/src/session/restore/tests.rs` | 撤销倒着来、只读的跳过；恢复正着来、只把真移回来的再移进去；来回以后用最新的位置；做成了的结局；对照交回的结局：对得上的照原样，移进回收站成了没带位置的、先后反了的、做的不是那一步的、编号路径对不上的 `failed`，少了的补、多出来的不要 |
+| `crates/gqy-kernel/src/session/tests/redo.rs`、`scenario/redo.rs`（施工 4-7 再补） | 重做最后一轮：一批里撤掉、原话再发、新开一轮，落了盘才回应、附撤销和重发的几句；换了话的只换开这一轮的那一句、附件照带；只换附件的字照原来的、不要附件的只剩字、字和附件都换的；换过一块都不剩的拒 `empty_message`（原来只有字换成空的、原来只有图不要附件）；排着接过来的几句一起重发、照先后；重做过的再重做、再撤销都带着全部几句；改过文件的先改回再发；撤掉压缩的先读回再发，读回以后才看得出不能重做的照样拒绝；回报叫醒的、手动压缩、清空、重启接着干的、没说过话、都撤掉了的拒 `not_redoable`，有回合在进行的拒 `turn_running`；重做以后不能恢复；同一个编号再来照上一次回应；载入以后一样 |
+| `crates/gqy-assemble/tests/redo.rs`（施工 4-7 再补） | 重做以后新的一轮的第一次请求和撤掉的那一轮的第一次请求一字不差（统一的请求、编码成线上的字节都比）：空闲时说的一句、排着接过来的几句 |
+| `crates/gqy-kernel/src/session/tests/revert/compaction.rs`（施工 6-9） | 撤掉压缩：先读回、读回的时候拒绝命令、不算空闲；读回来的对不上的（少一条、起点不对、中间断了）不理；撤销记在读回来的那一刻；回到前一个检查点、一次都没有的从头；撤不到压缩的不读；改回的文件照读回的那一段算；恢复不读磁盘、不请求模型、放回压缩；一次撤掉几次压缩；载入时认出哪次还算数，载入以后照样能恢复；不带回合的压缩载入不了 |
+| `crates/gqy-kernel/src/session/tests/scenario/rebuild.rs` | 检查点换了取回重读的原文：撤到没有检查点的不取，恢复了、载入以后、撤掉后来的一次回到它的，都取回它那几份（施工 6-9） |
+| `crates/gqy-kernel/src/session/tests/scenario.rs` | 撤销、恢复、再说一句；压缩以后事实重新注入（替身的压缩单开一轮，施工 6-9） |
+| `crates/gqy-kernel/src/session/tests/random/watch/undo.rs`、`watch/redo.rs`、`watch/restore.rs`、`random/restoring.rs`、`random/undoing.rs`（施工 6-9；重做施工 4-7 再补） | 随机输入里撤销、恢复、重做、改回文件照规矩接受或拒绝；重做重发的正好是撤掉的人的话、由最后一句开一轮；撤销、恢复、压缩随机交错：撤掉压缩的先读回、恢复不读、换回来的检查点取回原文；请求照撤销、恢复以后的历史；只交出改过的文件；结局只记一条；过时的、对不上的读回不理 |
+| `crates/gqy-kernel/src/session/tests/random/watch/jobs.rs`（施工 7-1） | 执行器替身在工具结果里派任务，后台命令和子代理轮着来，编号接着用过的最大的往下数，每隔两个接在前缀 `j9` 后面（带前缀的和不带的混在一份日志里，施工 7-1 补）：随机的撤销、恢复、压缩、崩了载入里账本照收（载入时整份日志再过一遍）。两种回报施工 7-2 接上（`watch/reports.rs`，`kernel/session.md`「守着它的」） |
+| `crates/gqy-kernel/src/facts/tests.rs`、`crates/gqy-kernel/tests/sample_facts.rs` | 事实照有效历史比：压缩、撤销以后重新注入 |
 
 ### 出处
 

@@ -10,12 +10,12 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/session_usage.rs` | 零参数；经端口要用量、金额、上下文，一句一行写出来；金额的写法 |
-| `crates/miyu-tool/src/usage.rs` | 查用量的端口 `UsagePort`、上下文 `ContextUse`、用量和金额 `Spent`、那件工具的名字 `SESSION_USAGE`（`tools/interface.md`） |
-| `crates/miyu-session/src/usage.rs` | 执行器这一头：派 `session_usage` 那一刻向内核要上下文（`Session::context_used()`、`context_limits()`）、照这一轮的配置取 `usage.currency`（`asked`）；端口先补这个会话、再只查它（`Ledger`） |
-| `crates/miyu-session/src/actor.rs`、`tools.rs` | 派一次调用时抄好那一刻的上下文，交给端口（`Dispatch.usage`、`ToolKit.ledger`） |
-| `crates/miyu-session/src/agents.rs` | 工具面：只有本机的会话有 `session_usage` |
-| `crates/miyu-store/src/usage.rs`、`usage/` | 用量汇总：补一个会话（`catch_up_session`）、查（`query`，`models.md`「在哪」） |
+| `crates/gqy-basesystem/src/session_usage.rs` | 零参数；经端口要用量、金额、上下文，一句一行写出来；金额的写法 |
+| `crates/gqy-tool/src/usage.rs` | 查用量的端口 `UsagePort`、上下文 `ContextUse`、用量和金额 `Spent`、那件工具的名字 `SESSION_USAGE`（`tools/interface.md`） |
+| `crates/gqy-session/src/usage.rs` | 执行器这一头：派 `session_usage` 那一刻向内核要上下文（`Session::context_used()`、`context_limits()`）、照这一轮的配置取 `usage.currency`（`asked`）；端口先补这个会话、再只查它（`Ledger`） |
+| `crates/gqy-session/src/actor.rs`、`tools.rs` | 派一次调用时抄好那一刻的上下文，交给端口（`Dispatch.usage`、`ToolKit.ledger`） |
+| `crates/gqy-session/src/agents.rs` | 工具面：只有本机的会话有 `session_usage` |
+| `crates/gqy-store/src/usage.rs`、`usage/` | 用量汇总：补一个会话（`catch_up_session`）、查（`query`，`models.md`「在哪」） |
 | `resources/software/basesystem/tools/session_usage.json` | 说明和参数格式 |
 | `resources/software/basesystem/session_usage/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en,ja}.json` | 显示名、结果那一句 |
@@ -92,11 +92,11 @@ Compaction starts at 95000.
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/session_usage.rs` | 访问类别是读、零参数；输出一字不差：用量、两种币种的金额、没价格的、窗口和压缩线；有窗口没压缩线的、没窗口的、算不了上下文的、没金额的；小金额的写法；参数不认也不报错；没有端口；查不了；叫停；说法中文、英文换得出字、有显示名 |
-| `crates/miyu-basesystem/src/session_usage/tests.rs` | 金额三位有效数字、至少两位小数 |
-| `crates/miyu-session/tests/session_usage.rs` | 真会话：剧本带价格，第二轮调它看到前两次请求的用量、金额，上下文照窗口、压缩线 |
-| `crates/miyu-session/tests/sessions.rs`、`read.rs` | 工具面：本机的会话有它，群里的没有，别的工具一件不少 |
-| `crates/miyu-basesystem/tests/budget.rs` | 工具面的预算：十三件，7465 字节 |
+| `crates/gqy-basesystem/tests/session_usage.rs` | 访问类别是读、零参数；输出一字不差：用量、两种币种的金额、没价格的、窗口和压缩线；有窗口没压缩线的、没窗口的、算不了上下文的、没金额的；小金额的写法；参数不认也不报错；没有端口；查不了；叫停；说法中文、英文换得出字、有显示名 |
+| `crates/gqy-basesystem/src/session_usage/tests.rs` | 金额三位有效数字、至少两位小数 |
+| `crates/gqy-session/tests/session_usage.rs` | 真会话：剧本带价格，第二轮调它看到前两次请求的用量、金额，上下文照窗口、压缩线 |
+| `crates/gqy-session/tests/sessions.rs`、`read.rs` | 工具面：本机的会话有它，群里的没有，别的工具一件不少 |
+| `crates/gqy-basesystem/tests/budget.rs` | 工具面的预算：十三件，7465 字节 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

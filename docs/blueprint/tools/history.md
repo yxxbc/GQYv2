@@ -12,18 +12,18 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/history.rs` | 参数、读日志、筛；`session` 认出来的不是她自己的，只读地开那个会话的日志再读（施工 C-4） |
-| `crates/miyu-basesystem/src/history/entry.rs` | 哪些算一条、一条的原文怎么写、「谁」那一格（别的 harness 发来的写名字，施工 7-10；别的会话发来的写短编号，施工 C-2）；人切权限级别的那一条（施工 2-7 补） |
-| `crates/miyu-basesystem/src/history/page.rs` | 找、读：一页怎么写、往下翻、整页上限、摘一段 |
-| `crates/miyu-basesystem/src/history/time.rs` | `since`、`until` 的写法 |
-| `crates/miyu-kernel/src/history.rs` | `History::whole()`：留着压缩替代掉的，撤销、恢复、撤回照有效历史的规矩算（`kernel/history.md`） |
-| `crates/miyu-kernel/src/time.rs` | 照时区写到分钟、照时区的日期和钟点换回时刻 |
-| `crates/miyu-tool/src/log.rs` | 这个会话日志的只读入口：`ReadLog`，`Call.log` 带着 |
-| `crates/miyu-tool/src/sessions.rs` | `SessionsPort::open`（施工 C-4）：只读地开别的会话的日志，交回 `Log`；`find_session` 认 `session` 写的是哪一个（C-3 做好） |
-| `crates/miyu-store/src/log/open.rs` | `read_segments`：只读地一段一段读 |
-| `crates/miyu-session/src/tools.rs` | 执行器把这个会话日志的只读入口、会话的时区、列会话的端口交给这次调用（`sessions`、`history` 共用的 `Call.sessions`） |
-| `crates/miyu-session/src/sessions.rs` | `Lister::open`（施工 C-4）：转给会话表的 `SessionPort::read_log` |
-| `crates/miyu-session/src/spawn.rs`、`crates/miyu-endpoint/src/spawn.rs` | `SessionPort::read_log`（施工 C-4）：会话表这一头只算出会话的真实目录，不读盘，`Log` 包着它；`miyu-endpoint` 已经直接依赖 `miyu-store`（`peek` 先例），不必把 `miyu-session` 里自己那份 `LogDir` 公开出来 |
+| `crates/gqy-basesystem/src/history.rs` | 参数、读日志、筛；`session` 认出来的不是她自己的，只读地开那个会话的日志再读（施工 C-4） |
+| `crates/gqy-basesystem/src/history/entry.rs` | 哪些算一条、一条的原文怎么写、「谁」那一格（别的 harness 发来的写名字，施工 7-10；别的会话发来的写短编号，施工 C-2）；人切权限级别的那一条（施工 2-7 补） |
+| `crates/gqy-basesystem/src/history/page.rs` | 找、读：一页怎么写、往下翻、整页上限、摘一段 |
+| `crates/gqy-basesystem/src/history/time.rs` | `since`、`until` 的写法 |
+| `crates/gqy-kernel/src/history.rs` | `History::whole()`：留着压缩替代掉的，撤销、恢复、撤回照有效历史的规矩算（`kernel/history.md`） |
+| `crates/gqy-kernel/src/time.rs` | 照时区写到分钟、照时区的日期和钟点换回时刻 |
+| `crates/gqy-tool/src/log.rs` | 这个会话日志的只读入口：`ReadLog`，`Call.log` 带着 |
+| `crates/gqy-tool/src/sessions.rs` | `SessionsPort::open`（施工 C-4）：只读地开别的会话的日志，交回 `Log`；`find_session` 认 `session` 写的是哪一个（C-3 做好） |
+| `crates/gqy-store/src/log/open.rs` | `read_segments`：只读地一段一段读 |
+| `crates/gqy-session/src/tools.rs` | 执行器把这个会话日志的只读入口、会话的时区、列会话的端口交给这次调用（`sessions`、`history` 共用的 `Call.sessions`） |
+| `crates/gqy-session/src/sessions.rs` | `Lister::open`（施工 C-4）：转给会话表的 `SessionPort::read_log` |
+| `crates/gqy-session/src/spawn.rs`、`crates/gqy-endpoint/src/spawn.rs` | `SessionPort::read_log`（施工 C-4）：会话表这一头只算出会话的真实目录，不读盘，`Log` 包着它；`gqy-endpoint` 已经直接依赖 `gqy-store`（`peek` 先例），不必把 `gqy-session` 里自己那份 `LogDir` 公开出来 |
 | `resources/software/basesystem/tools/history.json` | 说明和参数格式 |
 | `resources/software/basesystem/history/*.txt` | 输出里给她看的几句；`agent.txt` 是别的 harness 发来的那一条的「谁」（施工 7-10）；`session.txt` 是别的会话发来的那一条的「谁」（施工 C-2）；`permission.txt` 是人切权限级别的那一条的原文（施工 2-7 补） |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -173,16 +173,16 @@ This session cannot read other sessions.
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/src/history/tests.rs` | 哪些算一条；撤掉的、撤回的、她自己翻记录的不算；四种筛；找：每个词都要、不分大小写、新的在前、摘一段、往前翻；读：先后、工具调用的写法、整页上限、一条太长；时刻的写法和时区；参数不对；读不了日志；叫停 |
-| `crates/miyu-kernel/src/history/tests.rs` | `History::whole()`：压缩替代掉的留着，摘要也是一条；撤销、恢复、撤回和有效历史一样；撤掉压缩所在的那一轮，摘要跟着不算（施工 6-9） |
-| `crates/miyu-store/src/log/tests.rs` | `read_segments`：一段一段交、叫停就不读下去、半行跳过不截 |
-| `crates/miyu-session/tests/history.rs` | 真的会话：压缩以后 `history` 找得到压缩以前的话，时刻照会话的时区 |
-| `crates/miyu-basesystem/src/history/tests/permission.rs`（施工 2-7 补） | 人切权限级别：找、读都列出，「谁」是 `user`、原文写切成的那一级；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在；撤掉的回合里切的照样列，只读开着写只读，只换了策略快照的不算。样本会话里的 52、63 两条跟着出现在 `tests.rs`、`read.rs` 的清单里 |
-| `crates/miyu-basesystem/src/history/tests/harness.rs`（施工 7-10） | 别的 harness 发来的话：找、读的「谁」那一格写名字、名字照规矩转义；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在 |
-| `crates/miyu-basesystem/src/history/tests/peers.rs`（施工 C-2） | 别的会话发来的话：找、读的「谁」那一格写 `session <短编号>`，父会话的话照旧是 `user`；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在 |
-| `crates/miyu-basesystem/src/history/tests/other.rs`（施工 C-4） | 读别的会话：`session` 认出来的读的是那个会话的日志，不是这次调用自己的；认成她自己的照没写、不开任何别的日志；找不到、对得上不止一个、没有列会话的端口各拒一句，一条日志都不读；列会话、开日志失败都照「读不了日志」；时刻照这个会话自己的时区，和读的是哪一份日志无关 |
-| `crates/miyu-session/tests/history_other.rs`（施工 C-4） | 真的会话 actor：读别的会话磁盘上真实的日志、不载入它、在跑的也读得到；子会话、场所会话（群）写了 `session` 都拒 |
-| `crates/miyu-basesystem/tests/human_history.rs` | 每一种结果的说法，两种语言都换得出字，显示名也有；C-4 的三种拒绝也在内 |
+| `crates/gqy-basesystem/src/history/tests.rs` | 哪些算一条；撤掉的、撤回的、她自己翻记录的不算；四种筛；找：每个词都要、不分大小写、新的在前、摘一段、往前翻；读：先后、工具调用的写法、整页上限、一条太长；时刻的写法和时区；参数不对；读不了日志；叫停 |
+| `crates/gqy-kernel/src/history/tests.rs` | `History::whole()`：压缩替代掉的留着，摘要也是一条；撤销、恢复、撤回和有效历史一样；撤掉压缩所在的那一轮，摘要跟着不算（施工 6-9） |
+| `crates/gqy-store/src/log/tests.rs` | `read_segments`：一段一段交、叫停就不读下去、半行跳过不截 |
+| `crates/gqy-session/tests/history.rs` | 真的会话：压缩以后 `history` 找得到压缩以前的话，时刻照会话的时区 |
+| `crates/gqy-basesystem/src/history/tests/permission.rs`（施工 2-7 补） | 人切权限级别：找、读都列出，「谁」是 `user`、原文写切成的那一级；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在；撤掉的回合里切的照样列，只读开着写只读，只换了策略快照的不算。样本会话里的 52、63 两条跟着出现在 `tests.rs`、`read.rs` 的清单里 |
+| `crates/gqy-basesystem/src/history/tests/harness.rs`（施工 7-10） | 别的 harness 发来的话：找、读的「谁」那一格写名字、名字照规矩转义；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在 |
+| `crates/gqy-basesystem/src/history/tests/peers.rs`（施工 C-2） | 别的会话发来的话：找、读的「谁」那一格写 `session <短编号>`，父会话的话照旧是 `user`；筛 `user` 时在里面，筛 `assistant`、`tool` 时不在 |
+| `crates/gqy-basesystem/src/history/tests/other.rs`（施工 C-4） | 读别的会话：`session` 认出来的读的是那个会话的日志，不是这次调用自己的；认成她自己的照没写、不开任何别的日志；找不到、对得上不止一个、没有列会话的端口各拒一句，一条日志都不读；列会话、开日志失败都照「读不了日志」；时刻照这个会话自己的时区，和读的是哪一份日志无关 |
+| `crates/gqy-session/tests/history_other.rs`（施工 C-4） | 真的会话 actor：读别的会话磁盘上真实的日志、不载入它、在跑的也读得到；子会话、场所会话（群）写了 `session` 都拒 |
+| `crates/gqy-basesystem/tests/human_history.rs` | 每一种结果的说法，两种语言都换得出字，显示名也有；C-4 的三种拒绝也在内 |
 | 真模型实测（M6 验收） | 压缩以后问她压缩前的细节，她会用 `history` 取回 |
 | 真模型实测（C-7，跨会话验收） | 两个主会话，一个里说过一件事，另一个先 `sessions` 再 `history` 带 `session` 翻得到 |
 

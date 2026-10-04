@@ -3,7 +3,7 @@
 ### 是什么
 
 mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看到的是同一份 SVG，画图的内存只在核心里。做成可选的
-软件包 `mermaid`：crate `miyu-mermaid`，经 `miyu-core` 的 cargo 开关 `mermaid` 编进来，发行版默认打开。没编
+软件包 `mermaid`：crate `gqy-mermaid`，经 `gqy-core` 的 cargo 开关 `mermaid` 编进来，发行版默认打开。没编
 进来的核心里没有这块代码，`mermaid.render` 回 `unknown_method`，头照代码块显示源码。第一次调才初始化（读
 `style.json`、探一次系统的字体库），之后一直留着，直到核心退出。
 
@@ -13,12 +13,12 @@ mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看�
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-mermaid/`（第 3 层，执行器） | 画 SVG、懒读 `style.json`、独立探一次字体库、缓存、崩了当画不出 |
-| `crates/miyu-mermaid/src/lib.rs` | `Mermaid`：公开的家底和 `render`；渲染器的主题怎么改（三种记号色、字体） |
-| `crates/miyu-mermaid/src/style.rs` | 读 `style.json` |
-| `crates/miyu-mermaid/src/fonts.rs` | 独立探一次系统的字体库找不找得到字 |
-| `crates/miyu-endpoint/src/queries.rs` | 可选软件包登记的查询：方法名到怎么答的一张表，`QueryError`（软件包用得上的几种拒绝，不认得 JSON-RPC 的错误码） |
-| `crates/miyu-core/src/packages.rs` | 照编进来的可选软件包（cargo 开关）往查询表里登记；`mermaid.render` 的参数怎么读、`Mermaid` 的结果怎么翻成回应或者 `QueryError` |
+| `crates/gqy-mermaid/`（第 3 层，执行器） | 画 SVG、懒读 `style.json`、独立探一次字体库、缓存、崩了当画不出 |
+| `crates/gqy-mermaid/src/lib.rs` | `Mermaid`：公开的家底和 `render`；渲染器的主题怎么改（三种记号色、字体） |
+| `crates/gqy-mermaid/src/style.rs` | 读 `style.json` |
+| `crates/gqy-mermaid/src/fonts.rs` | 独立探一次系统的字体库找不找得到字 |
+| `crates/gqy-endpoint/src/queries.rs` | 可选软件包登记的查询：方法名到怎么答的一张表，`QueryError`（软件包用得上的几种拒绝，不认得 JSON-RPC 的错误码） |
+| `crates/gqy-core/src/packages.rs` | 照编进来的可选软件包（cargo 开关）往查询表里登记；`mermaid.render` 的参数怎么读、`Mermaid` 的结果怎么翻成回应或者 `QueryError` |
 | `resources/software/mermaid/style.json` | 字体、三种记号色、源码的上限、记几张 |
 
 ### 对外的样子
@@ -39,7 +39,7 @@ mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看�
 ### 怎么走
 
 1. 画 mermaid 在核心里：代码只有一份，同一张图终端和网页看只画一次，画图的内存只在核心里。做成可选的软件包
-   `mermaid`：crate `miyu-mermaid`，经 `miyu-core` 的 cargo 开关 `mermaid` 编进来，发行版默认打开。没编进来
+   `mermaid`：crate `gqy-mermaid`，经 `gqy-core` 的 cargo 开关 `mermaid` 编进来，发行版默认打开。没编进来
    的核心里没有这块代码，`mermaid.render` 回 `unknown_method`，头照代码块显示源码。
 2. 第一次调才初始化：读 `resources/software/mermaid/style.json`，之后一直留着，直到核心退出。系统的字体库（画图的库要量字的宽）在真要画的时候才探，整个进程只探一次：源码是空的、太长的、缓存里已经有的不用等它（2026-10-02 主会话定：CI 的 Windows 机器上扫字体能到几秒，几个测试一起扫过了十秒）。探不到字体记一条 `WARN mermaid not ready`，回 `internal_error`。
 3. 源码去掉前后空白。空的：`bad_params`。超过 64 KiB：`mermaid_too_long`。
@@ -66,7 +66,7 @@ mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看�
 `bad_params`：`source` 是空的（去掉前后空白以后）。`internal_error`：`style.json` 读不懂、这台机器上一种
 字体都读不到（画图的库初始化不了）。
 
-运行日志（目标 `miyu::mermaid`，一律英文）：
+运行日志（目标 `gqy::mermaid`，一律英文）：
 
 | 级别 | 行 | 什么时候 |
 |---|---|---|
@@ -85,11 +85,11 @@ mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看�
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-mermaid/src/tests.rs` | 记号色都换得掉、底和框不填色；同一份源码第二次不重画、满了丢最早的那一张；空的、太长、画不出各说一句（库的原话不是空的）；造出 `Mermaid` 不碰磁盘，第一次调才读 `style.json`、探字体；`style.json` 读不懂当没法画；panic 的几种payload 都翻成字符串；真的 `style.json`、一张流程图一张时序图都画得出 |
-| `crates/miyu-mermaid/src/style/tests.rs` | 读得进来、少一格或者多一格不认的、数是 0 或者字体表是空的都读不了 |
-| `crates/miyu-mermaid/src/fonts/tests.rs` | 这台机器上读得到至少一种字体（真机验，三个平台都该过） |
-| `crates/miyu-endpoint/src/queries/tests.rs` | 没登记的方法交回 `None`；登记过的名字正好对上才找得到；同一个名字登记两次当场 panic |
-| `crates/miyu-core/tests/packages.rs` | 真核心走一遍：一张流程图、一张时序图都出 SVG，回应的 `marks` 和 SVG 里用的三种记号色对得上；同一份源码两次拿到一样的回应；空的 `bad_params`、超过上限 `mermaid_too_long`、画不出 `mermaid_failed`（`data.detail` 不是空的）；查询表没登记的方法（没编进来某个软件包的情形）回 `unknown_method` |
+| `crates/gqy-mermaid/src/tests.rs` | 记号色都换得掉、底和框不填色；同一份源码第二次不重画、满了丢最早的那一张；空的、太长、画不出各说一句（库的原话不是空的）；造出 `Mermaid` 不碰磁盘，第一次调才读 `style.json`、探字体；`style.json` 读不懂当没法画；panic 的几种payload 都翻成字符串；真的 `style.json`、一张流程图一张时序图都画得出 |
+| `crates/gqy-mermaid/src/style/tests.rs` | 读得进来、少一格或者多一格不认的、数是 0 或者字体表是空的都读不了 |
+| `crates/gqy-mermaid/src/fonts/tests.rs` | 这台机器上读得到至少一种字体（真机验，三个平台都该过） |
+| `crates/gqy-endpoint/src/queries/tests.rs` | 没登记的方法交回 `None`；登记过的名字正好对上才找得到；同一个名字登记两次当场 panic |
+| `crates/gqy-core/tests/packages.rs` | 真核心走一遍：一张流程图、一张时序图都出 SVG，回应的 `marks` 和 SVG 里用的三种记号色对得上；同一份源码两次拿到一样的回应；空的 `bad_params`、超过上限 `mermaid_too_long`、画不出 `mermaid_failed`（`data.detail` 不是空的）；查询表没登记的方法（没编进来某个软件包的情形）回 `unknown_method` |
 
 ### 出处
 
@@ -118,10 +118,10 @@ mermaid 源码画成 SVG 由核心做一次：同一张图，终端和网页看�
 | 3 | mermaid 先做一个只出 SVG 的方法 `mermaid.render`，`view.detail` 随 M9 | 视图投影还没有，头现在就要图；M9 的 `view.detail` 用同一个画法、同一份缓存 | 现在就做 `view.detail`（要先有视图条目） |
 | 4 | mermaid 的颜色用三种记号色，回应里写明，头自己换 | 一张 SVG 给所有头，缓存只照源码；网页换成 CSS 变量，终端换成主题色再栅格化 | 头传颜色进来（缓存要照颜色分） |
 | 5 | mermaid 这一页独立成页 | 一页一个部件，和 crate 对得上 | 继续写在 `web-module.md` 里 |
-| 6 | 核心独立探一次系统的字体库（`miyu-mermaid/src/fonts.rs`），不借画图库内部那一份（施工 W-4） | `mermaid-rs-renderer` 自己找不到字体时只退化成按字数估算宽度，从不报错；`internal_error`（「读不到字体」）要核心自己能判断，只能自己再查一次 | 借画图库画一张探路图、照它有没有报错来判（它不会报错，这条路走不通） |
+| 6 | 核心独立探一次系统的字体库（`gqy-mermaid/src/fonts.rs`），不借画图库内部那一份（施工 W-4） | `mermaid-rs-renderer` 自己找不到字体时只退化成按字数估算宽度，从不报错；`internal_error`（「读不到字体」）要核心自己能判断，只能自己再查一次 | 借画图库画一张探路图、照它有没有报错来判（它不会报错，这条路走不通） |
 | 7 | 没能找到稳定触发 `mermaid-rs-renderer` 内部 panic 的源码，没在真机测到一次真的 panic（施工 W-4） | 试过几十种边角情况（空白、半截语法、递归很深的箭头、二进制字节）都只报解析错误，没有一次崩；崩溃的捕获（`catch_unwind`）靠代码审查，加一个独立单测验 panic payload 的几种类型都翻译得出原话 | 为了测它去改画图库的源码造一次真的崩溃（这个库不是我们维护的，不改第三方代码） |
 | 8 | `style.json` 没有 `note` 字段，`fonts`、`marks`、`max_source`、`keep` 都是纯数据，读的时候拒绝不认识的格（施工 W-4） | 两个演示的同名资源文件里带了一句 `note`，但这个仓库没有先例；数据文件越简单越好读、越不容易写错 | 照抄演示的格式，加一格 `note`（又要在 Rust 结构体里接一个没人用的字段） |
 | 9 | 懒初始化只试一次：第一次 `render` 读 `style.json`、探字体，成不成都记进去，这个核心的生命周期里不会再重试；失败的 `WARN` 只记这一次（施工 W-4） | 图纸写「之后一直留着」，没说失败要不要重试；一直重试一个本来就读不懂的文件、一直探一个确实没有字体的机器没有意义，还会把日志刷满 | 每次调用失败都重试一次（装环境的人改好了字体，不用重启核心）：图纸没这么要求，多了一份不确定性 |
-| 10 | 运行日志的目标用 `miyu::mermaid`，不是 `miyu::endpoint`（施工 W-4） | 和以后的 `net` 包用 `miyu::net` 一个道理：软件包自己的问题，用自己的目标，`web-module.md` 的组合日志表里 `link preview failed` 那一行也特地标了「目标 `miyu::net`」 | 照 `web-module.md` 日志表默认的 `miyu::endpoint`（那张表是 W-1 到 W-11 合在一起的参考表，没给 mermaid 单独标目标是起草时的疏漏） |
+| 10 | 运行日志的目标用 `gqy::mermaid`，不是 `gqy::endpoint`（施工 W-4） | 和以后的 `net` 包用 `gqy::net` 一个道理：软件包自己的问题，用自己的目标，`web-module.md` 的组合日志表里 `link preview failed` 那一行也特地标了「目标 `gqy::net`」 | 照 `web-module.md` 日志表默认的 `gqy::endpoint`（那张表是 W-1 到 W-11 合在一起的参考表，没给 mermaid 单独标目标是起草时的疏漏） |
 | 11 | 「没编进来回 `unknown_method`」不额外编一份关掉 cargo 开关的核心，改测查询表本身（施工 W-4，`web-module.md`「验收」允许的两种办法之一） | 关掉开关要单独一次 `cargo test --no-default-features` 构建，门禁（`cargo xtask check`）不跑这个组合；查询表没登记这个方法名，和这个方法所在的软件包没编进来，端点看到的是同一个结果 | 在 CI 里加一条额外的构建组合（门禁要跟着改，`cargo xtask check` 的「八项」变九项） |
-| 12 | 可选软件包登记查询的接口（`queries.rs`）：`Queries::register` 收 `Fn(Arc<Core>, Value) -> impl Future<Output = Result<Value, QueryError>>`，`QueryError` 是给软件包用的最小拒绝集合，不直接暴露 `Refusal`（施工 W-4） | `Refusal`（JSON-RPC 错误码、`message` 的中英文）是端点内部的细节，`miyu-core` 这样的外部 crate 不该认得这些；`QueryError` 只有参数不对、内部出错、一个原因码（可带一格 `data`）三种，够 `mermaid.render`、以后的 `link.preview` 用 | 把 `Refusal` 整个公开给软件包用（软件包要学一整套协议层的东西） |
+| 12 | 可选软件包登记查询的接口（`queries.rs`）：`Queries::register` 收 `Fn(Arc<Core>, Value) -> impl Future<Output = Result<Value, QueryError>>`，`QueryError` 是给软件包用的最小拒绝集合，不直接暴露 `Refusal`（施工 W-4） | `Refusal`（JSON-RPC 错误码、`message` 的中英文）是端点内部的细节，`gqy-core` 这样的外部 crate 不该认得这些；`QueryError` 只有参数不对、内部出错、一个原因码（可带一格 `data`）三种，够 `mermaid.render`、以后的 `link.preview` 用 | 把 `Refusal` 整个公开给软件包用（软件包要学一整套协议层的东西） |

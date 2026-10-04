@@ -8,11 +8,11 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/grep.rs` | 参数、一页怎么定、要碰的路径、搜哪些文件 |
-| `crates/miyu-basesystem/src/grep/search.rs` | 认正则；三种搜法；二进制；一行怎么截 |
-| `crates/miyu-basesystem/src/grep/render.rs` | 三种输出的写法、分页、给人看的说法 |
-| `crates/miyu-basesystem/src/walk.rs`、`pattern.rs` | 走目录、`glob` 的模式：和 `glob` 共用（`tools/glob.md`） |
-| `crates/miyu-basesystem/src/common.rs`、`common/shown.rs` | 几件共用的几句；路径怎么写 |
+| `crates/gqy-basesystem/src/grep.rs` | 参数、一页怎么定、要碰的路径、搜哪些文件 |
+| `crates/gqy-basesystem/src/grep/search.rs` | 认正则；三种搜法；二进制；一行怎么截 |
+| `crates/gqy-basesystem/src/grep/render.rs` | 三种输出的写法、分页、给人看的说法 |
+| `crates/gqy-basesystem/src/walk.rs`、`pattern.rs` | 走目录、`glob` 的模式：和 `glob` 共用（`tools/glob.md`） |
+| `crates/gqy-basesystem/src/common.rs`、`common/shown.rs` | 几件共用的几句；路径怎么写 |
 | `resources/software/basesystem/tools/grep.json` | 说明和参数格式 |
 | `resources/software/basesystem/grep/*.txt`、`common/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en}.json` | 显示名、结果那一句 |
@@ -171,10 +171,10 @@ f.txt-9-line 9
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/grep.rs` | 参数格式里的八个参数、报的路径；默认只列文件、新的在前；三种输出的写法；前后行和 `--`、`-C`、`context` 压过 `-A`、只要 `-A`；跳过的匹配不带它的前后行、`head_limit` 以外的也不带；`glob`、`include`、点名一个文件不管 `glob`；点名一个 FIFO 马上交回（Unix）；`-A`、`-B`、`-C` 写成字符串的整数也认；忽略的、二进制的、数据根里的不搜；`-i`、UTF-16；`head_limit`、`offset` 翻页、0 不限、`content` 够数就停；默认 250；一行截到 500；没搜到不算出错、正则和 `glob` 写错了算、没有的路径 |
-| `crates/miyu-basesystem/tests/glob.rs`、`src/pattern/tests.rs`、`src/walk/tests.rs` | 走目录、模式、叫停（和 `glob` 共用） |
-| `crates/miyu-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
-| `crates/miyu-session/tests/search.rs` | 会话里真的调它：工作区里搜得到、边界以外的也搜得到（施工 5-4 上）；从上面搜下来不进数据根 |
+| `crates/gqy-basesystem/tests/grep.rs` | 参数格式里的八个参数、报的路径；默认只列文件、新的在前；三种输出的写法；前后行和 `--`、`-C`、`context` 压过 `-A`、只要 `-A`；跳过的匹配不带它的前后行、`head_limit` 以外的也不带；`glob`、`include`、点名一个文件不管 `glob`；点名一个 FIFO 马上交回（Unix）；`-A`、`-B`、`-C` 写成字符串的整数也认；忽略的、二进制的、数据根里的不搜；`-i`、UTF-16；`head_limit`、`offset` 翻页、0 不限、`content` 够数就停；默认 250；一行截到 500；没搜到不算出错、正则和 `glob` 写错了算、没有的路径 |
+| `crates/gqy-basesystem/tests/glob.rs`、`src/pattern/tests.rs`、`src/walk/tests.rs` | 走目录、模式、叫停（和 `glob` 共用） |
+| `crates/gqy-basesystem/tests/human.rs` | 每一种结果的说法，两种语言都换得出字 |
+| `crates/gqy-session/tests/search.rs` | 会话里真的调它：工作区里搜得到、边界以外的也搜得到（施工 5-4 上）；从上面搜下来不进数据根 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

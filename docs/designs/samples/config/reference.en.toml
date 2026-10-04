@@ -1,8 +1,8 @@
-# Every Miyu setting and its default. This file is generated. Editing it has no effect.
+# Every GQY setting and its default. This file is generated. Editing it has no effect.
 # Write the system config in system/config.toml and personal settings in home/<account>/settings.toml.
 
 [log]
-# Runtime log level: How much the runtime log records. Set debug when chasing a problem. MIYU_LOG, when set, wins for that launch.
+# Runtime log level: How much the runtime log records. Set debug when chasing a problem. GQY_LOG, when set, wins for that launch.
 # Allowed: error, warn, info, debug, trace or off. Only in the system config. Takes effect at once.
 level = "info"
 
@@ -94,7 +94,7 @@ subagent = false
 # Allowed: openai-chat, anthropic or openai-responses. Only in the system config or personal settings. Takes effect next turn.
 # driver =
 
-# Keys: Write { secret = "name" } (saved with miyu login) or { env = "VARIABLE" }. Each session sticks to one of them. Empty means no auth header.
+# Keys: Write { secret = "name" } (saved with gqy login) or { env = "VARIABLE" }. Each session sticks to one of them. Empty means no auth header.
 # Allowed: a list of { secret = "…" } or { env = "…" }. Only in the system config or personal settings. Takes effect next turn.
 keys = []
 

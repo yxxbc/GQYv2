@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>body{margin:0}</style></head><body><!-- 本地外壳：这一行和最后一行只给直接打开用，发布到网上时去掉 -->
-<title>Miyu 架构全图</title>
+<title>GQY 架构全图</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@700&display=swap">
@@ -240,8 +240,8 @@ footer{margin-top:44px;color:var(--ink-2);font-size:13px}
 
 <div class="page">
   <header>
-    <p class="eyebrow">MIYU 重制版 · 第一轮设计 · 2026-09-25</p>
-    <h1>Miyu 架构全图</h1>
+    <p class="eyebrow">GQY 重制版 · 第一轮设计 · 2026-09-25</p>
+    <h1>GQY 架构全图</h1>
     <p class="lede">一个无头的核心，外面接可替换的头。内核只提供机制，策略都是数据和软件；一切状态都是一本只增日志的投影；权限由代码判定，不靠提示词。</p>
     <ul class="facts">
       <li><b>1</b><span><strong>个核心进程</strong>，每个数据根一个</span></li>
@@ -268,7 +268,7 @@ footer{margin-top:44px;color:var(--ink-2);font-size:13px}
   <section class="board" aria-label="架构图">
     <div class="board-scroll" id="scroll">
       <div class="board-inner" id="inner">
-        <svg id="map" viewBox="0 0 1400 1192" role="img" aria-label="Miyu 架构图：头、核心协议、核心进程、内核、内核空间模块、场所驱动、外部服务、核心的子进程和数据根"></svg>
+        <svg id="map" viewBox="0 0 1400 1192" role="img" aria-label="GQY 架构图：头、核心协议、核心进程、内核、内核空间模块、场所驱动、外部服务、核心的子进程和数据根"></svg>
         <div class="pop" id="pop" hidden role="dialog" aria-modal="false"></div>
       </div>
     </div>
@@ -317,7 +317,7 @@ footer{margin-top:44px;color:var(--ink-2);font-size:13px}
     <h2>第二轮细纲要细聊的</h2>
     <div class="next">
       <div class="rule"><b>工具加载（已定）</b><p>全量、存根、关三个状态；存根按组加载；出厂是常用的全量、其余存根，可以配置；描述也能改。见 25-工具加载。设置页的样子和头的样式一起出图。</p></div>
-      <div class="rule"><b>头的样式</b><p>Claude Code 的交互，opencode 的外观，Miyu 的时间线和收起式输出。</p></div>
+      <div class="rule"><b>头的样式</b><p>Claude Code 的交互，opencode 的外观，GQY 的时间线和收起式输出。</p></div>
       <div class="rule"><b>提示词</b><p>以旧版一直在用的提示词为参考。</p></div>
     </div>
   </section>
@@ -347,7 +347,7 @@ footer{margin-top:44px;color:var(--ink-2);font-size:13px}
       <li><span class="no">19</span><div><b>知识库</b> <span>文档就是文件、三件工具、克制的自动想起</span></div></li>
       <li><span class="no">20</span><div><b>语音</b> <span>桌面语音是一个场所、听写、QQ 语音</span></div></li>
       <li><span class="no">21</span><div><b>网页</b> <span>以旧版为底、原生 JS、照清单生成的设置页</span></div></li>
-      <li><span class="no">22</span><div><b>命令行</b> <span>miyu ask、给程序用、终端无缝集成</span></div></li>
+      <li><span class="no">22</span><div><b>命令行</b> <span>gqy ask、给程序用、终端无缝集成</span></div></li>
       <li><span class="no">23</span><div><b>性能预算</b> <span>量什么、怎么量、要达到多少</span></div></li>
       <li><span class="no">24</span><div><b>威胁模型</b> <span>对手、防线、接受了的风险</span></div></li>
       <li><span class="no">25</span><div><b>工具加载</b> <span>全量、存根、关；按组加载；出厂的混合模式</span></div></li>
@@ -384,7 +384,7 @@ function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<':
 const GROUPS = [
   { id: 'g_heads', x: 256, y: 14, w: 888, h: 128, label: '头 · 各自独立的进程，可以同时连好几个', tag: true,
     i: { k: '头', w: '可替换的组件。只经过核心协议和核心交互，不写业务逻辑；它们的差异只影响怎么显示，不影响模型看到什么。',
-      p: ['连接时声明自己的能力，例如能不能显示图片、能不能弹出提问', '多个头可以同时连着同一个会话，像 tmux 的多个客户端', '第二轮细纲细聊头的样式：Claude Code 的交互，opencode 的外观，Miyu 的时间线和收起式输出'],
+      p: ['连接时声明自己的能力，例如能不能显示图片、能不能弹出提问', '多个头可以同时连着同一个会话，像 tmux 的多个客户端', '第二轮细纲细聊头的样式：Claude Code 的交互，opencode 的外观，GQY 的时间线和收起式输出'],
       l: 'TTY：每个头都是一个终端', r: '01-架构 §五 · 13、21、22' } },
   { id: 'g_core', x: 256, y: 208, w: 888, h: 686, cls: 'core',
     i: { k: '核心进程', w: '宏内核，单进程，每个数据根只有一个。会话、回合、工具、记忆全在这里，没有任何头也能完整工作。',
@@ -402,7 +402,7 @@ const GROUPS = [
     i: { k: '内核空间模块', w: '策略和模型都在内核之外，换掉它们，内核一行不改。',
       p: ['出厂的人格、预设、提示词、工具描述，都是随发行附带的策略数据'], r: '02-内核 §一' } },
   { id: 'g_drivers', x: 16, y: 208, w: 220, h: 532, label: '场所驱动 · 核心拉起，也是头',
-    i: { k: '场所驱动', w: '把一种平台的线路协议翻译成统一的消息。由核心拉起，经标准输入输出说 Miyu 协议。',
+    i: { k: '场所驱动', w: '把一种平台的线路协议翻译成统一的消息。由核心拉起，经标准输入输出说 GQY 协议。',
       p: ['换平台只换驱动：以后接 Telegram、Discord，各写一个桥', '驱动只翻译，决定都在核心的场所子系统里'], l: '终端驱动', r: '18 §二' } },
   { id: 'g_net', x: 1164, y: 340, w: 220, h: 522, label: '外部 · 经网络',
     i: { k: '外部', w: '核心经网络去的地方：模型供应商、模型资料、软件源，以及经代理访问的网站。', r: '15、12、11' } },
@@ -418,15 +418,15 @@ const GROUPS = [
 /* ---------------- data: nodes ---------------- */
 const NODES = [
   // heads
-  { id: 'n_tui', x: 268, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端界面', s: ['miyu · 全屏 TUI', '时间线 · 抽屉 · 会话树'],
+  { id: 'n_tui', x: 268, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端界面', s: ['gqy · 全屏 TUI', '时间线 · 抽屉 · 会话树'],
     i: { k: '头 · 独立进程', w: '全屏的终端界面。宽屏有侧栏，窄屏把信息收进底栏。时间线延续旧版：细线穿过图标，说话处断开，过程收起成一行英文摘要。',
       p: ['确认、提问、选择从底部的抽屉升起（H4）', '会话树在底栏下方：主会话在最上面，子代理和后台命令各占一行，最多五行，秒切过去（H7）', '只负责画：显示什么由核心的视图投影决定'], l: '一个终端', r: '13-终端界面 · H1–H14' } },
   { id: 'n_web', x: 490, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '网页', s: ['浏览器 · 原生 JS', '设置页照清单生成'],
     i: { k: '头 · 独立进程', w: '以旧版网页为底：样子、版面、交互照旧，数据层照新协议重写。原生 JavaScript 按 ES 模块组织，不用框架，不用构建。',
-      p: ['本机用 miyu web 打开一次性登录链接，远程必须登录（X6）', '页面文件由核心的 HTTP 模块提供，放在资源目录里，不编进二进制', '产物和第三方页面放在沙盒的 iframe 里（X7）'], r: '21-网页 · X1–X8' } },
-  { id: 'n_cli', x: 712, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '命令行', s: ['miyu ask · miyu stdio', '给人，也给别的程序'],
+      p: ['本机用 gqy web 打开一次性登录链接，远程必须登录（X6）', '页面文件由核心的 HTTP 模块提供，放在资源目录里，不编进二进制', '产物和第三方页面放在沙盒的 iframe 里（X7）'], r: '21-网页 · X1–X8' } },
+  { id: 'n_cli', x: 712, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '命令行', s: ['gqy ask · gqy stdio', '给人，也给别的程序'],
     i: { k: '头 · 独立进程', w: '最薄的头，也是协议的参考实现。stdout 放结果，stderr 放进度，退出码 0 到 5。',
-      p: ['只有 miyu ask 会把文字发给模型，打错的子命令直接报错（R4）', '没人能回答的确认一律拒绝，退出码 4（O3）', '--format json、stream-json，以及直通协议的 miyu stdio（O4）', '它退出时，发起的后台任务留在核心里接着跑'], r: '22-命令行 · O1–O6' } },
+      p: ['只有 gqy ask 会把文字发给模型，打错的子命令直接报错（R4）', '没人能回答的确认一律拒绝，退出码 4（O3）', '--format json、stream-json，以及直通协议的 gqy stdio（O4）', '它退出时，发起的后台任务留在核心里接着跑'], r: '22-命令行 · O1–O6' } },
   { id: 'n_shell', x: 934, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端无缝集成', s: ['fish 完整 · bash/zsh 兜底', '工作目录跟着 shell'],
     i: { k: '头 · 独立进程', w: 'fish 沿用旧版完整的集成；bash 和 zsh 只做「命令找不到时对话」。一个 shell 窗口就是一条连续的终端会话。',
       p: ['每一轮开始时，工作目录跟着 shell 走', '头也可以当提供者：例如「读取刚才那条命令的输出」，只有它做得到'], r: '22-命令行 §七 · O6' } },
@@ -446,12 +446,12 @@ const NODES = [
     i: { k: '内核空间模块', w: '仿 Linux：账号、组、资源的属主，读、改、用三种权限；管理员的权力拆成一项项能力。没有 root。',
       p: ['能不能做 = 属主给的权限 ∩ 管理能力 ∩ 强制策略 ∩ 越界时人的确认', '权限检查分两道：命令进入判这条命令能不能发，工具执行前判这一步能不能做', '管理员看不到成员的会话：任何能力都不能越过属主权限（U2）', '组、权限、能力的每次变化都记进系统日志'], l: '用户、组、rwx、capabilities', r: '06-多用户与身份 · U1–U12' } },
   { id: 'n_config', x: 908, y: 236, w: 220, h: 90, k: 'module', p: 'core', t: '配置服务', s: ['一份清单 · 七层 · 管理员锁', '只有核心写文件'],
-    i: { k: '内核空间模块', w: '每个配置项只在配置清单里声明一次。校验、设置页、JSON Schema、miyu config、参考文档都从它生成。',
+    i: { k: '内核空间模块', w: '每个配置项只在配置清单里声明一次。校验、设置页、JSON Schema、gqy config、参考文档都从它生成。',
       p: ['七层：默认值、系统、人格、预设、个人、项目、会话；管理员可以锁住某一项', '写盘只改那一项，注释原样保留，顺着符号链接写', '生效分三种：当场、下一个回合开始、重启核心', '项目配置只能收紧，第一次遇到要你信任（G3）'], l: '/etc、~/.config 与 dconf 的锁', r: '14-配置 · G1–G10' } },
   // venue subsystem
   { id: 'n_rules', x: 280, y: 368, w: 160, h: 64, k: 'module', p: 'core', t: '场所规则', s: ['新场所出现时配置它', '像 udev · venues.d'],
     i: { k: '场所子系统', w: 'system/venues.d/ 下的规则文件，按文件名顺序套用，后面的覆盖前面的。',
-      p: ['能设：人格、预设、线路规程、准入、触发词、冷静、限流、睡眠、管理的人', 'miyu venue show 列出每一项属性来自哪条规则'], l: 'udev 规则', r: '18 §三 · Q13' } },
+      p: ['能设：人格、预设、线路规程、准入、触发词、冷静、限流、睡眠、管理的人', 'gqy venue show 列出每一项属性来自哪条规则'], l: 'udev 规则', r: '18 §三 · Q13' } },
   { id: 'n_inchain', x: 280, y: 438, w: 160, h: 48, k: 'module', p: 'core', t: '进站链', s: ['睡眠→禁言→准入→限流'],
     i: { k: '场所子系统', w: '进来的每条消息先过这一道。每条规则给出结果：放行、只记下、拒绝并回一句。',
       p: ['睡着时只放行主人和自己人，其余只记下，醒来也不补看', '限流数的是她要跑的回合，不是消息条数', '同一条消息只收一次：平台的消息编号就是命令编号（Q8）'], l: 'netfilter 的 INPUT 链', r: '18 §五 · Q6、Q14' } },
@@ -495,7 +495,7 @@ const NODES = [
       p: ['压缩只前进：新摘要替代到的位置不早于上一次', 'fork 式摘要刻意复用主对话的前缀', '群聊用同一套机制'], l: '内存回收', r: '09-压缩 · Z1–Z9' } },
   { id: 'n_prompt', x: 960, y: 508, w: 160, h: 64, k: 'module', p: 'core', t: '提示词装配', tag: true, s: ['人格：她是谁', '预设：开哪些软件'],
     i: { k: '内核空间模块', w: '组装请求的独占挂接点。人格管内容：人设提示词、示范对话、角色扮演提示、开场白、声音。预设管开关：打开哪些装好的软件。',
-      p: ['人格和预设在开会话时定，之后不换（Y5）', '出厂人格：Miyu、软件工程师；出厂预设：功能全开、开发', '装了但这次没开的软件，系统提示词里一行写明（Y8）', '提示词第二轮细纲定，参考旧版一直在用的'], l: '预设像 systemd 的 target', r: '16-人格与预设 · Y1–Y8' } },
+      p: ['人格和预设在开会话时定，之后不换（Y5）', '出厂人格：GQY、软件工程师；出厂预设：功能全开、开发', '装了但这次没开的软件，系统提示词里一行写明（Y8）', '提示词第二轮细纲定，参考旧版一直在用的'], l: '预设像 systemd 的 target', r: '16-人格与预设 · Y1–Y8' } },
   { id: 'n_models', x: 960, y: 578, w: 160, h: 64, k: 'module', p: 'core', t: '模型服务', s: ['供应商 · 模型 · 池', '四个挡位 · 五种用途'],
     i: { k: '内核空间模块', w: '供应商是一条通往模型的路。模型写成「供应商/模型」，池写成 @名字，四个挡位是 lite、cheap、standard、flagship。',
       p: ['池可以钉住，也可以轮换；出错按错误类别换，已经开始流式输出的不重试', '五种用途：主对话、看图、向量、识别、合成', '子代理、辅助请求、群里的判官按挡位走'], r: '15-模型与供应商 · M1–M9' } },
@@ -513,7 +513,7 @@ const NODES = [
     i: { k: '可选软件包 · 子系统', w: '文档就是文件，索引是派生数据，放在 SQLite 里。认 Markdown、纯文本、PDF、网页 HTML。',
       p: ['三件工具：kb_search、kb_read、kb_save', '自动想起每个库一个开关，只带开头一小段和出处，要全文自己去读（N5）', '挂进来的目录只读'], r: '19-知识库 · N1–N7' } },
   { id: 'n_adapters', x: 618, y: 758, w: 156, h: 120, k: 'module', p: 'core', t: '扩展适配器', s: ['进程扩展：像 FUSE', 'MCP：只接工具', '外部只挂异步点', '每次调用都有超时'],
-    i: { k: '内核空间模块', w: '外部扩展是独立进程，经标准输入输出说 Miyu 协议，适配器替它实现内核接口。MCP 服务器经 MCP 适配器接进来。',
+    i: { k: '内核空间模块', w: '外部扩展是独立进程，经标准输入输出说 GQY 协议，适配器替它实现内核接口。MCP 服务器经 MCP 适配器接进来。',
       p: ['独占插槽只对内核空间模块开放，外部扩展只能挂异步的点（I3）', '崩溃后退避重启，连续失败就停下，并说明原因', '工具目录缓存到磁盘，核心启动时不等扩展就绪（I8）', '最简单的扩展是脚本：一个可执行文件，头部写明它提供的那件工具'], l: 'FUSE', r: '05-内核接口 §四 · I2、I3、I8' } },
   { id: 'n_software', x: 786, y: 758, w: 214, h: 120, k: 'module', p: 'core', t: '自带软件', custom: 'software',
     i: { k: '随发行附带的软件', w: '内核不内置工具，发行版自带软件，就像 Linux 发行版自带 GNU 的软件。自带的和第三方的用同一套接口，不开后门。',
@@ -526,13 +526,13 @@ const NODES = [
   { id: 'x_qq', x: 28, y: 244, w: 196, h: 64, k: 'ext', p: 'ext', t: 'QQ 群与私聊', s: ['OneBot v11 实现', 'NapCat、SnowLuma…'],
     i: { k: '外部', w: '平台上说话的人都是外部身份：没有账号，碰不到这台机器。主人写下自己的 QQ 号就是绑定，私聊里就是本人（Q7）。',
       p: ['群里的人经场所组拿到最少的权限', '主人在私聊里要确认的事，就在聊天里问', '盗号、伪造私聊、注入后随手确认，这三条风险项目主人接受了，写在 24-威胁模型'], l: '远程的多人终端', r: '18 §三，06 · U8' } },
-  { id: 'n_qqbridge', x: 28, y: 420, w: 196, h: 84, k: 'proc', p: 'child', t: 'QQ 桥', s: ['适配层 · quirk 表', '平台工具：像 ioctl', 'Miyu 协议 · 标准输入输出'],
+  { id: 'n_qqbridge', x: 28, y: 420, w: 196, h: 84, k: 'proc', p: 'child', t: 'QQ 桥', s: ['适配层 · quirk 表', '平台工具：像 ioctl', 'GQY 协议 · 标准输入输出'],
     i: { k: '场所驱动 · 核心的子进程', w: '独立进程，由核心拉起。它是一个头，也是一个扩展（D3）：把平台上的人接进会话，也提供平台工具。',
       p: ['代表平台上的人发命令只能降权，要有 act_for_external 能力', '按平台的格式发：拆段、长文转图、表情包单独一条', 'quirk 表按连上来的实现和版本打开修正，只写在 QQ 桥里（Q10）', '平台工具都带「对哪个场所」：终端里也能处理 QQ 上的事，只有主人能用（Q16）'], l: '终端驱动', r: '18 §一、§九、§十一' } },
   { id: 'x_mic', x: 28, y: 560, w: 196, h: 48, k: 'ext', p: 'ext', t: '麦克风与音箱', s: ['系统的声音服务'],
-    i: { k: '外部 · 设备', w: '声音从哪进、从哪出，归系统管：PipeWire、CoreAudio、WASAPI。Miyu 只选设备，不管路由。',
+    i: { k: '外部 · 设备', w: '声音从哪进、从哪出，归系统管：PipeWire、CoreAudio、WASAPI。GQY 只选设备，不管路由。',
       p: ['Linux 上 WirePlumber 会记住每个流被挪到了哪；测试用 pw-link 接线，不用 pactl move'], r: '20 §八' } },
-  { id: 'n_voice', x: 28, y: 642, w: 196, h: 84, k: 'proc', p: 'child', t: '语音 worker', s: ['miyu-voice · 单独下载', '人声检测 · 唤醒词', '本机识别 SenseVoice'],
+  { id: 'n_voice', x: 28, y: 642, w: 196, h: 84, k: 'proc', p: 'child', t: '语音 worker', s: ['gqy-voice · 单独下载', '人声检测 · 唤醒词', '本机识别 SenseVoice'],
     i: { k: '场所驱动 · 重型 worker', w: '单独的二进制软件包，第一次用语音时才下载。它管麦克风和播放、人声检测、唤醒词、本机识别，是桌面语音这个场所的驱动。',
       p: ['线路规程「唤醒」：叫她的名字；播完 30 秒内接着说，不用再叫（V6）', '你一开口，她就停下', '桌面助手开着时它一直在，待机只跑人声检测和唤醒词；只用听写时用完就退', '模型文件约 190MB，放在系统缓存目录，整台机器共用（V4）'], r: '20-语音 · V3–V6' } },
   { id: 'x_editor', x: 28, y: 790, w: 196, h: 64, k: 'ext', p: 'ext', t: '你的编辑器', s: ['手改 TOML', '核心监视、重读'],
@@ -540,18 +540,18 @@ const NODES = [
       p: ['写错了保留上一份好的，并说清是哪一行（G8）', '编辑器靠 #:schema 拿到补全和校验（G10）'], r: '14-配置 §九' } },
   // right column
   { id: 'x_svc', x: 1176, y: 236, w: 196, h: 64, k: 'ext', p: 'ext', t: '系统服务管理器', s: ['systemd · launchd · Run 键', '要常驻时托管核心'],
-    i: { k: '外部 · 本机', w: 'Miyu 不自己造 init。开了通讯平台、定时任务或远程访问，就提议把核心登记成登录时启动的服务。',
+    i: { k: '外部 · 本机', w: 'GQY 不自己造 init。开了通讯平台、定时任务或远程访问，就提议把核心登记成登录时启动的服务。',
       p: ['崩溃后由它重启；全部状态从日志重建，未完成的回合标成中断'], l: 'init、systemd', r: '12 §二 · R1' } },
   { id: 'x_pkgsrc', x: 1176, y: 368, w: 196, h: 64, k: 'ext', p: 'ext', t: '软件源', s: ['官方源 ed25519 签名', 'GitHub Releases'],
     i: { k: '外部', w: '一个软件源就是一份索引：包名、版本、各平台的下载地址和哈希。',
-      p: ['添加第三方源要你明确信任', 'Miyu 自己随 GitHub Releases 发布；AUR、Homebrew 另有渠道，不建 apt、dnf 仓库'], l: 'apt 的源、Homebrew 的 tap', r: '12 §四、§六 · R6、R12' } },
+      p: ['添加第三方源要你明确信任', 'GQY 自己随 GitHub Releases 发布；AUR、Homebrew 另有渠道，不建 apt、dnf 仓库'], l: 'apt 的源、Homebrew 的 tap', r: '12 §四、§六 · R6、R12' } },
   { id: 'x_modelsdev', x: 1176, y: 580, w: 196, h: 46, k: 'ext', p: 'ext', t: 'models.dev', s: ['模型资料的来源之一'],
     i: { k: '外部', w: '模型资料按优先级取：手填的 > 实测学到的 > 供应商的清单 > models.dev > 驱动的默认。', r: '15 §三 · M2' } },
   { id: 'x_providers', x: 1176, y: 645, w: 196, h: 86, k: 'ext', p: 'ext', t: '模型供应商', s: ['DeepSeek · Anthropic', 'OpenAI · Gemini · Ollama', '借订阅的 CLI · 云端合成'],
     i: { k: '外部', w: '一条通往模型的路：驱动、地址、凭据。密钥在 secrets.toml 里，只能写入、替换、删除，不能读回。',
       p: ['第一次接入时先找已有的凭据', '金额照官方价格算我花了多少，可乘倍率（M9）', '成员可以配只给自己用的模型和密钥（M6）'], r: '15-模型与供应商' } },
   { id: 'x_web', x: 1176, y: 790, w: 196, h: 56, k: 'ext', p: 'ext', t: '网站', s: ['搜索 · 抓取 · 下载'],
-    i: { k: '外部', w: '沙盒里的命令、核心进程里的联网工具，都只经 Miyu 自带的代理出去，按网站放行，不解密 HTTPS。',
+    i: { k: '外部', w: '沙盒里的命令、核心进程里的联网工具，都只经 GQY 自带的代理出去，按网站放行，不解密 HTTPS。',
       p: ['第一次访问某个网站时问你，同意后记住', '管理员放行的网站，成员可以直接用'], r: '11 §四 · A5' } },
   // children
   { id: 'p_embed', x: 432, y: 980, w: 168, h: 84, k: 'proc', p: 'child', t: 'embedding worker', s: ['本机小模型', '第一次用时下载'],
@@ -660,7 +660,7 @@ const SCEN = [
     { t: '在沙盒边界之内就直接跑，不问人。要越界时，确认条目经视图投影推到头上。', n: ['k_log', 'n_view', 'n_tui'], e: ['e_log_view', 'e_push', 'e_h_tui'], g: ['G4'] },
     { t: '你来选：允许这一次、本会话都允许、这个工作区以后都允许，或者拒绝。拒绝的理由会告诉模型。', n: ['n_tui', 'n_auth', 'k_sessions'], e: ['e_h_tui', 'e_cmd', 'e_auth_sess'], g: ['G1'] },
     { t: 'shell 在沙盒里跑：文件是白名单，连不上核心，读不到本机令牌。', n: ['n_software', 'n_sandbox', 'p_cmd'], e: ['e_tools_software', 'e_software_sandbox', 'e_sandbox_cmd'], g: ['G5'] },
-    { t: '命令要上网，只能经过 Miyu 的代理：按网站放行，第一次问你，同意后记住。', n: ['n_sandbox', 'x_web'], e: ['e_sandbox_web'] },
+    { t: '命令要上网，只能经过 GQY 的代理：按网站放行，第一次问你，同意后记住。', n: ['n_sandbox', 'x_web'], e: ['e_sandbox_web'] },
     { t: '结果经执行后的链，写成 tool.result。附带的效果给头显示 diff，给内核做撤销。', n: ['k_tools', 'k_log', 'n_view'], e: ['e_log_view', 'e_push'] },
   ] },
   { id: 'config', no: '④', t: '改一项设置', sum: '四种改法：手改文件、终端界面、网页、命令行，最后都落到同一份 TOML 上。只有核心写文件。', steps: [
@@ -672,7 +672,7 @@ const SCEN = [
     { t: 'config.changed 推给所有的头，几个界面同时更新。', n: ['n_config', 'n_tui', 'n_web', 'n_cli', 'n_shell'], e: ['e_config_push', 'e_h_tui', 'e_h_web', 'e_h_cli', 'e_h_shell'] },
   ] },
   { id: 'pkg', no: '⑤', t: '装一个软件包', sum: '加一种能力就是装一个软件包，不用改代码。扩展只能做清单里声明、你批准过的事。', steps: [
-    { t: '命令行里 miyu pkg install weather。系统级安装要「装软件」能力，装进自己的家目录不用。', n: ['n_cli', 'n_auth'], e: ['e_h_cli', 'e_cmd'], g: ['G1', 'G2'] },
+    { t: '命令行里 gqy pkg install weather。系统级安装要「装软件」能力，装进自己的家目录不用。', n: ['n_cli', 'n_auth'], e: ['e_h_cli', 'e_cmd'], g: ['G1', 'G2'] },
     { t: '软件包管理从软件源取索引，校验哈希和签名。', n: ['n_pkg', 'x_pkgsrc'], e: ['e_auth_pkg', 'e_pkg_src'] },
     { t: '头上显示发布者、申请的能力、会替换哪个角色，由你批准。', n: ['n_cli', 'n_pkg'], e: ['e_h_cli'], g: ['G6'] },
     { t: '登记：清单加注册，冻结出一份新的目录快照。', n: ['n_pkg', 'k_catalog'], e: ['e_pkg_catalog'] },
@@ -990,7 +990,7 @@ const BRIEF = {
       <li class="p-child"><b>核心的子进程</b>桥与扩展按账号各一份；重型 worker 按需拉起、空闲退出；沙盒里的命令。都随核心退出。</li>
       <li class="p-ext"><b>外部</b>系统服务管理器、QQ 平台、声音服务、模型供应商、软件源、网站。</li>
     </ul>
-    <p class="muted">分发上是一个 miyu 二进制，像 busybox 那样按子命令分发；语音、本地 embedding 这类重型 worker 单独下载。</p>`,
+    <p class="muted">分发上是一个 gqy 二进制，像 busybox 那样按子命令分发；语音、本地 embedding 这类重型 worker 单独下载。</p>`,
 };
 
 function render() {

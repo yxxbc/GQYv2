@@ -17,7 +17,7 @@
 把 19 §6.1 的第 2、3、6 项门禁落地，并把已有检查组装成统一的 `cargo xtask check`：
 
 1. **clippy 全量**（第 2 项）：`unwrap_used`、`expect_used`、`panic`、`indexing_slicing`（非测试 deny）、`let_underscore_must_use`、`unused_result_ok`、`await_holding_lock`、`large_futures`、`missing_errors_doc`、`missing_panics_doc`、`disallowed_methods`（`Runtime::new`、`block_on`、`unbounded_channel`）。
-2. **rustdoc**（第 3 项）：`missing_docs`（rust lint）、断链检查（`RUSTDOCFLAGS="-D rustdoc::broken_intra_doc_links -D rustdoc::private_intra_doc_links" cargo doc --workspace --no-deps --document-private-items`）。**生成含私有项的文档**：只生成公开项时，私有函数的注释断链查不出来——miyu 0-2 实测踩过（他们的门禁把私有的也一起生成，有一条警告就算没过）。
+2. **rustdoc**（第 3 项）：`missing_docs`（rust lint）、断链检查（`RUSTDOCFLAGS="-D rustdoc::broken_intra_doc_links -D rustdoc::private_intra_doc_links" cargo doc --workspace --no-deps --document-private-items`）。**生成含私有项的文档**：只生成公开项时，私有函数的注释断链查不出来——gqy 0-2 实测踩过（他们的门禁把私有的也一起生成，有一条警告就算没过）。
 3. **文件体积**（第 6 项）：`cargo xtask size` —— `.rs` / `.ts` / `.css` 文件 800 行警告、1500 行需在施工单说明拆分计划（警告）、2000 行红。
 
 做完之后，任何新代码在提交前都会被这几条拦一遍；`cargo xtask check` 是本地与 CI 共用的同一实现。

@@ -34,8 +34,8 @@
 
 ### 验收
 
-1. 测试（先写，新类型、新函数改之前编译不过）：图纸「守着它的」那张表每一行；`media.rs` 挪完 openai-chat 的样本一个字节不变；`miyu-models` 认 `anthropic`、目录有开关的模型多 `off`；路由给 anthropic 填输出上限（一次性入口写了的、模型资料的、都没有的 8192）。
-2. 请求形状探针：`MIYU_PROBE_WRITE=1` 重写，`openai-chat` 的存档 `git diff` 是空的，`terminal/anthropic/` 是新加的；每次请求去掉打点以后是上一次的前缀延伸，随机日志三百例也查。
+1. 测试（先写，新类型、新函数改之前编译不过）：图纸「守着它的」那张表每一行；`media.rs` 挪完 openai-chat 的样本一个字节不变；`gqy-models` 认 `anthropic`、目录有开关的模型多 `off`；路由给 anthropic 填输出上限（一次性入口写了的、模型资料的、都没有的 8192）。
+2. 请求形状探针：`GQY_PROBE_WRITE=1` 重写，`openai-chat` 的存档 `git diff` 是空的，`terminal/anthropic/` 是新加的；每次请求去掉打点以后是上一次的前缀延伸，随机日志三百例也查。
 3. 给模型看的字：没有新的。
 4. 手写变异 15 个左右，挑关键的，全被逮住；`cargo xtask check` 八项全过；三台机器的 CI 全绿。
 5. 真模型实测（主会话合并前，DeepSeek 的 Anthropic 兼容接口）：编码、解码、带工具的循环、思考（配一档、签名回传不报 400）、人附图、打断再接着说、写错 key 是 `auth`；`"tools":[]`、PDF 放在 `tool_result` 里收不收照实记。缓存命中这一条它测不了（自动缓存、不认打点）：记成「待 Anthropic 官方的 key」，或者用 Zen 上的 Claude 测（收费，用之前问项目主人）。
@@ -50,10 +50,10 @@
 ### 验收结果
 
 - 测试（先写；新的类型、函数改之前编译不过）：
-  - `miyu-drivers`：`tests/anthropic.rs`（12 个）、`anthropic_marks.rs`（8 个，随机会话 60 个种子）、`anthropic_thinking.rs`（5 个）、`anthropic_media.rs`（8 个）、`anthropic_streams.rs`（7 个，15 份流的样本、从每个字节切开喂都一样）、`src/anthropic/models/tests.rs`（2 个）、`classify/tests.rs` 多一个（这一家的错误体 12 类）。样本 18 份在 `docs/designs/samples/drivers/anthropic/`。
-  - `miyu-models`：`provider/tests.rs`、`facts/tests.rs` 各多一个；`miyu-session`：`tests/route_anthropic.rs`（4 个）；`miyu-core`：出厂档案那一条多 `anthropic`。
+  - `gqy-drivers`：`tests/anthropic.rs`（12 个）、`anthropic_marks.rs`（8 个，随机会话 60 个种子）、`anthropic_thinking.rs`（5 个）、`anthropic_media.rs`（8 个）、`anthropic_streams.rs`（7 个，15 份流的样本、从每个字节切开喂都一样）、`src/anthropic/models/tests.rs`（2 个）、`classify/tests.rs` 多一个（这一家的错误体 12 类）。样本 18 份在 `docs/designs/samples/drivers/anthropic/`。
+  - `gqy-models`：`provider/tests.rs`、`facts/tests.rs` 各多一个；`gqy-session`：`tests/route_anthropic.rs`（4 个）；`gqy-core`：出厂档案那一条多 `anthropic`。
   - 拿 `anthropic` 当「还没有的驱动」的几处测试换成 `openai-responses`。
-- 请求形状探针：`MIYU_PROBE_WRITE=1` 重写，`openai-chat` 的存档 `git diff` 是空的；新加 `terminal/anthropic/`（22 份）。每个探针、随机日志的每一次请求编码成 Anthropic、去掉打点以后都是上一次的前缀延伸。
+- 请求形状探针：`GQY_PROBE_WRITE=1` 重写，`openai-chat` 的存档 `git diff` 是空的；新加 `terminal/anthropic/`（22 份）。每个探针、随机日志的每一次请求编码成 Anthropic、去掉打点以后都是上一次的前缀延伸。
 - 手写变异 19 个，逮住 18 个，一个一个改、跑相关的测试、改回去：稳定区不打；第 3 处打在 assistant 上；思考块也打；没 system 不打工具；不合并；空字也写；别家的思考也回传；用别家的编号；`is_error` 总写；档位不写 `display`；签名不理；`refusal` 当正常；用量照 openai-chat 减命中的；什么图都收；`exceed context limit` 不算超长；openai-chat 也填输出上限；anthropic 照档案的开关；不带版本头。没逮住的「同一块打两次」：编码时照有没有打点写，重复的记录本来就不会写两遍，那一行检查是多余的，改成用集合记打点、删掉它。
 - `cargo xtask check`：格式、clippy、文档、分层、纯逻辑、行数、许可证都过；测试只有 `config_set` 的 `a_write_that_fails_changes_nothing` 不过，容器里是 root 写得进只读文件，和这一步无关，CI 上过。
 - 新依赖：没有。给模型看的字：没有新的。

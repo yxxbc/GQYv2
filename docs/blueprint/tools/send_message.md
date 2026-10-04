@@ -12,21 +12,21 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-basesystem/src/send_message.rs` | 参数、认 `to`（parent/子代理/会话编号）、长度上限、交给端口、结果和效果 |
-| `crates/miyu-tool/src/messages.rs` | 发话的端口 `MessagePort`、发给谁 `Recipient`（多 `Session`）、送到了 `Delivered`（`Sent`/`Held`）、没送出去 `NotSent`，那件工具的名字 `SEND_MESSAGE`、以前的名字 `SEND_MESSAGE_FORMERLY`（`tools/interface.md`） |
-| `crates/miyu-session/src/messages.rs` | 执行器这一头：照内核交的这个会话派出去的子代理认编号，经会话表的端口送过去；送到了再问一句对方是不是没人看着的一次性会话（`SessionPort::held`）；拒绝的原因码译成 `NotSent`（`session/tools.md`「父子之间留言」） |
-| `crates/miyu-session/src/spawn.rs` | 会话表的端口多一个方法 `SessionPort::held`：对方这时是不是没人看着的一次性会话 |
-| `crates/miyu-session/src/handle.rs`、`actor.rs`、`actor/mail.rs` | `Handle` 多 `oneshot()`、`watched()`：和 `busy()` 一样由 actor 的订阅者数算出来、共用一面旗 |
-| `crates/miyu-endpoint/src/spawn.rs` | 会话表那一头 `held` 的实现：照会话表里的 `Handle` 看。`watch`（施工 C-6）：找到被等的会话（没载入的先载入），把「谁在等」交给它的 actor |
-| `crates/miyu-tool/src/run.rs` | 效果多一种 `PeerWatch`（施工 C-6），执行器照原样换成内核的 `peer.watch`（`miyu-session/src/effects.rs`） |
-| `crates/miyu-session/src/peers.rs`、`actor/watchers.rs` | 订、计时、再订（等的这一边），名单和发通知（被等的那一边），施工 C-6，`session/tools.md`「订、计时、再订」、`session/actor.md`「被等的名单」 |
+| `crates/gqy-basesystem/src/send_message.rs` | 参数、认 `to`（parent/子代理/会话编号）、长度上限、交给端口、结果和效果 |
+| `crates/gqy-tool/src/messages.rs` | 发话的端口 `MessagePort`、发给谁 `Recipient`（多 `Session`）、送到了 `Delivered`（`Sent`/`Held`）、没送出去 `NotSent`，那件工具的名字 `SEND_MESSAGE`、以前的名字 `SEND_MESSAGE_FORMERLY`（`tools/interface.md`） |
+| `crates/gqy-session/src/messages.rs` | 执行器这一头：照内核交的这个会话派出去的子代理认编号，经会话表的端口送过去；送到了再问一句对方是不是没人看着的一次性会话（`SessionPort::held`）；拒绝的原因码译成 `NotSent`（`session/tools.md`「父子之间留言」） |
+| `crates/gqy-session/src/spawn.rs` | 会话表的端口多一个方法 `SessionPort::held`：对方这时是不是没人看着的一次性会话 |
+| `crates/gqy-session/src/handle.rs`、`actor.rs`、`actor/mail.rs` | `Handle` 多 `oneshot()`、`watched()`：和 `busy()` 一样由 actor 的订阅者数算出来、共用一面旗 |
+| `crates/gqy-endpoint/src/spawn.rs` | 会话表那一头 `held` 的实现：照会话表里的 `Handle` 看。`watch`（施工 C-6）：找到被等的会话（没载入的先载入），把「谁在等」交给它的 actor |
+| `crates/gqy-tool/src/run.rs` | 效果多一种 `PeerWatch`（施工 C-6），执行器照原样换成内核的 `peer.watch`（`gqy-session/src/effects.rs`） |
+| `crates/gqy-session/src/peers.rs`、`actor/watchers.rs` | 订、计时、再订（等的这一边），名单和发通知（被等的那一边），施工 C-6，`session/tools.md`「订、计时、再订」、`session/actor.md`「被等的名单」 |
 | `resources/software/basesystem/tools/send_message.json` | 说明和参数格式 |
 | `resources/software/basesystem/send_message/*.txt` | 输出里给她看的几句 |
 | `resources/software/basesystem/human/{zh,en,ja}.json` | 显示名、结果那一句，`message_agent`、`send_message` 两个键都在 |
 
 ### 对外的样子
 
-访问类别 `read`，和 `subagent` 一样：发话什么都不改，只读开着也发得出去；一步里给几个会话发话，连着的一起发。不用 `outbound`：那是出了 Miyu、发到通讯平台上的，要问人；这里发的都是她能看到的会话（自己的树、或者同一个属主的别的主会话）。说明照 `26-提示词.md` 附录的草稿，一字不差，「只发对方现在就得知道的」那一句留着（`agents.md` 第六条第 5 条）；不点名 `sessions`：子会话和主会话共用这一份说明，子会话里没有 `sessions`（`26-提示词.md` J4）。
+访问类别 `read`，和 `subagent` 一样：发话什么都不改，只读开着也发得出去；一步里给几个会话发话，连着的一起发。不用 `outbound`：那是出了 GQY、发到通讯平台上的，要问人；这里发的都是她能看到的会话（自己的树、或者同一个属主的别的主会话）。说明照 `26-提示词.md` 附录的草稿，一字不差，「只发对方现在就得知道的」那一句留着（`agents.md` 第六条第 5 条）；不点名 `sessions`：子会话和主会话共用这一份说明，子会话里没有 `sessions`（`26-提示词.md` J4）。
 
 样本 `resources/software/basesystem/tools/send_message.json`：
 
@@ -146,15 +146,15 @@ Message sent to j1.
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-basesystem/tests/send_message.rs` | 只声明 `to`、`message`、`notify_when_idle`（必填的只有 `to`）、访问类别是读、说明里那两句在、以前的名字认得出来；发给谁照 `to` 认、话原样交出去，几段的编号照样认（施工 7-1 补），发给子代理的报 `job.messaged`、发给父的不报；每种拒绝各一句；`held`、一模一样的不算出错；超长的发出去之前拒、刚好到上限不算超；写法不对的端口不问；没有端口的送不到；少了参数的端口不问；每种说法两种语言都换得出字 |
-| `crates/miyu-basesystem/tests/send_message/watch.rs` | `notify_when_idle`（施工 C-6）：只订不发、端口不问、效果是整个编号；带话的送到了才订，被拒、太长的整次不订；订子代理、父会话、自己的拒；两样都没有的参数不对；说法两种语言都有 |
-| `crates/miyu-basesystem/tests/send_message/by_session_id.rs` | `to` 当会话编号认：整个编号、短编号都找得到同一个会话；没有列会话的端口的不去找、直接拒；找不到、对得上不止一个、是她自己：各一句，不去送 |
-| `crates/miyu-session/tests/messages.rs` | 执行器：送到对的会话、`by` 是这个会话、命令编号照调用、原话一块字、效果记进日志；到了深度上限的发给父；主会话没有父、没派过的、派它的那一轮撤掉了的、被停掉的、对方拒收、没有会话表；什么会话工具面里有它 |
-| `crates/miyu-session/tests/messages_peer.rs` | 执行器发给别的会话：命令编号、`by` 照这个会话；没人看着的一次性会话交回 `held`；限速、一模一样、对方没看的太多三种拒绝译成对应的说法 |
-| `crates/miyu-session/tests/messages_log.rs` | 运行日志：送到、送不到各一行，留言的字不进日志 |
-| `crates/miyu-endpoint/tests/messages.rs` | 真核心走一遍三层：孙代理问、中间一层答、孙代理做完、中间一层把整件活报上去，只报一次 |
-| `crates/miyu-endpoint/tests/peers.rs` | 真核心两个主会话：A 列出、发话给 B，B 被叫醒、回话，A 又被叫醒，来回几句；连续发到第 6 句被限速挡住，链自然断掉 |
-| `crates/miyu-basesystem/tests/budget.rs` | 工具面的预算 |
+| `crates/gqy-basesystem/tests/send_message.rs` | 只声明 `to`、`message`、`notify_when_idle`（必填的只有 `to`）、访问类别是读、说明里那两句在、以前的名字认得出来；发给谁照 `to` 认、话原样交出去，几段的编号照样认（施工 7-1 补），发给子代理的报 `job.messaged`、发给父的不报；每种拒绝各一句；`held`、一模一样的不算出错；超长的发出去之前拒、刚好到上限不算超；写法不对的端口不问；没有端口的送不到；少了参数的端口不问；每种说法两种语言都换得出字 |
+| `crates/gqy-basesystem/tests/send_message/watch.rs` | `notify_when_idle`（施工 C-6）：只订不发、端口不问、效果是整个编号；带话的送到了才订，被拒、太长的整次不订；订子代理、父会话、自己的拒；两样都没有的参数不对；说法两种语言都有 |
+| `crates/gqy-basesystem/tests/send_message/by_session_id.rs` | `to` 当会话编号认：整个编号、短编号都找得到同一个会话；没有列会话的端口的不去找、直接拒；找不到、对得上不止一个、是她自己：各一句，不去送 |
+| `crates/gqy-session/tests/messages.rs` | 执行器：送到对的会话、`by` 是这个会话、命令编号照调用、原话一块字、效果记进日志；到了深度上限的发给父；主会话没有父、没派过的、派它的那一轮撤掉了的、被停掉的、对方拒收、没有会话表；什么会话工具面里有它 |
+| `crates/gqy-session/tests/messages_peer.rs` | 执行器发给别的会话：命令编号、`by` 照这个会话；没人看着的一次性会话交回 `held`；限速、一模一样、对方没看的太多三种拒绝译成对应的说法 |
+| `crates/gqy-session/tests/messages_log.rs` | 运行日志：送到、送不到各一行，留言的字不进日志 |
+| `crates/gqy-endpoint/tests/messages.rs` | 真核心走一遍三层：孙代理问、中间一层答、孙代理做完、中间一层把整件活报上去，只报一次 |
+| `crates/gqy-endpoint/tests/peers.rs` | 真核心两个主会话：A 列出、发话给 B，B 被叫醒、回话，A 又被叫醒，来回几句；连续发到第 6 句被限速挡住，链自然断掉 |
+| `crates/gqy-basesystem/tests/budget.rs` | 工具面的预算 |
 | `xtask/src/ledger.rs` | 这些字的指纹和登记簿对得上 |
 
 ### 出处

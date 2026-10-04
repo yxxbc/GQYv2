@@ -1,5 +1,5 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><style>body{margin:0}</style></head><body><!-- 本地外壳：这一行和最后一行只给直接打开用，发布到网上时去掉 -->
-<title>Miyu 施工图</title>
+<title>GQY 施工图</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@700&display=swap">
@@ -272,21 +272,21 @@ a.step:hover{border-color:var(--primary)}
 <div class="page">
 
 <header class="mast">
-  <p class="eyebrow">MIYU 重制版 · 施工图</p>
-  <h1>Miyu 施工图</h1>
+  <p class="eyebrow">GQY 重制版 · 施工图</p>
+  <h1>GQY 施工图</h1>
   <p class="lede">一步一张图：这一步做完以后仓库长成什么样、新加了什么、怎么验收的。施工方案和每一步的施工单在 <code>docs/construction/</code>，这张图跟着它们一起更新。</p>
   <ul class="facts">
-    <li><b>195</b><span>/ 200 步（不算取消的两步）<strong>已完成</strong>，M6 长会话验收过了：到线就压，压完不失忆、接着干，换出去的她用 <code>history</code> 找得回；一直失败、压完很快又满的会暂停；摘要请求超长截短再试、调了工具改走隔离式；主请求超长先压再重发；撤销能撤掉压缩；人能自己叫她压、附一句要求；M7 分身验收过了：日志记得下任务的开始、结束和回报，回报到了她闲着就开一轮、正忙就在下一步看到；她能派子代理、把命令放到后台跑，子代理做完一层层报上来；她能用 jobs 看、读、停自己派出去的；父子之间能来回说话；<code>miyu ask</code> 派了子代理的，等它们都报回来、她说完才退出；撤销一轮时它派出去的任务一起停，核心崩了后台命令跟着死；Claude Code 这类别的 agent 能用 <code>miyu ask --from</code> 往她的会话里说话，她分得清不是人说的；头能读后台命令跑到一半的输出；M8 配置与模型验收过了：不靠开发用的环境变量，第一次接入找现成的 key、试通、写进配置，三种接口只用配置接上，会话里换模型，池里出错换下一个，思考强度、金额都对；网页登录的核心那一半：第一次用本机终端给的一次性码设用户名和密码，以后用它们登录，记住 30 天</span></li>
-    <li><b>8-22</b><span>下一步：M8 要补的 8-21 做完了，接着 8-22 到 8-24（网页演示转来的另两项；<code>miyu config</code> 拉起终端界面停在配置页）；网页模块做到 W-10（打包 W-11 暂停：还没到打包那一步），拆 M9（有界面）等终端界面、网页演示改好合进来再接着做</span></li>
+    <li><b>195</b><span>/ 200 步（不算取消的两步）<strong>已完成</strong>，M6 长会话验收过了：到线就压，压完不失忆、接着干，换出去的她用 <code>history</code> 找得回；一直失败、压完很快又满的会暂停；摘要请求超长截短再试、调了工具改走隔离式；主请求超长先压再重发；撤销能撤掉压缩；人能自己叫她压、附一句要求；M7 分身验收过了：日志记得下任务的开始、结束和回报，回报到了她闲着就开一轮、正忙就在下一步看到；她能派子代理、把命令放到后台跑，子代理做完一层层报上来；她能用 jobs 看、读、停自己派出去的；父子之间能来回说话；<code>gqy ask</code> 派了子代理的，等它们都报回来、她说完才退出；撤销一轮时它派出去的任务一起停，核心崩了后台命令跟着死；Claude Code 这类别的 agent 能用 <code>gqy ask --from</code> 往她的会话里说话，她分得清不是人说的；头能读后台命令跑到一半的输出；M8 配置与模型验收过了：不靠开发用的环境变量，第一次接入找现成的 key、试通、写进配置，三种接口只用配置接上，会话里换模型，池里出错换下一个，思考强度、金额都对；网页登录的核心那一半：第一次用本机终端给的一次性码设用户名和密码，以后用它们登录，记住 30 天</span></li>
+    <li><b>8-22</b><span>下一步：M8 要补的 8-21 做完了，接着 8-22 到 8-24（网页演示转来的另两项；<code>gqy config</code> 拉起终端界面停在配置页）；网页模块做到 W-10（打包 W-11 暂停：还没到打包那一步），拆 M9（有界面）等终端界面、网页演示改好合进来再接着做</span></li>
     <li><b class="mono">287899de</b><span>最近一步（8-21 供应商的显示名）的提交</span></li>
   </ul>
 </header>
 
 <section class="board" aria-labelledby="h-board">
   <h2 id="h-board">拼到哪了</h2>
-  <p class="sub">整个 Miyu 的架构图，先全画成虚线。每一步把做出来的那几块画实，块上标着是哪一步拼的；拼到最后，就是完整的一张。布局照 <code>docs/designs/架构全图.html</code>。</p>
+  <p class="sub">整个 GQY 的架构图，先全画成虚线。每一步把做出来的那几块画实，块上标着是哪一步拼的；拼到最后，就是完整的一张。布局照 <code>docs/designs/架构全图.html</code>。</p>
   <div class="map-scroll"><div class="map-inner">
-    <svg id="bmap" viewBox="0 0 1400 1192" role="img" aria-label="Miyu 的架构图，拼好的部分画实线，还没拼的画虚线。内核的框搭好了，事件日志开了个头。"></svg>
+    <svg id="bmap" viewBox="0 0 1400 1192" role="img" aria-label="GQY 的架构图，拼好的部分画实线，还没拼的画虚线。内核的框搭好了，事件日志开了个头。"></svg>
   </div></div>
   <div class="base" aria-label="地基与工具">
     <p class="base-cap">地基与工具 <span>· 不在架构图里，每一步都站在它上面</span></p>
@@ -300,7 +300,7 @@ a.step:hover{border-color:var(--primary)}
     <div class="piece ghost"><span class="by">3-5</span><span class="nm">试玩台（09-27 删掉了）</span></div>
     <div class="piece"><span class="by">3-5</span><span class="nm">给模型看的字的登记簿</span></div>
     <div class="piece"><span class="by">3-7</span><span class="nm">运行日志</span></div>
-    <div class="piece"><span class="by">3-9</span><span class="nm">主程序 miyu · 拉起核心</span></div>
+    <div class="piece"><span class="by">3-9</span><span class="nm">主程序 gqy · 拉起核心</span></div>
   </div>
   <ul class="legend" aria-label="拼图的图例">
     <li><span class="sw ghost"></span>还没拼</li>
@@ -366,10 +366,10 @@ a.step:hover{border-color:var(--primary)}
       </ol>
     </li>
     <li>
-      <div class="ms-head"><span class="ms-id">M3</span><span class="ms-name">第一次真对话</span><span class="ms-goal"><code>miyu ask</code> 跟真模型说上话，缓存命中有实测数字</span></div>
+      <div class="ms-head"><span class="ms-id">M3</span><span class="ms-name">第一次真对话</span><span class="ms-goal"><code>gqy ask</code> 跟真模型说上话，缓存命中有实测数字</span></div>
       <ol class="chips">
         <li><a class="step done" href="#s3-1"><span class="n">3-1</span>数据根<span class="st">✓</span></a></li>
-        <li><a class="step done" href="#s3-1b"><span class="n">3-1</span>数据根挪到 ~/.miyu（补）<span class="st">✓</span></a></li>
+        <li><a class="step done" href="#s3-1b"><span class="n">3-1</span>数据根挪到 ~/.gqy（补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-1c"><span class="n">3-1</span>数据根不认旧版（再补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-2"><span class="n">3-2</span>会话日志文件<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-3"><span class="n">3-3</span>blob<span class="st">✓</span></a></li>
@@ -395,7 +395,7 @@ a.step:hover{border-color:var(--primary)}
         <li><a class="step done" href="#s3-8i"><span class="n">3-8</span>订阅时补发之前的事件（六补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-8j"><span class="n">3-8</span>会话列表的索引（七补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-9a"><span class="n">3-9</span>主程序和拉起核心（上）<span class="st">✓</span></a></li>
-        <li><a class="step done" href="#s3-9b"><span class="n">3-9</span>miyu ask（下）<span class="st">✓</span></a></li>
+        <li><a class="step done" href="#s3-9b"><span class="n">3-9</span>gqy ask（下）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-9c"><span class="n">3-9</span>会话编号照先后（补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-9d"><span class="n">3-9</span>开发用的地址和模型（再补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s3-9e"><span class="n">3-9</span>附件（三补）<span class="st">✓</span></a></li>
@@ -412,7 +412,7 @@ a.step:hover{border-color:var(--primary)}
         <li><a class="step done" href="#s4-4a"><span class="n">4-4</span>读取（上）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s4-4b"><span class="n">4-4</span>找文件、搜内容（下）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s4-5a"><span class="n">4-5</span>给人看的说法（上）<span class="st">✓</span></a></li>
-        <li><a class="step done" href="#s4-5b"><span class="n">4-5</span>miyu ask 印出每一步（下）<span class="st">✓</span></a></li>
+        <li><a class="step done" href="#s4-5b"><span class="n">4-5</span>gqy ask 印出每一步（下）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s4-5c"><span class="n">4-5</span>日文的给人看的字（补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s4-5d"><span class="n">4-5</span>一个的时候说单数（再补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s4-6a"><span class="n">4-6</span>效果和写入（上）<span class="st">✓</span></a></li>
@@ -501,7 +501,7 @@ a.step:hover{border-color:var(--primary)}
         <li><a class="step done" href="#s7-7"><span class="n">7-7</span>父子之间留言<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s7-8"><span class="n">7-8</span>撤销和压缩里的任务<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s7-8b"><span class="n">7-8</span>检查点里不列任务（补）<span class="st">✓</span></a></li>
-        <li><a class="step done" href="#s7-9"><span class="n">7-9</span>miyu ask 等子代理<span class="st">✓</span></a></li>
+        <li><a class="step done" href="#s7-9"><span class="n">7-9</span>gqy ask 等子代理<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s7-9b"><span class="n">7-9</span>留了言的子代理也等（补）<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s7-10"><span class="n">7-10</span>别的 harness 发消息<span class="st">✓</span></a></li>
         <li><a class="step done" href="#s7-11"><span class="n">7-11</span>M7 验收<span class="st">✓</span></a></li>
@@ -538,7 +538,7 @@ a.step:hover{border-color:var(--primary)}
         <li><a class="step done" href="#s8-21"><span class="n">8-21</span>供应商的显示名<span class="st">✓</span></a></li>
         <li><span class="step"><span class="n">8-22</span>模型的默认温度（要补）</span></li>
         <li><span class="step"><span class="n">8-23</span>下架的模型移出池（要补）</span></li>
-        <li><span class="step"><span class="n">8-24</span><code>miyu config</code> 打开终端界面的配置页（要补）</span></li>
+        <li><span class="step"><span class="n">8-24</span><code>gqy config</code> 打开终端界面的配置页（要补）</span></li>
       </ol>
     </li>
     <li>
@@ -591,7 +591,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu-agent-remake/</span><span class="dir-note">工作区的根目录</span></div>
+            <div class="dir-label"><span class="path">gqy-agent-remake/</span><span class="dir-note">工作区的根目录</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">Cargo.toml</span><span class="rl">工作区：统一的版本、许可证和 lint</span></div>
               <div class="tile new"><span class="nm">Cargo.lock</span><span class="rl">锁文件：每个人编出来的依赖都一样</span></div>
@@ -606,7 +606,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="subdirs">
             <div class="dir">
               <div class="dir-label"><span class="path">crates/</span><span class="dir-note">一个 crate 一个目录</span></div>
-              <div class="tile new"><span class="nm">miyu-kernel</span><span class="rl">内核。只有一段说明它是什么的注释，还没有代码</span></div>
+              <div class="tile new"><span class="nm">gqy-kernel</span><span class="rl">内核。只有一段说明它是什么的注释，还没有代码</span></div>
             </div>
             <div class="dir">
               <div class="dir-label"><span class="path">docs/</span></div>
@@ -639,7 +639,7 @@ a.step:hover{border-color:var(--primary)}
       <ul>
         <li>Cargo 工作区：edition 2024，依赖解析第 3 版，成员放在 <code>crates/</code> 下。</li>
         <li>工具链钉死 1.97.0，不跟着 stable 漂。</li>
-        <li>第一个 crate <code>miyu-kernel</code>，只有文档注释。</li>
+        <li>第一个 crate <code>gqy-kernel</code>，只有文档注释。</li>
         <li>许可证、首页、AGENTS.md、忽略名单。</li>
         <li>顺带记下一条原则：每一个设计都有图纸（提交 <code>194a45d</code>）。</li>
       </ul>
@@ -672,12 +672,12 @@ a.step:hover{border-color:var(--primary)}
         <div class="stack-wrap">
           <div class="dep" aria-hidden="true">可以依赖</div>
           <div class="stack" aria-label="代码的六层，上层可以依赖下层">
-            <div class="band"><span class="lv">6</span><span class="lname">主程序</span><div class="slots"><span class="empty">还没有 · 以后放 miyu</span></div></div>
+            <div class="band"><span class="lv">6</span><span class="lname">主程序</span><div class="slots"><span class="empty">还没有 · 以后放 gqy</span></div></div>
             <div class="band"><span class="lv">5</span><span class="lname">头</span><div class="slots"><span class="empty">还没有 · 终端界面、命令行</span></div></div>
             <div class="band"><span class="lv">4</span><span class="lname">核心</span><div class="slots"><span class="empty">还没有 · 会话 actor、协议端点</span></div></div>
             <div class="band"><span class="lv">3</span><span class="lname">执行器</span><div class="slots"><span class="empty">还没有 · 存储、HTTP、工具、沙盒</span></div></div>
             <div class="band pure"><span class="lv">2</span><span class="lname">模块<small>纯逻辑</small></span><div class="slots"><span class="empty">还没有 · 请求组装、视图投影、驱动编解码</span></div></div>
-            <div class="band pure"><span class="lv">1</span><span class="lname">内核<small>纯逻辑</small></span><div class="slots"><span class="chip">miyu-kernel</span></div></div>
+            <div class="band pure"><span class="lv">1</span><span class="lname">内核<small>纯逻辑</small></span><div class="slots"><span class="chip">gqy-kernel</span></div></div>
           </div>
         </div>
         <div class="side">
@@ -743,7 +743,7 @@ a.step:hover{border-color:var(--primary)}
         <div class="d03-col">
           <div class="tile"><span class="nm">本机</span><span class="rl">main，和每一步的 step/ 分支</span></div>
           <div class="link">git push</div>
-          <div class="tile new"><span class="nm">GitHub：miyu-agent-remake</span><span class="rl">公开的临时仓库，做完并进 miyu-agent</span></div>
+          <div class="tile new"><span class="nm">GitHub：gqy-agent-remake</span><span class="rl">公开的临时仓库，做完并进 gqy-agent</span></div>
         </div>
         <div class="d03-col">
           <p class="rules-title">ci.yml：三台机器各跑一遍</p>
@@ -805,7 +805,7 @@ a.step:hover{border-color:var(--primary)}
   <figure class="frame">
     <div class="drawing">
       <div class="dir">
-        <div class="dir-label"><span class="path">miyu-kernel · id.rs、time.rs</span><span class="dir-note">JSON 里写成什么样</span></div>
+        <div class="dir-label"><span class="path">gqy-kernel · id.rs、time.rs</span><span class="dir-note">JSON 里写成什么样</span></div>
         <div class="files">
           <div class="tile new"><span class="nm">会话编号</span><span class="rl mono">"0192f3a0-1111-7abc-8def-001122334455"</span></div>
           <div class="tile new"><span class="nm">序号</span><span class="rl mono">45</span></div>
@@ -1610,12 +1610,12 @@ a.step:hover{border-color:var(--primary)}
           <div class="stack-wrap">
             <div class="dep" aria-hidden="true">可以依赖</div>
             <div class="stack" aria-label="代码的六层，第 2 层有了第一个 crate">
-              <div class="band"><span class="lv">6</span><span class="lname">主程序</span><div class="slots"><span class="empty">还没有 · 以后放 miyu</span></div></div>
+              <div class="band"><span class="lv">6</span><span class="lname">主程序</span><div class="slots"><span class="empty">还没有 · 以后放 gqy</span></div></div>
               <div class="band"><span class="lv">5</span><span class="lname">头</span><div class="slots"><span class="empty">还没有 · 终端界面、命令行</span></div></div>
               <div class="band"><span class="lv">4</span><span class="lname">核心</span><div class="slots"><span class="empty">还没有 · 会话 actor、协议端点</span></div></div>
               <div class="band"><span class="lv">3</span><span class="lname">执行器</span><div class="slots"><span class="empty">还没有 · 存储、HTTP、工具、沙盒</span></div></div>
-              <div class="band pure"><span class="lv">2</span><span class="lname">模块<small>纯逻辑</small></span><div class="slots"><span class="chip new">miyu-assemble</span><span class="empty">默认的组装</span></div></div>
-              <div class="band pure"><span class="lv">1</span><span class="lname">内核<small>纯逻辑</small></span><div class="slots"><span class="chip">miyu-kernel</span><span class="empty">新加 assemble.rs：组装请求的接口</span></div></div>
+              <div class="band pure"><span class="lv">2</span><span class="lname">模块<small>纯逻辑</small></span><div class="slots"><span class="chip new">gqy-assemble</span><span class="empty">默认的组装</span></div></div>
+              <div class="band pure"><span class="lv">1</span><span class="lname">内核<small>纯逻辑</small></span><div class="slots"><span class="chip">gqy-kernel</span><span class="empty">新加 assemble.rs：组装请求的接口</span></div></div>
             </div>
           </div>
           <div class="dir">
@@ -1665,7 +1665,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>做了什么</h3>
       <ul>
         <li>内核的接口 <code>Assembler</code>：给一段有效历史，出一份统一的请求。只有一个方法。</li>
-        <li>新 crate <code>miyu-assemble</code>，第 2 层：<code>DefaultAssembler</code>，造的时候交进稳定区和出厂的英文。</li>
+        <li>新 crate <code>gqy-assemble</code>，第 2 层：<code>DefaultAssembler</code>，造的时候交进稳定区和出厂的英文。</li>
         <li>分层表的第 2 层登记了它，门禁照表查。</li>
       </ul>
     </div>
@@ -1702,7 +1702,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">两块事实 · resources/core/facts/</span><span class="dir-note">内核注入，一类一块</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">env</span><span class="rl mono">&lt;env time="Fri 2026-09-25 16:00" timezone="UTC+09:00" cwd="~/src/miyu"/&gt;</span></div>
+              <div class="tile new"><span class="nm">env</span><span class="rl mono">&lt;env time="Fri 2026-09-25 16:00" timezone="UTC+09:00" cwd="~/src/gqy"/&gt;</span></div>
               <div class="tile new"><span class="nm">permission</span><span class="rl mono">&lt;permission level="workspace"/&gt;</span></div>
             </div>
           </div>
@@ -1785,7 +1785,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">存档 · docs/designs/samples/probe/terminal/</span><span class="dir-note">字节变了要有意：MIYU_PROBE_WRITE=1 重写，写明为什么</span></div>
+            <div class="dir-label"><span class="path">存档 · docs/designs/samples/probe/terminal/</span><span class="dir-note">字节变了要有意：GQY_PROBE_WRITE=1 重写，写明为什么</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">log.jsonl</span><span class="rl">假日志，八个回合：两块事实、结果倒着回来、中途来话、插话打断、换只读、被拒绝、出错、步数上限、撤销、压缩</span></div>
               <div class="tile new"><span class="nm">requests/01–13.json</span><span class="rl">每一次请求的规范字节</span></div>
@@ -2423,7 +2423,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">先查了四家</span><span class="rl">codex、opencode v2、Claude Code，旧 Miyu 只当旁证</span></div>
+          <div class="tile new"><span class="nm">先查了四家</span><span class="rl">codex、opencode v2、Claude Code，旧 GQY 只当旁证</span></div>
           <div class="tile new"><span class="nm">另开一轮接着发</span><span class="rl">能单独撤销，步数重新算，挂接点照它跑</span></div>
           <div class="tile new"><span class="nm">两轮同一批追加</span><span class="rl">上一轮结束、下一轮开始，一次写入</span></div>
           <div class="tile new"><span class="nm">触发不算排队</span><span class="rl">它开了这一轮，Ctrl+C 不会撤它</span></div>
@@ -2585,7 +2585,7 @@ a.step:hover{border-color:var(--primary)}
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">拒绝以后她接着干</span><span class="rl">项目主人定（A13），三家都是停下，这里不同</span></div>
-          <div class="tile new"><span class="nm">没人能确认的当场拒绝</span><span class="rl">QQ、桌面语音、不是终端的 miyu ask</span></div>
+          <div class="tile new"><span class="nm">没人能确认的当场拒绝</span><span class="rl">QQ、桌面语音、不是终端的 gqy ask</span></div>
           <div class="tile new"><span class="nm">只读时要写入的请求拦下</span><span class="rl">照请求要的那一类判，不用再过一遍链</span></div>
           <div class="tile new"><span class="nm">每个调用都过链</span><span class="rl">完全放开也过，等结论的占着位置</span></div>
         </div>
@@ -2785,7 +2785,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">两种停法 · 你定的</span><span class="dir-note">不变量 8</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">真崩了</span><span class="rl">没结果的调用补「已取消：Miyu 重启了」，这一轮 aborted，等你开口</span></div>
+              <div class="tile new"><span class="nm">真崩了</span><span class="rl">没结果的调用补「已取消：GQY 重启了」，这一轮 aborted，等你开口</span></div>
               <div class="tile new"><span class="nm">有计划的重启</span><span class="rl">关之前照打断收拾，这一轮 restarted；再起来自动开一轮接着干</span></div>
             </div>
           </div>
@@ -3067,7 +3067,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>做了什么</h3>
       <ul>
         <li><code>testkit/stage.rs</code>：记下每次请求看到了第几条为止；压缩先顶着。</li>
-        <li><code>miyu-assemble/tests/support</code>：去掉假内核，留五条性质；新写出厂的策略、照日志推每次请求的情形。</li>
+        <li><code>gqy-assemble/tests/support</code>：去掉假内核，留五条性质；新写出厂的策略、照日志推每次请求的情形。</li>
         <li><code>tests/probe.rs</code>、<code>tests/random_logs.rs</code>：剧本改成替身的动作；探针存档重写。</li>
       </ul>
     </div>
@@ -3176,40 +3176,40 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-1" aria-labelledby="h-s31">
   <div class="sheet-head"><h2 id="h-s31"><span class="no">3-1</span>数据根</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">Miyu 在每台机器上找到自己的数据根：默认位置照平台来，<code>MIYU_HOME</code> 能指到别处；第一次用时建好四个顶层目录，Unix 上只有本人能进。缓存目录一起找出来。M3 的第一步，第一个真碰磁盘的 crate。</p>
+  <p class="purpose">GQY 在每台机器上找到自己的数据根：默认位置照平台来，<code>GQY_HOME</code> 能指到别处；第一次用时建好四个顶层目录，Unix 上只有本人能进。缓存目录一起找出来。M3 的第一步，第一个真碰磁盘的 crate。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">找 · miyu-store/src/root.rs</span><span class="dir-note">07 第二节「默认位置」「怎么找」</span></div>
+            <div class="dir-label"><span class="path">找 · gqy-store/src/root.rs</span><span class="dir-note">07 第二节「默认位置」「怎么找」</span></div>
             <ol class="pipe" aria-label="怎么找数据根">
-              <li>从进程里读一份环境快照：MIYU_HOME、家目录、XDG、LOCALAPPDATA、平台</li>
-              <li>MIYU_HOME 设了就是它（要写绝对路径）</li>
+              <li>从进程里读一份环境快照：GQY_HOME、家目录、XDG、LOCALAPPDATA、平台</li>
+              <li>GQY_HOME 设了就是它（要写绝对路径）</li>
               <li>不然照平台：Linux 照 XDG，macOS、Windows 各有各的位置</li>
             </ol>
           </div>
           <div class="dir">
             <div class="dir-label"><span class="path">三个平台</span><span class="dir-note">数据根 · 缓存</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">Linux</span><span class="rl">~/.local/share/miyu · ~/.cache/miyu（XDG 设了照它）</span></div>
-              <div class="tile new"><span class="nm">macOS</span><span class="rl">~/Library/Application Support/Miyu · ~/Library/Caches/Miyu</span></div>
-              <div class="tile new"><span class="nm">Windows</span><span class="rl">%LOCALAPPDATA%\Miyu · %LOCALAPPDATA%\Miyu\cache</span></div>
+              <div class="tile new"><span class="nm">Linux</span><span class="rl">~/.local/share/gqy · ~/.cache/gqy（XDG 设了照它）</span></div>
+              <div class="tile new"><span class="nm">macOS</span><span class="rl">~/Library/Application Support/GQY · ~/Library/Caches/GQY</span></div>
+              <div class="tile new"><span class="nm">Windows</span><span class="rl">%LOCALAPPDATA%\GQY · %LOCALAPPDATA%\GQY\cache</span></div>
             </div>
           </div>
           <div class="dir">
             <div class="dir-label"><span class="path">第一次用时建骨架</span><span class="dir-note">别的用到时再建</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">system/ home/ state/ run/</span><span class="rl">Unix 上新建的 0700，只有本人能进</span></div>
-              <div class="tile"><span class="nm">已经有的不改</span><span class="rl">权限不对由 miyu doctor 报告</span></div>
+              <div class="tile"><span class="nm">已经有的不改</span><span class="rl">权限不对由 gqy doctor 报告</span></div>
             </div>
           </div>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-store，第 3 层</span><span class="rl">存储的执行器，会话日志、blob 也放这里</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-store，第 3 层</span><span class="rl">存储的执行器，会话日志、blob 也放这里</span></div>
           <div class="tile new"><span class="nm">照环境快照找</span><span class="rl">测试不改进程的环境变量，三个平台在哪台机器上都测得到</span></div>
-          <div class="tile new"><span class="nm">MIYU_HOME 要写绝对路径</span><span class="rl">相对的跟着当前目录变，会找到两个数据根</span></div>
+          <div class="tile new"><span class="nm">GQY_HOME 要写绝对路径</span><span class="rl">相对的跟着当前目录变，会找到两个数据根</span></div>
           <div class="tile"><span class="nm">缓存只找不建</span><span class="rl">整台机器共用，不跟着数据根变</span></div>
         </div>
       </div>
@@ -3228,16 +3228,16 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>crates/miyu-store</code>：新 crate，第 3 层；不引依赖。</li>
+        <li><code>crates/gqy-store</code>：新 crate，第 3 层；不引依赖。</li>
         <li><code>src/env.rs</code>：环境快照，平台也是一格。</li>
         <li><code>src/root.rs</code>：找数据根和缓存目录；建骨架；几个顶层目录的路径。</li>
-        <li><code>docs/designs/01-架构.md</code>：第 3 层登记 <code>miyu-store</code>。</li>
+        <li><code>docs/designs/01-架构.md</code>：第 3 层登记 <code>gqy-store</code>。</li>
       </ul>
     </div>
     <div>
       <h3>验收</h3>
       <ul class="checks">
-        <li><span class="ok">✓</span><span>新加 9 个测试：三个平台的默认位置、XDG、MIYU_HOME、空的和相对的、找不到家目录、建骨架、Unix 上的权限、已有的不改、读进程环境找得到</span></li>
+        <li><span class="ok">✓</span><span>新加 9 个测试：三个平台的默认位置、XDG、GQY_HOME、空的和相对的、找不到家目录、建骨架、Unix 上的权限、已有的不改、读进程环境找得到</span></li>
         <li><span class="ok">✓</span><span>测试都在临时目录里建、喂快照，不碰进程的环境变量和真的数据根</span></li>
         <li><span class="ok">✓</span><span>故意改坏十一处，每一处都有测试变红</span></li>
         <li><span class="ok">✓</span><span>本地 <code>cargo xtask check</code> 七项全过</span></li>
@@ -3256,8 +3256,8 @@ a.step:hover{border-color:var(--primary)}
 </section>
 
 <section class="sheet" id="s3-1b" aria-labelledby="h-s31b">
-  <div class="sheet-head"><h2 id="h-s31b"><span class="no">3-1</span>数据根挪到 ~/.miyu（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">数据根的默认位置从 XDG 那一套改到家目录的 <code>.miyu</code>，三个平台一个说法；顶层放一个标记文件，认不出是自己的数据根就不碰它。旧版 Miyu 也放在 <code>~/.miyu</code>：新版在这台机器上一个字节都不动它，直到迁过来。</p>
+  <div class="sheet-head"><h2 id="h-s31b"><span class="no">3-1</span>数据根挪到 ~/.gqy（补）</h2><span class="pill done">已完成</span></div>
+  <p class="purpose">数据根的默认位置从 XDG 那一套改到家目录的 <code>.gqy</code>，三个平台一个说法；顶层放一个标记文件，认不出是自己的数据根就不碰它。旧版 GQY 也放在 <code>~/.gqy</code>：新版在这台机器上一个字节都不动它，直到迁过来。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -3265,31 +3265,31 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">建骨架前先认标记 · root.rs</span><span class="dir-note">07 第二节「认得出自己的数据根才动它」</span></div>
             <ol class="pipe" aria-label="认标记">
-              <li>目录不存在、是空的：先写下 .miyu-root，再建四个顶层目录</li>
+              <li>目录不存在、是空的：先写下 .gqy-root，再建四个顶层目录</li>
               <li>有标记的：照常用</li>
               <li>不是空的又没有标记：一个字节都不动，报错停下</li>
             </ol>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">位置 · 你定的</span><span class="dir-note">「用xdg更好还是放.miyu？」</span></div>
+            <div class="dir-label"><span class="path">位置 · 你定的</span><span class="dir-note">「用xdg更好还是放.gqy？」</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">数据根：家目录的 .miyu</span><span class="rl">Linux、macOS、Windows 一个说法</span></div>
+              <div class="tile new"><span class="nm">数据根：家目录的 .gqy</span><span class="rl">Linux、macOS、Windows 一个说法</span></div>
               <div class="tile"><span class="nm">缓存照旧</span><span class="rl">系统的缓存目录，能删、能重下</span></div>
             </div>
           </div>
           <div class="dir">
             <div class="dir-label"><span class="path">认不出的两种</span><span class="dir-note">说清楚怎么办</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">像是旧版 Miyu 的数据</span><span class="rl">顶层有 config/：设 MIYU_HOME 指到别处，或者先迁过来</span></div>
-              <div class="tile new"><span class="nm">别的东西</span><span class="rl">连一个隐藏文件也算：设 MIYU_HOME 指到一个空目录</span></div>
+              <div class="tile new"><span class="nm">像是旧版 GQY 的数据</span><span class="rl">顶层有 config/：设 GQY_HOME 指到别处，或者先迁过来</span></div>
+              <div class="tile new"><span class="nm">别的东西</span><span class="rl">连一个隐藏文件也算：设 GQY_HOME 指到一个空目录</span></div>
             </div>
           </div>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">数据根放 ~/.miyu</span><span class="rl">好找、好备份、好搬家，和 ~/.claude、~/.codex 一个样子</span></div>
-          <div class="tile new"><span class="nm">标记文件 .miyu-root</span><span class="rl">MIYU_HOME 写错了也不会往别处建东西</span></div>
-          <div class="tile new"><span class="nm">顶层不放 config.toml</span><span class="rl">~/.miyu 不会被当成仓库的项目配置</span></div>
+          <div class="tile new"><span class="nm">数据根放 ~/.gqy</span><span class="rl">好找、好备份、好搬家，和 ~/.claude、~/.codex 一个样子</span></div>
+          <div class="tile new"><span class="nm">标记文件 .gqy-root</span><span class="rl">GQY_HOME 写错了也不会往别处建东西</span></div>
+          <div class="tile new"><span class="nm">顶层不放 config.toml</span><span class="rl">~/.gqy 不会被当成仓库的项目配置</span></div>
           <div class="tile"><span class="nm">迁移另画图纸</span><span class="rl">先盘点旧版的数据，再带着选项问</span></div>
         </div>
       </div>
@@ -3297,7 +3297,7 @@ a.step:hover{border-color:var(--primary)}
     <figcaption class="titleblock">
       <dl>
         <div><dt>图号</dt><dd class="mono">3-1（补）</dd></div>
-        <div><dt>名称</dt><dd>数据根挪到 ~/.miyu（补）</dd></div>
+        <div><dt>名称</dt><dd>数据根挪到 ~/.gqy（补）</dd></div>
         <div><dt>日期</dt><dd class="mono">2026-09-26</dd></div>
         <div><dt>提交</dt><dd class="mono">3e4116b</dd></div>
         <div><dt>验收</dt><dd>CI 全绿、长跑也绿、测试全过 · 通过</dd></div>
@@ -3308,7 +3308,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>root.rs</code>：三个平台的数据根都在家目录下的 <code>.miyu</code>；建骨架先认标记。</li>
+        <li><code>root.rs</code>：三个平台的数据根都在家目录下的 <code>.gqy</code>；建骨架先认标记。</li>
         <li><code>env.rs</code>：快照里去掉 <code>XDG_DATA_HOME</code>。</li>
         <li>图纸：07 第二节、S6；12 第三节一句。</li>
       </ul>
@@ -3341,7 +3341,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">写 · miyu-store/src/log.rs</span><span class="dir-note">07 第三节「段怎么存」</span></div>
+            <div class="dir-label"><span class="path">写 · gqy-store/src/log.rs</span><span class="dir-note">07 第三节「段怎么存」</span></div>
             <ol class="pipe" aria-label="追加一批">
               <li>内核交来一批事件：序号要接着上一批</li>
               <li>这一段已经到了上限，先开下一段（名字是第一条的序号）</li>
@@ -3389,7 +3389,7 @@ a.step:hover{border-color:var(--primary)}
       <ul>
         <li><code>log.rs</code>：新建、追加一批，满了换段。</li>
         <li><code>log/open.rs</code>：打开时自检、截尾；三种报错。</li>
-        <li><code>root.rs</code>：会话目录的路径；<code>miyu-store</code> 依赖内核。</li>
+        <li><code>root.rs</code>：会话目录的路径；<code>gqy-store</code> 依赖内核。</li>
       </ul>
     </div>
     <div>
@@ -3421,24 +3421,24 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">认不出的 · root.rs</span><span class="dir-note">07 第二节「认得出自己的数据根才动它」</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">只有一种说法</span><span class="rl">「里有别的东西，认不出是 Miyu 的数据根（顶层没有 .miyu-root），不动它。设 MIYU_HOME 指到一个空目录」</span></div>
-              <div class="tile"><span class="nm">拿掉的</span><span class="rl">顶层有 config/ 就说「像是旧版 Miyu 的数据」</span></div>
+              <div class="tile new"><span class="nm">只有一种说法</span><span class="rl">「里有别的东西，认不出是 GQY 的数据根（顶层没有 .gqy-root），不动它。设 GQY_HOME 指到一个空目录」</span></div>
+              <div class="tile"><span class="nm">拿掉的</span><span class="rl">顶层有 config/ 就说「像是旧版 GQY 的数据」</span></div>
               <div class="tile"><span class="nm">照旧</span><span class="rl">不是空的又没有标记，一个字节都不动；连一个隐藏文件也算</span></div>
             </div>
           </div>
           <div class="dir">
             <div class="dir-label"><span class="path">迁移 · 你定的</span><span class="dir-note">迁移图纸 27</span></div>
             <ol class="pipe" aria-label="迁移的先后">
-              <li>并行期：旧版照常用，新版设 MIYU_HOME 指到别处</li>
+              <li>并行期：旧版照常用，新版设 GQY_HOME 指到别处</li>
               <li>全部做完以后：单独的迁移程序，先把旧目录打成压缩包，读包里解出的副本</li>
-              <li>聊天记录迁成只读存档，记忆原样存着，新版就位在 ~/.miyu</li>
+              <li>聊天记录迁成只读存档，记忆原样存着，新版就位在 ~/.gqy</li>
             </ol>
           </div>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">新版不背旧版的兼容债</span><span class="rl">旧版的格式只有迁移程序认得</span></div>
-          <div class="tile new"><span class="nm">报错说出为什么认不出</span><span class="rl">写明目录和 .miyu-root；不说「新版」，也不说「先迁过来」</span></div>
+          <div class="tile new"><span class="nm">报错说出为什么认不出</span><span class="rl">写明目录和 .gqy-root；不说「新版」，也不说「先迁过来」</span></div>
           <div class="tile"><span class="nm">放一个目录的情形留着</span><span class="rl">只有一个目录也算有东西</span></div>
         </div>
       </div>
@@ -3464,7 +3464,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>验收</h3>
       <ul class="checks">
-        <li><span class="ok">✓</span><span>改了 2 个测试：只放一个文件的、只放一个目录的、只有一个隐藏文件的都报认不出，报错里写着目录和 .miyu-root，一个字节都不动</span></li>
+        <li><span class="ok">✓</span><span>改了 2 个测试：只放一个文件的、只放一个目录的、只有一个隐藏文件的都报认不出，报错里写着目录和 .gqy-root，一个字节都不动</span></li>
         <li><span class="ok">✓</span><span>故意改坏四处，每一处都有测试变红</span></li>
         <li><span class="ok">✓</span><span>本地 <code>cargo xtask check</code> 七项全过</span></li>
         <li><span class="ok">✓</span><span>三台机器的 CI 全绿，长跑也绿</span></li>
@@ -3489,7 +3489,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">存 · miyu-store/src/blob.rs</span><span class="dir-note">07 第五节「写」</span></div>
+            <div class="dir-label"><span class="path">存 · gqy-store/src/blob.rs</span><span class="dir-note">07 第五节「写」</span></div>
             <ol class="pipe" aria-label="存一份内容">
               <li>算出 SHA-256：已经有了，只把修改时间刷成现在</li>
               <li>写进 tmp/ 里的临时文件（只许新建），同步，关上</li>
@@ -3566,7 +3566,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">编码 · miyu-drivers/src/openai_chat.rs</span><span class="dir-note">05 第七节那张表</span></div>
+            <div class="dir-label"><span class="path">编码 · gqy-drivers/src/openai_chat.rs</span><span class="dir-note">05 第七节那张表</span></div>
             <ol class="pipe" aria-label="编码">
               <li>执行器照 blobs_needed 先取出图片、PDF 的字节</li>
               <li>每条消息照线上的写法写：system、user、assistant、tool，挪出来的图片另成一条 user</li>
@@ -3614,7 +3614,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-drivers</code>（第 2 层）：一次调用、blob 的端口、占位、base64、<code>openai_chat</code> 的编码。</li>
+        <li>新 crate <code>gqy-drivers</code>（第 2 层）：一次调用、blob 的端口、占位、base64、<code>openai_chat</code> 的编码。</li>
         <li>探针和随机日志：每一次请求再编码一份，存档、查线上的前缀延伸。</li>
         <li>图纸：05 第七节补了编码的表，26 第八节登记占位，01 第九节登记新 crate。</li>
       </ul>
@@ -3726,7 +3726,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">发一次 · miyu-http/src/send.rs</span><span class="dir-note">05 第七节「HTTP 执行器」</span></div>
+            <div class="dir-label"><span class="path">发一次 · gqy-http/src/send.rs</span><span class="dir-note">05 第七节「HTTP 执行器」</span></div>
             <ol class="pipe" aria-label="发一次请求">
               <li>先报「发出去了」，带着请求字节的哈希；POST 地址加路径，四个头加另配的</li>
               <li>不是 2xx：读最多 64 KiB，连同状态、响应头交给驱动分类</li>
@@ -3755,7 +3755,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="tile new"><span class="nm">rustls，证书认两份</span><span class="rl">系统的和 webpki 自带的；不依赖 OpenSSL</span></div>
           <div class="tile new"><span class="nm">key 打印出来是 ***</span><span class="rl">另配的头只写名字</span></div>
           <div class="tile new"><span class="nm">一次只发一回</span><span class="rl">重试和接着说是内核的事（3-5 下）</span></div>
-          <div class="tile"><span class="nm">本机交叉检查去掉 miyu-http</span><span class="rl">ring 有 C 代码；CI 在真机上查</span></div>
+          <div class="tile"><span class="nm">本机交叉检查去掉 gqy-http</span><span class="rl">ring 有 C 代码；CI 在真机上查</span></div>
         </div>
       </div>
     </div>
@@ -3773,7 +3773,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-http</code>（第 3 层）：<code>Endpoint</code>、<code>client()</code>、<code>send()</code>。</li>
+        <li>新 crate <code>gqy-http</code>（第 3 层）：<code>Endpoint</code>、<code>client()</code>、<code>send()</code>。</li>
         <li>驱动和解码器的接口加上 <code>Send + Sync</code>。</li>
         <li>图纸：05 第七节补了 HTTP 执行器；01 第九节登记新 crate。</li>
       </ul>
@@ -3805,7 +3805,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">出错以后 · miyu-kernel/src/session/retry.rs</span><span class="dir-note">02 第六节「回复怎么收」第 4 条</span></div>
+            <div class="dir-label"><span class="path">出错以后 · gqy-kernel/src/session/retry.rs</span><span class="dir-note">02 第六节「回复怎么收」第 4 条</span></div>
             <ol class="pipe" aria-label="出错以后">
               <li>收到的半截写成回复：只留思考和正文，带 interrupted，工具调用一个不留</li>
               <li>可以重试、这一步还没到 5 次、要等的不过 2 分钟：半截后面追加被打断的那一句，推 status，交出到点叫醒</li>
@@ -3887,7 +3887,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">一行话怎么走 · crates/miyu-try</span><span class="dir-note">工具 crate，不属于哪一层</span></div>
+            <div class="dir-label"><span class="path">一行话怎么走 · crates/gqy-try</span><span class="dir-note">工具 crate，不属于哪一层</span></div>
             <ol class="pipe" aria-label="一行话怎么走">
               <li>终端读一行，发给会话（内核）；一轮在走的时候来的字先攒着，Ctrl+C 打断这一轮</li>
               <li>追加的写进会话日志（3-1、3-2），同步了才回「落盘了」，再推给终端</li>
@@ -3907,8 +3907,8 @@ a.step:hover{border-color:var(--primary)}
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">是工具 crate</span><span class="rl">内核、组装、驱动、HTTP、存储接在一个进程里，放进哪一层都不对；谁也不依赖它</span></div>
-          <div class="tile new"><span class="nm">数据不落家目录的 .miyu</span><span class="rl">设了 MIYU_HOME 的照它，没设的每次开一个临时目录</span></div>
-          <div class="tile new"><span class="nm">key 在仓库外的文件里</span><span class="rl">~/.config/miyu-try/deepseek.env，只有本人能读；不打印、不进命令行</span></div>
+          <div class="tile new"><span class="nm">数据不落家目录的 .gqy</span><span class="rl">设了 GQY_HOME 的照它，没设的每次开一个临时目录</span></div>
+          <div class="tile new"><span class="nm">key 在仓库外的文件里</span><span class="rl">~/.config/gqy-try/deepseek.env，只有本人能读；不打印、不进命令行</span></div>
           <div class="tile new"><span class="nm">/cut 故意掐断</span><span class="rl">只为实测接着说：在思考或回复的第几段停下，照读到一半断了报</span></div>
           <div class="tile"><span class="nm">接着说怎么改</span><span class="rl">等项目主人拍板</span></div>
         </div>
@@ -3928,7 +3928,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新的工具 crate <code>miyu-try</code>：<code>cargo run -p miyu-try</code>，<code>--model</code> 换模型，<code>--system</code> 换 system。</li>
+        <li>新的工具 crate <code>gqy-try</code>：<code>cargo run -p gqy-try</code>，<code>--model</code> 换模型，<code>--system</code> 换 system。</li>
         <li>旧版的配置由一次性的脚本只抽 DeepSeek 那一项，key 写进仓库外只有本人能读的文件；新版的代码不读旧版。</li>
         <li>图纸：01 第九节登记第二个工具 crate。</li>
       </ul>
@@ -4089,9 +4089,9 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">一份快照怎么来 · miyu-store → miyu-policy</span><span class="dir-note">03 E5「写法」</span></div>
+            <div class="dir-label"><span class="path">一份快照怎么来 · gqy-store → gqy-policy</span><span class="dir-note">03 E5「写法」</span></div>
             <ol class="pipe" aria-label="一份快照怎么来">
-              <li>找资源目录：MIYU_RESOURCES，程序旁边的 resources/，上一级的 share/miyu/；都没有就说清找过哪几处</li>
+              <li>找资源目录：GQY_RESOURCES，程序旁边的 resources/，上一级的 share/gqy/；都没有就说清找过哪几处</li>
               <li>读原文：随核心附带的字（core/），人格的人设（personas/&lt;编号&gt;/prompts/persona.md）</li>
               <li>拼：system 照 26 第四节，每一块去掉末尾的空白、空一行相连；现在只有人设</li>
               <li>写成紧凑的 JSON，算哈希，存成 blob；造会话那一条记这个哈希</li>
@@ -4109,11 +4109,11 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-policy</span><span class="rl">第 2 层，纯逻辑；读文件在 miyu-store</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-policy</span><span class="rl">第 2 层，纯逻辑；读文件在 gqy-store</span></div>
           <div class="tile new"><span class="nm">模型和供应商不在快照里</span><span class="rl">同一份快照可以交给不同的端点</span></div>
           <div class="tile new"><span class="nm">两条核心规则不拼</span><span class="rl">项目主人定：检查点、权限到 M6、M4 实测再定</span></div>
-          <div class="tile new"><span class="nm">资源目录不猜</span><span class="rl">只看三处；开发时设 MIYU_RESOURCES</span></div>
-          <div class="tile"><span class="nm">还没有的</span><span class="rl">出厂 Miyu（下）；中途换策略、目录快照、步数上限初值</span></div>
+          <div class="tile new"><span class="nm">资源目录不猜</span><span class="rl">只看三处；开发时设 GQY_RESOURCES</span></div>
+          <div class="tile"><span class="nm">还没有的</span><span class="rl">出厂 GQY（下）；中途换策略、目录快照、步数上限初值</span></div>
         </div>
       </div>
     </div>
@@ -4131,8 +4131,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-policy</code>（第 2 层）：<code>Snapshot</code>、<code>compose()</code>、规范字节和哈希、<code>policy()</code>、<code>driver_texts()</code>、<code>session_created()</code>。</li>
-        <li><code>miyu-store</code>：<code>resources</code> 找资源目录、读原文；环境快照多了 <code>MIYU_RESOURCES</code> 和程序的真实位置。</li>
+        <li>新 crate <code>gqy-policy</code>（第 2 层）：<code>Snapshot</code>、<code>compose()</code>、规范字节和哈希、<code>policy()</code>、<code>driver_texts()</code>、<code>session_created()</code>。</li>
+        <li><code>gqy-store</code>：<code>resources</code> 找资源目录、读原文；环境快照多了 <code>GQY_RESOURCES</code> 和程序的真实位置。</li>
         <li>出厂的软件工程师：<code>resources/personas/engineer/prompts/persona.md</code>，进了登记簿。</li>
       </ul>
     </div>
@@ -4148,7 +4148,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/03-事件模型.md</code> E5「写法」、<code>12-进程形态与分发.md</code> 第三节「怎么找」、<code>26-提示词.md</code> 第四节「怎么拼」。</li>
-        <li><code>docs/designs/01-架构.md</code> 第九节：第 2 层多了 <code>miyu-policy</code>。</li>
+        <li><code>docs/designs/01-架构.md</code> 第九节：第 2 层多了 <code>gqy-policy</code>。</li>
         <li><code>docs/construction/3-6-策略快照（上）.md</code>：施工单。</li>
       </ul>
     </div>
@@ -4157,16 +4157,16 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-7a" aria-labelledby="h-s37a">
   <div class="sheet-head"><h2 id="h-s37a"><span class="no">3-7</span>运行日志（上）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">核心有了自己的运行日志：它在干什么、哪里出了错，一行一条的英文，像 dmesg。写进数据根的 state/logs/，满 10 MB 换一份；默认记到 INFO，MIYU_LOG 改这一次启动的级别。不写对话的内容，不写密钥，只写编号：一份日志可以直接发给别人看、贴进 issue。</p>
+  <p class="purpose">核心有了自己的运行日志：它在干什么、哪里出了错，一行一条的英文，像 dmesg。写进数据根的 state/logs/，满 10 MB 换一份；默认记到 INFO，GQY_LOG 改这一次启动的级别。不写对话的内容，不写密钥，只写编号：一份日志可以直接发给别人看、贴进 issue。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">一行从哪来 · tracing → miyu-log</span><span class="dir-note">28 第二、三节</span></div>
+            <div class="dir-label"><span class="path">一行从哪来 · tracing → gqy-log</span><span class="dir-note">28 第二、三节</span></div>
             <ol class="pipe" aria-label="一行从哪来">
-              <li>各 crate 照 tracing 发，目标写成 miyu::&lt;来源&gt;</li>
-              <li>筛：自己的照 MIYU_LOG，别人家的最多记到 WARN</li>
+              <li>各 crate 照 tracing 发，目标写成 gqy::&lt;来源&gt;</li>
+              <li>筛：自己的照 GQY_LOG，别人家的最多记到 WARN</li>
               <li>写成一行：会话编号从离得最近的 span 来</li>
               <li>state/logs/core.log：满 10 MB 在两行之间换一份</li>
             </ol>
@@ -4191,12 +4191,12 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-log</span><span class="rl">第 3 层；发日志的只依赖 tracing，写成什么样、写到哪只有它管</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-log</span><span class="rl">第 3 层；发日志的只依赖 tracing，写成什么样、写到哪只有它管</span></div>
           <div class="tile new"><span class="nm">正在写的之外留 5 份</span><span class="rl">和 logrotate 一个口径；再起来接着写原来那一份</span></div>
           <div class="tile new"><span class="nm">默认 INFO</span><span class="rl">读不懂的照 INFO，记一条 WARN；off 什么都不写</span></div>
           <div class="tile new"><span class="nm">会话的 span 开在 ERROR 级</span><span class="rl">span 也照级别筛：调到 WARN 也带着会话编号</span></div>
           <div class="tile new"><span class="nm">控制字符也转义</span><span class="rl">cat 日志时终端不会当成指令</span></div>
-          <div class="tile"><span class="nm">还没有的</span><span class="rl">会话的 INFO 行（3-7 下）；配置项 log.level（配置那一步）；miyu logs（3-9 以后）；每个软件的日志（M4 以后）</span></div>
+          <div class="tile"><span class="nm">还没有的</span><span class="rl">会话的 INFO 行（3-7 下）；配置项 log.level（配置那一步）；gqy logs（3-9 以后）；每个软件的日志（M4 以后）</span></div>
         </div>
       </div>
     </div>
@@ -4214,8 +4214,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-log</code>（第 3 层）：<code>install()</code>、<code>level()</code>、<code>subscriber()</code>、<code>RotatingFile</code>、<code>LineLayer</code>，测试里拿 <code>Memory</code> 接住。</li>
-        <li><code>miyu-http</code>：<code>send</code> 在外面包一层，<code>DEBUG</code> 记发出去和收场；共用的测试夹具挪进 <code>tests/support/fixtures.rs</code>，日志的测试自己一个进程。</li>
+        <li>新 crate <code>gqy-log</code>（第 3 层）：<code>install()</code>、<code>level()</code>、<code>subscriber()</code>、<code>RotatingFile</code>、<code>LineLayer</code>，测试里拿 <code>Memory</code> 接住。</li>
+        <li><code>gqy-http</code>：<code>send</code> 在外面包一层，<code>DEBUG</code> 记发出去和收场；共用的测试夹具挪进 <code>tests/support/fixtures.rs</code>，日志的测试自己一个进程。</li>
       </ul>
     </div>
     <div>
@@ -4230,7 +4230,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/28-运行日志.md</code>（新）；<code>07-存储.md</code> 第二节、<code>14-配置.md</code> 第五节、<code>22-命令行.md</code> 第五节。</li>
-        <li><code>docs/designs/01-架构.md</code> 第九节：第 3 层多了 <code>miyu-log</code>。</li>
+        <li><code>docs/designs/01-架构.md</code> 第九节：第 3 层多了 <code>gqy-log</code>。</li>
         <li><code>docs/construction/3-7-运行日志（上）.md</code>：施工单。</li>
       </ul>
     </div>
@@ -4245,7 +4245,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">一条输入怎么走 · miyu-session</span><span class="dir-note">02 第七节「会话 actor 怎么跑」</span></div>
+            <div class="dir-label"><span class="path">一条输入怎么走 · gqy-session</span><span class="dir-note">02 第七节「会话 actor 怎么跑」</span></div>
             <ol class="pipe" aria-label="一条输入怎么走">
               <li>命令、执行器的回报进收件箱</li>
               <li>照 actor 的时钟记下到的时刻，送进内核</li>
@@ -4279,7 +4279,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-session</span><span class="rl">第 4 层第一个；一个会话一个 tokio 任务</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-session</span><span class="rl">第 4 层第一个；一个会话一个 tokio 任务</span></div>
           <div class="tile new"><span class="nm">写不进去就停下</span><span class="rl">记 WARN；没落盘的不算发生，再载入照磁盘上的来</span></div>
           <div class="tile new"><span class="nm">panic 了只停这一个</span><span class="rl">外面的任务看着它，记 ERROR，别的会话照常</span></div>
           <div class="tile new"><span class="nm">时刻不往回走</span><span class="rl">系统时间往回拨了照上一次的；载入时接着日志里最后一条</span></div>
@@ -4303,7 +4303,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-session</code>（第 4 层）：<code>create()</code>、<code>load()</code> 交回 <code>Handle</code>（<code>command</code>、<code>subscribe</code>、<code>stop</code>）；请求模型的端口 <code>ModelPort</code>、<code>Reports</code>、<code>Cancel</code>；<code>new_id</code>。</li>
+        <li>新 crate <code>gqy-session</code>（第 4 层）：<code>create()</code>、<code>load()</code> 交回 <code>Handle</code>（<code>command</code>、<code>subscribe</code>、<code>stop</code>）；请求模型的端口 <code>ModelPort</code>、<code>Reports</code>、<code>Cancel</code>；<code>new_id</code>。</li>
         <li>运行日志：<code>created</code>、<code>loaded</code>、<code>request</code>、<code>ended</code>、<code>failed</code>、<code>cancelled</code>、<code>retrying</code>、<code>stopped</code>、<code>closed</code>；<code>DEBUG</code> 记输入和动作的种类。</li>
       </ul>
     </div>
@@ -4319,7 +4319,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/02-内核.md</code> 第七节「会话 actor 怎么跑」、<code>07-存储.md</code> 第四节「写不进去」、<code>28-运行日志.md</code> 第二节的例子。</li>
-        <li><code>docs/designs/01-架构.md</code> 第九节：第 4 层多了 <code>miyu-session</code>。</li>
+        <li><code>docs/designs/01-架构.md</code> 第九节：第 4 层多了 <code>gqy-session</code>。</li>
         <li><code>docs/construction/3-7-会话actor（中）.md</code>：施工单。</li>
       </ul>
     </div>
@@ -4338,7 +4338,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="一次请求怎么走">
               <li>照驱动列的清单取 blob（阻塞线程）</li>
               <li>编码：请求字节，发到哪条路径</li>
-              <li>miyu_http::send：发、流式读、空闲超时、叫停</li>
+              <li>gqy_http::send：发、流式读、空闲超时、叫停</li>
               <li>回报交回 actor：发出去了、增量、说完了</li>
             </ol>
           </div>
@@ -4347,7 +4347,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="files">
               <div class="tile new"><span class="nm">ForSession</span><span class="rl">驱动的占位取自这个会话的快照，属主的 blob 目录：核心升级改了字，老会话照样逐字节重现</span></div>
               <div class="tile new"><span class="nm">HttpModels</span><span class="rl">客户端、端点、兼容的写法、模型、空闲超时（初值 180 秒）</span></div>
-              <div class="tile new"><span class="nm">假服务器</span><span class="rl">挪进 miyu-http 的 testkit 开关，两边的测试都用它</span></div>
+              <div class="tile new"><span class="nm">假服务器</span><span class="rl">挪进 gqy-http 的 testkit 开关，两边的测试都用它</span></div>
             </div>
           </div>
         </div>
@@ -4356,7 +4356,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="tile new"><span class="nm">取不出来的 blob 由编码报</span><span class="rl">直接出错，分类 other，不发；重试也没用</span></div>
           <div class="tile new"><span class="nm">任务带着会话的 span</span><span class="rl">HTTP 的日志写在会话编号后面</span></div>
           <div class="tile new"><span class="nm">叫停交给 send</span><span class="rl">不要这次请求了、会话停了，马上断开</span></div>
-          <div class="tile new"><span class="nm">交叉 clippy 再排除 miyu-session</span><span class="rl">它依赖 miyu-http，本机编不了 ring；CI 三个平台真编</span></div>
+          <div class="tile new"><span class="nm">交叉 clippy 再排除 gqy-session</span><span class="rl">它依赖 gqy-http，本机编不了 ring；CI 三个平台真编</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">端点、模型、key 从配置来（3-9 以前）；资源调度；图从哪来（M4）</span></div>
         </div>
       </div>
@@ -4375,8 +4375,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-session</code>：<code>Models</code>、<code>ForSession</code>、<code>HttpModels</code>、<code>IDLE</code>；<code>create()</code>、<code>load()</code> 改收 <code>&amp;dyn Models</code>。</li>
-        <li><code>miyu-http</code>：假服务器挪进 <code>testkit</code> 开关；导出 <code>Client</code>。</li>
+        <li><code>gqy-session</code>：<code>Models</code>、<code>ForSession</code>、<code>HttpModels</code>、<code>IDLE</code>；<code>create()</code>、<code>load()</code> 改收 <code>&amp;dyn Models</code>。</li>
+        <li><code>gqy-http</code>：假服务器挪进 <code>testkit</code> 开关；导出 <code>Client</code>。</li>
       </ul>
     </div>
     <div>
@@ -4405,7 +4405,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">一个连接怎么走 · miyu-endpoint</span><span class="dir-note">04 第二、三节</span></div>
+            <div class="dir-label"><span class="path">一个连接怎么走 · gqy-endpoint</span><span class="dir-note">04 第二、三节</span></div>
             <ol class="pipe" aria-label="一个连接怎么走">
               <li>读一行，最长 1 MiB</li>
               <li>认成请求：id 就是命令编号</li>
@@ -4433,7 +4433,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-endpoint</span><span class="rl">第 4 层；只认字节流，不管它从哪来</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-endpoint</span><span class="rl">第 4 层；只认字节流，不管它从哪来</span></div>
           <div class="tile new"><span class="nm">令牌每个字节都比</span><span class="rl">长短也比；不对的、版本对不上的断开</span></div>
           <div class="tile new"><span class="nm">工作目录跟着头走</span><span class="rl">send 带的 cwd 变了，先送进会话，下一个边界才注入</span></div>
           <div class="tile new"><span class="nm">重发的造会话</span><span class="rl">记最近 1024 个造会话的命令编号，重发的还是那一个</span></div>
@@ -4455,8 +4455,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-endpoint</code>（第 4 层）：<code>Core</code>、<code>serve</code>；读一行、认请求、握手、方法、会话表、原因码和中英文的话。</li>
-        <li><code>miyu-session</code>：<code>Handle::environment</code>；剧本端口挪进 <code>testkit</code> 开关。</li>
+        <li>新 crate <code>gqy-endpoint</code>（第 4 层）：<code>Core</code>、<code>serve</code>；读一行、认请求、握手、方法、会话表、原因码和中英文的话。</li>
+        <li><code>gqy-session</code>：<code>Handle::environment</code>；剧本端口挪进 <code>testkit</code> 开关。</li>
       </ul>
     </div>
     <div>
@@ -4471,7 +4471,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/04-核心协议.md</code> 第九节「先做的几样怎么写」。</li>
-        <li><code>docs/designs/01-架构.md</code> 第九节：第 4 层多了 <code>miyu-endpoint</code>。</li>
+        <li><code>docs/designs/01-架构.md</code> 第九节：第 4 层多了 <code>gqy-endpoint</code>。</li>
         <li><code>docs/construction/3-8-协议端点（上）.md</code>：施工单。</li>
       </ul>
     </div>
@@ -4504,7 +4504,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">瞬时事件也走事件流</span><span class="rl">增量、状态：miyu ask 这样的头靠它们边收边打</span></div>
+          <div class="tile new"><span class="nm">瞬时事件也走事件流</span><span class="rl">增量、状态：gqy ask 这样的头靠它们边收边打</span></div>
           <div class="tile new"><span class="nm">订阅停了接着转回应</span><span class="rl">掉了队、会话停了，回应一条都不丢</span></div>
           <div class="tile new"><span class="nm">撞上掉队也先放回应</span><span class="rl">施工中查出的 bug，修了，测试守着</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">视图流、会话列表流（M8 以后）；从某个序号之后补发；增量合并</span></div>
@@ -4525,8 +4525,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-endpoint</code>：<code>subscribe</code>、<code>unsubscribe</code>；连接读写分开；<code>subscriptions.rs</code> 的转发任务。</li>
-        <li><code>miyu-session</code>：<code>Subscription::try_next</code>；剧本端口加 <code>Floods</code>。</li>
+        <li><code>gqy-endpoint</code>：<code>subscribe</code>、<code>unsubscribe</code>；连接读写分开；<code>subscriptions.rs</code> 的转发任务。</li>
+        <li><code>gqy-session</code>：<code>Subscription::try_next</code>；剧本端口加 <code>Floods</code>。</li>
       </ul>
     </div>
     <div>
@@ -4567,9 +4567,9 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">套接字放哪</span><span class="dir-note">名字带数据根的指纹</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">$XDG_RUNTIME_DIR/miyu-&lt;指纹&gt;/core.sock</span><span class="rl">Linux：它是自己的、只有自己能进</span></div>
+              <div class="tile new"><span class="nm">$XDG_RUNTIME_DIR/gqy-&lt;指纹&gt;/core.sock</span><span class="rl">Linux：它是自己的、只有自己能进</span></div>
               <div class="tile new"><span class="nm">run/core.sock</span><span class="rl">没设的、macOS</span></div>
-              <div class="tile new"><span class="nm">$TMPDIR/miyu-&lt;uid&gt;/&lt;指纹&gt;.sock</span><span class="rl">放不下：Linux 107、macOS 103 字节</span></div>
+              <div class="tile new"><span class="nm">$TMPDIR/gqy-&lt;uid&gt;/&lt;指纹&gt;.sock</span><span class="rl">放不下：Linux 107、macOS 103 字节</span></div>
             </div>
           </div>
         </div>
@@ -4597,8 +4597,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-ipc</code>（新，第 3 层）：<code>open</code>、<code>connect</code>；套接字放哪、单实例锁、本机令牌、<code>run/socket</code>；Windows 上是造不出来的桩。</li>
-        <li><code>miyu-endpoint</code>：<code>run</code>，在监听器上一个个接连接。</li>
+        <li><code>gqy-ipc</code>（新，第 3 层）：<code>open</code>、<code>connect</code>；套接字放哪、单实例锁、本机令牌、<code>run/socket</code>；Windows 上是造不出来的桩。</li>
+        <li><code>gqy-endpoint</code>：<code>run</code>，在监听器上一个个接连接。</li>
       </ul>
     </div>
     <div>
@@ -4622,13 +4622,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-8d" aria-labelledby="h-s38d">
   <div class="sheet-head"><h2 id="h-s38d"><span class="no">3-8</span>Windows 命名管道（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">Windows 上核心也有本机入口：命名管道 \\.\pipe\miyu-&lt;指纹&gt;，只对本人开放。核心起来的先后和 Linux、macOS 一样；头照 run/socket 连上，先核对管道另一头的进程是自己的，再读令牌、握手。</p>
+  <p class="purpose">Windows 上核心也有本机入口：命名管道 \\.\pipe\gqy-&lt;指纹&gt;，只对本人开放。核心起来的先后和 Linux、macOS 一样；头照 run/socket 连上，先核对管道另一头的进程是自己的，再读令牌、握手。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-pipe/</span><span class="dir-note">唯一放开 unsafe 的 crate</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-pipe/</span><span class="dir-note">唯一放开 unsafe 的 crate</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">create</span><span class="rl">建管道的一个实例：安全描述符 D:P(A;;GA;;;&lt;当前用户&gt;)，可以声明第一个实例</span></div>
               <div class="tile new"><span class="nm">current_user</span><span class="rl">当前用户的 SID</span></div>
@@ -4636,7 +4636,7 @@ a.step:hover{border-color:var(--primary)}
             </div>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">接连接</span><span class="dir-note">miyu-ipc 的 windows.rs</span></div>
+            <div class="dir-label"><span class="path">接连接</span><span class="dir-note">gqy-ipc 的 windows.rs</span></div>
             <ol class="pipe" aria-label="接连接">
               <li>等着的实例有人连上</li>
               <li>先建好下一个实例等着</li>
@@ -4646,7 +4646,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">只装非用 unsafe 不可的</span><span class="rl">等连接、忙了再连这些，留在 miyu-ipc</span></div>
+          <div class="tile new"><span class="nm">只装非用 unsafe 不可的</span><span class="rl">等连接、忙了再连这些，留在 gqy-ipc</span></div>
           <div class="tile new"><span class="nm">第一个实例</span><span class="rl">名字被别的程序占了，起不来、不动它</span></div>
           <div class="tile new"><span class="nm">头核对另一头</span><span class="rl">另一头的进程不是自己的，不交令牌</span></div>
           <div class="tile new"><span class="nm">每个 unsafe 块写清为什么安全</span><span class="rl">clippy 的 undocumented_unsafe_blocks 拦着</span></div>
@@ -4668,9 +4668,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-pipe</code>（新，第 3 层）：调 Windows 的安全接口，放开了 <code>unsafe</code>（项目主人定）。</li>
-        <li><code>miyu-ipc</code>：<code>windows.rs</code> 换掉桩；两个「还不支持」删掉。</li>
-        <li><code>miyu-endpoint</code>：端到端的测试三个平台都跑。</li>
+        <li><code>gqy-pipe</code>（新，第 3 层）：调 Windows 的安全接口，放开了 <code>unsafe</code>（项目主人定）。</li>
+        <li><code>gqy-ipc</code>：<code>windows.rs</code> 换掉桩；两个「还不支持」删掉。</li>
+        <li><code>gqy-endpoint</code>：端到端的测试三个平台都跑。</li>
       </ul>
     </div>
     <div>
@@ -4699,7 +4699,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">session.set_permission_level</span><span class="dir-note">miyu-endpoint/src/methods.rs</span></div>
+            <div class="dir-label"><span class="path">session.set_permission_level</span><span class="dir-note">gqy-endpoint/src/methods.rs</span></div>
             <ol class="pipe" aria-label="怎么走">
               <li><code>{session, level?, read_only?}</code>：<code>workspace</code> 或 <code>full</code>，只读开关；两格都不写的回参数不对</li>
               <li>变了才记 <code>session.policy_changed</code>：收紧当场生效，放宽下一步生效；一样的不记</li>
@@ -4754,7 +4754,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">session.set_meta、session.delete</span><span class="dir-note">miyu-endpoint/src/sessions/delete.rs</span></div>
+            <div class="dir-label"><span class="path">session.set_meta、session.delete</span><span class="dir-note">gqy-endpoint/src/sessions/delete.rs</span></div>
             <ol class="pipe" aria-label="怎么走">
               <li>改名、置顶：变了才记 <code>session.meta_changed</code>；列会话带标题、置顶</li>
               <li>删除：回合进行中拒；子会话一层层停下，后台命令杀掉，目录挪进回收处</li>
@@ -4798,7 +4798,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-8g" aria-labelledby="h-s38g">
   <div class="sheet-head"><h2 id="h-s38g"><span class="no">3-8</span>回顾 session.recap（四补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">头能向核心要一句回顾：这个会话在做什么、做完了什么、卡在哪。照 codex 的做法单独发一次有上限的辅助请求，只喂最近几轮的对话正文，不接主对话的前缀；什么时候要、怎么显示是头的事。命令行有了 <code>miyu recap</code>。</p>
+  <p class="purpose">头能向核心要一句回顾：这个会话在做什么、做完了什么、卡在哪。照 codex 的做法单独发一次有上限的辅助请求，只喂最近几轮的对话正文，不接主对话的前缀；什么时候要、怎么显示是头的事。命令行有了 <code>gqy recap</code>。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -4849,7 +4849,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-8h" aria-labelledby="h-s38h">
   <div class="sheet-head"><h2 id="h-s38h"><span class="no">3-8</span>自动起标题（五补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">没起名的会话，第一轮有带正文的回答以后，核心照回顾那一套单独发一次小请求，起一个 3 到 7 个词的短标题，记成 <code>session.meta_changed</code>（<code>by</code> 是内核）。人起过名的不动，子会话、一次性会话不起。命令行有了 <code>miyu rename</code>（照 Claude Code，项目主人定）。</p>
+  <p class="purpose">没起名的会话，第一轮有带正文的回答以后，核心照回顾那一套单独发一次小请求，起一个 3 到 7 个词的短标题，记成 <code>session.meta_changed</code>（<code>by</code> 是内核）。人起过名的不动，子会话、一次性会话不起。命令行有了 <code>gqy rename</code>（照 Claude Code，项目主人定）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -5001,7 +5001,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-9a" aria-labelledby="h-s39a">
   <div class="sheet-head"><h2 id="h-s39a"><span class="no">3-9</span>主程序和拉起核心（上）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">miyu 这个程序有了。核心是一个单独的进程，由头拉起：建好骨架和管理员 admin 的家目录，运行日志写进 state/logs/core.log，从环境变量拿模型，在套接字上等连接，说一声「好了」；没有头连着、也没有在跑的回合，空闲够久了自己走。头连的时候核心没在跑，就把它拉起来，等它说好了再连。</p>
+  <p class="purpose">gqy 这个程序有了。核心是一个单独的进程，由头拉起：建好骨架和管理员 admin 的家目录，运行日志写进 state/logs/core.log，从环境变量拿模型，在套接字上等连接，说一声「好了」；没有头连着、也没有在跑的回合，空闲够久了自己走。头连的时候核心没在跑，就把它拉起来，等它说好了再连。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -5011,12 +5011,12 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="头拉起核心">
               <li>先连，连上了就用</li>
               <li>拿 run/spawn.lock，再连一次</li>
-              <li>拉起 miyu core，等它写来那一行</li>
+              <li>拉起 gqy core，等它写来那一行</li>
               <li>ready 就连；running 等到连上；error 照原样说</li>
             </ol>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">核心起来的先后</span><span class="dir-note">miyu-core</span></div>
+            <div class="dir-label"><span class="path">核心起来的先后</span><span class="dir-note">gqy-core</span></div>
             <ol class="pipe" aria-label="核心起来的先后">
               <li>建骨架</li>
               <li>拿锁：已经有一个在跑的，说 running 就走</li>
@@ -5032,7 +5032,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="tile new"><span class="nm">收到停的信号先停会话</span><span class="rl">跑到一半的回合记成「重启了」，下次接着干</span></div>
           <div class="tile new"><span class="nm">跟终端脱开</span><span class="rl">自成一组，终端里的 Ctrl+C 打不到它</span></div>
           <div class="tile new"><span class="nm">两个进程同时建骨架都成</span><span class="rl">施工中查出的 bug，修了</span></div>
-          <div class="tile"><span class="nm">还没有的</span><span class="rl">miyu ask（3-9 下）；配置文件、首次引导；登记成系统服务</span></div>
+          <div class="tile"><span class="nm">还没有的</span><span class="rl">gqy ask（3-9 下）；配置文件、首次引导；登记成系统服务</span></div>
         </div>
       </div>
     </div>
@@ -5050,15 +5050,15 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu</code>（新，第 6 层）：按子命令分发；<code>miyu core</code> 不写进帮助；不认识的子命令报错、退出码 2。</li>
-        <li><code>miyu-core</code>（新，第 4 层）：核心进程的起停、空闲退出、从环境变量拿模型。</li>
-        <li><code>miyu-ipc</code>：<code>connect_or_start</code>、核心说的那一行；内核、会话、协议端点看得出空不空闲。</li>
+        <li><code>gqy</code>（新，第 6 层）：按子命令分发；<code>gqy core</code> 不写进帮助；不认识的子命令报错、退出码 2。</li>
+        <li><code>gqy-core</code>（新，第 4 层）：核心进程的起停、空闲退出、从环境变量拿模型。</li>
+        <li><code>gqy-ipc</code>：<code>connect_or_start</code>、核心说的那一行；内核、会话、协议端点看得出空不空闲。</li>
       </ul>
     </div>
     <div>
       <h3>验收</h3>
       <ul class="checks">
-        <li><span class="ok">✓</span><span>真的拉起 miyu core：连上、握手；再连不再拉起；两个头同时连只拉起一次；起不来的说原因；一声不吭就走的也说；已经在跑的说一声就走；空闲了自己走</span></li>
+        <li><span class="ok">✓</span><span>真的拉起 gqy core：连上、握手；再连不再拉起；两个头同时连只拉起一次；起不来的说原因；一声不吭就走的也说；已经在跑的说一声就走；空闲了自己走</span></li>
         <li><span class="ok">✓</span><span>故意改坏 22 处：全拦下（先补了 4 处测试缺口）</span></li>
         <li><span class="ok">✓</span><span>本地七项全过；三台机器的 CI 全绿，长跑也绿</span></li>
       </ul>
@@ -5075,15 +5075,15 @@ a.step:hover{border-color:var(--primary)}
 </section>
 
 <section class="sheet" id="s3-9b" aria-labelledby="h-s39b">
-  <div class="sheet-head"><h2 id="h-s39b"><span class="no">3-9</span>miyu ask（下）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">最薄的头 miyu ask 有了，M3 完成：连上核心，开一个一次性会话，把一句话发给她，边收边打：思考灰色印在标准错误上，回答印在标准输出上，问完一行用量。跟真的 DeepSeek 连说两轮，第二轮命中了缓存。</p>
+  <div class="sheet-head"><h2 id="h-s39b"><span class="no">3-9</span>gqy ask（下）</h2><span class="pill done">已完成</span></div>
+  <p class="purpose">最薄的头 gqy ask 有了，M3 完成：连上核心，开一个一次性会话，把一句话发给她，边收边打：思考灰色印在标准错误上，回答印在标准输出上，问完一行用量。跟真的 DeepSeek 连说两轮，第二轮命中了缓存。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu ask 的先后</span><span class="dir-note">22 第三节</span></div>
-            <ol class="pipe" aria-label="miyu ask 的先后">
+            <div class="dir-label"><span class="path">gqy ask 的先后</span><span class="dir-note">22 第三节</span></div>
+            <ol class="pipe" aria-label="gqy ask 的先后">
               <li>建骨架；没 key 又没核心，退出码 5</li>
               <li>连上核心，握手</li>
               <li>开一次性会话，或者接着说</li>
@@ -5103,7 +5103,7 @@ a.step:hover{border-color:var(--primary)}
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">一次性会话</span><span class="rl">记进 session.created；--continue 接最新的那个</span></div>
           <div class="tile new"><span class="nm">session.list</span><span class="rl">从新到旧，照一次性筛；只读第一条</span></div>
-          <div class="tile new"><span class="nm">命令编号带随机前缀</span><span class="rl">施工中查出的：两次 miyu ask 撞号，第二句被当成重发</span></div>
+          <div class="tile new"><span class="nm">命令编号带随机前缀</span><span class="rl">施工中查出的：两次 gqy ask 撞号，第二句被当成重发</span></div>
           <div class="tile new"><span class="nm">退出码</span><span class="rl">0 走完；1 出错；2 用法不对；3 打断；5 没有模型</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">附件、管道输入、--tools、--timeout、stream-json；等子代理回报</span></div>
         </div>
@@ -5112,7 +5112,7 @@ a.step:hover{border-color:var(--primary)}
     <figcaption class="titleblock">
       <dl>
         <div><dt>图号</dt><dd class="mono">3-9（下）</dd></div>
-        <div><dt>名称</dt><dd>miyu ask</dd></div>
+        <div><dt>名称</dt><dd>gqy ask</dd></div>
         <div><dt>日期</dt><dd class="mono">2026-09-27</dd></div>
         <div><dt>提交</dt><dd class="mono">b239e2e</dd></div>
         <div><dt>验收</dt><dd>CI 全绿、测试全过；项目主人跟真模型说了两轮 · 通过</dd></div>
@@ -5123,9 +5123,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-cli</code>（新，第 5 层）：<code>miyu ask</code>，最薄的头，也是协议的参考实现。</li>
-        <li><code>miyu-endpoint</code>：造会话标一次性；<code>session.list</code>。</li>
-        <li><code>miyu-store</code>：只读地拿会话日志的第一条；一个账号有哪些会话。</li>
+        <li><code>gqy-cli</code>（新，第 5 层）：<code>gqy ask</code>，最薄的头，也是协议的参考实现。</li>
+        <li><code>gqy-endpoint</code>：造会话标一次性；<code>session.list</code>。</li>
+        <li><code>gqy-store</code>：只读地拿会话日志的第一条；一个账号有哪些会话。</li>
       </ul>
     </div>
     <div>
@@ -5141,7 +5141,7 @@ a.step:hover{border-color:var(--primary)}
       <ul>
         <li><code>docs/designs/22-命令行.md</code> 第三节：施工中定的写法。</li>
         <li><code>docs/designs/04-核心协议.md</code> 第九节：oneshot、session.list、命令编号不撞。</li>
-        <li><code>docs/construction/3-9-miyu-ask（下）.md</code>：施工单。</li>
+        <li><code>docs/construction/3-9-gqy-ask（下）.md</code>：施工单。</li>
       </ul>
     </div>
   </div>
@@ -5149,13 +5149,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-9e" aria-labelledby="h-s39e">
   <div class="sheet-head"><h2 id="h-s39e"><span class="no">3-9</span>附件（三补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">说话时能带上图片和文件：网页拖进来的、命令行 <code>miyu ask --file</code> 给的，都进她这一轮的消息。</p>
+  <p class="purpose">说话时能带上图片和文件：网页拖进来的、命令行 <code>gqy ask --file</code> 给的，都进她这一轮的消息。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">blob.put → session.send</span><span class="dir-note">miyu-endpoint/src/attach.rs</span></div>
+            <div class="dir-label"><span class="path">blob.put → session.send</span><span class="dir-note">gqy-endpoint/src/attach.rs</span></div>
             <ol class="pipe" aria-label="附件怎么走">
               <li><code>blob.put</code> 存成 blob，一个最多 20 MiB，照内容认是图片还是文件</li>
               <li><code>session.send</code> 带上 <code>attachments</code>，接在文字后面</li>
@@ -5275,7 +5275,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">接口在第 3 层</span><span class="rl">新 crate miyu-tool；快照不依赖它，拿的是内核的类型</span></div>
+          <div class="tile new"><span class="nm">接口在第 3 层</span><span class="rl">新 crate gqy-tool；快照不依赖它，拿的是内核的类型</span></div>
           <div class="tile new"><span class="nm">没有工具的快照字节不变</span><span class="rl">空的不写：M3 造的会话照旧载入，哈希不变</span></div>
           <div class="tile new"><span class="nm">读回来的也查重名</span><span class="rl">有两件同名的，造不出策略，不载入</span></div>
           <div class="tile new"><span class="nm">4-1、4-2 换了先后</span><span class="rl">执行要测，会话的策略里先得有工具</span></div>
@@ -5298,9 +5298,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-tool</code>（新，第 3 层）：规格、<code>Tool</code>、工具目录。</li>
-        <li><code>miyu-policy</code>：快照多一格工具面，造策略时交给组装器和内核。</li>
-        <li><code>miyu-session</code>：造会话时交进目录；<code>miyu-endpoint</code>、<code>miyu-core</code>：核心带一个目录，现在是空的。</li>
+        <li><code>gqy-tool</code>（新，第 3 层）：规格、<code>Tool</code>、工具目录。</li>
+        <li><code>gqy-policy</code>：快照多一格工具面，造策略时交给组装器和内核。</li>
+        <li><code>gqy-session</code>：造会话时交进目录；<code>gqy-endpoint</code>、<code>gqy-core</code>：核心带一个目录，现在是空的。</li>
       </ul>
     </div>
     <div>
@@ -5314,7 +5314,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/05-内核接口.md</code> 第六、八节：规格的第一批四格、第一版的目录。</li>
-        <li><code>docs/designs/01-架构.md</code> 第九节：第 3 层多一个 miyu-tool。</li>
+        <li><code>docs/designs/01-架构.md</code> 第九节：第 3 层多一个 gqy-tool。</li>
         <li><code>docs/construction/4-1-工具接口和工具面.md</code>：施工单。</li>
       </ul>
     </div>
@@ -5354,7 +5354,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="tile new"><span class="nm">不另给取消信号</span><span class="rl">Rust 的异步丢掉即取消，少一样要工具自觉照办的约定</span></div>
           <div class="tile new"><span class="nm">两句进登记簿</span><span class="rl">现在用不了、崩了：和内核替工具写的几句放在一处，从快照里拿</span></div>
           <div class="tile new"><span class="nm">运行日志</span><span class="rl">running、ran、stopped、unavailable、crashed；参数的字一个都不记</span></div>
-          <div class="tile new"><span class="nm">假工具</span><span class="rl">miyu-tool 的 testkit：回声、出错、推输出、停住、等凑齐、崩</span></div>
+          <div class="tile new"><span class="nm">假工具</span><span class="rl">gqy-tool 的 testkit：回声、出错、推输出、停住、等凑齐、崩</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">权限策略（4-3）；工具执行中问人（M8）；真的工具（4-4 起）</span></div>
         </div>
       </div>
@@ -5373,9 +5373,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-tool</code>：<code>Tool</code> 多一样执行；测试用的假工具。</li>
-        <li><code>miyu-session</code>：执行工具的端口 <code>tools.rs</code>；actor 把执行、叫停交给它；剧本能让她调工具。</li>
-        <li><code>miyu-policy</code>、<code>miyu-store</code>：快照、资源目录多两句。</li>
+        <li><code>gqy-tool</code>：<code>Tool</code> 多一样执行；测试用的假工具。</li>
+        <li><code>gqy-session</code>：执行工具的端口 <code>tools.rs</code>；actor 把执行、叫停交给它；剧本能让她调工具。</li>
+        <li><code>gqy-policy</code>、<code>gqy-store</code>：快照、资源目录多两句。</li>
       </ul>
     </div>
     <div>
@@ -5398,7 +5398,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s3-9c" aria-labelledby="h-s39c">
   <div class="sheet-head"><h2 id="h-s39c"><span class="no">3-9</span>会话编号照先后（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">同一毫秒里造的几个会话，编号也照造的先后排。原来编号的后半截是随机数，同一毫秒里造的两个谁先谁后说不准，列会话「从新到旧」会排错，miyu ask --continue 也可能接错会话。施工 4-2 跑改坏清单时撞见，3-9（下）留下的。</p>
+  <p class="purpose">同一毫秒里造的几个会话，编号也照造的先后排。原来编号的后半截是随机数，同一毫秒里造的两个谁先谁后说不准，列会话「从新到旧」会排错，gqy ask --continue 也可能接错会话。施工 4-2 跑改坏清单时撞见，3-9（下）留下的。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -5434,7 +5434,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-session</code> 的 <code>clock.rs</code>：造编号时用单调的计数器。</li>
+        <li><code>gqy-session</code> 的 <code>clock.rs</code>：造编号时用单调的计数器。</li>
       </ul>
     </div>
     <div>
@@ -5465,7 +5465,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="dir-label"><span class="path">边界表：先对上的算</span><span class="dir-note">11 第四节</span></div>
             <ol class="pipe" aria-label="边界表的先后">
               <li>工作区：能读能写；里面的 .git/hooks、.git/config 只能读</li>
-              <li>Miyu 的数据根：谁都不能碰（退回来的账号工作区除外）</li>
+              <li>GQY 的数据根：谁都不能碰（退回来的账号工作区除外）</li>
               <li>临时目录：能读能写</li>
               <li>系统目录、工具链目录：只能读</li>
               <li>别的：边界以外，要碰就得问人</li>
@@ -5483,7 +5483,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-fs</span><span class="rl">第 3 层：文件工具照它碰文件，执行前的链照它判</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-fs</span><span class="rl">第 3 层：文件工具照它碰文件，执行前的链照它判</span></div>
           <div class="tile new"><span class="nm">数据根不分大小写</span><span class="rl">macOS、Windows 上换个大小写也认得出；工作区照原样比</span></div>
           <div class="tile new"><span class="nm">Windows 照字面消 ..</span><span class="rl">系统找文件前就消掉了，落在哪是定的（施工中 CI 查出）</span></div>
           <div class="tile new"><span class="nm">第一版清单</span><span class="rl">三个平台的系统目录；.cargo、.rustup、.npm、.gitconfig</span></div>
@@ -5505,7 +5505,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-fs</code>（新，第 3 层）：<code>Boundary</code>、<code>resolve()</code>、<code>open_file()</code>。</li>
+        <li><code>gqy-fs</code>（新，第 3 层）：<code>Boundary</code>、<code>resolve()</code>、<code>open_file()</code>。</li>
       </ul>
     </div>
     <div>
@@ -5575,9 +5575,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-session</code> 的 <code>guard.rs</code>：权限策略，接进执行前的链。</li>
-        <li><code>miyu-tool</code>：工具报要碰的路径；<code>miyu-fs</code>：<code>too_wide</code>。</li>
-        <li><code>miyu-endpoint</code>：工作目录太宽退回账号的工作区；拒绝时的两句进快照、进登记簿。</li>
+        <li><code>gqy-session</code> 的 <code>guard.rs</code>：权限策略，接进执行前的链。</li>
+        <li><code>gqy-tool</code>：工具报要碰的路径；<code>gqy-fs</code>：<code>too_wide</code>。</li>
+        <li><code>gqy-endpoint</code>：工作目录太宽退回账号的工作区；拒绝时的两句进快照、进登记簿。</li>
       </ul>
     </div>
     <div>
@@ -5600,7 +5600,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s4-4a" aria-labelledby="h-s44a">
   <div class="sheet-head"><h2 id="h-s44a"><span class="no">4-4</span>读取（上）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">第一件真的工具：read。她能读工作区里的文本文件，带行号按行分页，读到目录时列出里面有什么。它属于基础系统这个软件包，核心起来时登记进工具目录；说明、参数格式、输出里给她看的几句都在资源目录里、进了登记簿。miyu ask 里没人能确认，越界的读当场被拒、告诉她原因（施工 4-9 定成一直这样）。</p>
+  <p class="purpose">第一件真的工具：read。她能读工作区里的文本文件，带行号按行分页，读到目录时列出里面有什么。它属于基础系统这个软件包，核心起来时登记进工具目录；说明、参数格式、输出里给她看的几句都在资源目录里、进了登记簿。gqy ask 里没人能确认，越界的读当场被拒、告诉她原因（施工 4-9 定成一直这样）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -5624,10 +5624,10 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">新 crate miyu-basesystem</span><span class="rl">第 3 层：4-4 到 4-8 的几件都在这里</span></div>
+          <div class="tile new"><span class="nm">新 crate gqy-basesystem</span><span class="rl">第 3 层：4-4 到 4-8 的几件都在这里</span></div>
           <div class="tile new"><span class="nm">交给工具的家目录</span><span class="rl">和权限策略换 ~ 的办法一样，碰到的是同一个文件</span></div>
           <div class="tile new"><span class="nm">编码</span><span class="rl">UTF-8、带 BOM 的 UTF-16；NUL 当二进制，不读</span></div>
-          <div class="tile new"><span class="nm">miyu ask 没人能确认</span><span class="rl">要问人的当场拒绝，不一直等着（施工 4-9 定成一直这样）</span></div>
+          <div class="tile new"><span class="nm">gqy ask 没人能确认</span><span class="rl">要问人的当场拒绝，不一直等着（施工 4-9 定成一直这样）</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">glob、grep（4-4 下）；效果（4-6）；图片、PDF</span></div>
         </div>
       </div>
@@ -5646,9 +5646,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-basesystem</code>（新，第 3 层）：从资源目录读字；<code>read</code>。</li>
-        <li><code>miyu-core</code>：起来时登记基础系统；<code>miyu-tool</code>：交给工具的家目录。</li>
-        <li><code>miyu-cli</code>：说没人能确认（施工 4-9 定成一直这样）。</li>
+        <li><code>gqy-basesystem</code>（新，第 3 层）：从资源目录读字；<code>read</code>。</li>
+        <li><code>gqy-core</code>：起来时登记基础系统；<code>gqy-tool</code>：交给工具的家目录。</li>
+        <li><code>gqy-cli</code>：说没人能确认（施工 4-9 定成一直这样）。</li>
       </ul>
     </div>
     <div>
@@ -5690,7 +5690,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="找文件、搜内容走目录">
               <li>遵守 .gitignore：仓库里往上到仓库根，不在仓库里只认往下的</li>
               <li>隐藏文件照找，.git 这类版本库目录不进</li>
-              <li>Miyu 的数据根不进，工作区在里面的照样进</li>
+              <li>GQY 的数据根不进，工作区在里面的照样进</li>
               <li>新的在前；工作目录里的写相对路径</li>
             </ol>
           </div>
@@ -5720,9 +5720,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-basesystem</code>：glob、grep；共用的走目录、模式、路径写法、相近的名字；read 改到规范上。</li>
-        <li><code>miyu-tool</code>、<code>miyu-session</code>：交给工具的数据根；<code>miyu-fs</code>：「在不在某个目录里」公开出来。</li>
-        <li><code>miyu-core</code>：登记读的三件。</li>
+        <li><code>gqy-basesystem</code>：glob、grep；共用的走目录、模式、路径写法、相近的名字；read 改到规范上。</li>
+        <li><code>gqy-tool</code>、<code>gqy-session</code>：交给工具的数据根；<code>gqy-fs</code>：「在不在某个目录里」公开出来。</li>
+        <li><code>gqy-core</code>：登记读的三件。</li>
       </ul>
     </div>
     <div>
@@ -5791,9 +5791,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：说法、<code>tool.result</code> 的 <code>human</code>；内核写的每一句带说法；模板的 <code>fill</code>、<code>fields</code>。</li>
-        <li><code>miyu-tool</code>、<code>miyu-policy</code>、<code>miyu-session</code>：说法从工具、权限策略、执行器一路交进内核。</li>
-        <li><code>miyu-basesystem</code>：三件读的工具每一种结果都带说法；<code>miyu-store</code>：读给人看的字、换成字。</li>
+        <li><code>gqy-kernel</code>：说法、<code>tool.result</code> 的 <code>human</code>；内核写的每一句带说法；模板的 <code>fill</code>、<code>fields</code>。</li>
+        <li><code>gqy-tool</code>、<code>gqy-policy</code>、<code>gqy-session</code>：说法从工具、权限策略、执行器一路交进内核。</li>
+        <li><code>gqy-basesystem</code>：三件读的工具每一种结果都带说法；<code>gqy-store</code>：读给人看的字、换成字。</li>
       </ul>
     </div>
     <div>
@@ -5815,8 +5815,8 @@ a.step:hover{border-color:var(--primary)}
 </section>
 
 <section class="sheet" id="s4-5b" aria-labelledby="h-s45b">
-  <div class="sheet-head"><h2 id="h-s45b"><span class="no">4-5</span>miyu ask 印出每一步（下）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">照项目主人定的样子，miyu ask 把她做的每一步在标准错误上印成一行：显示名、参数的值、结果那一句；没做成的同一行写原因，「出错」「没做」标红，整行灰。工作目录太宽、核心退回账号的工作区时，开头说一句。M4 读的那一半能用了：让她在工作区里读代码、搜代码，看得见每一步做成了没有。</p>
+  <div class="sheet-head"><h2 id="h-s45b"><span class="no">4-5</span>gqy ask 印出每一步（下）</h2><span class="pill done">已完成</span></div>
+  <p class="purpose">照项目主人定的样子，gqy ask 把她做的每一步在标准错误上印成一行：显示名、参数的值、结果那一句；没做成的同一行写原因，「出错」「没做」标红，整行灰。工作目录太宽、核心退回账号的工作区时，开头说一句。M4 读的那一半能用了：让她在工作区里读代码、搜代码，看得见每一步做成了没有。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -5827,7 +5827,7 @@ a.step:hover{border-color:var(--primary)}
               <li>· 读取 src/lib.rs → 37 行</li>
               <li>· 读取 src/mian.rs → 出错：没有这个文件，是不是 src/main.rs</li>
               <li>· 读取 ~/notes/plan.md → 没做：要确认，这里没人能确认</li>
-              <li>· 目录太宽（~），这次在 ~/.miyu/home/admin/workspace 里干活</li>
+              <li>· 目录太宽（~），这次在 ~/.gqy/home/admin/workspace 里干活</li>
             </ol>
           </div>
           <div class="dir">
@@ -5852,7 +5852,7 @@ a.step:hover{border-color:var(--primary)}
     <figcaption class="titleblock">
       <dl>
         <div><dt>图号</dt><dd class="mono">4-5（下）</dd></div>
-        <div><dt>名称</dt><dd>miyu ask 印出每一步</dd></div>
+        <div><dt>名称</dt><dd>gqy ask 印出每一步</dd></div>
         <div><dt>日期</dt><dd class="mono">2026-09-28</dd></div>
         <div><dt>提交</dt><dd class="mono">ec5090f</dd></div>
         <div><dt>验收</dt><dd>CI 全绿、测试全过 · 通过</dd></div>
@@ -5863,8 +5863,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-endpoint</code>：会话表记下实际干活的目录；造会话、说话的回应带上 <code>cwd</code>。</li>
-        <li><code>miyu-cli</code>：<code>steps</code> 把一次结果写成一行，分灰的、红的几段；跟着一轮的那一头收到结果就印，思考、步骤都当旁白；起来时照界面语言读给人看的字。</li>
+        <li><code>gqy-endpoint</code>：会话表记下实际干活的目录；造会话、说话的回应带上 <code>cwd</code>。</li>
+        <li><code>gqy-cli</code>：<code>steps</code> 把一次结果写成一行，分灰的、红的几段；跟着一轮的那一头收到结果就印，思考、步骤都当旁白；起来时照界面语言读给人看的字。</li>
       </ul>
     </div>
     <div>
@@ -5879,7 +5879,7 @@ a.step:hover{border-color:var(--primary)}
       <ul>
         <li><code>docs/designs/22-命令行.md</code> 第三节：一步那一行怎么写。</li>
         <li><code>docs/designs/04-核心协议.md</code> 第九节：回应里的 <code>cwd</code>。</li>
-        <li><code>docs/construction/4-5-miyu ask 印出每一步（下）.md</code>：施工单。</li>
+        <li><code>docs/construction/4-5-gqy ask 印出每一步（下）.md</code>：施工单。</li>
       </ul>
     </div>
   </div>
@@ -6032,9 +6032,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：效果的类型，不认识的原样留着；<code>tool.result</code> 多 <code>effects</code>；边读边算的内容哈希。</li>
-        <li><code>miyu-tool</code>、<code>miyu-session</code>：工具交回效果，执行器存 blob；她看过的交给每次调用，载入时重建。</li>
-        <li><code>miyu-basesystem</code>：read 报 file.read；新的 write；共用的「文件的写法」和「整体换成新内容」。</li>
+        <li><code>gqy-kernel</code>：效果的类型，不认识的原样留着；<code>tool.result</code> 多 <code>effects</code>；边读边算的内容哈希。</li>
+        <li><code>gqy-tool</code>、<code>gqy-session</code>：工具交回效果，执行器存 blob；她看过的交给每次调用，载入时重建。</li>
+        <li><code>gqy-basesystem</code>：read 报 file.read；新的 write；共用的「文件的写法」和「整体换成新内容」。</li>
       </ul>
     </div>
     <div>
@@ -6104,7 +6104,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-basesystem</code>：新的 <code>edit</code>，找位置的 <code>find</code>（两层看法、换回原文、最接近的几行）。</li>
+        <li><code>gqy-basesystem</code>：新的 <code>edit</code>，找位置的 <code>find</code>（两层看法、换回原文、最接近的几行）。</li>
         <li>「文件的写法」多了只换编码和 BOM、严格解码；改之前核对、目录、写不了挪进共用的几句。</li>
         <li><code>write</code> 的说明补上第三句「只改一部分的用 edit」。</li>
       </ul>
@@ -6155,7 +6155,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="tile new"><span class="nm">参数 file_path</span><span class="rl">照 read、write、edit 的叫法，path 也认；文件、目录都能删</span></div>
           <div class="tile new"><span class="nm">链接删链接本身</span><span class="rl">最后一段不跟链接，指向的东西不动</span></div>
           <div class="tile new"><span class="nm">Windows 读 $I 记录</span><span class="rl">回收站列表里的名字藏了扩展名，拼不回原路径（CI 上查实）</span></div>
-          <div class="tile new"><span class="nm">~ 一个规矩</span><span class="rl">照 miyu-fs 开放出来的 tilde 接家目录</span></div>
+          <div class="tile new"><span class="nm">~ 一个规矩</span><span class="rl">照 gqy-fs 开放出来的 tilde 接家目录</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">撤销（4-7）；收不了时先问要不要永久删（有了确认的抽屉以后，M8）</span></div>
         </div>
       </div>
@@ -6174,8 +6174,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-basesystem</code>：新的 <code>trash</code>，三个平台的回收站各一份，读 Windows <code>$I</code> 记录的 <code>recycled</code>。</li>
-        <li><code>miyu-fs</code>：<code>~</code> 的规矩开放出来，自己拼路径的工具照同一条。</li>
+        <li><code>gqy-basesystem</code>：新的 <code>trash</code>，三个平台的回收站各一份，读 Windows <code>$I</code> 记录的 <code>recycled</code>。</li>
+        <li><code>gqy-fs</code>：<code>~</code> 的规矩开放出来，自己拼路径的工具照同一条。</li>
         <li>删了的从她看过的里拿掉；给人看的字中文、英文各一份。</li>
       </ul>
     </div>
@@ -6225,9 +6225,9 @@ a.step:hover{border-color:var(--primary)}
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">新建的撤销进回收站</span><span class="rl">宁可不删，不可删没了</span></div>
           <div class="tile new"><span class="nm">位置照日志往后找</span><span class="rl">恢复时又移进回收站，位置变了，下一次撤销照新的</span></div>
-          <div class="tile new"><span class="nm">写回、回收站进 miyu-fs</span><span class="rl">工具和撤销共用；第三方编辑器报的效果也撤得回</span></div>
+          <div class="tile new"><span class="nm">写回、回收站进 gqy-fs</span><span class="rl">工具和撤销共用；第三方编辑器报的效果也撤得回</span></div>
           <div class="tile new"><span class="nm">协议</span><span class="rl">session.revert、session.unrevert；改回文件时来的拒绝，原因码 restoring</span></div>
-          <div class="tile"><span class="nm">还没有的</span><span class="rl">miyu undo、miyu redo 和给人看的差异（4-7 下）；子代理、后台命令一起停下（M7）</span></div>
+          <div class="tile"><span class="nm">还没有的</span><span class="rl">gqy undo、gqy redo 和给人看的差异（4-7 下）；子代理、后台命令一起停下（M7）</span></div>
         </div>
       </div>
     </div>
@@ -6245,9 +6245,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：新事件 <code>files.restored</code>；撤销、恢复时算出要改回的几步，等结局回来再回应。</li>
-        <li><code>miyu-session</code>：照几步改回文件；她看过的照有效历史算。</li>
-        <li><code>miyu-fs</code>：写回和回收站从基础系统挪来，加上从回收站移回来；<code>miyu-endpoint</code>：撤销、恢复两个方法。</li>
+        <li><code>gqy-kernel</code>：新事件 <code>files.restored</code>；撤销、恢复时算出要改回的几步，等结局回来再回应。</li>
+        <li><code>gqy-session</code>：照几步改回文件；她看过的照有效历史算。</li>
+        <li><code>gqy-fs</code>：写回和回收站从基础系统挪来，加上从回收站移回来；<code>gqy-endpoint</code>：撤销、恢复两个方法。</li>
       </ul>
     </div>
     <div>
@@ -6268,8 +6268,8 @@ a.step:hover{border-color:var(--primary)}
 </section>
 
 <section class="sheet" id="s4-7b" aria-labelledby="h-s47b">
-  <div class="sheet-head"><h2 id="h-s47b"><span class="no">4-7</span>miyu undo、miyu redo（下）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">前端做出来之前，人也用得上撤销：miyu undo 撤掉当前会话的最后一轮，印出改回了哪些文件，之后又被改过的不覆盖、印出差异；miyu redo 在发下一句之前恢复。样子是项目主人定的；差异由核心算好，头只照着印。</p>
+  <div class="sheet-head"><h2 id="h-s47b"><span class="no">4-7</span>gqy undo、gqy redo（下）</h2><span class="pill done">已完成</span></div>
+  <p class="purpose">前端做出来之前，人也用得上撤销：gqy undo 撤掉当前会话的最后一轮，印出改回了哪些文件，之后又被改过的不覆盖、印出差异；gqy redo 在发下一句之前恢复。样子是项目主人定的；差异由核心算好，头只照着印。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -6280,7 +6280,7 @@ a.step:hover{border-color:var(--primary)}
               <li>· 撤销「把 README 改成中文」这一轮</li>
               <li>· 改回 src/a.rs ／ · 移回 docs/old.md ／ · 删掉 notes/new.txt → 移进了回收站</li>
               <li>· 改回 src/b.rs → 没动：之后又被改过，下面印差异（她改完的 → 现在，最多 20 行）</li>
-              <li>· 这一轮执行过 2 条命令：命令改的文件撤不回 ／ 发下一句之前，可以用 miyu redo 恢复。</li>
+              <li>· 这一轮执行过 2 条命令：命令改的文件撤不回 ／ 发下一句之前，可以用 gqy redo 恢复。</li>
             </ol>
           </div>
           <div class="dir">
@@ -6305,7 +6305,7 @@ a.step:hover{border-color:var(--primary)}
     <figcaption class="titleblock">
       <dl>
         <div><dt>图号</dt><dd class="mono">4-7（下）</dd></div>
-        <div><dt>名称</dt><dd>miyu undo、miyu redo</dd></div>
+        <div><dt>名称</dt><dd>gqy undo、gqy redo</dd></div>
         <div><dt>日期</dt><dd class="mono">2026-09-28</dd></div>
         <div><dt>提交</dt><dd class="mono">d1d4d82</dd></div>
         <div><dt>验收</dt><dd>CI 全绿、测试全过 · 通过</dd></div>
@@ -6316,9 +6316,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-cli</code>：<code>undo</code>（找会话、发命令、照回应印）；<code>link</code>、<code>shown</code>、<code>rpc</code> 从 ask 里挪成公共的。</li>
-        <li><code>miyu-endpoint</code>：<code>undo</code>，回应里给人看的几样，差异用 similar 算。</li>
-        <li><code>miyu-kernel</code>：撤销不写回合编号的撤最后一轮；<code>miyu</code>：两个子命令。</li>
+        <li><code>gqy-cli</code>：<code>undo</code>（找会话、发命令、照回应印）；<code>link</code>、<code>shown</code>、<code>rpc</code> 从 ask 里挪成公共的。</li>
+        <li><code>gqy-endpoint</code>：<code>undo</code>，回应里给人看的几样，差异用 similar 算。</li>
+        <li><code>gqy-kernel</code>：撤销不写回合编号的撤最后一轮；<code>gqy</code>：两个子命令。</li>
       </ul>
     </div>
     <div>
@@ -6332,7 +6332,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>图纸</h3>
       <ul>
         <li><code>docs/designs/22-命令行.md</code> 第三节，<code>04</code> 第九节的回应，<code>02</code> 的原因码。</li>
-        <li><code>docs/construction/4-7-miyu undo、miyu redo（下）.md</code>：施工单。</li>
+        <li><code>docs/construction/4-7-gqy undo、gqy redo（下）.md</code>：施工单。</li>
       </ul>
     </div>
   </div>
@@ -6348,9 +6348,9 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">命令行</span><span class="dir-note">终端界面照同样的名字</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">miyu undo · miyu rewind</span><span class="rl">发 session.revert</span></div>
-              <div class="tile new"><span class="nm">miyu restore</span><span class="rl">发 session.unrevert，原来叫 redo</span></div>
-              <div class="tile new"><span class="nm">miyu redo</span><span class="rl">不认识的子命令，退出码 2</span></div>
+              <div class="tile new"><span class="nm">gqy undo · gqy rewind</span><span class="rl">发 session.revert</span></div>
+              <div class="tile new"><span class="nm">gqy restore</span><span class="rl">发 session.unrevert，原来叫 redo</span></div>
+              <div class="tile new"><span class="nm">gqy redo</span><span class="rl">不认识的子命令，退出码 2</span></div>
             </div>
           </div>
         </div>
@@ -6397,13 +6397,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s4-7d" aria-labelledby="h-s47d">
   <div class="sheet-head"><h2 id="h-s47d"><span class="no">4-7</span>重做上一轮（再补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">撤掉最后一轮，把开这一轮的话原样再发一次，让她重新做；也能换成改过的话再发（网页编辑上一句）。协议 <code>session.redo</code>、命令行 <code>miyu redo</code>（项目主人定只重做最后一轮）。</p>
+  <p class="purpose">撤掉最后一轮，把开这一轮的话原样再发一次，让她重新做；也能换成改过的话再发（网页编辑上一句）。协议 <code>session.redo</code>、命令行 <code>gqy redo</code>（项目主人定只重做最后一轮）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu redo [话]</span><span class="dir-note">session/redo.rs</span></div>
+            <div class="dir-label"><span class="path">gqy redo [话]</span><span class="dir-note">session/redo.rs</span></div>
             <ol class="pipe" aria-label="怎么走">
               <li>照撤销的规矩撤掉最后一轮，同一批把那几句话重发、开新的一轮</li>
               <li>写了话、附件的换掉，没写的照原来那一句的</li>
@@ -6458,7 +6458,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="做了什么">
               <li>改回了的、写回内容的那一项带 <code>diff</code>：改回以前对改回以后，规矩照旧（上下 3 行、最多 20 行、<code>more</code>）</li>
               <li>带差异的每一项多 <code>added</code>、<code>removed</code>，照整份差异数</li>
-              <li>挪进挪出回收站的、本来就一样的不带；<code>miyu undo</code> 照旧印，代码不用改</li>
+              <li>挪进挪出回收站的、本来就一样的不带；<code>gqy undo</code> 照旧印，代码不用改</li>
             </ol>
           </div>
         </div>
@@ -6543,7 +6543,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-basesystem</code>：新的 <code>shell</code>，下面四块：用哪个 shell（<code>program</code>）、环境变量（<code>env</code>）、起命令和整组杀（<code>process</code>）、输出（<code>output</code>）。</li>
+        <li><code>gqy-basesystem</code>：新的 <code>shell</code>，下面四块：用哪个 shell（<code>program</code>）、环境变量（<code>env</code>）、起命令和整组杀（<code>process</code>）、输出（<code>output</code>）。</li>
         <li>工具的说明能带这台机器上的字段（<code>spec_filled</code>）：只有 <code>shell</code> 用，写明是哪种 shell。</li>
         <li>给人看的字中文、英文各一份；登记簿记下新加的九份字。</li>
       </ul>
@@ -6567,7 +6567,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s4-9" aria-labelledby="h-s49">
   <div class="sheet-head"><h2 id="h-s49"><span class="no">4-9</span>没人能确认时说清楚</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">miyu ask 里没有提问的工具，也没有确认的界面：要确认的那一步当场被拒，她在回答里说明，有问题就在回答里问。这一步补上收尾：有几步因为要确认没做的，退出码 4，标准错误上最后一行说一句。提问的工具和确认的抽屉挪到 M8，事先放行的参数随 M5。</p>
+  <p class="purpose">gqy ask 里没有提问的工具，也没有确认的界面：要确认的那一步当场被拒，她在回答里说明，有问题就在回答里问。这一步补上收尾：有几步因为要确认没做的，退出码 4，标准错误上最后一行说一句。提问的工具和确认的抽屉挪到 M8，事先放行的参数随 M5。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -6578,7 +6578,7 @@ a.step:hover{border-color:var(--primary)}
               <li>· 读取 ~/.gitconfig → 没做：要确认，这里没人能确认</li>
               <li>她在回答里说明读不到</li>
               <li>· 输入 3,210 · 命中缓存 2,944（92%）· 输出 186</li>
-              <li>· 1 步没做：要你确认，miyu ask 里确认不了（退出码 4）</li>
+              <li>· 1 步没做：要你确认，gqy ask 里确认不了（退出码 4）</li>
             </ol>
           </div>
           <div class="dir">
@@ -6591,7 +6591,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">没有提问的工具</span><span class="rl">miyu ask 里没有 ask_user，也没有确认的界面，是不是终端都一样（项目主人定）</span></div>
+          <div class="tile new"><span class="nm">没有提问的工具</span><span class="rl">gqy ask 里没有 ask_user，也没有确认的界面，是不是终端都一样（项目主人定）</span></div>
           <div class="tile new"><span class="nm">退出码</span><span class="rl">照常结束又有几步没做的 4；打断 3、出错 1、没有模型 5 照旧</span></div>
           <div class="tile new"><span class="nm">只算这一种</span><span class="rl">只读时要写的、碰到数据根的不算；给脚本的只看退出码</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">事先放行的参数 --add-dir（M5）；提问的工具、确认的抽屉（M8）</span></div>
@@ -6612,7 +6612,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-cli</code>：跟着一轮时数被拒的；最后那一行和它的中文、英文；退出码 4；握手一律说没人能确认。</li>
+        <li><code>gqy-cli</code>：跟着一轮时数被拒的；最后那一行和它的中文、英文；退出码 4；握手一律说没人能确认。</li>
       </ul>
     </div>
     <div>
@@ -6634,7 +6634,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s4-9b" aria-labelledby="h-s49b">
   <div class="sheet-head"><h2 id="h-s49b"><span class="no">4-9</span>补完蓝图（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">项目主人定了新开蓝图这一层：写 Miyu 现在长什么样，事无巨细，以后改设计就改它。这一步把 M0 到 4-9 已经做完的部分补成蓝图，35 页，每一条都对过代码。</p>
+  <p class="purpose">项目主人定了新开蓝图这一层：写 GQY 现在长什么样，事无巨细，以后改设计就改它。这一步把 M0 到 4-9 已经做完的部分补成蓝图，35 页，每一条都对过代码。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -6647,7 +6647,7 @@ a.step:hover{border-color:var(--primary)}
               <div class="tile new"><span class="nm">store、log、session/</span><span class="rl">数据根和日志、运行日志、会话 actor、执行工具、权限策略</span></div>
               <div class="tile new"><span class="nm">protocol、core、ipc</span><span class="rl">握手和每个方法、撤销的回应、核心进程、本机的套接字和命名管道</span></div>
               <div class="tile new"><span class="nm">fs、tools/</span><span class="rl">边界和回收站、工具接口、七件工具各一页</span></div>
-              <div class="tile new"><span class="nm">cli/</span><span class="rl">miyu ask、miyu undo、主程序</span></div>
+              <div class="tile new"><span class="nm">cli/</span><span class="rl">gqy ask、gqy undo、主程序</span></div>
             </div>
           </div>
           <div class="dir">
@@ -6724,7 +6724,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="files">
               <div class="tile new"><span class="nm">改回文件</span><span class="rl">移回来算不出哈希的照样算移回来；内核对照执行器交回的结局，对不上的记没做成</span></div>
               <div class="tile new"><span class="nm">撤销的回应</span><span class="rl">执行过几条命令只数跑过的；人说的那句取第一行不空的</span></div>
-              <div class="tile new"><span class="nm">miyu undo</span><span class="rl">英文分单复数；差异里的制表符照原样；没设 key、核心没在跑的不拉起，退出码 5</span></div>
+              <div class="tile new"><span class="nm">gqy undo</span><span class="rl">英文分单复数；差异里的制表符照原样；没设 key、核心没在跑的不拉起，退出码 5</span></div>
             </div>
           </div>
         </div>
@@ -6732,7 +6732,7 @@ a.step:hover{border-color:var(--primary)}
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">等多久</span><span class="rl">最多 10 秒，一般几毫秒就交回来了；等的时候来的消息照排队，撤销、恢复照旧被拒</span></div>
           <div class="tile new"><span class="nm">等的时候重启</span><span class="rl">那次打断照样算数，先收尾，再起来不接着干</span></div>
-          <div class="tile new"><span class="nm">没 key 不拉起</span><span class="rl">照 miyu ask 的规矩：拉起一个没有 key 的核心，之后的 miyu ask 也用不了（项目主人定）</span></div>
+          <div class="tile new"><span class="nm">没 key 不拉起</span><span class="rl">照 gqy ask 的规矩：拉起一个没有 key 的核心，之后的 gqy ask 也用不了（项目主人定）</span></div>
           <div class="tile"><span class="nm">还没有的</span><span class="rl">崩溃时正在改的文件照旧不留效果；执行命令不等，它改的文件本来就不记效果</span></div>
         </div>
       </div>
@@ -6751,10 +6751,10 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：调用多一种「停着」；打断时等停着的、到点和又打断就不等；重启时先把那次打断收尾；对照改回的结局；没叫停却停了的照已取消记。</li>
-        <li><code>miyu-tool</code>、<code>miyu-basesystem</code>：叫停的旗交给每次调用；三件写的工具真正改之前看旗。</li>
-        <li><code>miyu-session</code>：叫它停只举旗，掐掉叫停过的记一行 WARN；移回来读不了的照样算移回来。</li>
-        <li><code>miyu-endpoint</code>、<code>miyu-cli</code>：命令数、那句话、单复数、制表符、没 key 不拉起。</li>
+        <li><code>gqy-kernel</code>：调用多一种「停着」；打断时等停着的、到点和又打断就不等；重启时先把那次打断收尾；对照改回的结局；没叫停却停了的照已取消记。</li>
+        <li><code>gqy-tool</code>、<code>gqy-basesystem</code>：叫停的旗交给每次调用；三件写的工具真正改之前看旗。</li>
+        <li><code>gqy-session</code>：叫它停只举旗，掐掉叫停过的记一行 WARN；移回来读不了的照样算移回来。</li>
+        <li><code>gqy-endpoint</code>、<code>gqy-cli</code>：命令数、那句话、单复数、制表符、没 key 不拉起。</li>
       </ul>
     </div>
     <div>
@@ -6823,10 +6823,10 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-fs</code>：<code>resolve_itself</code>，最后一段不跟链接，从 <code>trash</code> 挪过来。</li>
-        <li><code>miyu-tool</code>、<code>miyu-session</code>：要碰的路径多一格 <code>itself</code>，权限策略照它换真实的位置。</li>
-        <li><code>miyu-basesystem</code>：trash 不分大小写；grep、write、edit 安全地打开；read 的二进制；shell 的四处；没声明的别名宽松地认。</li>
-        <li><code>miyu-kernel</code>：参数修正往下走。</li>
+        <li><code>gqy-fs</code>：<code>resolve_itself</code>，最后一段不跟链接，从 <code>trash</code> 挪过来。</li>
+        <li><code>gqy-tool</code>、<code>gqy-session</code>：要碰的路径多一格 <code>itself</code>，权限策略照它换真实的位置。</li>
+        <li><code>gqy-basesystem</code>：trash 不分大小写；grep、write、edit 安全地打开；read 的二进制；shell 的四处；没声明的别名宽松地认。</li>
+        <li><code>gqy-kernel</code>：参数修正往下走。</li>
       </ul>
     </div>
     <div>
@@ -6896,10 +6896,10 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：两种事件多一格 <code>cwd</code>，开回合时写上；替身能不再扣着叫醒。</li>
-        <li><code>miyu-assemble</code>：碰到 <code>model.called</code> 也收住回合开始的那一段；随机日志的重试回合切级别。</li>
-        <li><code>miyu-endpoint</code>：订阅不掐；载入时的工作目录；去重补回；握手时限、数组的参数、被拒的语言、人格目录。</li>
-        <li><code>miyu-core</code>：Ctrl+C 装不上当它不会来。</li>
+        <li><code>gqy-kernel</code>：两种事件多一格 <code>cwd</code>，开回合时写上；替身能不再扣着叫醒。</li>
+        <li><code>gqy-assemble</code>：碰到 <code>model.called</code> 也收住回合开始的那一段；随机日志的重试回合切级别。</li>
+        <li><code>gqy-endpoint</code>：订阅不掐；载入时的工作目录；去重补回；握手时限、数组的参数、被拒的语言、人格目录。</li>
+        <li><code>gqy-core</code>：Ctrl+C 装不上当它不会来。</li>
       </ul>
     </div>
     <div>
@@ -6968,8 +6968,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-drivers</code>：噪声多认三种；流里的错留下要等多久；解码器多一个 <code>finished()</code>。</li>
-        <li><code>miyu-http</code>：另配的头换掉同名的；造不出请求的出错 <code>other</code>；只差 [DONE] 算说完；原话去掉地址；端点打印只写主机名。</li>
+        <li><code>gqy-drivers</code>：噪声多认三种；流里的错留下要等多久；解码器多一个 <code>finished()</code>。</li>
+        <li><code>gqy-http</code>：另配的头换掉同名的；造不出请求的出错 <code>other</code>；只差 [DONE] 算说完；原话去掉地址；端点打印只写主机名。</li>
       </ul>
     </div>
     <div>
@@ -6990,7 +6990,7 @@ a.step:hover{border-color:var(--primary)}
 </section>
 <section class="sheet" id="s4-9g" aria-labelledby="h-s49g">
   <div class="sheet-head"><h2 id="h-s49g"><span class="no">4-9</span>命令行、运行日志（再补四上）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">补蓝图时查出命令行和运行日志有几处和设计对不上：<code>miyu --help</code> 印的是代码注释；<code>NO_COLOR</code> 设成空的也不上色；日志里的路径带着用户名；<code>basesystem</code> 的来源一列对不齐；阻塞线程里发的行没有会话编号；日志的目录和文件照系统默认的权限；起来那一行少了数据根和时区，起不来那一行把给人看的中文写了进去。这一步一件件修好。再补四条目多，拆成上中下三步，总数 80。</p>
+  <p class="purpose">补蓝图时查出命令行和运行日志有几处和设计对不上：<code>gqy --help</code> 印的是代码注释；<code>NO_COLOR</code> 设成空的也不上色；日志里的路径带着用户名；<code>basesystem</code> 的来源一列对不齐；阻塞线程里发的行没有会话编号；日志的目录和文件照系统默认的权限；起来那一行少了数据根和时区，起不来那一行把给人看的中文写了进去。这一步一件件修好。再补四条目多，拆成上中下三步，总数 80。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -6998,7 +6998,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">一行运行日志</span><span class="dir-note">写成一行的那一层</span></div>
             <ol class="pipe" aria-label="一行运行日志">
-              <li>起来那一行：starting version pid root=~/.miyu tz=+09:00</li>
+              <li>起来那一行：starting version pid root=~/.gqy tz=+09:00</li>
               <li>写成一行之前：正文和每个值里的家目录换成 ~，再加引号、转义</li>
               <li>来源：工具发的写工具的名字，shell 占 8 格，对得齐</li>
               <li>阻塞线程、读输出的线程：带着派活时的 span，行上有会话编号</li>
@@ -7036,10 +7036,10 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-log</code>：新 <code>home.rs</code>，写成一行时家目录换成 <code>~</code>；新建的目录 0700、文件 0600；<code>utc_offset()</code>。</li>
-        <li><code>miyu-core</code>：起来那一行带数据根、时区；起不来只记 <code>stage</code>。</li>
-        <li><code>miyu</code>、<code>miyu-cli</code>：<code>--help</code> 不印注释；<code>NO_COLOR</code> 照约定。</li>
-        <li><code>miyu-basesystem</code>、<code>miyu-session</code>：来源写 <code>shell</code>；阻塞线程、读输出的线程带着会话的 span。</li>
+        <li><code>gqy-log</code>：新 <code>home.rs</code>，写成一行时家目录换成 <code>~</code>；新建的目录 0700、文件 0600；<code>utc_offset()</code>。</li>
+        <li><code>gqy-core</code>：起来那一行带数据根、时区；起不来只记 <code>stage</code>。</li>
+        <li><code>gqy</code>、<code>gqy-cli</code>：<code>--help</code> 不印注释；<code>NO_COLOR</code> 照约定。</li>
+        <li><code>gqy-basesystem</code>、<code>gqy-session</code>：来源写 <code>shell</code>；阻塞线程、读输出的线程带着会话的 span。</li>
       </ul>
     </div>
     <div>
@@ -7107,9 +7107,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-kernel</code>：编号、时刻、模板、账本、事件的报错改英文。</li>
-        <li><code>miyu-store</code>：会话日志、blob、读人格的报错改英文；数据根的几句照旧。</li>
-        <li><code>miyu-policy</code>、<code>miyu-session</code>：快照、造策略、造会话、载入会话的报错改英文。</li>
+        <li><code>gqy-kernel</code>：编号、时刻、模板、账本、事件的报错改英文。</li>
+        <li><code>gqy-store</code>：会话日志、blob、读人格的报错改英文；数据根的几句照旧。</li>
+        <li><code>gqy-policy</code>、<code>gqy-session</code>：快照、造策略、造会话、载入会话的报错改英文。</li>
       </ul>
     </div>
     <div>
@@ -7149,7 +7149,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="files">
               <div class="tile new"><span class="nm">造会话没成</span><span class="rl">只剩一段空的第一段的会话目录删掉；别的一个字节不动；快照的 blob 留着</span></div>
               <div class="tile new"><span class="nm">注释和样本</span><span class="rl">九处注释和代码对上；approval_requested 的样本照现在的写法，测试比它的样子</span></div>
-              <div class="tile new"><span class="nm">aborted.txt</span><span class="rl">Miyu stopped unexpectedly and this turn did not finish.</span></div>
+              <div class="tile new"><span class="nm">aborted.txt</span><span class="rl">GQY stopped unexpectedly and this turn did not finish.</span></div>
             </div>
           </div>
         </div>
@@ -7176,8 +7176,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-session</code>：权限策略在阻塞线程里判，环境读一次；造会话没成收拾会话目录。</li>
-        <li><code>miyu-store</code>：<code>abandon()</code>，只删只剩空第一段的目录。</li>
+        <li><code>gqy-session</code>：权限策略在阻塞线程里判，环境读一次；造会话没成收拾会话目录。</li>
+        <li><code>gqy-store</code>：<code>abandon()</code>，只删只剩空第一段的目录。</li>
         <li>注释九处；样本一份；<code>resources/core/turn-ended/aborted.txt</code> 和登记簿。</li>
       </ul>
     </div>
@@ -7245,7 +7245,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>做了什么</h3>
       <ul>
         <li><code>xtask</code>：新 <code>prompts.rs</code>（生成、检查汇总页）、<code>samples.rs</code>（比样本块）；<code>cargo xtask prompts</code>。</li>
-        <li><code>miyu-cli</code>：两段终端样本的测试。</li>
+        <li><code>gqy-cli</code>：两段终端样本的测试。</li>
         <li>蓝图：新页 <code>prompts.md</code>；README 的样本规矩；工具七页、命令行两页、运行日志一页。</li>
       </ul>
     </div>
@@ -7273,7 +7273,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">她干的活</span><span class="dir-note">miyu ask，一轮</span></div>
+            <div class="dir-label"><span class="path">她干的活</span><span class="dir-note">gqy ask，一轮</span></div>
             <ol class="pipe" aria-label="她干的几步">
               <li>· 执行命令 cargo test 2>&amp;1 | tail -60 → 输出 32 行</li>
               <li>· 读取 src/lib.rs → 24 行</li>
@@ -7284,7 +7284,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">看到的</span><span class="dir-note">都对</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">撤销、恢复</span><span class="rl">miyu undo 改回 src/lib.rs、说执行过 2 条命令；miyu redo 又改回来</span></div>
+              <div class="tile new"><span class="nm">撤销、恢复</span><span class="rl">gqy undo 改回 src/lib.rs、说执行过 2 条命令；gqy redo 又改回来</span></div>
               <div class="tile new"><span class="nm">缓存</span><span class="rl">5 次请求，第一次冷，之后每次命中前面的全部前缀；整轮 76%</span></div>
               <div class="tile new"><span class="nm">干净</span><span class="rl">没有 DSML；日志里没有 key；用完停掉了带着 key 的核心</span></div>
             </div>
@@ -7314,7 +7314,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>做了什么</h3>
       <ul>
         <li>登记簿：七份工具说明、aborted.txt 的 token 换成实测的；汇总页重新生成。</li>
-        <li>设计 10 第九节：预算的初值；<code>crates/miyu-basesystem/tests/budget.rs</code> 照字节守。</li>
+        <li>设计 10 第九节：预算的初值；<code>crates/gqy-basesystem/tests/budget.rs</code> 照字节守。</li>
         <li>蓝图 <code>tools/interface.md</code>：预算那条从「还没有的」挪进正文。</li>
       </ul>
     </div>
@@ -7337,7 +7337,7 @@ a.step:hover{border-color:var(--primary)}
 </section>
 <section class="sheet" id="s4-11" aria-labelledby="h-s411">
   <div class="sheet-head"><h2 id="h-s411"><span class="no">4-11</span>命令行的样子</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">项目主人试玩 M4 以后提的三件：miyu ask 的每一步照 opencode 的样子印，命令、编辑下面带内容；-h 一页说全，参数写错时每种说一句；MIYU_HOME、MIYU_RESOURCES 认开头的 ~。</p>
+  <p class="purpose">项目主人试玩 M4 以后提的三件：gqy ask 的每一步照 opencode 的样子印，命令、编辑下面带内容；-h 一页说全，参数写错时每种说一句；GQY_HOME、GQY_RESOURCES 认开头的 ~。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -7356,7 +7356,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="files">
               <div class="tile new"><span class="nm">帮助页</span><span class="rl">自己写，一种语言四页：命令、各命令的选项、会话怎么接、例子；-c、-s 短写</span></div>
               <div class="tile new"><span class="nm">参数写错</span><span class="rl">每种一句：少了要说的话、没有这个选项、多了参数、只能写一个、后面少了值、只能是哪几样</span></div>
-              <div class="tile new"><span class="nm">开头的 ~</span><span class="rl">MIYU_HOME、MIYU_RESOURCES 写 ~/… 也认，照家目录接</span></div>
+              <div class="tile new"><span class="nm">开头的 ~</span><span class="rl">GQY_HOME、GQY_RESOURCES 写 ~/… 也认，照家目录接</span></div>
             </div>
           </div>
         </div>
@@ -7407,7 +7407,7 @@ a.step:hover{border-color:var(--primary)}
 </section>
 <section class="sheet" id="s4-12" aria-labelledby="h-s412">
   <div class="sheet-head"><h2 id="h-s412"><span class="no">4-12</span>许可证改成 GPL</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">仓库的许可证从 MIT 换成 GPL-3.0-or-later：别人改了 Miyu 再分发，得照样公开源码。门禁多一项「许可证」，查第三方依赖都能和它合在一起发。</p>
+  <p class="purpose">仓库的许可证从 MIT 换成 GPL-3.0-or-later：别人改了 GQY 再分发，得照样公开源码。门禁多一项「许可证」，查第三方依赖都能和它合在一起发。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -7547,7 +7547,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s5-1" aria-labelledby="h-s51">
   <div class="sheet-head"><h2 id="h-s51"><span class="no">5-1</span>沙盒的规格和助手</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">把沙盒的路接通，还不收紧任何东西：核心给要关起来的命令写一份规格，小程序 miyu-sandbox 照规格收紧自己，再换成那条命令；shell 带了规格的经它起；核心起来时探一次这台机器能收紧到什么程度。</p>
+  <p class="purpose">把沙盒的路接通，还不收紧任何东西：核心给要关起来的命令写一份规格，小程序 gqy-sandbox 照规格收紧自己，再换成那条命令；shell 带了规格的经它起；核心起来时探一次这台机器能收紧到什么程度。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -7555,19 +7555,19 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">一条带了规格的命令怎么走</span><span class="dir-note">现在不收紧</span></div>
             <ol class="pipe" aria-label="一条带了规格的命令怎么走">
-              <li>shell 把命令包成 miyu-sandbox run --spec &lt;规格&gt; -- &lt;shell&gt; &lt;参数…&gt;</li>
+              <li>shell 把命令包成 gqy-sandbox run --spec &lt;规格&gt; -- &lt;shell&gt; &lt;参数…&gt;</li>
               <li>助手读规格：认不得的格、类型不对的当写坏了，退出 125，不跑</li>
               <li>收紧自己：这一步什么都不做，5-2 起各平台往这里加</li>
               <li>换成命令：Unix 上 exec，还是同一个进程；Windows 上起子进程、等它</li>
             </ol>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-sandbox/</span><span class="dir-note">第 3 层，新的</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-sandbox/</span><span class="dir-note">第 3 层，新的</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">spec.rs</span><span class="rl">规格：read、write、readonly、hidden、network</span></div>
               <div class="tile new"><span class="nm">wrap.rs · locate.rs</span><span class="rl">包命令；找助手，在主程序旁边</span></div>
               <div class="tile new"><span class="nm">probe.rs</span><span class="rl">探测：最多等 5 秒，读输出、等退出都算在里面</span></div>
-              <div class="tile new"><span class="nm">bin/miyu-sandbox/</span><span class="rl">助手本身：main.rs 管共用的（run、probe、出错的几句），收紧各平台一个文件</span></div>
+              <div class="tile new"><span class="nm">bin/gqy-sandbox/</span><span class="rl">助手本身：main.rs 管共用的（run、probe、出错的几句），收紧各平台一个文件</span></div>
             </div>
           </div>
         </div>
@@ -7596,7 +7596,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>新 crate <code>miyu-sandbox</code>：规格、包命令、找助手、探测，助手 <code>miyu-sandbox</code> 本身。</li>
+        <li>新 crate <code>gqy-sandbox</code>：规格、包命令、找助手、探测，助手 <code>gqy-sandbox</code> 本身。</li>
         <li><code>Call</code> 多一格 <code>sandbox</code>：<code>shell</code> 带了的经助手起，不带的照旧。</li>
         <li>核心起来时探一次，只记日志。</li>
       </ul>
@@ -7843,7 +7843,7 @@ a.step:hover{border-color:var(--primary)}
             </ol>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">真模型实测</span><span class="dir-note">本机内核 7.2 · miyu ask</span></div>
+            <div class="dir-label"><span class="path">真模型实测</span><span class="dir-note">本机内核 7.2 · gqy ask</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">工作区里写</span><span class="rl">写成了</span></div>
               <div class="tile new"><span class="nm">工作区外写</span><span class="rl">权限不够，沙盒挡的</span></div>
@@ -8017,14 +8017,14 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s5-8" aria-labelledby="h-s58">
   <div class="sheet-head"><h2 id="h-s58"><span class="no">5-8</span>Windows：装</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">Windows 上的沙盒要一个专用的沙盒用户，建它要一次管理员权限。<code>miyu sandbox setup</code> 建、藏好这个用户，<code>remove</code> 撤掉；不是管理员时经系统的确认提升一次。密码加密存进本人的数据根，沙盒读不到；5-9 用它以沙盒用户的身份起命令。分身施工，在虚拟机上真装真卸。</p>
+  <p class="purpose">Windows 上的沙盒要一个专用的沙盒用户，建它要一次管理员权限。<code>gqy sandbox setup</code> 建、藏好这个用户，<code>remove</code> 撤掉；不是管理员时经系统的确认提升一次。密码加密存进本人的数据根，沙盒读不到；5-9 用它以沙盒用户的身份起命令。分身施工，在虚拟机上真装真卸。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu sandbox setup</span><span class="dir-note">一次管理员权限</span></div>
-            <ol class="pipe" aria-label="miyu sandbox setup">
+            <div class="dir-label"><span class="path">gqy sandbox setup</span><span class="dir-note">一次管理员权限</span></div>
+            <ol class="pipe" aria-label="gqy sandbox setup">
               <li>不是管理员：经 runas 提升一次，弹系统的确认</li>
               <li>先认数据根的标记，不是就一个字节都不写</li>
               <li>建用户：只在 Users 组、自己改不了密码、登录界面上藏着</li>
@@ -8062,8 +8062,8 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>crates/miyu-sandbox/src/install*</code>：建、藏、删用户，提升，DPAPI，只给本人的文件。</li>
-        <li><code>crates/miyu-cli/src/sandbox*</code>：<code>miyu sandbox setup</code>、<code>remove</code> 和帮助页。</li>
+        <li><code>crates/gqy-sandbox/src/install*</code>：建、藏、删用户，提升，DPAPI，只给本人的文件。</li>
+        <li><code>crates/gqy-cli/src/sandbox*</code>：<code>gqy sandbox setup</code>、<code>remove</code> 和帮助页。</li>
       </ul>
     </div>
     <div>
@@ -8086,7 +8086,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s5-4b" aria-labelledby="h-s54b">
   <div class="sheet-head"><h2 id="h-s54b"><span class="no">5-4</span>权限策略接上沙盒（下）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">沙盒里的命令跑得顺，沙盒用不了时说清楚：工具链的缓存用沙盒自己的一份，沙盒里编得了项目，你的 ~/.cargo 照旧只读；握手时报出这台机器的沙盒能不能用、为什么，miyu ask 用不了时开头说一行原因和怎么修。被沙盒挡住时不另加提示：实测 4 次都认得出（项目主人定）。</p>
+  <p class="purpose">沙盒里的命令跑得顺，沙盒用不了时说清楚：工具链的缓存用沙盒自己的一份，沙盒里编得了项目，你的 ~/.cargo 照旧只读；握手时报出这台机器的沙盒能不能用、为什么，gqy ask 用不了时开头说一行原因和怎么修。被沙盒挡住时不另加提示：实测 4 次都认得出（项目主人定）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -8131,9 +8131,9 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-sandbox</code> 的 <code>Availability</code>；核心探到的结果、沙盒的缓存交给协议端点。</li>
+        <li><code>gqy-sandbox</code> 的 <code>Availability</code>；核心探到的结果、沙盒的缓存交给协议端点。</li>
         <li>会话的 <code>sandbox/caches.rs</code>：缓存、变量、cargo 配置。</li>
-        <li>握手的回应多一格 <code>sandbox</code>；<code>miyu ask</code> 开头那一句。</li>
+        <li>握手的回应多一格 <code>sandbox</code>；<code>gqy ask</code> 开头那一句。</li>
       </ul>
     </div>
     <div>
@@ -8268,7 +8268,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s5-10a" aria-labelledby="h-s510a">
   <div class="sheet-head"><h2 id="h-s510a"><span class="no">5-10</span>加进来的目录（上）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose"><code>miyu ask --add-dir &lt;目录&gt;</code>：事先多放行几个目录，和工作区一样能读能写，可以写好几次。<code>miyu ask</code> 里确认不了，要写工作区以外的地方只能靠它（项目主人 09-28 定，照 Claude Code、codex）。她看到的请求一个字节不变。</p>
+  <p class="purpose"><code>gqy ask --add-dir &lt;目录&gt;</code>：事先多放行几个目录，和工作区一样能读能写，可以写好几次。<code>gqy ask</code> 里确认不了，要写工作区以外的地方只能靠它（项目主人 09-28 定，照 Claude Code、codex）。她看到的请求一个字节不变。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -8473,7 +8473,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s5-11b" aria-labelledby="h-s511b">
   <div class="sheet-head"><h2 id="h-s511b"><span class="no">5-11</span>运行目录用完删掉（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">5-11 撞见的：Linux 上套接字放在 $XDG_RUNTIME_DIR/miyu-&lt;指纹&gt;/，核心走的时候只删了套接字文件，这一层目录留着，一个数据根留一个。现在空了连目录一起删。</p>
+  <p class="purpose">5-11 撞见的：Linux 上套接字放在 $XDG_RUNTIME_DIR/gqy-&lt;指纹&gt;/，核心走的时候只删了套接字文件，这一层目录留着，一个数据根留一个。现在空了连目录一起删。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -8482,8 +8482,8 @@ a.step:hover{border-color:var(--primary)}
             <div class="dir-label"><span class="path">核心走的时候</span><span class="dir-note">先删，再放锁</span></div>
             <ol class="pipe" aria-label="核心走的时候">
               <li>删套接字文件</li>
-              <li>放在 $XDG_RUNTIME_DIR/miyu-&lt;指纹&gt;/ 里的：这一层空了一起删</li>
-              <li>数据根的 run/、临时目录下共用的 miyu-&lt;uid&gt;/ 不删</li>
+              <li>放在 $XDG_RUNTIME_DIR/gqy-&lt;指纹&gt;/ 里的：这一层空了一起删</li>
+              <li>数据根的 run/、临时目录下共用的 gqy-&lt;uid&gt;/ 不删</li>
               <li>放锁</li>
             </ol>
           </div>
@@ -8509,7 +8509,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li><code>miyu-ipc</code>：<code>place::own_dir</code> 认出专用的那一层；<code>Listener</code> 走的时候删它。</li>
+        <li><code>gqy-ipc</code>：<code>place::own_dir</code> 认出专用的那一层；<code>Listener</code> 走的时候删它。</li>
       </ul>
     </div>
     <div>
@@ -8739,8 +8739,8 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">核心起来时</span><span class="dir-note">设了 DEEPSEEK_API_KEY 才看</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">MIYU_DEV_BASE_URL</span><span class="rl">替换地址，端点编号改成 dev</span></div>
-              <div class="tile new"><span class="nm">MIYU_DEV_MODEL</span><span class="rl">替换模型名，不合写法起不来</span></div>
+              <div class="tile new"><span class="nm">GQY_DEV_BASE_URL</span><span class="rl">替换地址，端点编号改成 dev</span></div>
+              <div class="tile new"><span class="nm">GQY_DEV_MODEL</span><span class="rl">替换模型名，不合写法起不来</span></div>
             </div>
           </div>
         </div>
@@ -8772,7 +8772,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>测试覆盖不设、只设一个、都设、空白、没有 key、模型名不合写法</span></li>
-        <li><span class="ok">✓</span><span>真模型：miyu ask 读文件、答一句，走得通；数据根里没有 key</span></li>
+        <li><span class="ok">✓</span><span>真模型：gqy ask 读文件、答一句，走得通；数据根里没有 key</span></li>
         <li><span class="ok">✓</span><span>手写 5 个变异全被逮住；门禁八项全过，三台机器的 CI 全绿</span></li>
       </ul>
     </div>
@@ -8798,7 +8798,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="限额从哪来">
               <li>读资源目录的 <code>models/models-dev.json</code>（models.dev 的快照，只留 DeepSeek 那一家）</li>
               <li>照（deepseek，模型名）查窗口、最大输出；开发端点也照它查</li>
-              <li><code>MIYU_DEV_WINDOW</code> 设了的，当窗口</li>
+              <li><code>GQY_DEV_WINDOW</code> 设了的，当窗口</li>
               <li>DeepSeek 的写法交官方计算器 v41 的图片算法，一张最多 1024</li>
             </ol>
           </div>
@@ -8831,7 +8831,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核 <code>ImagePrice</code>、<code>Limits.images</code>；驱动 <code>DeepSeekImages</code>；会话端口的 <code>limits()</code>；核心的 <code>ModelTable</code> 和 <code>MIYU_DEV_WINDOW</code>。</li>
+        <li>内核 <code>ImagePrice</code>、<code>Limits.images</code>；驱动 <code>DeepSeekImages</code>；会话端口的 <code>limits()</code>；核心的 <code>ModelTable</code> 和 <code>GQY_DEV_WINDOW</code>。</li>
       </ul>
     </div>
     <div>
@@ -8854,13 +8854,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s6-3b" aria-labelledby="h-s63b">
   <div class="sheet-head"><h2 id="h-s63b"><span class="no">6-3</span>接上真模型（下）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">压缩在真模型上用得顺手、看得见：<code>miyu ask</code> 印压缩那一行，运行日志记一行度量；该在真模型上量的几件量完、定下来。</p>
+  <p class="purpose">压缩在真模型上用得顺手、看得见：<code>gqy ask</code> 印压缩那一行，运行日志记一行度量；该在真模型上量的几件量完、定下来。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu ask 的标准错误</span><span class="dir-note">灰色旁白，终端里原地刷新</span></div>
+            <div class="dir-label"><span class="path">gqy ask 的标准错误</span><span class="dir-note">灰色旁白，终端里原地刷新</span></div>
             <ol class="pipe" aria-label="压缩那一行怎么变">
               <li>摘要请求发出去：<code>· 正在压缩上下文… 已写 0 字</code></li>
               <li>每来一段正文，回到行首擦掉重画：<code>已写 3,120 字</code></li>
@@ -8900,7 +8900,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核 <code>CompactionDone</code>、发摘要请求先推 0 字的进度；会话 actor 的 <code>compacted</code> 一行；<code>miyu ask</code> 的 <code>compacting.rs</code>；组装取摘要先去草稿；检查点包装的结尾多一句。</li>
+        <li>内核 <code>CompactionDone</code>、发摘要请求先推 0 字的进度；会话 actor 的 <code>compacted</code> 一行；<code>gqy ask</code> 的 <code>compacting.rs</code>；组装取摘要先去草稿；检查点包装的结尾多一句。</li>
       </ul>
     </div>
     <div>
@@ -8982,7 +8982,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s6-3d" aria-labelledby="h-s63d">
   <div class="sheet-head"><h2 id="h-s63d"><span class="no">6-3</span>压好了那一行改说法（再补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">压缩好了那一行，中文从「上下文压缩好了」改成「上下文已压缩」，<code>miyu ask</code>、<code>miyu compact</code> 和终端界面说法一致。英文 <code>Context compacted</code> 不动。</p>
+  <p class="purpose">压缩好了那一行，中文从「上下文压缩好了」改成「上下文已压缩」，<code>gqy ask</code>、<code>gqy compact</code> 和终端界面说法一致。英文 <code>Context compacted</code> 不动。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -9035,7 +9035,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s6-3e" aria-labelledby="h-s63e">
   <div class="sheet-head"><h2 id="h-s63e"><span class="no">6-3</span>已写 0 字不印（三补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">压缩刚开始、摘要请求还没收到字时，<code>miyu ask</code>、<code>miyu compact</code> 那一行只印「· 正在压缩上下文…」，不印「已写 0 字」，和终端界面一致（项目主人定）。</p>
+  <p class="purpose">压缩刚开始、摘要请求还没收到字时，<code>gqy ask</code>、<code>gqy compact</code> 那一行只印「· 正在压缩上下文…」，不印「已写 0 字」，和终端界面一致（项目主人定）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -9068,7 +9068,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>先改期望，改代码以前 4 个测试红；改了那一句，<code>miyu compact</code> 共用。</li>
+        <li>先改期望，改代码以前 4 个测试红；改了那一句，<code>gqy compact</code> 共用。</li>
       </ul>
     </div>
     <div>
@@ -9106,10 +9106,10 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">新加的</span><span class="dir-note">各在各的层</span></div>
             <div class="files">
-              <div class="tile new"><span class="nm">ReadLog · Log</span><span class="rl">miyu-tool：Call 多 log、offset</span></div>
-              <div class="tile new"><span class="nm">read_segments</span><span class="rl">miyu-store：只读，说停就停</span></div>
+              <div class="tile new"><span class="nm">ReadLog · Log</span><span class="rl">gqy-tool：Call 多 log、offset</span></div>
+              <div class="tile new"><span class="nm">read_segments</span><span class="rl">gqy-store：只读，说停就停</span></div>
               <div class="tile new"><span class="nm">History::whole()</span><span class="rl">内核：留着一切的那一份</span></div>
-              <div class="tile new"><span class="nm">history</span><span class="rl">miyu-basesystem：entry、page、time</span></div>
+              <div class="tile new"><span class="nm">history</span><span class="rl">gqy-basesystem：entry、page、time</span></div>
             </div>
           </div>
         </div>
@@ -9276,7 +9276,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核 <code>session/breaker.rs</code>、新事件和两格；策略 <code>pause.rs</code>；<code>miyu ask</code> 印暂停那一行、不发时的出错那一行。</li>
+        <li>内核 <code>session/breaker.rs</code>、新事件和两格；策略 <code>pause.rs</code>；<code>gqy ask</code> 印暂停那一行、不发时的出错那一行。</li>
       </ul>
     </div>
     <div>
@@ -9375,7 +9375,7 @@ a.step:hover{border-color:var(--primary)}
               <li>作废的这一次照常记 <code>model.called</code>（<code>bad_summary</code>，原话写明改走）</li>
               <li>记在回合上（<code>Again</code>：截到哪、截了几次、是不是隔离式），落了盘再发</li>
               <li>隔离式：平常的那几条消息原样，system 换成 <code>summarize-system.txt</code>，工具面空的；超长照样截短</li>
-              <li><code>miyu ask</code> 印灰色一行「摘要请求里调了工具，改用不带工具的再压」</li>
+              <li><code>gqy ask</code> 印灰色一行「摘要请求里调了工具，改用不带工具的再压」</li>
             </ol>
           </div>
         </div>
@@ -9401,7 +9401,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核 <code>shorten.rs</code> 的 <code>Again</code> 和改走、<code>session/summary.rs</code>；组装器 <code>summarize_isolated</code>；快照 <code>summarize_system</code>；<code>miyu ask</code> 那一行。</li>
+        <li>内核 <code>shorten.rs</code> 的 <code>Again</code> 和改走、<code>session/summary.rs</code>；组装器 <code>summarize_isolated</code>；快照 <code>summarize_system</code>；<code>gqy ask</code> 那一行。</li>
       </ul>
     </div>
     <div>
@@ -9539,13 +9539,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s6-8" aria-labelledby="h-s68">
   <div class="sheet-head"><h2 id="h-s68"><span class="no">6-8</span>手动压缩</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">人能自己叫她压缩：<code>miyu compact [要求]</code>、协议上 <code>session.compact</code>。单开一轮只做压缩，可以附一句要求；自动压缩暂停着也能压，压成了自动压缩跟着恢复。</p>
+  <p class="purpose">人能自己叫她压缩：<code>gqy compact [要求]</code>、协议上 <code>session.compact</code>。单开一轮只做压缩，可以附一句要求；自动压缩暂停着也能压，压成了自动压缩跟着恢复。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu compact 重点保留数据库设计的讨论</span><span class="dir-note">session/manual.rs</span></div>
+            <div class="dir-label"><span class="path">gqy compact 重点保留数据库设计的讨论</span><span class="dir-note">session/manual.rs</span></div>
             <ol class="pipe" aria-label="手动压缩怎么走">
               <li>空闲时收：有回合在进行 <code>turn_running</code>，没有能压的 <code>nothing_to_compact</code></li>
               <li>单开一轮（<code>turn.started</code> 没有 <code>trigger</code>，不进上下文），不注入事实、不跑回合开始的挂接点</li>
@@ -9576,7 +9576,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核 <code>session/manual.rs</code>；命令行 <code>miyu compact</code>，和 <code>miyu ask</code> 共用跟着一轮、按 Ctrl+C 的那段；摘要指令拆成正文、要求那一行、结尾三份。</li>
+        <li>内核 <code>session/manual.rs</code>；命令行 <code>gqy compact</code>，和 <code>gqy ask</code> 共用跟着一轮、按 Ctrl+C 的那段；摘要指令拆成正文、要求那一行、结尾三份。</li>
         <li>顺手修了 6-9 的一处：撤销拿走上一轮排着的话时，暂停着没发出去的那次请求不算听到过。</li>
       </ul>
     </div>
@@ -9610,7 +9610,7 @@ a.step:hover{border-color:var(--primary)}
               <li>空闲时收，单开一轮；同一批写 <code>context.compacted</code>（<code>trigger: clear</code>，摘要空的）和 <code>turn.ended</code></li>
               <li>渲染时什么都不出；下一轮开头照常注入环境、权限</li>
               <li>回合进行中拒 <code>turn_running</code>；本来就空的拒 <code>nothing_to_clear</code>「上下文为空」</li>
-              <li>撤掉清空：<code>miyu undo</code> 说「撤掉了清空，上下文回到了清空以前」</li>
+              <li>撤掉清空：<code>gqy undo</code> 说「撤掉了清空，上下文回到了清空以前」</li>
             </ol>
           </div>
         </div>
@@ -9657,7 +9657,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s6-9" aria-labelledby="h-s69">
   <div class="sheet-head"><h2 id="h-s69"><span class="no">6-9</span>撤销能撤掉压缩</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">压缩跟着它所在的那一轮：撤掉这一轮，里面的压缩一起撤掉，上下文回到压缩前的原文；<code>miyu restore</code> 放回来，不重新请求模型。原来一轮里压过一次，这一轮和它以前的都撤不了。</p>
+  <p class="purpose">压缩跟着它所在的那一轮：撤掉这一轮，里面的压缩一起撤掉，上下文回到压缩前的原文；<code>gqy restore</code> 放回来，不重新请求模型。原来一轮里压过一次，这一轮和它以前的都撤不了。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -9695,7 +9695,7 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>做了什么</h3>
       <ul>
-        <li>内核的账本、<code>History::settle</code>、<code>revert.rs</code> 的读回；执行器 <code>actor/store.rs</code> 读回日志、交原文；协议撤销回应的 <code>compactions</code>；<code>miyu undo</code> 那一句。</li>
+        <li>内核的账本、<code>History::settle</code>、<code>revert.rs</code> 的读回；执行器 <code>actor/store.rs</code> 读回日志、交原文；协议撤销回应的 <code>compactions</code>；<code>gqy undo</code> 那一句。</li>
       </ul>
     </div>
     <div>
@@ -9743,7 +9743,7 @@ a.step:hover{border-color:var(--primary)}
         <div class="rules">
           <p class="rules-title">这一步看到的</p>
           <div class="tile"><span class="nm">读整盘放开</span><span class="rl">她先搜到了工作区外的备份：测具的漏洞，删了再测</span></div>
-          <div class="tile"><span class="nm">沙盒要一起编</span><span class="rl">只编 miyu 时命令要确认，miyu ask 里跑不成</span></div>
+          <div class="tile"><span class="nm">沙盒要一起编</span><span class="rl">只编 gqy 时命令要确认，gqy ask 里跑不成</span></div>
           <div class="tile new"><span class="nm">6-6 补</span><span class="rl">验收前修了出错再来丢截法</span></div>
         </div>
       </div>
@@ -9789,7 +9789,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-kernel</span><span class="dir-note">事件和账本</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-kernel</span><span class="dir-note">事件和账本</span></div>
             <ol class="pipe" aria-label="新的几样">
               <li>效果 <code>job.started</code>：编号 <code>j1</code>、<code>j2</code>，<code>command</code> 或 <code>agent</code>（带子会话编号）</li>
               <li>事件 <code>job.reported</code>、<code>child.reported</code>；<code>session.created</code> 多 <code>parent</code>、<code>depth</code></li>
@@ -9908,7 +9908,7 @@ a.step:hover{border-color:var(--primary)}
             </ol>
           </div>
           <div class="dir">
-            <div class="dir-label"><span class="path">请求里</span><span class="dir-note">miyu-assemble/src/jobs.rs</span></div>
+            <div class="dir-label"><span class="path">请求里</span><span class="dir-note">gqy-assemble/src/jobs.rs</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">&lt;command-ended&gt;</span><span class="rl">退出码、用时、多少字、用 jobs 看；整块 49 token</span></div>
               <div class="tile new"><span class="nm">&lt;subagent-report&gt;</span><span class="rl">正文照带；截过的、人插过话的、没说话的各一句</span></div>
@@ -10014,7 +10014,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">shell run_in_background</span><span class="dir-note">miyu-session/src/jobs.rs</span></div>
+            <div class="dir-label"><span class="path">shell run_in_background</span><span class="dir-note">gqy-session/src/jobs.rs</span></div>
             <ol class="pipe" aria-label="后台命令怎么走">
               <li>照前台判权限、进沙盒、同一份环境变量白名单；起来交给任务表，当场返回编号</li>
               <li>输出一直写进会话目录的 <code>jobs/&lt;编号&gt;.out</code>；结束了存 blob、记 <code>job.reported</code>，落了盘才从表里拿掉</li>
@@ -10027,7 +10027,7 @@ a.step:hover{border-color:var(--primary)}
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">timeout 不管后台</span><span class="rl">一直开着的服务不结束，也就不回报</span></div>
           <div class="tile"><span class="nm">留到 7-8</span><span class="rl">核心崩了后台命令还活着：各平台的进程树管理</span></div>
-          <div class="tile"><span class="nm">留到 7-9</span><span class="rl">miyu ask 里印给人看的「放到后台了」</span></div>
+          <div class="tile"><span class="nm">留到 7-9</span><span class="rl">gqy ask 里印给人看的「放到后台了」</span></div>
         </div>
       </div>
     </div>
@@ -10052,7 +10052,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>三个平台的真进程测试、沙盒里照样关着；手写 34 个变异全逮住；三台机器的 CI 和长跑全绿</span></li>
-        <li><span class="ok">✓</span><span>真模型：这一轮里跑完的下一步看到；<code>miyu ask</code> 退出以后跑完的只记下，<code>-c</code> 时看到</span></li>
+        <li><span class="ok">✓</span><span>真模型：这一轮里跑完的下一步看到；<code>gqy ask</code> 退出以后跑完的只记下，<code>-c</code> 时看到</span></li>
       </ul>
     </div>
     <div>
@@ -10181,7 +10181,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">agent 描述 交代</span><span class="dir-note">miyu-session/src/spawn.rs</span></div>
+            <div class="dir-label"><span class="path">agent 描述 交代</span><span class="dir-note">gqy-session/src/spawn.rs</span></div>
             <ol class="pipe" aria-label="派出去怎么走">
               <li>领一个编号（<code>j1</code>…，撤掉的不回收），执行器经会话表造子会话</li>
               <li>抄父会话：属主、场所、目录、权限级别和只读、能不能确认；人格软件工程师；<code>depth</code> 加一</li>
@@ -10271,7 +10271,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>新测试退回改之前全红；12 个手写变异全逮住；三台机器的 CI 和长跑全绿</span></li>
-        <li><span class="ok">✓</span><span>真模型：新会话派子代理数文件，调的是 subagent，报回 5 个，miyu ask 等到回报才退出</span></li>
+        <li><span class="ok">✓</span><span>真模型：新会话派子代理数文件，调的是 subagent，报回 5 个，gqy ask 等到回报才退出</span></li>
       </ul>
     </div>
     <div>
@@ -10402,7 +10402,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">撤销 · 压缩 · 进程树</span><span class="dir-note">agents.md 第七、十条 · core.md</span></div>
             <ol class="pipe" aria-label="五件事">
-              <li>撤掉的那几轮派出去、还在跑的后台命令和子代理一起停，记 <code>undone</code>、不叫醒她；撤销回应多 <code>jobs</code>，<code>miyu undo</code> 说「停掉了 N 个任务」；恢复撤销不重起</li>
+              <li>撤掉的那几轮派出去、还在跑的后台命令和子代理一起停，记 <code>undone</code>、不叫醒她；撤销回应多 <code>jobs</code>，<code>gqy undo</code> 说「停掉了 N 个任务」；恢复撤销不重起</li>
               <li>没听到的回报留在尾巴里，不压进摘要（检查点里列还在跑的任务那一段，7-8 补去掉了）</li>
               <li>Linux、macOS：每条命令的进程组里有个看门的 <code>sh</code>，盯着只在核心手里的生命线管道，断了就杀整组；Windows：核心进 <code>KILL_ON_JOB_CLOSE</code> 的作业对象</li>
               <li>父会话载入时，认不得的空子会话连同它派的停下、挪进回收处；删子会话、送回报挪进会话表的锁里</li>
@@ -10432,7 +10432,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>29 个手写的变异全逮住；三台机器的 CI 和长跑全绿；真核心硬杀以后后台命令也停了（三台都跑）</span></li>
-        <li><span class="ok">✓</span><span>真模型：后台 <code>sleep 900</code> 加一个在睡的子代理，<code>miyu undo</code> 说「停掉了 2 个任务」，两个进程都没了，日志记 <code>undone</code>、没开新的一轮</span></li>
+        <li><span class="ok">✓</span><span>真模型：后台 <code>sleep 900</code> 加一个在睡的子代理，<code>gqy undo</code> 说「停掉了 2 个任务」，两个进程都没了，日志记 <code>undone</code>、没开新的一轮</span></li>
         <li><span class="ok">✓</span><span>真模型：读大文件压了一次，检查点里列着 j1、j2；停掉核心时后台的 <code>sleep</code> 跟着没了</span></li>
       </ul>
     </div>
@@ -10493,14 +10493,14 @@ a.step:hover{border-color:var(--primary)}
   </div>
 </section>
 <section class="sheet" id="s7-9" aria-labelledby="h-s79">
-  <div class="sheet-head"><h2 id="h-s79"><span class="no">7-9</span>miyu ask 等子代理</h2><span class="pill done">已完成</span></div>
-  <p class="purpose"><code>miyu ask</code> 派了子代理的，等子代理都回报完、被回报叫醒的几轮也结束，才退出，这期间每一轮都印出来。会话 actor 告诉内核有没有头看着：跟着的时候回报叫醒她，退出以后只记下。</p>
+  <div class="sheet-head"><h2 id="h-s79"><span class="no">7-9</span>gqy ask 等子代理</h2><span class="pill done">已完成</span></div>
+  <p class="purpose"><code>gqy ask</code> 派了子代理的，等子代理都回报完、被回报叫醒的几轮也结束，才退出，这期间每一轮都印出来。会话 actor 告诉内核有没有头看着：跟着的时候回报叫醒她，退出以后只记下。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">miyu ask 的标准错误</span><span class="dir-note">cli/ask.md「等子代理」</span></div>
+            <div class="dir-label"><span class="path">gqy ask 的标准错误</span><span class="dir-note">cli/ask.md「等子代理」</span></div>
             <ol class="pipe" aria-label="印的样子">
               <li>第一轮照旧印；还有子代理没报，印灰字 <code>· 等 2 个子代理回报…（按 Ctrl+C 不等了）</code>，终端里原地刷新</li>
               <li>回报到了，那一行原地换成 <code>· j1「Count lines in a.txt」报回来了</code>，接着印叫醒的那一轮</li>
@@ -10513,14 +10513,14 @@ a.step:hover{border-color:var(--primary)}
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">不加协议</span><span class="rl">头照 <code>job.started</code>、<code>child.reported</code>、<code>job.messaged</code> 自己数</span></div>
           <div class="tile new"><span class="nm">Watched</span><span class="rl">订阅从无到有、从有到无时会话 actor 告诉内核</span></div>
-          <div class="tile"><span class="nm">不等的</span><span class="rl">后台命令；这次以前派的子代理；<code>miyu redo</code></span></div>
+          <div class="tile"><span class="nm">不等的</span><span class="rl">后台命令；这次以前派的子代理；<code>gqy redo</code></span></div>
         </div>
       </div>
     </div>
     <figcaption class="titleblock">
       <dl>
         <div><dt>图号</dt><dd class="mono">7-9</dd></div>
-        <div><dt>名称</dt><dd>miyu ask 等子代理</dd></div>
+        <div><dt>名称</dt><dd>gqy ask 等子代理</dd></div>
         <div><dt>日期</dt><dd class="mono">2026-09-30</dd></div>
         <div><dt>提交</dt><dd class="mono">fc1b933</dd></div>
         <div><dt>验收</dt><dd>变异、CI、真模型 · 通过</dd></div>
@@ -10539,14 +10539,14 @@ a.step:hover{border-color:var(--primary)}
     <div>
       <h3>图纸</h3>
       <ul>
-        <li><code>docs/construction/7-9-miyu ask 等子代理.md</code>。</li>
+        <li><code>docs/construction/7-9-gqy ask 等子代理.md</code>。</li>
       </ul>
     </div>
   </div>
 </section>
 <section class="sheet" id="s7-9b" aria-labelledby="h-s79b">
   <div class="sheet-head"><h2 id="h-s79b"><span class="no">7-9</span>留了言的子代理也等（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">人答了子代理的问题、她把答复转给它以后，<code>miyu ask</code> 等它改完报回来，再印她看完回报的那一轮。M7 验收自测撞见的：子代理是上一次派的，这一次留了言，<code>miyu ask</code> 当场就退出了，回报只记下、没叫醒她。</p>
+  <p class="purpose">人答了子代理的问题、她把答复转给它以后，<code>gqy ask</code> 等它改完报回来，再印她看完回报的那一轮。M7 验收自测撞见的：子代理是上一次派的，这一次留了言，<code>gqy ask</code> 当场就退出了，回报只记下、没叫醒她。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -10583,7 +10583,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>13 个手写的变异全逮住；三台机器的 CI 和长跑一次全绿；新样本 <code>ask-agents-messaged-text.txt</code> 由真核心逐字节比</span></li>
-        <li><span class="ok">✓</span><span>真模型：派子代理改 port、它问上来；<code>miyu ask -c "port 改成 8080。"</code> 等到「· j1 报回来了」和她看完回报的那一轮才退出，文件改好了</span></li>
+        <li><span class="ok">✓</span><span>真模型：派子代理改 port、它问上来；<code>gqy ask -c "port 改成 8080。"</code> 等到「· j1 报回来了」和她看完回报的那一轮才退出，文件改好了</span></li>
       </ul>
     </div>
     <div>
@@ -10596,7 +10596,7 @@ a.step:hover{border-color:var(--primary)}
 </section>
 <section class="sheet" id="s7-10" aria-labelledby="h-s710">
   <div class="sheet-head"><h2 id="h-s710"><span class="no">7-10</span>别的 harness 发消息</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">Claude Code、opencode、脚本这类别的 harness，用 <code>miyu ask -s &lt;会话&gt; --from &lt;名字&gt; &lt;话&gt;</code> 往 Miyu 的会话里说一句；她分得清是人说的还是别的代理说的。</p>
+  <p class="purpose">Claude Code、opencode、脚本这类别的 harness，用 <code>gqy ask -s &lt;会话&gt; --from &lt;名字&gt; &lt;话&gt;</code> 往 GQY 的会话里说一句；她分得清是人说的还是别的代理说的。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -10607,15 +10607,15 @@ a.step:hover{border-color:var(--primary)}
               <li><code>from</code> 去控制字符、截 128 字节，记成 <code>by: harness</code>；空的、不是字符串的拒 <code>bad_params</code></li>
               <li>发给她的包一层 <code>&lt;agent-message from="…"&gt;</code>，名字转义；<code>history</code> 的「谁」写 <code>agent "…"</code></li>
               <li>照子代理留言的规矩：不作废在等人的题，打断不撤回，撤销不带走，它开的那一轮重做不了</li>
-              <li><code>miyu ask</code> 往正忙的会话里发，跟住听到它的那一轮；<code>--from</code> 不带 <code>cwd</code>，按 Ctrl+C、到时间只是不等了，不打断</li>
+              <li><code>gqy ask</code> 往正忙的会话里发，跟住听到它的那一轮；<code>--from</code> 不带 <code>cwd</code>，按 Ctrl+C、到时间只是不等了，不打断</li>
             </ol>
           </div>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">三句新字</span><span class="rl">标签开头 10、收尾 5，<code>history</code> 的 6</span></div>
-          <div class="tile new"><span class="nm">顺手修的</span><span class="rl"><code>miyu ask -s</code> 往正忙的会话里发会一直等</span></div>
-          <div class="tile"><span class="nm">不做的</span><span class="rl">MCP 服务、<code>miyu stdio</code>；名字不核对</span></div>
+          <div class="tile new"><span class="nm">顺手修的</span><span class="rl"><code>gqy ask -s</code> 往正忙的会话里发会一直等</span></div>
+          <div class="tile"><span class="nm">不做的</span><span class="rl">MCP 服务、<code>gqy stdio</code>；名字不核对</span></div>
         </div>
       </div>
     </div>
@@ -10647,7 +10647,7 @@ a.step:hover{border-color:var(--primary)}
 </section>
 <section class="sheet" id="s7-11" aria-labelledby="h-s711">
   <div class="sheet-head"><h2 id="h-s711"><span class="no">7-11</span>M7 验收</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">M7 分身的真模型验收：后台命令结束叫醒她，并行派子代理、子代理再派孙代理、一层层报上来，父子之间留言，撤销时停掉那一轮派出去的，<code>miyu ask</code> 等回报，别的 harness 往会话里说话。</p>
+  <p class="purpose">M7 分身的真模型验收：后台命令结束叫醒她，并行派子代理、子代理再派孙代理、一层层报上来，父子之间留言，撤销时停掉那一轮派出去的，<code>gqy ask</code> 等回报，别的 harness 往会话里说话。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -10671,7 +10671,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步看到的</p>
-          <div class="tile new"><span class="nm">7-9 补</span><span class="rl">留了言的以前派的子代理，miyu ask 也等</span></div>
+          <div class="tile new"><span class="nm">7-9 补</span><span class="rl">留了言的以前派的子代理，gqy ask 也等</span></div>
           <div class="tile"><span class="nm">行为</span><span class="rl">前台 sleep 等后台、子代理回来后复核：一个在调研，一个照 Claude Code 加一句</span></div>
           <div class="tile"><span class="nm">同期合的</span><span class="rl">7-2 补、7-4 补、7-8 补（网页、终端界面转来和实测撞见的）</span></div>
         </div>
@@ -10715,7 +10715,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">配置清单</span><span class="dir-note">8-1</span></div>
             <ol class="pipe" aria-label="做了什么">
-              <li>新 crate <code>miyu-config</code>（第 2 层，纯逻辑）：<code>Item</code>、<code>settings!</code> 宏、值、查清单、查资源的字、生成 Schema 和参考文件</li>
+              <li>新 crate <code>gqy-config</code>（第 2 层，纯逻辑）：<code>Item</code>、<code>settings!</code> 宏、值、查清单、查资源的字、生成 Schema 和参考文件</li>
               <li>清单两项：<code>ui.language</code>、<code>log.level</code>；类型只有选项</li>
               <li>核心照系统语言写 <code>state/config/</code> 下三份，一样的不重写，写不成记 WARN 照样起来</li>
             </ol>
@@ -10758,7 +10758,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s8-2" aria-labelledby="h-s82">
   <div class="sheet-head"><h2 id="h-s82"><span class="no">8-2</span>读配置</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">核心起来时读默认值、系统配置、个人设置、项目配置四层，合出最终值，每个值说得出来自哪一层、哪个文件、第几行。项目配置信任过才算、只认收紧的；写错的那一项丢掉、别的照用，拼错的键给最近的键名。头能经协议查清单、查最终值、校验一段字；命令行有 <code>miyu config get</code>、<code>explain</code>、<code>check</code>、<code>path</code>。</p>
+  <p class="purpose">核心起来时读默认值、系统配置、个人设置、项目配置四层，合出最终值，每个值说得出来自哪一层、哪个文件、第几行。项目配置信任过才算、只认收紧的；写错的那一项丢掉、别的照用，拼错的键给最近的键名。头能经协议查清单、查最终值、校验一段字；命令行有 <code>gqy config get</code>、<code>explain</code>、<code>check</code>、<code>path</code>。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -10766,7 +10766,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">读配置</span><span class="dir-note">8-2</span></div>
             <ol class="pipe" aria-label="做了什么">
-              <li><code>miyu-config</code> 的解析、合并、报错；读 TOML 用 <code>toml_edit</code>（只开 parse），系统语言兜底 <code>sys-locale</code></li>
+              <li><code>gqy-config</code> 的解析、合并、报错；读 TOML 用 <code>toml_edit</code>（只开 parse），系统语言兜底 <code>sys-locale</code></li>
               <li><code>hello</code> 回应多 <code>language</code>、<code>config_errors</code>；查询 <code>config.schema</code>、<code>config.get</code>、<code>config.check</code></li>
               <li>清单加 <code>permission.start_read_only</code>：开着的新会话一开局就是只读</li>
             </ol>
@@ -10774,8 +10774,8 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">握手以后照 language 说</span><span class="rl">命令行每个子命令都换，不只 miyu config（主会话定）</span></div>
-          <div class="tile new"><span class="nm">没信任那一行</span><span class="rl">miyu ask 起头只说配置有错，没信任随 8-3 的 miyu config trust</span></div>
+          <div class="tile new"><span class="nm">握手以后照 language 说</span><span class="rl">命令行每个子命令都换，不只 gqy config（主会话定）</span></div>
+          <div class="tile new"><span class="nm">没信任那一行</span><span class="rl">gqy ask 起头只说配置有错，没信任随 8-3 的 gqy config trust</span></div>
           <div class="tile"><span class="nm">还不写、不监视</span><span class="rl">写盘 8-3，当场生效 8-4</span></div>
         </div>
       </div>
@@ -10819,7 +10819,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="做了什么">
               <li><code>config.set</code>：一层里改几项（全收或全不收）或整份换；四个原因码</li>
               <li><code>journal.jsonl</code>：<code>config.changed</code>、<code>trust.changed</code></li>
-              <li><code>miyu config set</code>、<code>unset</code>、<code>edit</code>、<code>trust</code>；<code>miyu ask</code> 起头提醒没信任的项目配置</li>
+              <li><code>gqy config set</code>、<code>unset</code>、<code>edit</code>、<code>trust</code>；<code>gqy ask</code> 起头提醒没信任的项目配置</li>
             </ol>
           </div>
         </div>
@@ -10911,7 +10911,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s8-5" aria-labelledby="h-s85">
   <div class="sheet-head"><h2 id="h-s85"><span class="no">8-5</span>密钥</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">模型供应商的 key 这类密钥单独放在 <code>system/secrets.toml</code>（0600），配置里只写引用 <code>{ secret = … }</code> 或 <code>{ env = … }</code>。协议只能写、删、列名字，从不交出值；命令行有 <code>miyu login</code>、<code>miyu logout</code>、<code>miyu login --list</code>（照 opencode、codex，项目主人定）。</p>
+  <p class="purpose">模型供应商的 key 这类密钥单独放在 <code>system/secrets.toml</code>（0600），配置里只写引用 <code>{ secret = … }</code> 或 <code>{ env = … }</code>。协议只能写、删、列名字，从不交出值；命令行有 <code>gqy login</code>、<code>gqy logout</code>、<code>gqy login --list</code>（照 opencode、codex，项目主人定）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -10962,7 +10962,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s8-5b" aria-labelledby="h-s85b">
   <div class="sheet-head"><h2 id="h-s85b"><span class="no">8-5 补</span>按 Ctrl+C 也把回显开回来（补）</h2><span class="pill done">已完成</span></div>
-  <p class="purpose"><code>miyu login</code>、<code>miyu setup</code> 贴 key 时关掉了回显，按 Ctrl+C 进程被信号直接打断，回显开不回来，人得自己敲 <code>reset</code>。改成读 key 那一段自己管终端的设置，Ctrl+C 当取消，回显照原样开回来。</p>
+  <p class="purpose"><code>gqy login</code>、<code>gqy setup</code> 贴 key 时关掉了回显，按 Ctrl+C 进程被信号直接打断，回显开不回来，人得自己敲 <code>reset</code>。改成读 key 那一段自己管终端的设置，Ctrl+C 当取消，回显照原样开回来。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -11019,7 +11019,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">供应商</span><span class="dir-note">8-6</span></div>
             <ol class="pipe" aria-label="做了什么">
-              <li>新 crate <code>miyu-models</code>（纯逻辑），<code>route.rs</code> 取代 <code>HttpModels</code></li>
+              <li>新 crate <code>gqy-models</code>（纯逻辑），<code>route.rs</code> 取代 <code>HttpModels</code></li>
               <li>驱动接口加认证头 <code>auth(key)</code>；没配好模型当场报 <code>no_model</code>，不发请求</li>
               <li>清单登记 <code>models.chat</code>、<code>providers.*</code>，键里支持人起的名字；设置页多「模型」一页</li>
             </ol>
@@ -11027,7 +11027,7 @@ a.step:hover{border-color:var(--primary)}
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">核心不读 MIYU_DEV_*</span><span class="rl">三个名字只留在 xtask dev-home 里</span></div>
+          <div class="tile new"><span class="nm">核心不读 GQY_DEV_*</span><span class="rl">三个名字只留在 xtask dev-home 里</span></div>
           <div class="tile new"><span class="nm">出错换 key 随 8-9</span><span class="rl">8-6 只钉 key、排候选</span></div>
           <div class="tile"><span class="nm">两个演示改接法</span><span class="rl">合了已告诉终端界面、网页</span></div>
         </div>
@@ -11072,7 +11072,7 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="做了什么">
               <li>网址类型认环境变量引用，照密钥那一格的写法、取法</li>
               <li><code>config.get</code>、<code>model.list</code> 回引用，不回地址</li>
-              <li><code>xtask dev-home</code> 写 <code>{ env = "MIYU_DEV_BASE_URL" }</code></li>
+              <li><code>xtask dev-home</code> 写 <code>{ env = "GQY_DEV_BASE_URL" }</code></li>
             </ol>
           </div>
         </div>
@@ -11121,7 +11121,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="dir-label"><span class="path">模型资料</span><span class="dir-note">8-7</span></div>
             <ol class="pipe" aria-label="做了什么">
               <li>快照 5.3 MB（225 家、8341 个模型，MIT）；写了 ready 以后后台读，release 约 30 毫秒</li>
-              <li>后台更新带 ETag、304、失败一小时后再试；<code>MIYU_CATALOG_UPDATE=false</code> 能关</li>
+              <li>后台更新带 ETag、304、失败一小时后再试；<code>GQY_CATALOG_UPDATE=false</code> 能关</li>
               <li>四层对目录、规整、几家同名先认出的那家再原厂；本机的服务价格当 0</li>
             </ol>
           </div>
@@ -11270,7 +11270,7 @@ a.step:hover{border-color:var(--primary)}
             <div class="dir-label"><span class="path">挡位改成池（补）</span><span class="dir-note">8-8 补</span></div>
             <ol class="pipe" aria-label="做了什么">
               <li>拿掉 <code>models.tiers.*</code>、<code>model.list</code> 的 <code>tiers</code>、挡位那种写法；写挡位名的回 <code>unknown_model</code></li>
-              <li><code>pools.&lt;id&gt;.subagent</code>（出厂关）、<code>description</code>（新类型 <code>english</code>，60 字）；<code>miyu setup</code> 写三个空的预设池</li>
+              <li><code>pools.&lt;id&gt;.subagent</code>（出厂关）、<code>description</code>（新类型 <code>english</code>，60 字）；<code>gqy setup</code> 写三个空的预设池</li>
               <li><code>pool</code> 的枚举只列开着开关、有成员的池，说明一个池一行；以前的会话写 <code>tier</code> 不报错、用父会话的</li>
             </ol>
           </div>
@@ -11362,7 +11362,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s8-10" aria-labelledby="h-s810">
   <div class="sheet-head"><h2 id="h-s810"><span class="no">8-10</span>会话里换模型</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">开着的会话能换模型：头发 <code>session.configure</code>，下一个回合开始生效；钉着的模型、池没了退回 <code>models.chat</code>、记一条说明；配置变了也在下一个回合开始时生效，限额跟着变、推 <code>model.changed</code>（<code>why: turn</code>）。<code>subscribe</code> 带会话接下来请求的模型，<code>miyu ask --model</code>。</p>
+  <p class="purpose">开着的会话能换模型：头发 <code>session.configure</code>，下一个回合开始生效；钉着的模型、池没了退回 <code>models.chat</code>、记一条说明；配置变了也在下一个回合开始时生效，限额跟着变、推 <code>model.changed</code>（<code>why: turn</code>）。<code>subscribe</code> 带会话接下来请求的模型，<code>gqy ask --model</code>。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -11379,7 +11379,7 @@ a.step:hover{border-color:var(--primary)}
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">只改窗口也推</span><span class="rl">model.changed 的 why: turn 在引用、端点、窗口、压缩线有一格变了就推</span></div>
-          <div class="tile new"><span class="nm">接旧会话换不成</span><span class="rl">miyu ask -c --model 换不成退出码 1，不发话</span></div>
+          <div class="tile new"><span class="nm">接旧会话换不成</span><span class="rl">gqy ask -c --model 换不成退出码 1，不发话</span></div>
         </div>
       </div>
     </div>
@@ -11412,7 +11412,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="s8-11" aria-labelledby="h-s811">
   <div class="sheet-head"><h2 id="h-s811"><span class="no">8-11</span>第一次接入</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">没配过模型的人能接上第一个模型：核心给引导要用的三个方法 <code>provider.detect</code>、<code>provider.catalog</code>、<code>provider.test</code>；主程序里一个最基本的 <code>miyu setup</code> 一行行问、敲数字；<code>miyu ask</code> 没模型时在终端里先走一遍。全屏的引导在各个头里做（M9）。</p>
+  <p class="purpose">没配过模型的人能接上第一个模型：核心给引导要用的三个方法 <code>provider.detect</code>、<code>provider.catalog</code>、<code>provider.test</code>；主程序里一个最基本的 <code>gqy setup</code> 一行行问、敲数字；<code>gqy ask</code> 没模型时在终端里先走一遍。全屏的引导在各个头里做（M9）。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -11422,14 +11422,14 @@ a.step:hover{border-color:var(--primary)}
             <ol class="pipe" aria-label="做了什么">
               <li><code>provider.detect</code>：环境变量里哪几家有 key（不交值）、本机哪些模型服务（只探本机、300 毫秒、并行）</li>
               <li><code>provider.test</code>：真发一句 <code>Reply with OK.</code>（4 个 token），收到第一段就停；推荐能调工具、窗口够大、发布最晚的</li>
-              <li><code>miyu setup</code>：环境变量里的 key 只引用不复制，贴的 key 试通了才存成密钥，经核心写配置</li>
+              <li><code>gqy setup</code>：环境变量里的 key 只引用不复制，贴的 key 试通了才存成密钥，经核心写配置</li>
             </ol>
           </div>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">先试再存</span><span class="rl">贴的 key 先照这一次的值试，通了才存</span></div>
-          <div class="tile new"><span class="nm">没模型不造会话</span><span class="rl">miyu ask 照 config.get 判有没有模型</span></div>
+          <div class="tile new"><span class="nm">没模型不造会话</span><span class="rl">gqy ask 照 config.get 判有没有模型</span></div>
           <div class="tile"><span class="nm">本机服务走了代理</span><span class="rl">NO_PROXY 没写回环的连不上，另开 8-11 补</span></div>
         </div>
       </div>
@@ -11449,7 +11449,7 @@ a.step:hover{border-color:var(--primary)}
       <h3>验收</h3>
       <ul class="checks">
         <li><span class="ok">✓</span><span>18 个手写变异全逮住；三台机器的 CI 和长跑全绿</span></li>
-        <li><span class="ok">✓</span><span>真的伪终端、真模型：本机假装成 Ollama 的转发器，空的数据根 <code>miyu setup</code> 选它、试通、选模型、写好配置，<code>miyu ask</code> 照常说话；没配模型直接 <code>miyu ask</code> 先走 setup 再发</span></li>
+        <li><span class="ok">✓</span><span>真的伪终端、真模型：本机假装成 Ollama 的转发器，空的数据根 <code>gqy setup</code> 选它、试通、选模型、写好配置，<code>gqy ask</code> 照常说话；没配模型直接 <code>gqy ask</code> 先走 setup 再发</span></li>
       </ul>
     </div>
     <div>
@@ -11571,7 +11571,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">模型调用口</span><span class="dir-note">8-20</span></div>
             <ol class="pipe" aria-label="做了什么">
-              <li>底子在 <code>miyu-session</code> 的 <code>route/</code>：<code>Routes</code> 上的方法，不认会话，调用方交四样东西</li>
+              <li>底子在 <code>gqy-session</code> 的 <code>route/</code>：<code>Routes</code> 上的方法，不认会话，调用方交四样东西</li>
               <li>一次性入口 <code>OneShot</code>：出错最多换 5 次；不收图的模型不发、回 <code>model_failed</code></li>
               <li><code>model.call</code>：<code>model</code>、<code>purpose</code>、<code>messages</code>、<code>max_tokens</code>，回 <code>text</code>、<code>provider</code>、<code>model</code>、<code>usage</code>；不进任何会话的日志</li>
             </ol>
@@ -11770,7 +11770,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-drivers/src/anthropic/</span><span class="dir-note">新驱动</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-drivers/src/anthropic/</span><span class="dir-note">新驱动</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">messages.rs</span><span class="rl">相邻同角色的合成一条；思考块回传；结果里的图、PDF 放在 tool_result 里</span></div>
               <div class="tile new"><span class="nm">marks.rs</span><span class="rl">四处打点：工具和 system、稳定区、上一次、这一次的末尾</span></div>
@@ -11829,7 +11829,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-drivers/src/openai_responses/</span><span class="dir-note">新驱动</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-drivers/src/openai_responses/</span><span class="dir-note">新驱动</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">input.rs</span><span class="rl">user、assistant 几项、function_call、function_call_output；结果里的图放在 output 里</span></div>
               <div class="tile new"><span class="nm">effort.rs</span><span class="rl">档位要摘要和加密思考；off 是 effort none；没配的不加</span></div>
@@ -11886,7 +11886,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-models/src/</span><span class="dir-note">资料和供应商</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-models/src/</span><span class="dir-note">资料和供应商</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">headers.rs</span><span class="rl">头的模板：只认 {session_digest}，种子的 SHA-256 前 26 位</span></div>
               <div class="tile"><span class="nm">catalog.rs、facts.rs</span><span class="rl">模型自己的包名、交错思考的字段，只取第 1、2 层</span></div>
@@ -11943,7 +11943,7 @@ a.step:hover{border-color:var(--primary)}
           <div class="dir">
             <div class="dir-label"><span class="path">自测：一个空的数据根连起来走</span><span class="dir-note">main 8d3170c · 界面中文</span></div>
             <ol class="pipe" aria-label="自测的几件">
-              <li><code>miyu ask</code> 没模型先走 setup：找到 <code>OPENCODE_API_KEY</code>、选 Go、试通、敲名字选模型，接着答对</li>
+              <li><code>gqy ask</code> 没模型先走 setup：找到 <code>OPENCODE_API_KEY</code>、选 Go、试通、敲名字选模型，接着答对</li>
               <li>DeepSeek 官方只写 key；它的 Anthropic 接口、Responses 中转站写驱动和地址：三家带工具各一轮都对</li>
               <li>会话里从 Responses 换到 Anthropic 接口，接着上文答；池里第一个 401、记冷却、换第二个，下次不再试坏的</li>
               <li><code>effort</code> 改了下一个回合就用上；<code>usage.query</code> 和每次冻结的金额、照目录价格手算的一分不差；<code>recap</code> 记在用途里</li>
@@ -12429,7 +12429,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="sW-2" aria-labelledby="h-sW2">
   <div class="sheet-head"><h2 id="h-sW2"><span class="no">W-2</span>列文件、找文件</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">头打 <code>@</code> 选文件要的两样由核心给：<code>fs.list</code> 列一层目录（照打的开头筛），<code>fs.find</code> 在一个目录里模糊找文件（建清单、打分）。列目录、建清单、打分挪进 <code>miyu-fs</code>，终端演示和网页的桥各自那一份以后能删。数据根里只有账号自己的工作区能列、能找。</p>
+  <p class="purpose">头打 <code>@</code> 选文件要的两样由核心给：<code>fs.list</code> 列一层目录（照打的开头筛），<code>fs.find</code> 在一个目录里模糊找文件（建清单、打分）。列目录、建清单、打分挪进 <code>gqy-fs</code>，终端演示和网页的桥各自那一份以后能删。数据根里只有账号自己的工作区能列、能找。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -12446,7 +12446,7 @@ a.step:hover{border-color:var(--primary)}
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">穿过数据根够到工作区</span><span class="rl">Boundary 多一问：要不要往下走，和这一条算不算数分开</span></div>
-          <div class="tile new"><span class="nm">清单在系统线程里建</span><span class="rl">miyu-fs 不为这一步依赖 tokio</span></div>
+          <div class="tile new"><span class="nm">清单在系统线程里建</span><span class="rl">gqy-fs 不为这一步依赖 tokio</span></div>
           <div class="tile"><span class="nm">macOS 判 root</span><span class="rl">看自己建的临时目录归谁，macOS 没有 /proc</span></div>
         </div>
       </div>
@@ -12529,7 +12529,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="sW-4" aria-labelledby="h-sW4">
   <div class="sheet-head"><h2 id="h-sW4"><span class="no">W-4</span>mermaid</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">mermaid 源码画成 SVG 由核心做，做成可选的软件包 <code>mermaid</code>（crate <code>miyu-mermaid</code>，cargo 开关 <code>mermaid</code>，发行版默认打开）：同一张图终端和网页看只画一次。顺带立起可选软件包登记查询的那张表，W-7 的 <code>net</code> 照它登记。</p>
+  <p class="purpose">mermaid 源码画成 SVG 由核心做，做成可选的软件包 <code>mermaid</code>（crate <code>gqy-mermaid</code>，cargo 开关 <code>mermaid</code>，发行版默认打开）：同一张图终端和网页看只画一次。顺带立起可选软件包登记查询的那张表，W-7 的 <code>net</code> 照它登记。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -12678,7 +12678,7 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="sW-7" aria-labelledby="h-sW7">
   <div class="sheet-head"><h2 id="h-sW7"><span class="no">W-7</span>链接卡片</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">头给一个网址，核心抓下那一页的标题、简介、图，交回一张卡片：<code>link.preview</code>。做成可选的软件包 <code>net</code>（crate <code>miyu-net</code>），照 W-4 立好的查询表登记。卡片的图存成账号的 blob，头照 <code>blob.get</code> 读。以后 <code>web_fetch</code> 用同一份抓取和地址闸。</p>
+  <p class="purpose">头给一个网址，核心抓下那一页的标题、简介、图，交回一张卡片：<code>link.preview</code>。做成可选的软件包 <code>net</code>（crate <code>gqy-net</code>），照 W-4 立好的查询表登记。卡片的图存成账号的 blob，头照 <code>blob.get</code> 读。以后 <code>web_fetch</code> 用同一份抓取和地址闸。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
@@ -12783,14 +12783,14 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-net/src/sites/</span><span class="dir-note">按站取的一层</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-net/src/sites/</span><span class="dir-note">按站取的一层</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">sites.rs</span><span class="rl">认站、挑读页面的办法、人机验证页的标题、合卡片的字</span></div>
               <div class="tile new"><span class="nm">bilibili.rs</span><span class="rl">BV、av、短链；读页面脚本里的 videoData</span></div>
               <div class="tile new"><span class="nm">youtube.rs</span><span class="rl">读过 &lt;/head&gt;；ISO 8601 的时长、频道名</span></div>
               <div class="tile new"><span class="nm">mediawiki.rs</span><span class="rl">generator 认站、api.php、正文最外层的第一段</span></div>
               <div class="tile new"><span class="nm">rules/sites.rs</span><span class="rl">link_preview.json 的 api、sites、challenge 三段</span></div>
-              <div class="tile new"><span class="nm">tests/live.rs</span><span class="rl">真网络实测，#[ignore] 加 MIYU_NET_LIVE=1</span></div>
+              <div class="tile new"><span class="nm">tests/live.rs</span><span class="rl">真网络实测，#[ignore] 加 GQY_NET_LIVE=1</span></div>
             </div>
           </div>
           <ol class="pipe" aria-label="卡片多的三格">
@@ -12852,7 +12852,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-endpoint/src/</span><span class="dir-note">握手认四种凭据</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-endpoint/src/</span><span class="dir-note">握手认四种凭据</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">login.rs、login/files.rs</span><span class="rl">一次性码、设密码、密码登录和限流、登录令牌、作废了断开</span></div>
               <div class="tile"><span class="nm">hello.rs、connection.rs</span><span class="rl">本机令牌、一次性码、登录令牌、用户名加密码，只写一种；用码连上的只能设密码</span></div>
@@ -12861,13 +12861,13 @@ a.step:hover{border-color:var(--primary)}
           <ol class="pipe" aria-label="接上了哪些">
             <li class="cmd"><code>account.setup_code</code>、<code>account.setup</code>、<code>account.logout</code></li>
             <li><code>system/accounts.json</code>（argon2id）、<code>home/admin/logins.json</code>（只存哈希），0600</li>
-            <li><code>miyu-ipc</code> 的 <code>connect_bare</code>：不读本机令牌，留给网页软件</li>
+            <li><code>gqy-ipc</code> 的 <code>connect_bare</code>：不读本机令牌，留给网页软件</li>
           </ol>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
           <div class="tile new"><span class="nm">只有一个 admin</span><span class="rl">用户名只用来登录，家目录照旧</span></div>
-          <div class="tile new"><span class="nm">码只用一次</span><span class="rl">握手当场作废，忘了密码 miyu web --reset</span></div>
+          <div class="tile new"><span class="nm">码只用一次</span><span class="rl">握手当场作废，忘了密码 gqy web --reset</span></div>
           <div class="tile new"><span class="nm">60 秒错 5 次</span><span class="rl">先拒、不验；验一次 27 毫秒</span></div>
         </div>
       </div>
@@ -12901,13 +12901,13 @@ a.step:hover{border-color:var(--primary)}
 
 <section class="sheet" id="sW-9" aria-labelledby="h-sW9">
   <div class="sheet-head"><h2 id="h-sW9"><span class="no">W-9</span>网页软件</h2><span class="pill done">已完成</span></div>
-  <p class="purpose">网页界面成一个单独的程序 <code>miyu-web</code>：自己开一个只听本机的端口给页面，把浏览器的 WebSocket 一帧一条转成核心协议的一行一条，经本机套接字（Windows 上命名管道）连核心，不读本机令牌，凭据照原样交给核心验。主程序的 <code>miyu web</code> 找到它、交参数：确保在跑，第一次、忘了密码的带一次性码打开浏览器。</p>
+  <p class="purpose">网页界面成一个单独的程序 <code>gqy-web</code>：自己开一个只听本机的端口给页面，把浏览器的 WebSocket 一帧一条转成核心协议的一行一条，经本机套接字（Windows 上命名管道）连核心，不读本机令牌，凭据照原样交给核心验。主程序的 <code>gqy web</code> 找到它、交参数：确保在跑，第一次、忘了密码的带一次性码打开浏览器。</p>
   <figure class="frame">
     <div class="drawing">
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-web/src/</span><span class="dir-note">新 crate，第 5 层的头</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-web/src/</span><span class="dir-note">新 crate，第 5 层的头</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">serve.rs、pages.rs</span><span class="rl">单实例、run/web、Host 核对、页面文件和响应头、空闲退出</span></div>
               <div class="tile new"><span class="nm">ws.rs</span><span class="rl">Origin 核对，一帧一行照转；1003、1009、1012，关了先读掉再放</span></div>
@@ -12915,14 +12915,14 @@ a.step:hover{border-color:var(--primary)}
             </div>
           </div>
           <ol class="pipe" aria-label="接上了哪些">
-            <li class="cmd"><code>miyu web</code> → 旁边的 <code>miyu-web open</code> → <code>serve</code></li>
+            <li class="cmd"><code>gqy web</code> → 旁边的 <code>gqy-web open</code> → <code>serve</code></li>
             <li><code>resources/web/web.json</code>：端口、空闲、CSP、媒体类型</li>
-            <li><code>miyu-ipc</code> 的 <code>spawn_detached</code>：拉起、跟终端脱开、等那一行，和拉起核心一个办法</li>
+            <li><code>gqy-ipc</code> 的 <code>spawn_detached</code>：拉起、跟终端脱开、等那一行，和拉起核心一个办法</li>
           </ol>
         </div>
         <div class="rules">
           <p class="rules-title">这一步定下的</p>
-          <div class="tile new"><span class="nm">出厂端口 8300</span><span class="rl">Miyu 的生日 8 月 30 日</span></div>
+          <div class="tile new"><span class="nm">出厂端口 8300</span><span class="rl">GQY 的生日 8 月 30 日</span></div>
           <div class="tile new"><span class="nm">只认本机</span><span class="rl">127.0.0.1、localhost、[::1]，别的 Host、Origin 403</span></div>
           <div class="tile new"><span class="nm">关了先读掉</span><span class="rl">带着没读的数据关会 RST，Windows 上丢关闭帧</span></div>
         </div>
@@ -12964,7 +12964,7 @@ a.step:hover{border-color:var(--primary)}
       <div class="d01">
         <div class="d01-left">
           <div class="dir">
-            <div class="dir-label"><span class="path">crates/miyu-web/src/media/</span><span class="dir-note">网页软件多的 /media</span></div>
+            <div class="dir-label"><span class="path">crates/gqy-web/src/media/</span><span class="dir-note">网页软件多的 /media</span></div>
             <div class="files">
               <div class="tile new"><span class="nm">media.rs</span><span class="rl">POST /media 换票据，GET /media/&lt;票据&gt; 一块块给、响应头</span></div>
               <div class="tile new"><span class="nm">tickets.rs</span><span class="rl">64 位十六进制，同样的交回同一张，12 小时不用作废，最多 4096 张</span></div>
@@ -12974,7 +12974,7 @@ a.step:hover{border-color:var(--primary)}
           <ol class="pipe" aria-label="接上了哪些">
             <li class="cmd"><code>blob.get</code>、<code>fs.read</code>（W-6）一块 512 KiB</li>
             <li><code>web.json</code>：票据多久作废、最多几张；音视频、PDF 的类型</li>
-            <li>令牌作废了（<code>miyu web --logout</code>），票据一起作废</li>
+            <li>令牌作废了（<code>gqy web --logout</code>），票据一起作废</li>
           </ol>
         </div>
         <div class="rules">
@@ -13059,9 +13059,9 @@ const GROUPS = [
 ];
 const NODES = [
   // heads
-  { id: 'n_tui', x: 268, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端界面', s: ['miyu · 全屏 TUI', '时间线 · 抽屉 · 会话树'] },
+  { id: 'n_tui', x: 268, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端界面', s: ['gqy · 全屏 TUI', '时间线 · 抽屉 · 会话树'] },
   { id: 'n_web', x: 490, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '网页', s: ['浏览器 · 原生 JS', '设置页照清单生成'] },
-  { id: 'n_cli', x: 712, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '命令行', s: ['miyu ask · miyu stdio', '给人，也给别的程序'] },
+  { id: 'n_cli', x: 712, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '命令行', s: ['gqy ask · gqy stdio', '给人，也给别的程序'] },
   { id: 'n_shell', x: 934, y: 42, w: 198, h: 88, k: 'proc', p: 'head', t: '终端无缝集成', s: ['fish 完整 · bash/zsh 兜底', '工作目录跟着 shell'] },
   // bus
   { id: 'n_bus', x: 256, y: 158, w: 888, h: 30, k: 'bus', p: 'core', t: '核心协议', custom: 'bus' },
@@ -13099,9 +13099,9 @@ const NODES = [
   { id: 'n_sandbox', x: 1012, y: 758, w: 116, h: 120, k: 'module', p: 'core', t: '沙盒', s: ['管得住的不问人', '越界才问人', '整盘能读，只管写'] },
   // left column
   { id: 'x_qq', x: 28, y: 244, w: 196, h: 64, k: 'ext', p: 'ext', t: 'QQ 群与私聊', s: ['OneBot v11 实现', 'NapCat、SnowLuma…'] },
-  { id: 'n_qqbridge', x: 28, y: 420, w: 196, h: 84, k: 'proc', p: 'child', t: 'QQ 桥', s: ['适配层 · quirk 表', '平台工具：像 ioctl', 'Miyu 协议 · 标准输入输出'] },
+  { id: 'n_qqbridge', x: 28, y: 420, w: 196, h: 84, k: 'proc', p: 'child', t: 'QQ 桥', s: ['适配层 · quirk 表', '平台工具：像 ioctl', 'GQY 协议 · 标准输入输出'] },
   { id: 'x_mic', x: 28, y: 560, w: 196, h: 48, k: 'ext', p: 'ext', t: '麦克风与音箱', s: ['系统的声音服务'] },
-  { id: 'n_voice', x: 28, y: 642, w: 196, h: 84, k: 'proc', p: 'child', t: '语音 worker', s: ['miyu-voice · 单独下载', '人声检测 · 唤醒词', '本机识别 SenseVoice'] },
+  { id: 'n_voice', x: 28, y: 642, w: 196, h: 84, k: 'proc', p: 'child', t: '语音 worker', s: ['gqy-voice · 单独下载', '人声检测 · 唤醒词', '本机识别 SenseVoice'] },
   { id: 'x_editor', x: 28, y: 790, w: 196, h: 64, k: 'ext', p: 'ext', t: '你的编辑器', s: ['手改 TOML', '核心监视、重读'] },
   // right column
   { id: 'x_svc', x: 1176, y: 236, w: 196, h: 64, k: 'ext', p: 'ext', t: '系统服务管理器', s: ['systemd · launchd · Run 键', '要常驻时托管核心'] },
@@ -13196,17 +13196,17 @@ const BUILD = {
   k_ctx: { by: '1-8', how: 'frame', note: '请求、历史、模板、组装、事实、探针' },
   k_turn: { by: '2-1', how: 'frame', note: '会话的骨架、累积器、一轮走到底、调工具、打断、排队、权限级别、确认、提问、载入、崩溃恢复、撤销与恢复；执行器替身把它一整轮一整轮跑完；出了错自己再来，说了一半的带着半截接着说（3-5 下）' },
   k_tools: { by: '2-4', how: 'frame', note: '先查、修正参数、只读的一起跑、只读时拦写文件的、执行前的链、等人确认；执行端口（4-2）：照名字在目录里找，一件一个任务地跑，叫停就掐掉；快照里有、目录里没有的报现在用不了，崩了的报内部错误，会话照常走' },
-  n_sandbox: { by: '4-3', how: 'frame', note: '文件工具的路径边界（4-3 上）：边界表（工作区、数据根、临时目录、系统和工具链目录，几片重叠时有先后），换成真实的位置（~、链接、还不存在的），安全地打开（不跟随最后一层的链接、不阻塞、只开普通文件）。权限策略（4-3 下）：工具报要碰的路径，照边界和级别判放行、问人还是拒绝，数据根哪一级都拒绝；工作目录太宽退回账号的工作区。沙盒的底子（5-1）：规格、助手 miyu-sandbox，shell 带了规格的经它起，核心起来时探一次。Linux 的文件用 Landlock 照规格放行（5-2）；只管读写、不管网络，挡住能替命令在沙盒外读写的系统服务（5-1 补，项目主人 09-29 定）；照 dsh 整盘能读、只管写，数据根一级级绕开（5-3）；.git 不另外护' },
+  n_sandbox: { by: '4-3', how: 'frame', note: '文件工具的路径边界（4-3 上）：边界表（工作区、数据根、临时目录、系统和工具链目录，几片重叠时有先后），换成真实的位置（~、链接、还不存在的），安全地打开（不跟随最后一层的链接、不阻塞、只开普通文件）。权限策略（4-3 下）：工具报要碰的路径，照边界和级别判放行、问人还是拒绝，数据根哪一级都拒绝；工作目录太宽退回账号的工作区。沙盒的底子（5-1）：规格、助手 gqy-sandbox，shell 带了规格的经它起，核心起来时探一次。Linux 的文件用 Landlock 照规格放行（5-2）；只管读写、不管网络，挡住能替命令在沙盒外读写的系统服务（5-1 补，项目主人 09-29 定）；照 dsh 整盘能读、只管写，数据根一级级绕开（5-3）；.git 不另外护' },
   n_software: { by: '4-4', how: 'frame', note: '基础系统（4-4 上、下）：读的三件 read、glob、grep，名字、参数、输出照成熟 harness 的规范（以 Claude Code 为主）；说明、参数格式、输出里的几句都在资源目录的 software/basesystem/ 下、进登记簿；核心起来时登记。history（6-4）：翻会话自己的日志，关键词加筛选，压缩换出去的找得回' },
   k_catalog: { by: '4-1', how: 'frame', note: '工具目录：每件工具报出规格（名字、说明、参数格式、访问类别），核心起来时登记一次就冻结；重名的、名字不合写法的、参数格式不是对象的当场拒绝。造会话时工具面照名字排好存进策略快照，载入以后逐字节一样。现在目录是空的，第一批工具在 4-4（4-1）' },
-  n_store: { by: '3-1', how: 'frame', note: '数据根：家目录的 .miyu、MIYU_HOME、骨架、认标记（认不出的只有一种说法，不认旧版）；会话日志：按段的 JSONL，一批一次写入一次同步，打开时自检截尾；blob：按内容哈希存，先写临时文件、同步、再改名，读的时候核对；资源目录：MIYU_RESOURCES、程序旁边的 resources/、上一级的 share/miyu/，读出一个人格的原文（3-6 上）' },
+  n_store: { by: '3-1', how: 'frame', note: '数据根：家目录的 .gqy、GQY_HOME、骨架、认标记（认不出的只有一种说法，不认旧版）；会话日志：按段的 JSONL，一批一次写入一次同步，打开时自检截尾；blob：按内容哈希存，先写临时文件、同步、再改名，读的时候核对；资源目录：GQY_RESOURCES、程序旁边的 resources/、上一级的 share/gqy/，读出一个人格的原文（3-6 上）' },
   n_prompt: { by: '3-6', how: 'frame', note: '策略快照：人格从资源目录拼成快照，按内容哈希存档，载入时照哈希重建，请求逐字节一样；现在只有软件工程师（3-6 上）' },
   n_driver: { by: '3-4', how: 'frame', note: 'OpenAI 兼容接口：编码（每一种写法有样本，探针另存一份线上的字节，随机日志查线上的前缀延伸）、流式解码（13 份手写的流，从哪里切开都一样）、出错分六类；驱动的接口 Driver；HTTP 执行器（3-5 上）：发请求、流式读、空闲超时、打断；会接着写的供应商用前缀续写（3-5 再补，出厂只开 DeepSeek）；DEBUG 记发出去和收场，key、正文、地址的路径一个字都不记（3-7 上）' },
   k_sessions: { by: '3-7', how: 'frame', note: '会话 actor（3-7 中）：命令和执行器的回报进收件箱，动作照表回；先落盘，后回应、后推送；造会话存策略快照，载入照它重建，停在一轮中间的再起来接着干；写不进去就停下。请求模型接上驱动和 HTTP，驱动的占位取自会话的快照（3-7 下）；会话表照编号找会话、没在跑的从磁盘载入，只起一个 actor（3-8 上）' },
-  n_models: { by: '3-9', how: 'frame', note: '配置系统做出来之前只认环境变量 DEEPSEEK_API_KEY：设了就接 DeepSeek 官方的 deepseek-flash，key 只在内存里；没设的，每次请求都当场回「没有可用的模型」（3-9 上，项目主人定）；开发用的 MIYU_DEV_BASE_URL、MIYU_DEV_MODEL 替换地址和模型（3-9 再补）' },
-  n_cli: { by: '3-9', how: 'frame', note: 'miyu ask：连上核心（没在跑就拉起），开一次性会话或者 --continue、--session 接着说；思考灰色印在标准错误上，回答印在标准输出上，问完一行用量；Ctrl+C 一次打断、两次就走；--format json 给脚本（3-9 下）' },
-  n_compact: { by: '6-1', how: 'frame', note: '用量和压缩线（6-1）：锚是最近一次压缩以后、说完了、带用量的 model.called，盖住工具面、system 和前 messages+1 条；后面新增的照 UTF-8 字节除以 4 估（照 codex）；报的比估的小取估的、换过模型整份估（照 dsh）；压缩线 = 窗口 − min(最大输出, 20000) − 13000。摘要请求（6-2 上）：发主请求之前过了线，在这一轮里先压：有效历史到第 N 条的投影加摘要指令，取出摘要写检查点，这一轮要回应的话留在尾巴里，一组不拆；执行器交了限额才主动压。留尾巴（6-2 下）：照投影的先后一组一组地留，至多 min(16000, 线的四分之一)，只在切得开的地方切；一步至多压一次。模型资料和限额（6-3 上）：models.dev 的快照查窗口，DeepSeek 的图片照官方计算器，会话 actor 造会话、载入以后交给内核，真的会话到线就压。接上真模型（6-3 下）：miyu ask 印压缩那一行（原地刷新进度，压好了换成压前 → 压后），日志记度量；检查点包装的结尾加一句接着做、别重做（J12 实测）；取摘要先去草稿。检查点里的几段和压后重建（6-5）：清单、取回指路、太大没重读的由代码写；发摘要请求之前先重读最近的文件，原文存成 blob 放进检查点。失败和熔断（6-6 上）：连续失败 3 次、压完 3 个回合内又到线连着 3 次，暂停自动压缩，暂停着放不下的请求不发。截短重试（6-6 中）：摘要请求自己超长，截掉最老的几组再试，最多 3 次，截过的写明摘要没看到哪一段。撤销能撤掉压缩（6-9）：压缩跟着它所在的那一轮撤，撤到压缩以前时从磁盘读回更早的一段。隔离式回退（6-6 下）：摘要回复里调了工具，改发不带工具面的摘要请求。截过的、隔离式的出错再来照记下的发（6-6 补）。被动压缩（6-7）：主请求报超长，先压再重发一次。手动压缩（6-8）：session.compact、miyu compact 单开一轮只做压缩，要求夹在摘要指令里，暂停着也能压' },
-  n_web: { by: 'W-9', how: 'frame', note: '网页软件 miyu-web（W-9）：只听本机的 HTTP 端口（出厂 8300），给页面文件，/ws 把浏览器的 WebSocket 一帧一条转成核心协议的一行一条，不读本机令牌；单实例、空闲退出；miyu web 找旁边的它、确保在跑、带一次性码打开浏览器。/media（W-10）：带登录令牌换票据，照票据一块块给 blob、本机文件，能分段拖进度。页面还在网页演示里' },
+  n_models: { by: '3-9', how: 'frame', note: '配置系统做出来之前只认环境变量 DEEPSEEK_API_KEY：设了就接 DeepSeek 官方的 deepseek-flash，key 只在内存里；没设的，每次请求都当场回「没有可用的模型」（3-9 上，项目主人定）；开发用的 GQY_DEV_BASE_URL、GQY_DEV_MODEL 替换地址和模型（3-9 再补）' },
+  n_cli: { by: '3-9', how: 'frame', note: 'gqy ask：连上核心（没在跑就拉起），开一次性会话或者 --continue、--session 接着说；思考灰色印在标准错误上，回答印在标准输出上，问完一行用量；Ctrl+C 一次打断、两次就走；--format json 给脚本（3-9 下）' },
+  n_compact: { by: '6-1', how: 'frame', note: '用量和压缩线（6-1）：锚是最近一次压缩以后、说完了、带用量的 model.called，盖住工具面、system 和前 messages+1 条；后面新增的照 UTF-8 字节除以 4 估（照 codex）；报的比估的小取估的、换过模型整份估（照 dsh）；压缩线 = 窗口 − min(最大输出, 20000) − 13000。摘要请求（6-2 上）：发主请求之前过了线，在这一轮里先压：有效历史到第 N 条的投影加摘要指令，取出摘要写检查点，这一轮要回应的话留在尾巴里，一组不拆；执行器交了限额才主动压。留尾巴（6-2 下）：照投影的先后一组一组地留，至多 min(16000, 线的四分之一)，只在切得开的地方切；一步至多压一次。模型资料和限额（6-3 上）：models.dev 的快照查窗口，DeepSeek 的图片照官方计算器，会话 actor 造会话、载入以后交给内核，真的会话到线就压。接上真模型（6-3 下）：gqy ask 印压缩那一行（原地刷新进度，压好了换成压前 → 压后），日志记度量；检查点包装的结尾加一句接着做、别重做（J12 实测）；取摘要先去草稿。检查点里的几段和压后重建（6-5）：清单、取回指路、太大没重读的由代码写；发摘要请求之前先重读最近的文件，原文存成 blob 放进检查点。失败和熔断（6-6 上）：连续失败 3 次、压完 3 个回合内又到线连着 3 次，暂停自动压缩，暂停着放不下的请求不发。截短重试（6-6 中）：摘要请求自己超长，截掉最老的几组再试，最多 3 次，截过的写明摘要没看到哪一段。撤销能撤掉压缩（6-9）：压缩跟着它所在的那一轮撤，撤到压缩以前时从磁盘读回更早的一段。隔离式回退（6-6 下）：摘要回复里调了工具，改发不带工具面的摘要请求。截过的、隔离式的出错再来照记下的发（6-6 补）。被动压缩（6-7）：主请求报超长，先压再重发一次。手动压缩（6-8）：session.compact、gqy compact 单开一轮只做压缩，要求夹在摘要指令里，暂停着也能压' },
+  n_web: { by: 'W-9', how: 'frame', note: '网页软件 gqy-web（W-9）：只听本机的 HTTP 端口（出厂 8300），给页面文件，/ws 把浏览器的 WebSocket 一帧一条转成核心协议的一行一条，不读本机令牌；单实例、空闲退出；gqy web 找旁边的它、确保在跑、带一次性码打开浏览器。/media（W-10）：带登录令牌换票据，照票据一块块给 blob、本机文件，能分段拖进度。页面还在网页演示里' },
   n_bus: { by: '3-8', how: 'frame', note: '连接上一行一条 JSON-RPC 2.0：握手（主版本、本机令牌）、造会话、说话、打断，拒绝附原因码（3-8 上）；订阅事件流，回应排在它产生的推送后面，掉队推 resync（3-8 中）；核心在本机的 Unix 套接字上等连接：一个数据根一个核心（锁），本机令牌写进 run/token，实际位置记在 run/socket，套接字放在只有自己能进的目录里（3-8 下）；Windows 上是命名管道，只对本人开放，头连上以后核对另一头是自己的（3-8 补）' },
 };
 

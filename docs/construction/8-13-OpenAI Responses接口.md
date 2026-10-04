@@ -25,7 +25,7 @@
 ### 验收
 
 1. 测试（先写）：图纸「守着它的」那张表每一行；`models` 认 `openai-responses`、它没有开关、不替它填输出上限；路由发到 `/responses`、带 `Bearer`。
-2. 请求形状探针：`MIYU_PROBE_WRITE=1` 重写，`openai-chat`、`anthropic` 的存档 `git diff` 是空的，新加 `terminal/openai-responses/`；每次请求是上一次的前缀延伸，随机日志也查。
+2. 请求形状探针：`GQY_PROBE_WRITE=1` 重写，`openai-chat`、`anthropic` 的存档 `git diff` 是空的，新加 `terminal/openai-responses/`；每次请求是上一次的前缀延伸，随机日志也查。
 3. 给模型看的字：没有新的。
 4. 手写变异 15 个左右，全被逮住；`cargo xtask check` 八项全过；三台机器的 CI 全绿。
 5. 真模型实测（主会话合并前）：项目主人给的中转站（OpenAI 兼容，`/responses` 走得通），带工具的循环、思考强度、附图、打断再接着说、写错 key；`function_call_output` 带图收不收、`"tools":[]` 收不收照实记。中转站给的思考没有加密内容，加密思考的回传、缓存命中记成「待 OpenAI 官方的 key 或 Zen 上的 GPT」。
@@ -38,10 +38,10 @@
 ### 验收结果
 
 - 测试（先写；新的类型、函数改之前编译不过）：
-  - `miyu-drivers`：`tests/openai_responses.rs`（8 个）、`openai_responses_reasoning.rs`（4 个）、`openai_responses_media.rs`（5 个）、`openai_responses_streams.rs`（8 个，15 份流的样本、从每个字节切开喂都一样）。样本 13 份在 `docs/designs/samples/drivers/openai-responses/`。
-  - `miyu-models`：`provider/tests.rs`、`facts/tests.rs` 加了 `openai-responses`（认得、没有开关、目录有开关的模型也不多 `off`）；`miyu-session`：`tests/route_responses.rs`（2 个）；`miyu-core`：出厂档案那一条多 `openai`。
+  - `gqy-drivers`：`tests/openai_responses.rs`（8 个）、`openai_responses_reasoning.rs`（4 个）、`openai_responses_media.rs`（5 个）、`openai_responses_streams.rs`（8 个，15 份流的样本、从每个字节切开喂都一样）。样本 13 份在 `docs/designs/samples/drivers/openai-responses/`。
+  - `gqy-models`：`provider/tests.rs`、`facts/tests.rs` 加了 `openai-responses`（认得、没有开关、目录有开关的模型也不多 `off`）；`gqy-session`：`tests/route_responses.rs`（2 个）；`gqy-core`：出厂档案那一条多 `openai`。
   - 三种驱动都有了，拿 `openai-responses` 当「还没有的驱动」的几处测试改了：用不了的供应商写成不带驱动和地址（`UNUSABLE_MODEL`），还没有的驱动写在档案里（`google`）。
-- 请求形状探针：`MIYU_PROBE_WRITE=1` 重写，`openai-chat`、`anthropic` 的存档 `git diff` 是空的；新加 `terminal/openai-responses/`（22 份）。每个探针、随机日志的每一次请求编码成 Responses 都是上一次的前缀延伸。
+- 请求形状探针：`GQY_PROBE_WRITE=1` 重写，`openai-chat`、`anthropic` 的存档 `git diff` 是空的；新加 `terminal/openai-responses/`（22 份）。每个探针、随机日志的每一次请求编码成 Responses 都是上一次的前缀延伸。
 - 实测抓到一个问题，当场修了：项目主人给的中转站流过来的工具参数增量丢了开头的 `{"`，`output_item.done` 的整段是对的，她连调了十几次 `read` 都参数不对。改成参数攒到这一项完了照整段交（图纸「施工时定的」），样本 `arguments-dropped` 复现它，修之前是红的。
 - 手写变异 19 个，全逮住（两个第一轮没逮住，补了测试再逮住）：不写 `store`；system 写进 `input`；`strict` 写真；正文不合并；别家的思考也回传（补：别家的数据长得和自己家一样）；空摘要也写一段；用别家的编号（补：别家的私有数据写法一样）；没输出不写占位；档位不要加密内容；`off` 不写；摘要不隔空行；参数照增量交；不认加密内容；`max_output_tokens` 不完整当出错；用量不减命中；`response.failed` 交整段；只在 `done` 给的不补；responses 能关思考；结果里的图挪走。
 - `cargo xtask check`：格式、clippy、文档、分层、纯逻辑、行数、许可证都过；测试只有 `config_set` 的 `a_write_that_fails_changes_nothing` 不过（容器里是 root），和这一步无关。

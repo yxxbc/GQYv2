@@ -8,12 +8,12 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-store/src/index.rs` | 打开（坏了的删掉重建）、读全部的行、写回一行、会话落盘时往上盖、删行、用着用着坏了的重建 |
-| `crates/miyu-store/src/sqlite.rs` | 怎么开、查版本和 `quick_check`、WAL、坏了连同 `-wal`、`-shm` 删掉：施工 8-15 从 `index.rs` 挪出来，和用量汇总共用；`IndexError`、`Opened` 是它的 `DbError`、`Opened` |
-| `crates/miyu-store/src/index/row.rs` | 一行记什么，照一条事件怎么盖（`Row::see`）；这一条记下的工作目录（`cwd`） |
-| `crates/miyu-store/src/log.rs`、`log/open.rs` | 日志里的一个位置 `Mark`；会话日志写到哪了（`SessionLog::mark`）；从记下的位置读起（`read_marked`，`store.md` 第 7 条） |
-| `crates/miyu-session/src/store.rs` | `Indexed`：会话日志每落一批，顺手更新索引（`session/actor.md` 第 5 条第 7 点） |
-| `crates/miyu-endpoint/src/list.rs` | 起来时打开（`open_index`）；列会话照索引读、照日志补（`scan`）；删会话删行（`forget`） |
+| `crates/gqy-store/src/index.rs` | 打开（坏了的删掉重建）、读全部的行、写回一行、会话落盘时往上盖、删行、用着用着坏了的重建 |
+| `crates/gqy-store/src/sqlite.rs` | 怎么开、查版本和 `quick_check`、WAL、坏了连同 `-wal`、`-shm` 删掉：施工 8-15 从 `index.rs` 挪出来，和用量汇总共用；`IndexError`、`Opened` 是它的 `DbError`、`Opened` |
+| `crates/gqy-store/src/index/row.rs` | 一行记什么，照一条事件怎么盖（`Row::see`）；这一条记下的工作目录（`cwd`） |
+| `crates/gqy-store/src/log.rs`、`log/open.rs` | 日志里的一个位置 `Mark`；会话日志写到哪了（`SessionLog::mark`）；从记下的位置读起（`read_marked`，`store.md` 第 7 条） |
+| `crates/gqy-session/src/store.rs` | `Indexed`：会话日志每落一批，顺手更新索引（`session/actor.md` 第 5 条第 7 点） |
+| `crates/gqy-endpoint/src/list.rs` | 起来时打开（`open_index`）；列会话照索引读、照日志补（`scan`）；删会话删行（`forget`） |
 
 依赖 `rusqlite`，开 `bundled`：自己带 SQLite 的源码编，三个平台一样，不用系统装的 SQLite（`licenses.md`）。
 
@@ -76,7 +76,7 @@
    3. 对不上的：记的那一段没了、比记的短了（手动截过）、记的位置前面一个字节不是 `\n`（不在一行的开头）、多出来的那一截读不下去：这一个会话整份重读（第 4 款）。
 4. 没有这一行的、对不上的：照没有索引时的读法（`protocol.md` 的 `session.list` 第 2 到 4 条），先读第一条挑，再从头读一遍盖上去。读完了的写进索引：没有这一行的，表里还没有才写；对不上的，照到的还是原来那里才换。后面读不下去的（日志坏了）：记一行 `WARN meta not read`，照坏的那一段以前的算，不写进索引，下次还整份读。
 5. 所以结果和每次整份读的一字不差（测试里两种算法比）。末尾没写完的半行照旧不算：照到的是它前面那一整行的末尾，写完了下次补。
-6. 写回失败的记一行 `WARN session index not updated`（目标 `miyu::endpoint`），照样列。
+6. 写回失败的记一行 `WARN session index not updated`（目标 `gqy::endpoint`），照样列。
 7. 记着的位置对、日志却在原处改了内容、长度没变的（手动改了一个字），认不出来：日志是只追加的，只有手动改才会这样，照记的列。
 
 **4. 删会话**（`forget`）
@@ -101,13 +101,13 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-store/src/index/tests.rs` | 新建的是空的、下次照旧、目录 0700；一批批盖上：属主、一次性、工作目录、标题、置顶、最近一次动静、照到哪，造的时刻不变；没有这一行、照到的不是这一批之前的，不动；写回只填空的、只换照到的没变过的；删行、删没有的也成；乱写的文件、版本不对的删掉重建成空的；读不懂的一行报错、重建以后是空的 |
-| `crates/miyu-store/src/log/tests/marked.rs` | 从头读照到的就是写的一方记的；只读多出来的；接着读后面的段；末尾的半行不算、一个字节不动；比记的短了、不在一行开头、记的那一段没了，交回空的；序号接不上报坏了 |
-| `crates/miyu-endpoint/src/list/tests/indexed.rs` | 一批各种各样的会话（没记过工作目录的、改名置顶又去掉标题的、两段的、末尾半行的、日志坏了的、第一条不对的、空目录、一次性的子会话）：没有索引、照日志填、照索引读，列出来一字不差，只要一次性的也一样；日志坏了的不写进索引；索引没看见的几条补上、换了段的补上；截短了的、位置落在一行中间的、记的那一段没了的整份重读、写回去；没有、乱写、版本不对的起来时重建、照日志填好；用着用着读出坏了的，这一次照样列得对、重建好 |
-| `crates/miyu-endpoint/src/list/tests/speed.rs` | 量尺，标 `#[ignore]`：250 个会话、日志共 13 MB，整份读、照日志填、照索引读、几个会话多写了几条以后，各要多久 |
-| `crates/miyu-endpoint/tests/index.rs` | 造会话就有那一行；说了一轮、改标题置顶以后那一行和日志对得上，照到日志的末尾；删会话删掉那一行 |
-| `crates/miyu-endpoint/tests/index_log.rs` | `INFO session index created`、`WARN session index rebuilt`、`WARN session index not read` 这几行；读出坏了的照样列得对 |
-| `crates/miyu-session/tests/index_log.rs` | 每落一批那一行照到日志的末尾；表没了，更新失败只记一行带会话编号的 `WARN session index not updated`，会话照常说完下一轮 |
+| `crates/gqy-store/src/index/tests.rs` | 新建的是空的、下次照旧、目录 0700；一批批盖上：属主、一次性、工作目录、标题、置顶、最近一次动静、照到哪，造的时刻不变；没有这一行、照到的不是这一批之前的，不动；写回只填空的、只换照到的没变过的；删行、删没有的也成；乱写的文件、版本不对的删掉重建成空的；读不懂的一行报错、重建以后是空的 |
+| `crates/gqy-store/src/log/tests/marked.rs` | 从头读照到的就是写的一方记的；只读多出来的；接着读后面的段；末尾的半行不算、一个字节不动；比记的短了、不在一行开头、记的那一段没了，交回空的；序号接不上报坏了 |
+| `crates/gqy-endpoint/src/list/tests/indexed.rs` | 一批各种各样的会话（没记过工作目录的、改名置顶又去掉标题的、两段的、末尾半行的、日志坏了的、第一条不对的、空目录、一次性的子会话）：没有索引、照日志填、照索引读，列出来一字不差，只要一次性的也一样；日志坏了的不写进索引；索引没看见的几条补上、换了段的补上；截短了的、位置落在一行中间的、记的那一段没了的整份重读、写回去；没有、乱写、版本不对的起来时重建、照日志填好；用着用着读出坏了的，这一次照样列得对、重建好 |
+| `crates/gqy-endpoint/src/list/tests/speed.rs` | 量尺，标 `#[ignore]`：250 个会话、日志共 13 MB，整份读、照日志填、照索引读、几个会话多写了几条以后，各要多久 |
+| `crates/gqy-endpoint/tests/index.rs` | 造会话就有那一行；说了一轮、改标题置顶以后那一行和日志对得上，照到日志的末尾；删会话删掉那一行 |
+| `crates/gqy-endpoint/tests/index_log.rs` | `INFO session index created`、`WARN session index rebuilt`、`WARN session index not read` 这几行；读出坏了的照样列得对 |
+| `crates/gqy-session/tests/index_log.rs` | 每落一批那一行照到日志的末尾；表没了，更新失败只记一行带会话编号的 `WARN session index not updated`，会话照常说完下一轮 |
 
 ### 量出来的
 

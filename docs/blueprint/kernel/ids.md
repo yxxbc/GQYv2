@@ -8,23 +8,23 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/id.rs` | 十五种用字符串写的编号和名字；序号 `Seq`、回合编号 `TurnId`；内容哈希怎么算（`ContentHash::of`、`Hasher`）；会话的短编号 `SessionId::short`（施工 C-1） |
-| `crates/miyu-kernel/src/id/call.rs` | 调用编号 `CallId` |
-| `crates/miyu-kernel/src/id/job.rs` | 任务编号 `JobId`（施工 7-1；带上父会话的编号，施工 7-1 补） |
-| `crates/miyu-kernel/src/time.rs` | 时刻 `Timestamp`；时区 `UtcOffset`；给模型看的当地钟点 `local_hour` |
-| `crates/miyu-kernel/src/origin.rs` | `by`：八种，加上不认识的 |
-| `crates/miyu-kernel/src/format_error.rs` | 写法不对时报的 `FormatError`（它的样子见 `kernel/events.md`「出错」） |
-| `crates/miyu-kernel/src/raw.rs` | `by` 照 `kind` 分派的读法（`kernel/blocks.md`） |
+| `crates/gqy-kernel/src/id.rs` | 十五种用字符串写的编号和名字；序号 `Seq`、回合编号 `TurnId`；内容哈希怎么算（`ContentHash::of`、`Hasher`）；会话的短编号 `SessionId::short`（施工 C-1） |
+| `crates/gqy-kernel/src/id/call.rs` | 调用编号 `CallId` |
+| `crates/gqy-kernel/src/id/job.rs` | 任务编号 `JobId`（施工 7-1；带上父会话的编号，施工 7-1 补） |
+| `crates/gqy-kernel/src/time.rs` | 时刻 `Timestamp`；时区 `UtcOffset`；给模型看的当地钟点 `local_hour` |
+| `crates/gqy-kernel/src/origin.rs` | `by`：八种，加上不认识的 |
+| `crates/gqy-kernel/src/format_error.rs` | 写法不对时报的 `FormatError`（它的样子见 `kernel/events.md`「出错」） |
+| `crates/gqy-kernel/src/raw.rs` | `by` 照 `kind` 分派的读法（`kernel/blocks.md`） |
 
 这些东西不在内核里造：
 
 | 什么 | 谁造 |
 |---|---|
-| 会话编号 | `crates/miyu-session/src/clock.rs` 的 `new_id`：UUIDv7，一个核心进程共用一个计数器（`session/actor.md`） |
+| 会话编号 | `crates/gqy-session/src/clock.rs` 的 `new_id`：UUIDv7，一个核心进程共用一个计数器（`session/actor.md`） |
 | 时刻 | 同一个文件里的会话时钟：系统时间，到毫秒，不往回走 |
 | 序号 | 账本 `Ledger::next_seq`，追加一条给一个（`kernel/history.md`） |
 | 调用编号 | 流式累积器，照回复的序号一个个分（`kernel/request.md`） |
-| 命令编号 | 发命令的一方：协议里每个请求的 `id` 就是命令编号，例如 `miyu ask` 的 `ask-<16 位十六进制>-<序号>`（`protocol.md`、`cli/ask.md`） |
+| 命令编号 | 发命令的一方：协议里每个请求的 `id` 就是命令编号，例如 `gqy ask` 的 `ask-<16 位十六进制>-<序号>`（`protocol.md`、`cli/ask.md`） |
 | 任务编号 | 执行器的 `JobIds`：一个会话一份，照日志里用过的往下数，子会话带上自己在父会话里的编号（`session/tools.md`「派子代理」第 1 条） |
 
 内核不读时钟：纯逻辑门禁拦 `SystemTime`、`Instant`。
@@ -112,7 +112,7 @@
 | `tool` | 一次工具调用：执行时引起的 | `call_id`：调用编号 | `{"kind":"tool","call_id":"call_44_1"}` |
 | `module` | 模块，包括扩展 | `id`：模块 | `{"kind":"module","id":"memory"}` |
 | `session` | 另一个会话：照它和这个会话的关系分三种（下面） | `id`：会话编号 | `{"kind":"session","id":"0192f3a0-1111-7abc-8def-001122334455"}` |
-| `harness` | 别的 harness：经 `miyu ask --from` 发来的话（`agents.md` 第十一条，施工 7-1） | `name`：它自己报的名字 | `{"kind":"harness","name":"claude-code"}` |
+| `harness` | 别的 harness：经 `gqy ask --from` 发来的话（`agents.md` 第十一条，施工 7-1） | `name`：它自己报的名字 | `{"kind":"harness","name":"claude-code"}` |
 | `kernel` | 内核自己 | 没有 | `{"kind":"kernel"}` |
 
 `by` 是 `session` 的，照它和这个会话的关系分三种，不另加种类（施工 C-1，`cross-session.md`「谁」）：
@@ -199,7 +199,7 @@
     5. 认识的种类多出来的格不管：读进内存时丢掉，写出去不再有（日志里的原文留着，`kernel/events.md`）。
     6. 不认识的种类：整块原样留着（`By::Unknown`），写出去一字不差，空格、数字的写法都不变。
 20. 写：`kind` 在最前，其余几格照上表的先后；不认识的照原文写。
-21. 这一格取自连接，不取自正文：内核照执行器交进来的记。现在连上核心的只有本机，本机连上来的一律是管理员，`{"kind":"person","account":"admin"}`（`crates/miyu-endpoint/src/sessions.rs` 的 `admin`，`protocol.md`）。
+21. 这一格取自连接，不取自正文：内核照执行器交进来的记。现在连上核心的只有本机，本机连上来的一律是管理员，`{"kind":"person","account":"admin"}`（`crates/gqy-endpoint/src/sessions.rs` 的 `admin`，`protocol.md`）。
 
 **用得上 `by` 的地方**：
 
@@ -208,7 +208,7 @@
 | 撤销 | 跟着撤掉的几轮一起去掉的消息，只算 `person` 发来的 `message.user` | `kernel/history.md` |
 | 事实注入 | 和有效历史里同一个 `by`、同一个类别的最近一块比，一样的不再注入 | `kernel/request.md` |
 | 接着写被打断的回复 | 最后一块 `reply_cut` 事实要是 `kernel` 记的 | `kernel/request.md` |
-| `miyu undo` 的回应 | 引起那一轮的是 `person` 发来的 `message.user`，才写出那句话的第一行 | `protocol.md` |
+| `gqy undo` 的回应 | 引起那一轮的是 `person` 发来的 `message.user`，才写出那句话的第一行 | `protocol.md` |
 | 子代理的回报 | `child.reported` 的 `by` 要是那个子会话（`session`） | `kernel/history.md`（施工 7-1） |
 | 空了的通知 | `peer.idle` 的 `by`：`idle` 的是那个会话，`expired`、`gone` 的是内核 | `kernel/history.md`（施工 C-1） |
 
@@ -237,10 +237,10 @@ bad session id: must be 36 characters (got "x")
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/id/tests.rs` | 图纸上的例子读写一字不差（`samples_from_the_drawing_round_trip`、`names_from_the_drawing_round_trip`）；会话编号（`session_id_must_be_lowercase_uuid_text`）；短名字（`command_id_is_short_printable_text`、`short_names_are_opaque_but_bounded`）；路径里的名字（`account_is_like_a_linux_login_name`、`module_driver_and_fact_names_follow_the_account_rule`）；内容哈希的写法和算法（`content_hash_is_sha256_in_lowercase_hex`、`content_hash_of_known_contents`、`hashing_piece_by_piece_is_the_same_as_all_at_once`）；媒体类型、文件名、事件种类各自的规则；序号和回合编号（`seq_starts_at_one`、`turn_id_reads_like_a_seq`）；会话的短编号（`a_short_session_id_is_its_last_eight_characters`，施工 C-1）；调用编号第 9 到 12 条（`call_id_accepts_only_what_the_kernel_writes`）；任务编号第 25、26 条和排序（`job_id_accepts_only_what_the_kernel_writes`、`job_ids_sort_by_number`，施工 7-1；几段的、`under`、`last`，施工 7-1 补）；报错的样子和 80 个字符（`error_says_what_why_and_what_was_read`、`long_text_in_errors_is_cut`） |
-| `crates/miyu-session/src/clock/tests.rs` 的 `ids_made_together_differ_in_their_short_form`（施工 C-1） | 真造的编号：同一刻连造的几个前 8 位一样，短编号是最后 8 位、各不一样。内核不造编号，所以放在造编号的那一层 |
-| `crates/miyu-kernel/src/time/tests.rs` | 图纸上的例子；几个标准时刻和两头的界（`well_known_moments`、`years_outside_0000_to_9999_are_refused`）；闰年；1600 年到 2400 年一天一天数过去和换算对得上；第 13 到 17 条每种坏写法；时区的写法和范围；第 18 条当地钟点（`the_local_hour_is_the_wall_clock_to_the_hour`；23 点到 24 点 `the_last_hour_of_a_day_ends_at_24`，施工 1-13 补）；七天的写法 |
-| `crates/miyu-kernel/src/origin/tests.rs` | 八种读写一字不差、各读成自己那一种；不认识的一字不差；认识的种类多出来的格不管；第 19 条的几种坏写法；`harness` 的名字照短名字的规则（施工 7-1） |
+| `crates/gqy-kernel/src/id/tests.rs` | 图纸上的例子读写一字不差（`samples_from_the_drawing_round_trip`、`names_from_the_drawing_round_trip`）；会话编号（`session_id_must_be_lowercase_uuid_text`）；短名字（`command_id_is_short_printable_text`、`short_names_are_opaque_but_bounded`）；路径里的名字（`account_is_like_a_linux_login_name`、`module_driver_and_fact_names_follow_the_account_rule`）；内容哈希的写法和算法（`content_hash_is_sha256_in_lowercase_hex`、`content_hash_of_known_contents`、`hashing_piece_by_piece_is_the_same_as_all_at_once`）；媒体类型、文件名、事件种类各自的规则；序号和回合编号（`seq_starts_at_one`、`turn_id_reads_like_a_seq`）；会话的短编号（`a_short_session_id_is_its_last_eight_characters`，施工 C-1）；调用编号第 9 到 12 条（`call_id_accepts_only_what_the_kernel_writes`）；任务编号第 25、26 条和排序（`job_id_accepts_only_what_the_kernel_writes`、`job_ids_sort_by_number`，施工 7-1；几段的、`under`、`last`，施工 7-1 补）；报错的样子和 80 个字符（`error_says_what_why_and_what_was_read`、`long_text_in_errors_is_cut`） |
+| `crates/gqy-session/src/clock/tests.rs` 的 `ids_made_together_differ_in_their_short_form`（施工 C-1） | 真造的编号：同一刻连造的几个前 8 位一样，短编号是最后 8 位、各不一样。内核不造编号，所以放在造编号的那一层 |
+| `crates/gqy-kernel/src/time/tests.rs` | 图纸上的例子；几个标准时刻和两头的界（`well_known_moments`、`years_outside_0000_to_9999_are_refused`）；闰年；1600 年到 2400 年一天一天数过去和换算对得上；第 13 到 17 条每种坏写法；时区的写法和范围；第 18 条当地钟点（`the_local_hour_is_the_wall_clock_to_the_hour`；23 点到 24 点 `the_last_hour_of_a_day_ends_at_24`，施工 1-13 补）；七天的写法 |
+| `crates/gqy-kernel/src/origin/tests.rs` | 八种读写一字不差、各读成自己那一种；不认识的一字不差；认识的种类多出来的格不管；第 19 条的几种坏写法；`harness` 的名字照短名字的规则（施工 7-1） |
 | `xtask/src/purity.rs`（门禁「纯逻辑」） | 内核的 `src/` 里没有 `SystemTime`、`Instant`：不读时钟 |
 
 ### 出处

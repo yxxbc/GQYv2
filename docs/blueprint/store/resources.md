@@ -8,10 +8,10 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-store/src/resources.rs` | 找资源目录；读出一个人格要用的原文、子会话的场所说明 |
-| `crates/miyu-store/src/human.rs` | 读给人看的字；照说法换成一句话；换进去的字段把控制字符换成 `�`；配置那一格照 `Words` 交给配置清单（施工 8-1） |
-| `crates/miyu-store/src/env.rs` | 找资源目录要看的 `MIYU_RESOURCES`、程序的位置（`store.md`） |
-| `resources/` | 源码树里的资源目录，开发时 `MIYU_RESOURCES` 指到它 |
+| `crates/gqy-store/src/resources.rs` | 找资源目录；读出一个人格要用的原文、子会话的场所说明 |
+| `crates/gqy-store/src/human.rs` | 读给人看的字；照说法换成一句话；换进去的字段把控制字符换成 `�`；配置那一格照 `Words` 交给配置清单（施工 8-1） |
+| `crates/gqy-store/src/env.rs` | 找资源目录要看的 `GQY_RESOURCES`、程序的位置（`store.md`） |
+| `resources/` | 源码树里的资源目录，开发时 `GQY_RESOURCES` 指到它 |
 
 ### 对外的样子
 
@@ -20,7 +20,7 @@
 | `ResourceRoot::locate(env)` | 照环境快照找资源目录 |
 | `ResourceRoot::at(路径)` | 就用这个目录，测试、工具指定的 |
 | `ResourceRoot::path()` | 资源目录本身 |
-| `ResourceRoot::sources(人格)` | 读出这个人格要用的原文，交给 `miyu-policy` 拼策略快照（`policy.md`） |
+| `ResourceRoot::sources(人格)` | 读出这个人格要用的原文，交给 `gqy-policy` 拼策略快照（`policy.md`） |
 | `ResourceRoot::subagent_venue()` | 读出子会话的场所说明 `core/jobs/subagent-venue.txt`，造子会话时接在人设后面（施工 7-5）；读不了的写明是哪一份 |
 | `ResourceRoot::catalog_snapshot()` | models.dev 目录的快照在哪（`models/models-dev.json`，旁边是 `models-dev.meta.json`，施工 8-7）：约 5 MB，核心写了 `ready` 以后在后台读，读不了的照样起来（`models.md`「怎么走」第二条） |
 | `ResourceRoot::vendors()` | 认原厂的表的原文（`models/vendors.toml`，施工 8-7），怎么读由核心定 |
@@ -33,7 +33,7 @@
 | `Human::fields(编号)` | 这一句要哪些字段，照出现的先后，重复的算一次；没有这一句的是空的 |
 | `clean(字)` | 控制字符换成 `�`，别的照原样 |
 | `Human::page`、`Human::group` | 设置页的页、组的名字（施工 8-2，`config.schema`） |
-| `Human` 实现的 `miyu_config::Words` | `item(键)`：配置那一格里这一项的名字、说明、选项名；`sentence(编号, 字段)`：内核那一份 `said` 里的一句，编号前面加 `core/`，例如 `config/facts` 就是说法 `core/config/facts`（施工 8-1，`config.md`「给人看的字」） |
+| `Human` 实现的 `gqy_config::Words` | `item(键)`：配置那一格里这一项的名字、说明、选项名；`sentence(编号, 字段)`：内核那一份 `said` 里的一句，编号前面加 `core/`，例如 `config/facts` 就是说法 `core/config/facts`（施工 8-1，`config.md`「给人看的字」） |
 | `FALLBACK` | `"en"`：找不到别的语言时用的那一种 |
 
 `Face` 有四格：`name` 是显示名，例如「读取」；`subject` 是显示名后面跟哪一个参数的值，例如 `file_path`，没有的只写显示名；`icon` 是写在最前面的符号，例如 `→`；`block` 是标题下面还印一块什么：`command` 印执行命令的输出，`edits` 印改动，没有的只印标题（施工 4-11，`cli/ask.md`「每一步」）。
@@ -69,11 +69,11 @@
 | `core/` 下的 `.txt`（两份 `*-rule.txt`、`jobs/subagent-venue.txt` 除外）、`personas/<人格>/prompts/persona.md` | `ResourceRoot::sources` | 造会话时，拼进策略快照 |
 | `core/jobs/subagent-venue.txt` | `ResourceRoot::subagent_venue` | 造子会话时，接进 system（施工 7-5） |
 | `core/permission-rule.txt`、`core/local-paths-rule.txt` | `ResourceRoot::core_lines` | 造会话时，接在 system 最后（施工 2-7 补，`policy.md` 的 `with_core_lines`） |
-| `core/human/`、`software/<软件包>/human/` | `Human::load` | `miyu ask` 起来时读一次，印每一步用（`cli/ask.md`）；核心起来时照系统的语言读一次，生成配置的 Schema 和参考文件（施工 8-1，`config.md`） |
-| `software/basesystem/` 下别的 | `miyu-basesystem` | 核心起来时登记工具（`tools/*.md`） |
-| `software/mermaid/style.json` | `miyu-mermaid` | `mermaid.render` 第一次调时读一次，之后留着（施工 W-4，`mermaid.md`） |
-| `software/net/link_preview.json` | `miyu-net` | `link.preview` 第一次调时读一次，之后留着（施工 W-7，`net.md`）。是数据，不发给模型，不进登记簿 |
-| `web/web.json` | `miyu-web` 的 `Settings::load` | `miyu-web serve` 起来时读一次：出厂端口、空闲多久退出、`Content-Security-Policy`、扩展名到媒体类型（施工 W-9，`web-ui.md`）；`/media` 的票据多久不用作废、最多几张（施工 W-10）。是数据，不发给模型，不进登记簿 |
+| `core/human/`、`software/<软件包>/human/` | `Human::load` | `gqy ask` 起来时读一次，印每一步用（`cli/ask.md`）；核心起来时照系统的语言读一次，生成配置的 Schema 和参考文件（施工 8-1，`config.md`） |
+| `software/basesystem/` 下别的 | `gqy-basesystem` | 核心起来时登记工具（`tools/*.md`） |
+| `software/mermaid/style.json` | `gqy-mermaid` | `mermaid.render` 第一次调时读一次，之后留着（施工 W-4，`mermaid.md`） |
+| `software/net/link_preview.json` | `gqy-net` | `link.preview` 第一次调时读一次，之后留着（施工 W-7，`net.md`）。是数据，不发给模型，不进登记簿 |
+| `web/web.json` | `gqy-web` 的 `Settings::load` | `gqy-web serve` 起来时读一次：出厂端口、空闲多久退出、`Content-Security-Policy`、扩展名到媒体类型（施工 W-9，`web-ui.md`）；`/media` 的票据多久不用作废、最多几张（施工 W-10）。是数据，不发给模型，不进登记簿 |
 | `models/models-dev.json`、`models-dev.meta.json` | `ResourceRoot::catalog_snapshot` | 核心写了 `ready` 以后读一次，和缓存目录里后台拉的那一份挑新的（施工 8-7，`models.md`）。原样的 `api.json` 和它是什么时候拉的。是数据，不发给模型，不进登记簿 |
 | `models/models-dev.LICENSE` | 没人读 | models.dev 的 MIT 许可证原文，跟着快照一起发（`licenses.md`「资源里的第三方数据」） |
 | `models/profiles.toml` | `ResourceRoot::profiles` | 核心起来时读一次，`[npm]`（包名 → 驱动，施工 8-7）、认得出的供应商的驱动、地址、开关、一张图怎么算（施工 8-6，`models.md`）。是数据，不发给模型，不进登记簿 |
@@ -85,16 +85,16 @@
 
 **1. 找资源目录**（`ResourceRoot::locate`）
 
-1. `MIYU_RESOURCES` 设了、不是空的：就是它，别处不看。开头的 `~` 和 `MIYU_HOME` 一样照家目录接（`store.md`），找不到家目录的当相对路径报错。接好以后要是绝对路径，相对的报错；它要是一个目录，不是的报错。
-2. 没设或者是空的：看程序的真实位置（`Env` 的 `exe`，顺着链接找到的本体）。它旁边有 `resources/` 目录，就是它；不然它的上一级下有 `share/miyu/` 目录，就是它。
+1. `GQY_RESOURCES` 设了、不是空的：就是它，别处不看。开头的 `~` 和 `GQY_HOME` 一样照家目录接（`store.md`），找不到家目录的当相对路径报错。接好以后要是绝对路径，相对的报错；它要是一个目录，不是的报错。
+2. 没设或者是空的：看程序的真实位置（`Env` 的 `exe`，顺着链接找到的本体）。它旁边有 `resources/` 目录，就是它；不然它的上一级下有 `share/gqy/` 目录，就是它。
 3. 都没有：报错，写明找过的两处。连程序在哪都不知道的，说不知道。
 4. 不猜别的位置。
 
 | 装法 | 程序 | 找到的资源目录 |
 |---|---|---|
-| 安装脚本 | `~/.local/lib/miyu/miyu` | 旁边的 `~/.local/lib/miyu/resources/` |
-| deb、rpm、AUR、Homebrew | `<前缀>/bin/miyu` | 上一级下的 `<前缀>/share/miyu/` |
-| 开发 | `target/debug/miyu` | 设 `MIYU_RESOURCES` 指到源码树的 `resources/` |
+| 安装脚本 | `~/.local/lib/gqy/gqy` | 旁边的 `~/.local/lib/gqy/resources/` |
+| deb、rpm、AUR、Homebrew | `<前缀>/bin/gqy` | 上一级下的 `<前缀>/share/gqy/` |
+| 开发 | `target/debug/gqy` | 设 `GQY_RESOURCES` 指到源码树的 `resources/` |
 
 **2. 读出一个人格要用的原文**（`ResourceRoot::sources`）
 
@@ -131,7 +131,7 @@
 3. 读得到却读不懂的，报错，写明是哪一份：不是 JSON、写法不对（有不认识的格、工具少了 `name`、类型不对）、哪一句的模板坏了（写明是哪一句）。
 4. `said` 里每一句的编号，前面加上这一份在资源目录里的位置：内核的加 `core/`，软件包的加 `software/<软件包>/`。例如 `core/human/zh.json` 里的 `tool-results/unattended`，就是说法 `core/tool-results/unattended`。
 5. `tools` 合成一张表：后读的盖掉先读的同名工具。`config` 的项、页、组也各合成一张表，后读的盖掉先读的（现在只有内核那一份写它）。
-6. 语言的编号由头交进来：`miyu ask` 交 `zh` 或 `en`（`cli/ask.md`）。
+6. 语言的编号由头交进来：`gqy ask` 交 `zh` 或 `en`（`cli/ask.md`）。
 7. **一个的时候说单数**（施工 4-5 再补）：一句说法管着的数是 1 时，编号多接一段 `/one`，例如 `read/lines/one`；发说法的那一处自己挑，是 1 就发 `X/one`，别的数照旧发 `X`，模板本身不挑单复数（「模板只做字段替换」，`05-内核接口.md`）。读完一种语言的全部文件以后，凡是有 `X` 没有 `X/one` 的，拿 `X` 的内容原样补一份 `X/one`：英文那种需要单数的字段后面紧跟着可数名词的（`{count}`、`{total}` 这类），自己写了 `X/one` 那一句，照它；中文、日文不挑单复数，没写，退到这条规矩补出来，和 `X` 一个字不差。软件包自己写了 `X/one` 的，不补（已经有了）。
 
    因为是补在全部文件读完以后，`human.get`（施工 W-1）交出去的 `said_entries()` 里，每种语言都能找到 `X/one`，不止写了它的那一种。
@@ -181,28 +181,28 @@
 
 | 类型 | 哪一种 | 说的话 |
 |---|---|---|
-| `ResourceError` | `Relative` | `MIYU_RESOURCES 要写绝对路径，现在是 <路径>` |
-| | `Missing` | `MIYU_RESOURCES 指的 <路径> 不是一个目录` |
-| | `NotFound`，找过两处 | `找不到资源目录：<程序旁边的 resources>、<上一级的 share/miyu> 都没有。开发时设 MIYU_RESOURCES 指到源码树的 resources/` |
-| | `NotFound`，不知道程序在哪 | `找不到资源目录：不知道程序在哪。开发时设 MIYU_RESOURCES 指到源码树的 resources/` |
+| `ResourceError` | `Relative` | `GQY_RESOURCES 要写绝对路径，现在是 <路径>` |
+| | `Missing` | `GQY_RESOURCES 指的 <路径> 不是一个目录` |
+| | `NotFound`，找过两处 | `找不到资源目录：<程序旁边的 resources>、<上一级的 share/gqy> 都没有。开发时设 GQY_RESOURCES 指到源码树的 resources/` |
+| | `NotFound`，不知道程序在哪 | `找不到资源目录：不知道程序在哪。开发时设 GQY_RESOURCES 指到源码树的 resources/` |
 | `SourceError` | `Persona` | `persona id "<编号>" is not valid: it starts with a lowercase letter and has only lowercase letters, digits, - and _` |
 | | `Read` | `cannot read <路径>: <系统的原话>` |
 | `HumanError` | | `<哪一份>: <为什么>`；模板坏了的，为什么是 `<哪一句>: bad template: <哪里坏了>` |
 
-`ResourceError` 给人看（核心起不来时交给头、`miyu ask` 印出来），是中文，等界面语言那一步；`SourceError` 只进运行日志，是英文（施工 4-9 再补四中：原来是中文）。
+`ResourceError` 给人看（核心起不来时交给头、`gqy ask` 印出来），是中文，等界面语言那一步；`SourceError` 只进运行日志，是英文（施工 4-9 再补四中：原来是中文）。
 
 - 核心起来时找不到资源目录，起不来，原因交给头（`core.md`）。
 - 造会话时读不出人格：编号不合写法的，协议端点回 `bad_params`；读不了文件的，回 `unknown_persona`（`protocol.md`）。
-- `miyu ask` 读给人看的字出错、找不到资源目录，都当没有字（`cli/ask.md`）。
+- `gqy ask` 读给人看的字出错、找不到资源目录，都当没有字（`cli/ask.md`）。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-store/src/resources/tests.rs` | `MIYU_RESOURCES` 优先、开头的 `~` 照家目录接、要是绝对路径、要是目录；程序旁边的 `resources/`、上一级的 `share/miyu/`；都没有时写明找过哪两处、不知道程序在哪；读出软件工程师的人设和随核心附带的字（会话编号的模板是它那份文件，施工 1-13 再补；切了级别以后的权限那一份也是，施工 2-7 补）；人设文件缺了写明是哪一份；不合写法的编号拒绝；子会话的场所说明是它自己那份文件，没有的写明是哪一份（施工 7-5）；核心的几行是它们那两份文件，没有的写明是哪一份（施工 2-7 补） |
-| `crates/miyu-store/tests/human.rs` | 内核给模型的每一句（`core/tool-results/`、`core/permissions/`）两种语言都有给人看的一句，要的字段不多于给模型的；照语言换成字，没有的语言照英文，没有这一句、少了字段的换不出；工具的显示名、后面跟的参数、符号、下面那一块，`block` 写别的读不懂；控制字符换掉、引号反斜杠照原样；什么都没有不算错，只有英文的照英文，读不懂的写明是哪一份、哪一句；配置那一格照 `Words` 交出去、句子的编号加 `core/`、写错了说是哪一份（施工 8-1）；中文、日文没写 `X/one` 的，退到 `X` 的字，英文自己写的不一样；每种语言的 `said_entries()` 都交得出清单上每一句的 `/one`；软件包自己写了 `X/one` 的，补的规矩不盖掉它（施工 4-5 再补） |
-| `crates/miyu-store/tests/human_languages.rs`（施工 4-5 补；4-5 再补加了单数的门禁） | 内核和每个软件包都有中文、英文、日文三份，说法的键、每一句要的字段、工具的样子（显示名以外）、配置那一格的项和选项、页、组（施工 8-1）都和英文那一份一样（没写 `X/one` 的按 `Human::load` 的规矩补齐了再比）；每件工具都有显示名，配置的名字、说明都不空；日文照语言换得出（找不到的语言会退回英文，所以直接查文件）；门禁：英文 `{count}`、`{total}` 后面紧跟着词的每一句，都有 `/one` 那一句对着 |
-| `crates/miyu-store/tests/snapshot.rs` | 从源码树的资源目录拼出软件工程师的快照 |
+| `crates/gqy-store/src/resources/tests.rs` | `GQY_RESOURCES` 优先、开头的 `~` 照家目录接、要是绝对路径、要是目录；程序旁边的 `resources/`、上一级的 `share/gqy/`；都没有时写明找过哪两处、不知道程序在哪；读出软件工程师的人设和随核心附带的字（会话编号的模板是它那份文件，施工 1-13 再补；切了级别以后的权限那一份也是，施工 2-7 补）；人设文件缺了写明是哪一份；不合写法的编号拒绝；子会话的场所说明是它自己那份文件，没有的写明是哪一份（施工 7-5）；核心的几行是它们那两份文件，没有的写明是哪一份（施工 2-7 补） |
+| `crates/gqy-store/tests/human.rs` | 内核给模型的每一句（`core/tool-results/`、`core/permissions/`）两种语言都有给人看的一句，要的字段不多于给模型的；照语言换成字，没有的语言照英文，没有这一句、少了字段的换不出；工具的显示名、后面跟的参数、符号、下面那一块，`block` 写别的读不懂；控制字符换掉、引号反斜杠照原样；什么都没有不算错，只有英文的照英文，读不懂的写明是哪一份、哪一句；配置那一格照 `Words` 交出去、句子的编号加 `core/`、写错了说是哪一份（施工 8-1）；中文、日文没写 `X/one` 的，退到 `X` 的字，英文自己写的不一样；每种语言的 `said_entries()` 都交得出清单上每一句的 `/one`；软件包自己写了 `X/one` 的，补的规矩不盖掉它（施工 4-5 再补） |
+| `crates/gqy-store/tests/human_languages.rs`（施工 4-5 补；4-5 再补加了单数的门禁） | 内核和每个软件包都有中文、英文、日文三份，说法的键、每一句要的字段、工具的样子（显示名以外）、配置那一格的项和选项、页、组（施工 8-1）都和英文那一份一样（没写 `X/one` 的按 `Human::load` 的规矩补齐了再比）；每件工具都有显示名，配置的名字、说明都不空；日文照语言换得出（找不到的语言会退回英文，所以直接查文件）；门禁：英文 `{count}`、`{total}` 后面紧跟着词的每一句，都有 `/one` 那一句对着 |
+| `crates/gqy-store/tests/snapshot.rs` | 从源码树的资源目录拼出软件工程师的快照 |
 
 ### 出处
 

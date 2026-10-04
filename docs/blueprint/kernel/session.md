@@ -10,34 +10,34 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/session.rs` | `Session`：造会话、分派输入、收命令、造事件、落盘以后推送和回应 |
-| `crates/miyu-kernel/src/session/input.rs`、`action.rs` | 输入、命令；动作、结局、原因码 |
-| `crates/miyu-kernel/src/session/policy.rs`、`recent.rs` | 冻结在会话上的策略；最近接受的命令编号 |
-| `crates/miyu-kernel/src/session/turn.rs`、`call.rs`、`spans.rs`、`retry.rs` | 开回合、发请求、结束回合；收回复、记 `model.called`、回复每一块的起止（施工 2-3 补）；出错再来 |
-| `crates/miyu-kernel/src/session/compaction.rs` | 压缩这一步：到没到线、替代到哪、发摘要请求、收回来写 `context.compacted`（`compaction.md`，施工 6-2 上） |
-| `crates/miyu-kernel/src/session/manual.rs` | 手动压缩单开的那一轮：收命令、替代到哪、那一轮发摘要请求（`compaction.md` 第七条，施工 6-8） |
-| `crates/miyu-kernel/src/session/redo.rs` | 重做：撤最后一轮、重发开它的话、开新的一轮（`history.md`「重做」，施工 4-7 再补） |
-| `crates/miyu-kernel/src/session/clear.rs` | 清空上下文单开的那一轮：收命令、上下文是不是本来就空、一批写开头、空的检查点、结束（`compaction.md` 第十四条，施工 6-8 补） |
-| `crates/miyu-kernel/src/session/recap.rs` | 回顾：收命令、照落了盘的有效历史组装、交回上一句、并进在路上的、收回报、记 `model.called` 和 `session.recapped`（「回顾」，施工 3-8 四补） |
-| `crates/miyu-kernel/src/session/aside.rs` | 辅助请求在路上的那一次（回顾、起标题共用，施工 3-8 五补从 `recap.rs` 分出来）：照用途和名字认回报、收增量、说完了算出正文和那条 `model.called`；不带回合编号的事件怎么造 |
-| `crates/miyu-kernel/src/session/sight.rs` | 替它看图：什么时候转述、出 `Describe`、收回来记 `image.described`、这个会话转述过哪些图、把转述放进请求、人这一轮最近说的那一句（「替它看图」，施工 8-17） |
-| `crates/miyu-kernel/src/session/title.rs` | 起标题：该不该起（从日志一条条算）、落了盘以后发请求、收回来记 `model.called` 和 `session.meta_changed`、标题怎么截（「起标题」，施工 3-8 五补） |
-| `crates/miyu-kernel/src/session/replies.rs` | 命令的回应什么时候回：记下编号、等事件落盘、接受过的编号再来（施工 3-8 四补从 `session.rs` 挪出来） |
-| `crates/miyu-kernel/src/session/limits.rs` | 给头看的限额 `ContextLimits`：窗口、压缩线（施工 6-3 补）；在跑的回合和它的 `cause`（`turn_cause()`，施工 8-9） |
-| `crates/miyu-kernel/src/session/tools.rs`、`step.rs` | 这一步的调用：先查、派、收结果、补结果；每个调用走到了哪、轮到谁 |
-| `crates/miyu-kernel/src/session/queue.rs`、`interrupt.rs` | 排队的消息；打断 |
-| `crates/miyu-kernel/src/session/jobs.rs` | 回报到了：记下，开一轮、排着还是只记下（施工 7-2，`agents.md` 第三条）；子会话重交的认出来（施工 7-6） |
-| `crates/miyu-kernel/src/session/messages.rs` | 子代理的留言到了：认出是这个会话派的哪个子代理，照回报的规矩记下、开不开一轮；交给执行器的派出去的子代理（施工 7-7，`agents.md` 第六条）；别的 harness 发来的话照同一条路走（施工 7-10） |
-| `crates/miyu-kernel/src/session/peers.rs` | 别的会话发来的话过防刷屏：一字不差的、限速、没听到的上限（施工 C-2，`cross-session.md` 第五条），过了的照同一条路走。空了的通知：收、作废、不在了，「空了」、通知那一行、在等哪几个（施工 C-6，`cross-session.md` 第六条） |
-| `crates/miyu-kernel/src/session/report.rs` | 向上回报：子会话欠不欠着父会话一份回报、什么时候报、报什么、正文怎么截（施工 7-6，`agents.md` 第二条、第八条） |
-| `crates/miyu-kernel/src/session/permission.rs` | 切权限级别、请求之前查事实 |
-| `crates/miyu-kernel/src/session/meta.rs` | 改标题、置顶；现在的标题、置顶（施工 3-8 三补） |
-| `crates/miyu-kernel/src/session/configure.rs` | 换模型：会话的引用和最近一次换模型写在第几条（`Reference`），收命令，回合开始退回默认的记下（施工 8-10，`models.md`「怎么走」第六条）。8-18 曾在这里加过会话给每个模型记的思考强度，8-18（补）去掉了 |
-| `crates/miyu-kernel/src/session/send.rs` | 发一条消息（施工 8-10 从 `session.rs` 挪出来，那边放不下了） |
-| `crates/miyu-kernel/src/session/restart.rs`、`load.rs` | 有计划的重启；从日志载入（认出哪次压缩还算数，`history.md`「载入」）、崩了的收尾、重启后接着干 |
-| `crates/miyu-kernel/src/accumulate.rs` | 增量拼成回复 |
-| `crates/miyu-kernel/src/tool.rs`、`tool/texts.rs` | 访问类别、参数修正；内核替工具写的几句 |
-| `crates/miyu-kernel/src/facts.rs` | 环境、权限、会话编号三块事实（权限切了用切换那一份，施工 2-7 补），回复被截断的那一句 |
+| `crates/gqy-kernel/src/session.rs` | `Session`：造会话、分派输入、收命令、造事件、落盘以后推送和回应 |
+| `crates/gqy-kernel/src/session/input.rs`、`action.rs` | 输入、命令；动作、结局、原因码 |
+| `crates/gqy-kernel/src/session/policy.rs`、`recent.rs` | 冻结在会话上的策略；最近接受的命令编号 |
+| `crates/gqy-kernel/src/session/turn.rs`、`call.rs`、`spans.rs`、`retry.rs` | 开回合、发请求、结束回合；收回复、记 `model.called`、回复每一块的起止（施工 2-3 补）；出错再来 |
+| `crates/gqy-kernel/src/session/compaction.rs` | 压缩这一步：到没到线、替代到哪、发摘要请求、收回来写 `context.compacted`（`compaction.md`，施工 6-2 上） |
+| `crates/gqy-kernel/src/session/manual.rs` | 手动压缩单开的那一轮：收命令、替代到哪、那一轮发摘要请求（`compaction.md` 第七条，施工 6-8） |
+| `crates/gqy-kernel/src/session/redo.rs` | 重做：撤最后一轮、重发开它的话、开新的一轮（`history.md`「重做」，施工 4-7 再补） |
+| `crates/gqy-kernel/src/session/clear.rs` | 清空上下文单开的那一轮：收命令、上下文是不是本来就空、一批写开头、空的检查点、结束（`compaction.md` 第十四条，施工 6-8 补） |
+| `crates/gqy-kernel/src/session/recap.rs` | 回顾：收命令、照落了盘的有效历史组装、交回上一句、并进在路上的、收回报、记 `model.called` 和 `session.recapped`（「回顾」，施工 3-8 四补） |
+| `crates/gqy-kernel/src/session/aside.rs` | 辅助请求在路上的那一次（回顾、起标题共用，施工 3-8 五补从 `recap.rs` 分出来）：照用途和名字认回报、收增量、说完了算出正文和那条 `model.called`；不带回合编号的事件怎么造 |
+| `crates/gqy-kernel/src/session/sight.rs` | 替它看图：什么时候转述、出 `Describe`、收回来记 `image.described`、这个会话转述过哪些图、把转述放进请求、人这一轮最近说的那一句（「替它看图」，施工 8-17） |
+| `crates/gqy-kernel/src/session/title.rs` | 起标题：该不该起（从日志一条条算）、落了盘以后发请求、收回来记 `model.called` 和 `session.meta_changed`、标题怎么截（「起标题」，施工 3-8 五补） |
+| `crates/gqy-kernel/src/session/replies.rs` | 命令的回应什么时候回：记下编号、等事件落盘、接受过的编号再来（施工 3-8 四补从 `session.rs` 挪出来） |
+| `crates/gqy-kernel/src/session/limits.rs` | 给头看的限额 `ContextLimits`：窗口、压缩线（施工 6-3 补）；在跑的回合和它的 `cause`（`turn_cause()`，施工 8-9） |
+| `crates/gqy-kernel/src/session/tools.rs`、`step.rs` | 这一步的调用：先查、派、收结果、补结果；每个调用走到了哪、轮到谁 |
+| `crates/gqy-kernel/src/session/queue.rs`、`interrupt.rs` | 排队的消息；打断 |
+| `crates/gqy-kernel/src/session/jobs.rs` | 回报到了：记下，开一轮、排着还是只记下（施工 7-2，`agents.md` 第三条）；子会话重交的认出来（施工 7-6） |
+| `crates/gqy-kernel/src/session/messages.rs` | 子代理的留言到了：认出是这个会话派的哪个子代理，照回报的规矩记下、开不开一轮；交给执行器的派出去的子代理（施工 7-7，`agents.md` 第六条）；别的 harness 发来的话照同一条路走（施工 7-10） |
+| `crates/gqy-kernel/src/session/peers.rs` | 别的会话发来的话过防刷屏：一字不差的、限速、没听到的上限（施工 C-2，`cross-session.md` 第五条），过了的照同一条路走。空了的通知：收、作废、不在了，「空了」、通知那一行、在等哪几个（施工 C-6，`cross-session.md` 第六条） |
+| `crates/gqy-kernel/src/session/report.rs` | 向上回报：子会话欠不欠着父会话一份回报、什么时候报、报什么、正文怎么截（施工 7-6，`agents.md` 第二条、第八条） |
+| `crates/gqy-kernel/src/session/permission.rs` | 切权限级别、请求之前查事实 |
+| `crates/gqy-kernel/src/session/meta.rs` | 改标题、置顶；现在的标题、置顶（施工 3-8 三补） |
+| `crates/gqy-kernel/src/session/configure.rs` | 换模型：会话的引用和最近一次换模型写在第几条（`Reference`），收命令，回合开始退回默认的记下（施工 8-10，`models.md`「怎么走」第六条）。8-18 曾在这里加过会话给每个模型记的思考强度，8-18（补）去掉了 |
+| `crates/gqy-kernel/src/session/send.rs` | 发一条消息（施工 8-10 从 `session.rs` 挪出来，那边放不下了） |
+| `crates/gqy-kernel/src/session/restart.rs`、`load.rs` | 有计划的重启；从日志载入（认出哪次压缩还算数，`history.md`「载入」）、崩了的收尾、重启后接着干 |
+| `crates/gqy-kernel/src/accumulate.rs` | 增量拼成回复 |
+| `crates/gqy-kernel/src/tool.rs`、`tool/texts.rs` | 访问类别、参数修正；内核替工具写的几句 |
+| `crates/gqy-kernel/src/facts.rs` | 环境、权限、会话编号三块事实（权限切了用切换那一份，施工 2-7 补），回复被截断的那一句 |
 | `resources/core/tool-results/`、`resources/core/facts/reply-cut.txt` | 给模型看的字 |
 | `resources/core/human/{zh,en}.json` | 内核写的结果给人看的说法 |
 
@@ -165,15 +165,15 @@
 
 | 格 | 是什么 | 现在交进来的 |
 |---|---|---|
-| `assembler` | 组装请求的做法（`Assembler`，要能挪到别的线程） | `miyu-assemble` 的默认组装 |
+| `assembler` | 组装请求的做法（`Assembler`，要能挪到别的线程） | `gqy-assemble` 的默认组装 |
 | `facts` | 事实的模板：环境、权限、会话编号、切了级别以后的权限、回复被截断 | `resources/core/facts/` 的五份；以前造的快照没有会话编号那一份的，没有：不注入那一块（施工 1-13 再补）；没有切换那一份的，没有：切了照旧写平常那一份（施工 2-7 补） |
 | `tools` | 工具名到 `ToolRule { access, parameters }`：访问类别、参数格式 | 快照的工具面 |
-| `step_limit` | 一个回合最多请求几次模型，`None` 不限 | `None`（`miyu-policy` 的 `compose`） |
+| `step_limit` | 一个回合最多请求几次模型，`None` 不限 | `None`（`gqy-policy` 的 `compose`） |
 | `tool_texts` | 内核替工具写的 13 句（`ToolTexts`） | `resources/core/tool-results/` |
 | `attended` | 有没有人能确认、回答 | 造会话的那个连接握手时的 `caps.input` |
 | `resumes` | 有计划的重启打断了一轮，连着接着干几次 | 3 |
 | `reports` | 子会话回报的正文怎么截（`Reports`，施工 7-6）：`chars` 最多几个字，`omitted` 截在中间的那一行（字段 `count`） | 快照里的 `jobs.report_chars`（出厂 30000）、`core/jobs/subagent-omitted.txt`；以前造的快照没有的，照出厂的数、空的那一行 |
-| `compaction` | 压缩用的数：`reserve_cap` 输出预留的上限、`margin` 余量、`tail` 尾巴的上限、`price` 估算时一张图、一个文件各算多少；`None` 不主动压 | 20000、13000、16000、各 2000（`miyu-policy` 的 `compose`，施工 6-2）；以前造的快照里没有的是 `None` |
+| `compaction` | 压缩用的数：`reserve_cap` 输出预留的上限、`margin` 余量、`tail` 尾巴的上限、`price` 估算时一张图、一个文件各算多少；`None` 不主动压 | 20000、13000、16000、各 2000（`gqy-policy` 的 `compose`，施工 6-2）；以前造的快照里没有的是 `None` |
 | `titles` | 起标题的两个数（`Titles`，施工 3-8 五补）：`tries` 一个会话最多试几次，`chars` 标题最多几个字；`None` 不起标题 | 快照里的 `title.tries`、`title.chars`（出厂 2、50），快照里还得有起标题的字；以前造的快照里没有的是 `None` |
 | `peers` | 别的会话发来的话怎么防刷屏（`Peers`，施工 C-2）：`burst` 同一个发话方一个窗口里最多几句、`window` 窗口多少秒、`unread` 没听到的最多几句 | 快照里的 `peers`（出厂 5、600、50，`cross-session.md`「对外的样子」）；以前造的快照没有的，照出厂的数 |
 
@@ -409,7 +409,7 @@
 1. **什么时候起**：「落了盘」里，一轮的 `turn.ended` 落了盘，这一轮有她带正文的回复（最近一条正文去掉空白不是空的回复在这一轮），并且：
    - 标题从没动过：日志里没有带 `title` 的 `session.meta_changed`，人改的、去掉的、内核起的都算动过。只置顶的不算。
    - 不是子会话（`session.created` 带 `parent`）：派它时的标题就是它的名字。
-   - 不是一次性的会话（`oneshot`，`miyu ask` 开的）：多半是脚本在跑，每一轮多一次请求不划算（2026-10-01 项目主人定）。
+   - 不是一次性的会话（`oneshot`，`gqy ask` 开的）：多半是脚本在跑，每一轮多一次请求不划算（2026-10-01 项目主人定）。
    - 试过的次数不到策略里的 `titles.tries`（出厂 2）：从日志数，`purpose` 是 `title` 的 `model.called` 有几条，载入时照样数回来。
    - 没有一次在路上；没收到过「要重启了」；策略里有 `titles`。
 2. 照这一刻落了盘的有效历史交组装器组装（`Assembler::title`），它同时交回照到的那一条：第一个回答的序号。组装不出来的（快照里没有起标题的字、有效历史里没有带正文的回答）不起，也不算试过。
@@ -501,7 +501,7 @@
 | `cancelled-before` | 打断时还没跑过的 | `cancelled` | `The call was cancelled before it ran: the user interrupted the turn.` |
 | `cancelled-running` | 打断时跑到一半的 | `cancelled` | `The call was cancelled while it was running: the user interrupted the turn. It may have been partly done.` |
 | `skipped` | 急着插话，还没跑的；等人确认时来了一句话 | `skipped` | `The call was skipped: the user sent a new message.` |
-| `restarted` | 有计划的重启、崩了收尾时没有结果的 | `cancelled` | `The call was cancelled: Miyu restarted before it finished. It may have been partly done.` |
+| `restarted` | 有计划的重启、崩了收尾时没有结果的 | `cancelled` | `The call was cancelled: GQY restarted before it finished. It may have been partly done.` |
 
 回复被截断以后再来的那一块事实（`resources/core/facts/reply-cut.txt`，`kind` 是 `reply_cut`）：
 
@@ -537,57 +537,57 @@
 | `cancelled-before` | 打断了，没跑 | interrupted before it ran |
 | `cancelled-running` | 打断了，跑到一半 | interrupted while running |
 | `skipped` | 跳过了 | skipped |
-| `restarted` | Miyu 重启了，没跑完 | Miyu restarted before it finished |
+| `restarted` | GQY 重启了，没跑完 | GQY restarted before it finished |
 
-原因码给人看的那句话由核心照头的语言配（`crates/miyu-endpoint/src/refusal.rs`，`protocol.md`）。`unknown_level` 还没配专门的话，照「被拒绝了。」「Refused.」说（确认、提问的五个见 `asking.md`）。
+原因码给人看的那句话由核心照头的语言配（`crates/gqy-endpoint/src/refusal.rs`，`protocol.md`）。`unknown_level` 还没配专门的话，照「被拒绝了。」「Refused.」说（确认、提问的五个见 `asking.md`）。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/session/tests.rs` | 造会话落了盘才回应；消息落了盘才回应；空消息；同一个编号落盘前后再来；拒绝过的重新判；落盘到一半只回应落全了的；落盘超出追加过的；只记最近 1024 个 |
-| `crates/miyu-kernel/src/session/tests/limits.rs` | 给头看的限额（施工 6-3 补）：没交过的两格都没有；压缩线照窗口、最大输出算（最大输出比预留的上限大、小、没有）；窗口太小没有压缩线；策略里没有压缩的只有窗口；再交一次照新的 |
-| `crates/miyu-kernel/src/session/tests/idle.rs` | 有回合、`turn.ended` 没落盘都不算空闲（改回文件时不算空闲在 `session/tests/restore.rs`，`history.md`） |
-| `crates/miyu-kernel/src/session/tests/turn.rs` | 空闲时消息和回合的开头同一批；挂接点等开头落盘；挂接点跑完才请求；注入照交回的先后；中途的消息并进这一轮；挂接点跑的时候来的消息，落了盘才请求；对不上的挂接点结果不理；报的最后一个环境才注入 |
-| `crates/miyu-kernel/src/session/tests/dirs.rs` | 加进来的目录（施工 5-10 上）：`turn.started` 带着它、没有就不写这一格；判权限、派工具都带上；回合中途报来的下一轮才用 |
-| `crates/miyu-kernel/src/session/tests/reply.rs` | 一整轮；`model.called` 的每一格；下一轮只注入变了的；不再来的错结束回合、留半截；出错的半截里收全的调用也不留；等一会儿再来；没发出去的没有端点和用时；执行器违约按出错算；过时的回报不理；私有数据留在回复里不推；有工具调用的回合不结束 |
-| `crates/miyu-kernel/src/session/tests/difference.rs` | 只是接着加的没有第一处不同；改了 system 的是第一处不同 |
-| `crates/miyu-kernel/src/session/tests/tools.rs` | 一步跑完再请求；非只读的一个一个来；没有的工具、坏参数当场回；修正只用在执行上；步数上限在最后一步跑完后结束；推工具的输出；对不上的结果不理；回合带着开始时的工作目录 |
-| `crates/miyu-kernel/src/session/tests/redo.rs`、`scenario/redo.rs` | 重做（施工 4-7 再补，`history.md`「守着它的」） |
-| `crates/miyu-kernel/src/session/tests/recap.rs`、`scenario/recap.rs`（施工 3-8 四补） | 回顾：单独一次请求，两条不带回合编号、不开回合，回应那一句（去掉前后空白、思考不要），`model.called` 带 `purpose`、`seen` 是照到的、没有第一处不同和块的起止；没有新内容的交回上一句、不请求，说了新的一句再请求；一个回复都没有（说了、没回复的也算）拒绝；出错、只有思考、只有工具调用的没写成、不再来；在路上又要的一起回、只请求一次；照落了盘的算、那一句落了盘才回；对不上的回报不理、发出去了报两次认第一次；还没发出去就来增量、没发出去就说完、增量对不上的没写成；同一个编号再来就是再要一次；有回合在进行时照收，这一轮照常、之后的主请求照旧接着上一次主请求往后长；排着的那句照样撤得回；只记下的那句回顾照到了、手动压缩照样留着它；撤掉后来的一轮照撤完的再请求，前两句留在日志里 |
-| `crates/miyu-kernel/src/session/tests/title.rs`、`scenario/title.rs`（施工 3-8 五补） | 起标题：`turn.ended` 落了盘才起、照落了盘的有效历史组装、回合结束的挂接点照跑；第一轮答完起一次，两条都是内核记的、不带回合编号和 `cause`，标题取第一行，`model.called` 带 `purpose`、`seen` 是第一个回答、没有第一处不同和块的起止，起过的不再起，会话上的标题跟着换；超过 50 个字截到 50、去掉末尾空白、不加省略号，按字数不按字节；人起过名、去掉过的不起，只置顶的照起；子会话、一次性的会话不起；没答出正文的那一轮不起，下一轮答了照第一轮的算；出错、只有思考的算没起成，两次就不再起；试过几次载入以后照日志数，在路上丢了的不算；在路上时人改了名的只记请求、不盖掉；一次只有一个在路上；撤掉那一轮标题照样在；要重启了不起；名字、用途对不上的回报不理，说完了再报一次不理，没有命令等着它 |
-| `crates/miyu-kernel/src/session/tests/clear.rs`、`scenario/clear.rs` | 清空（施工 6-8 补）：一批三条、不请求模型、不跑回合开始的挂接点、跑回合结束的，落了盘才回应；有回合在进行、本来就空（没说过话、刚清过）的拒绝，清完又说了一句的收；只有一份摘要、只有一条回报也清；记在一边的回报跟着清掉；同一个编号再来；下一轮只看到清空以后的、事实照常注入；撤掉回到清空以前、恢复又清空；暂停着也收、清完到线照常自动压；载入以后一样 |
-| `crates/miyu-kernel/src/session/tests/compact.rs`、`scenario/manual.rs` | 手动压缩（施工 6-8）：空闲时收、开的那一轮没有触发、不注入、不跑挂接点，落了盘才回应；有回合在进行时拒绝（改回文件时拒绝在 `restore.rs`）；没有能压的四种；摘要请求带着要求；成了同一批结束、排着的接着开；失败不数不暂停；重试同一个 N；打断、重启；暂停着也收、成了以后到线照常自动压 |
-| `crates/miyu-kernel/src/session/tests/scenario/reports.rs`、`scenario/reports_undo.rs`（施工 7-2） | 回报：闲着时开一轮、`trigger`、`cause` 是它，回应只附它；`by`、`cause` 照交来的，不带回合编号；正忙时下一步听到、不另开；最后一步里到的接着开；和排着的消息比由后来的开；只记下的六种不开、下一轮开始时在请求里；被人停掉的照样开；打断时不撤回、不接着开，接着发的由排着的消息开；没人看着的一次性会话只记下，有头订阅着照常开、头退了回合结束也不开；对不上的拒绝、不理；能恢复撤销时只记下，恢复以后由最后那条开、回应不附它；派它的那一轮撤掉了的不开，恢复了跟着回来；人说了下一句一起听到；载入不开轮、载入以后照样能由恢复开、载入以后当没人看着，回合里到的、开过一轮的载入以后不算记在一边的；派它的那一轮还撤着的，恢复了后来那一轮也不开；手动压缩那一轮也清掉记在一边的；派它的那一条压缩掉了、撤掉压缩读回重建以后照常开；恢复要改回文件的，改完了才由它开；由回报接着开的一轮撤掉，带走上一轮排着的话、回报留着；读回日志时到的后台命令结束，读回来记了撤销再记 |
-| `crates/miyu-kernel/src/session/tests/scenario/models.rs`（施工 8-6、8-9、8-10） | 端口当场说完的 `no_model`：这一轮以出错结束，不再来，不推重试的状态，照这个名字写进日志；端口说换了端点的（施工 8-9）不管分类当场再来（等 0 毫秒）、照它说的等、数进 5 次，状态带 `failover`；`cooling` 照它说的等最早恢复的、没说的照退避、超过 2 分钟的不等，照这个名字写进日志；换模型（施工 8-10）：记一条、一样的不记、下一个回合开始交出去，回合进行中换的下一轮才交，撤掉的回合里换的也算、崩了载入照样算，退回默认的记在注入前面、`cause` 是回合的、以后钉在退回的上面，`models.chat` 也没有的不记 |
-| `crates/miyu-kernel/src/session/tests/scenario/vision.rs`（施工 8-17） | 替它看图：看不了图的先转述、内核记一条不带回合编号、`cause` 是这一轮的转述、落了盘才请求、请求的 `described` 是它；同一张图只转述一次，第二轮、崩了载入、撤销、压缩以后照样用；看得了图的、没交过限额的不转述；没成的不记、这一轮不再试、主请求照发、下一轮再试；转述带人这一轮最近说的那一句，这一轮只发了图的不带上一轮的话；看图时打断直接结束、回来的照样记；看图时切了级别，事实排在转述后面、请求前面；快照里没有转述的字的不转述 |
-| `crates/miyu-kernel/src/session/tests/random.rs` 的替它看图（施工 8-17，`random/sighting.rs`、`watch/sight.rs`） | 八个种子里的一个：看不了图才转述，转述过的、在路上的不再转；转述是内核记的、不带回合编号、就是送回去的那一句；请求的 `described` 正好是日志里这几张图的；看不了图的主请求里的图都转述过或者这一轮没成；对不上的转述不理；回合过去了才回来的照样记 |
-| `crates/miyu-kernel/src/session/tests/configure.rs`（施工 8-10） | 换模型记一条、落了盘才回应、同一个编号再来不再记；一样的当场回、编号照记；造会话记下的引用交出去、没有的交没有；回合进行中的带上回合、回合照常；载入照日志算、撤掉的回合里换的也算；改回文件时拒；退回对不上的不记 |
-| `crates/miyu-kernel/src/session/tests/scenario/breaker.rs` 的 `a_new_model_lifts_the_pause_and_failures_count_from_zero`、`scenario/manual.rs` 的 `compacting_and_clearing_after_a_model_change_do_not_resolve_again`（施工 8-10） | 换了模型暂停解除、到线又压、换过去以后再失败从 0 数、载入以后一样、换成一样的不解除；换模型以后手动压缩、清空那一轮不交引用 |
-| `crates/miyu-kernel/src/session/tests/scenario/harness.rs`（施工 7-10） | 别的 harness 发来的话：闲着开一轮、`trigger` 和 `cause` 照它、回应只附它、不带回合编号；正忙下一次请求听到、结束时不再开；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下；能恢复撤销时记在一边、载入以后恢复了接着开；撤掉它开的那一轮它留着，它开的那一轮重做不了；子会话里收到的不欠父会话回报 |
-| `crates/miyu-kernel/src/session/tests/scenario/peers.rs`（施工 C-2） | 别的会话发来的话：三种关系（人的、父会话的话排进这一轮，子代理、别的会话的不带回合编号）；闲着开一轮、`trigger` 和 `cause` 照它、回应只附它；正忙下一次请求听到、结束时不再开；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下；能恢复撤销时记在一边、载入以后恢复了接着开；撤掉它开的那一轮它留着，它开的那一轮重做不了；子会话里收到的不欠父会话回报 |
-| `crates/miyu-kernel/src/session/tests/scenario/watch.rs`（施工 C-6） | 空了的通知：在等的记下、叫醒、`cause` 照命令；不在等的拒、什么都不记；撤掉订它的那一轮不等了、恢复了又等；作废到点才记（含正好那一刻）、只记下、`cause` 是订它的那一轮的；又订从新的时刻算；`gone` 只记下；执行器交的 `idle` 不理；`vacant()` 要子代理都报完、后台命令不算；`last_line()` 的截法；它开的那一轮重做不了、撤销不带走；能恢复撤销时记在一边、载入以后恢复了接着开 |
-| `crates/miyu-kernel/src/session/tests/scenario/flood.rs`（施工 C-2） | 防刷屏：第 6 句拒、被拒的什么都不记、别的发话方照收；正好 600 秒那一刻还算、过了 1 毫秒就收；一字不差的拒、不占数、别的发话方发同样的照收、窗口过了又收；没听到的第 51 句拒、听到以后又收；重启以后限速、一字不差、没听到的数照日志算回来；子代理的留言不受「5 句」管 |
-| `crates/miyu-kernel/src/session/tests/scenario/messages.rs`（施工 7-7） | 子代理的留言：闲着开一轮、`trigger` 和 `cause` 照它、回应只附它；正忙下一次请求听到、不带回合编号；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下、有头订阅着照常开；派它的那一轮撤掉了的不开轮；能恢复撤销时记在一边、载入以后恢复了接着开；由它接着开的一轮撤掉，人的话跟着撤、留言留着；载入以后下一轮听到；不是她派的会话发来的是别的会话发来的话（施工 C-2），不带回合编号；`subagents()` 的每一种；中间一层答完孙代理的留言不报、孙代理报完再报；孙代理在回报里问、它留言答了（`job.messaged`）也等孙代理再报 |
-| `crates/miyu-kernel/src/session/tests/scenario/upward.rs`、`scenario/upward_load.rs`、`session/report/tests.rs`（施工 7-6） | 向上回报：做完交代报那一轮最后说的、只报一次；主会话不报；人自己开的不报；人开的一轮里进了父会话的留言报、注明人；交代那一轮里人插过话注明；超长的截头尾、中间那一行；出错报半截、没说话的正文空、步数上限报最后说的；孙代理都报完、被叫醒的那一轮结束才报一次；孙代理崩了闲着当场报；它自己的子代理开的不报；崩在那一轮里载入报 `aborted`；报过的载入再交一次；重启接着干、做完再报，没接着干的报 `aborted`；打断的等下一轮；补的一批没全落盘不报；收到「要重启了」以后不交、再载入时交一次；父会话挤掉最近 1024 个编号以后照样认出重交的，换编号的是新的一份。截正文：到上限原样、头尾各一半、单数尾巴多一个、空的那一行只留换行 |
-| `crates/miyu-kernel/src/session/tests/queue.rs` | 最后一步里来的开下一轮；由最后一条触发；出错、到上限的也接着开；被后一步听到的不再开；打断接着发、退回；没排着的不写撤回；触发不算排队 |
-| `crates/miyu-kernel/src/session/tests/interrupt.rs` | 空闲时打断被拒；请求前、请求中、调工具时打断；什么都没收到不写回复；急着插话的三种时候；空闲时急着插话开回合；在跑的写叫它停、排在后面的当场补、10 秒以后叫醒、改完了的带着效果记、收了尾到点不理 |
-| `crates/miyu-kernel/src/session/tests/landed.rs`（施工 3-8 六补） | `landed()`：造会话那一条落盘以前没有；追加了、还没落盘的不算，落一部分走一部分；载入的是日志里最后一条 |
-| `crates/miyu-kernel/src/session/tests/meta.rs`（施工 3-8 三补） | 改名记一条、落了盘才回应、同一个编号再来不再记；只写变了的格，和现在一样的（含没有标题时去掉、没置顶时取消、两格都不写）当场回应、编号照记；去掉标题记成空的；回合进行中的带上回合；载入以后照日志算回来，撤掉的回合里改的也算；`deletable()`：空闲的删得了，开了回合、`turn.ended` 没落盘的是有回合在进行，改回文件的时候是正在改回 |
-| `crates/miyu-kernel/src/session/tests/scenario/permission_changed.rs`（施工 2-7 补） | 切了级别以后的那一块：空闲时切的下一轮开头用切换那一份；来回切了一圈的不注入；回合中途切的这一轮下一次请求之前注入；连着切、压缩以后、撤掉带着上一块的几轮以后、撤掉的回合里切的载入以后照样算、崩了载入以后不重发、以前的快照 |
-| `crates/miyu-kernel/src/session/tests/scenario/session_fact.rs`（施工 1-13 再补） | 会话编号：第一轮排在环境、权限后面注入，第二轮不注入；压缩以后再注入一次；撤掉带着它的那一轮以后下一轮重新注入；崩了载入以后编号一样、不重发；子会话写它自己的编号；以前的快照没有模板的不注入 |
-| `crates/miyu-kernel/src/session/tests/permission.rs` | 空闲时切、切成一样的、不认识的级别；收紧成只读拦下回复里的、这一步里等着的写入；放宽等下一次请求；来回切不注入；挂接点前后切；收紧成工作区什么都不拦；只读下改常用的那一级；事实写这一轮的工作目录 |
-| `crates/miyu-kernel/src/session/tests/restart.rs` | 重启照打断收拾；接着干；排着的由最后一条开；连着 4 次不接；走完一轮、你开口以后从头数 |
-| `crates/miyu-kernel/src/session/tests/scenario/commands.rs`（施工 7-3） | 用过的最大任务编号：没派过的 0，撤掉的回合里派的也算，载入以后照日志算回来；崩了载入补 `aborted`（只补后台命令、`by` 是内核、没有 `cause`、回合编号、用时、输出，不开轮，再载入不再补），结束过的不补，补的排在那一轮收尾前面；要重启了以后到的结束只记下、不开轮，接着干的那一轮看得到它 |
-| `crates/miyu-kernel/src/session/tests/tools.rs` 的 `a_dispatched_call_carries_the_cause_of_its_turn`（施工 7-3） | 派出去的调用带着这一轮的 `cause`，链当场放行的、等人允许了的一样 |
-| `crates/miyu-kernel/src/session/tests/load.rs` | 走完的载入一样往下走；坏日志拒绝；崩在哪都收尾、等你开口；崩之前的命令不再生效；生效的权限回来；检查点重读过文件的，第一个动作是 `Recall`（施工 6-9；撤掉压缩的撤销载入以后见 `history.md`「守着它的」） |
-| `crates/miyu-kernel/src/session/tests/spans.rs`、`scenario/spans.rs`（施工 2-3 补） | 回复每一块的起止：思考、正文、工具调用各一块照增量的时刻，收块不算；驱动流完了才一起收块、字交错着来、私有数据、时钟往回拨；出错收的半截、打断收的半截只记留下的，空块不记；出错没收到字的没有这一格 |
-| `crates/miyu-kernel/src/session/tests/scenario.rs`、`scenario/retrying.rs`、`scenario/stopping.rs` | 执行器替身（`testkit`）把真会话一整轮一整轮地跑：两个读一起跑、中间来一句；只读拦写入；步数上限和失败的请求；重试的每一种（原样再来、半截接着说、半截的调用丢掉、带着 HTTP 状态码、照供应商等、5 次放弃、不该再来的、等的时候打断、重启、切级别、不算步数、说完清零）；打断接着发、重启接着干、崩了等你；停着的写：停在改之前、改完了、到 10 秒、又打断一次、等的时候来的消息排队和撤销被拒、等的时候重启（退回的不再接着干，接着发的交给下一轮） |
-| `crates/miyu-kernel/src/session/tests/random.rs` 和 `random/` | 三百例随机输入（CI 另跑两万例），每一步查：不变量（第 5 条一个会话查不了）；块的起止写了回复的才有、和回复的块一块一项，摘要请求没有（施工 2-3 补）；挂接点、请求、派工具、步数上限、只读的规矩；打断时停着的（叫它停只在打断里、停着的交回来才收尾、到点和又打断就不等，十个种子里一个多调写文件的专走这里）；崩了、重启了载入以后照规矩走；回报（施工 7-2，另一串随机数，七个种子里一个是一次性的会话）：对不上的拒绝、不理，开轮、排着、只记下、回合结束接着开、恢复撤销以后接着开照「回报」的规矩（`random/watch/reports.rs`）；清空（施工 6-8 补，另一串随机数）：照规矩收下或者拒绝，收下的一批三条（`random/watch/clear.rs`）；重做（施工 4-7 再补，和撤销同一串随机数）：照规矩收下或者拒绝，收下的撤最后一轮、重发撤掉的人的话、由最后一句开一轮（`random/watch/redo.rs`）；改标题、置顶（施工 3-8 三补，另一串随机数，每一例最后喂一次：夹在中间会让难得走到的几条路走不到）；回顾（施工 3-8 四补，另一串随机数，四个种子里一个）：照落了盘的有效历史判出拒绝、交回、并进、请求，请求照重建的有效历史组装，替身送的回报照内核的规矩算出写没写成，两条不带回合编号、回应照判出来的，排着的、回报、压缩的边界都不看它；有回顾在路上时不崩，跑完以前让它说完（`random/watch/recap.rs`、`random/recapping.rs`）；别的会话发来的话（施工 C-2，另一串随机数，三个发话方、四句话，随机的策略把数调小成 3 句、20 秒、5 句）：防刷屏照看守自己数的拒、原因对得上，收下的不带回合编号、同一批里不作废不撤回，叫不叫醒她照回报的规矩（`random/watch/peers.rs`、`random/peering.rs`）；出错再来（施工 8-9 加换端点、全在冷却）：再来的只有能再来的分类和端口说换了端点的，换了端点、全在冷却的没到 5 次、要等的不超过 2 分钟就一定再来，推的 `status` 带的 `failover` 照端口说的，换了端点又没说等多久的等 0 毫秒（`random/watch/model.rs`、`random/endings.rs`）；换模型（施工 8-10，另一串随机数、另一串命令编号，四个种子里一个）：一样的不记，不一样的只记一条，回合开始交的是看守照日志算的引用，挂接点结果里的退回对得上才记、记在注入前面，熔断只看换过去以后的（`random/watch/configure.rs`、`random/configuring.rs`；施工 8-18 曾在这个种子里再多生成一串思考强度的命令，8-18（补）去掉了）；每条路、每一种输入都走到过 |
-| `crates/miyu-kernel/src/tool/tests.rs`、`tool/texts/tests.rs` | 参数修正的每一种，嵌套的对象、数组里的也修；访问类别不认识的算写入；那几句的字段转义、每句带说法 |
-| `crates/miyu-kernel/src/accumulate/tests.rs` | 拼回复、调用编号、空块、交错的字、截断只留收全的调用、增量对不上的六种；每一块带着它在流里是第几块（施工 2-3 补） |
-| `crates/miyu-kernel/tests/resources.rs` | 出厂的那几句读得进来，带字段的换出来一字不差 |
-| `crates/miyu-kernel/tests/transient_sample.rs` | `model.delta`、`tool.progress`、`status` 写出去和样本一字不差 |
+| `crates/gqy-kernel/src/session/tests.rs` | 造会话落了盘才回应；消息落了盘才回应；空消息；同一个编号落盘前后再来；拒绝过的重新判；落盘到一半只回应落全了的；落盘超出追加过的；只记最近 1024 个 |
+| `crates/gqy-kernel/src/session/tests/limits.rs` | 给头看的限额（施工 6-3 补）：没交过的两格都没有；压缩线照窗口、最大输出算（最大输出比预留的上限大、小、没有）；窗口太小没有压缩线；策略里没有压缩的只有窗口；再交一次照新的 |
+| `crates/gqy-kernel/src/session/tests/idle.rs` | 有回合、`turn.ended` 没落盘都不算空闲（改回文件时不算空闲在 `session/tests/restore.rs`，`history.md`） |
+| `crates/gqy-kernel/src/session/tests/turn.rs` | 空闲时消息和回合的开头同一批；挂接点等开头落盘；挂接点跑完才请求；注入照交回的先后；中途的消息并进这一轮；挂接点跑的时候来的消息，落了盘才请求；对不上的挂接点结果不理；报的最后一个环境才注入 |
+| `crates/gqy-kernel/src/session/tests/dirs.rs` | 加进来的目录（施工 5-10 上）：`turn.started` 带着它、没有就不写这一格；判权限、派工具都带上；回合中途报来的下一轮才用 |
+| `crates/gqy-kernel/src/session/tests/reply.rs` | 一整轮；`model.called` 的每一格；下一轮只注入变了的；不再来的错结束回合、留半截；出错的半截里收全的调用也不留；等一会儿再来；没发出去的没有端点和用时；执行器违约按出错算；过时的回报不理；私有数据留在回复里不推；有工具调用的回合不结束 |
+| `crates/gqy-kernel/src/session/tests/difference.rs` | 只是接着加的没有第一处不同；改了 system 的是第一处不同 |
+| `crates/gqy-kernel/src/session/tests/tools.rs` | 一步跑完再请求；非只读的一个一个来；没有的工具、坏参数当场回；修正只用在执行上；步数上限在最后一步跑完后结束；推工具的输出；对不上的结果不理；回合带着开始时的工作目录 |
+| `crates/gqy-kernel/src/session/tests/redo.rs`、`scenario/redo.rs` | 重做（施工 4-7 再补，`history.md`「守着它的」） |
+| `crates/gqy-kernel/src/session/tests/recap.rs`、`scenario/recap.rs`（施工 3-8 四补） | 回顾：单独一次请求，两条不带回合编号、不开回合，回应那一句（去掉前后空白、思考不要），`model.called` 带 `purpose`、`seen` 是照到的、没有第一处不同和块的起止；没有新内容的交回上一句、不请求，说了新的一句再请求；一个回复都没有（说了、没回复的也算）拒绝；出错、只有思考、只有工具调用的没写成、不再来；在路上又要的一起回、只请求一次；照落了盘的算、那一句落了盘才回；对不上的回报不理、发出去了报两次认第一次；还没发出去就来增量、没发出去就说完、增量对不上的没写成；同一个编号再来就是再要一次；有回合在进行时照收，这一轮照常、之后的主请求照旧接着上一次主请求往后长；排着的那句照样撤得回；只记下的那句回顾照到了、手动压缩照样留着它；撤掉后来的一轮照撤完的再请求，前两句留在日志里 |
+| `crates/gqy-kernel/src/session/tests/title.rs`、`scenario/title.rs`（施工 3-8 五补） | 起标题：`turn.ended` 落了盘才起、照落了盘的有效历史组装、回合结束的挂接点照跑；第一轮答完起一次，两条都是内核记的、不带回合编号和 `cause`，标题取第一行，`model.called` 带 `purpose`、`seen` 是第一个回答、没有第一处不同和块的起止，起过的不再起，会话上的标题跟着换；超过 50 个字截到 50、去掉末尾空白、不加省略号，按字数不按字节；人起过名、去掉过的不起，只置顶的照起；子会话、一次性的会话不起；没答出正文的那一轮不起，下一轮答了照第一轮的算；出错、只有思考的算没起成，两次就不再起；试过几次载入以后照日志数，在路上丢了的不算；在路上时人改了名的只记请求、不盖掉；一次只有一个在路上；撤掉那一轮标题照样在；要重启了不起；名字、用途对不上的回报不理，说完了再报一次不理，没有命令等着它 |
+| `crates/gqy-kernel/src/session/tests/clear.rs`、`scenario/clear.rs` | 清空（施工 6-8 补）：一批三条、不请求模型、不跑回合开始的挂接点、跑回合结束的，落了盘才回应；有回合在进行、本来就空（没说过话、刚清过）的拒绝，清完又说了一句的收；只有一份摘要、只有一条回报也清；记在一边的回报跟着清掉；同一个编号再来；下一轮只看到清空以后的、事实照常注入；撤掉回到清空以前、恢复又清空；暂停着也收、清完到线照常自动压；载入以后一样 |
+| `crates/gqy-kernel/src/session/tests/compact.rs`、`scenario/manual.rs` | 手动压缩（施工 6-8）：空闲时收、开的那一轮没有触发、不注入、不跑挂接点，落了盘才回应；有回合在进行时拒绝（改回文件时拒绝在 `restore.rs`）；没有能压的四种；摘要请求带着要求；成了同一批结束、排着的接着开；失败不数不暂停；重试同一个 N；打断、重启；暂停着也收、成了以后到线照常自动压 |
+| `crates/gqy-kernel/src/session/tests/scenario/reports.rs`、`scenario/reports_undo.rs`（施工 7-2） | 回报：闲着时开一轮、`trigger`、`cause` 是它，回应只附它；`by`、`cause` 照交来的，不带回合编号；正忙时下一步听到、不另开；最后一步里到的接着开；和排着的消息比由后来的开；只记下的六种不开、下一轮开始时在请求里；被人停掉的照样开；打断时不撤回、不接着开，接着发的由排着的消息开；没人看着的一次性会话只记下，有头订阅着照常开、头退了回合结束也不开；对不上的拒绝、不理；能恢复撤销时只记下，恢复以后由最后那条开、回应不附它；派它的那一轮撤掉了的不开，恢复了跟着回来；人说了下一句一起听到；载入不开轮、载入以后照样能由恢复开、载入以后当没人看着，回合里到的、开过一轮的载入以后不算记在一边的；派它的那一轮还撤着的，恢复了后来那一轮也不开；手动压缩那一轮也清掉记在一边的；派它的那一条压缩掉了、撤掉压缩读回重建以后照常开；恢复要改回文件的，改完了才由它开；由回报接着开的一轮撤掉，带走上一轮排着的话、回报留着；读回日志时到的后台命令结束，读回来记了撤销再记 |
+| `crates/gqy-kernel/src/session/tests/scenario/models.rs`（施工 8-6、8-9、8-10） | 端口当场说完的 `no_model`：这一轮以出错结束，不再来，不推重试的状态，照这个名字写进日志；端口说换了端点的（施工 8-9）不管分类当场再来（等 0 毫秒）、照它说的等、数进 5 次，状态带 `failover`；`cooling` 照它说的等最早恢复的、没说的照退避、超过 2 分钟的不等，照这个名字写进日志；换模型（施工 8-10）：记一条、一样的不记、下一个回合开始交出去，回合进行中换的下一轮才交，撤掉的回合里换的也算、崩了载入照样算，退回默认的记在注入前面、`cause` 是回合的、以后钉在退回的上面，`models.chat` 也没有的不记 |
+| `crates/gqy-kernel/src/session/tests/scenario/vision.rs`（施工 8-17） | 替它看图：看不了图的先转述、内核记一条不带回合编号、`cause` 是这一轮的转述、落了盘才请求、请求的 `described` 是它；同一张图只转述一次，第二轮、崩了载入、撤销、压缩以后照样用；看得了图的、没交过限额的不转述；没成的不记、这一轮不再试、主请求照发、下一轮再试；转述带人这一轮最近说的那一句，这一轮只发了图的不带上一轮的话；看图时打断直接结束、回来的照样记；看图时切了级别，事实排在转述后面、请求前面；快照里没有转述的字的不转述 |
+| `crates/gqy-kernel/src/session/tests/random.rs` 的替它看图（施工 8-17，`random/sighting.rs`、`watch/sight.rs`） | 八个种子里的一个：看不了图才转述，转述过的、在路上的不再转；转述是内核记的、不带回合编号、就是送回去的那一句；请求的 `described` 正好是日志里这几张图的；看不了图的主请求里的图都转述过或者这一轮没成；对不上的转述不理；回合过去了才回来的照样记 |
+| `crates/gqy-kernel/src/session/tests/configure.rs`（施工 8-10） | 换模型记一条、落了盘才回应、同一个编号再来不再记；一样的当场回、编号照记；造会话记下的引用交出去、没有的交没有；回合进行中的带上回合、回合照常；载入照日志算、撤掉的回合里换的也算；改回文件时拒；退回对不上的不记 |
+| `crates/gqy-kernel/src/session/tests/scenario/breaker.rs` 的 `a_new_model_lifts_the_pause_and_failures_count_from_zero`、`scenario/manual.rs` 的 `compacting_and_clearing_after_a_model_change_do_not_resolve_again`（施工 8-10） | 换了模型暂停解除、到线又压、换过去以后再失败从 0 数、载入以后一样、换成一样的不解除；换模型以后手动压缩、清空那一轮不交引用 |
+| `crates/gqy-kernel/src/session/tests/scenario/harness.rs`（施工 7-10） | 别的 harness 发来的话：闲着开一轮、`trigger` 和 `cause` 照它、回应只附它、不带回合编号；正忙下一次请求听到、结束时不再开；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下；能恢复撤销时记在一边、载入以后恢复了接着开；撤掉它开的那一轮它留着，它开的那一轮重做不了；子会话里收到的不欠父会话回报 |
+| `crates/gqy-kernel/src/session/tests/scenario/peers.rs`（施工 C-2） | 别的会话发来的话：三种关系（人的、父会话的话排进这一轮，子代理、别的会话的不带回合编号）；闲着开一轮、`trigger` 和 `cause` 照它、回应只附它；正忙下一次请求听到、结束时不再开；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下；能恢复撤销时记在一边、载入以后恢复了接着开；撤掉它开的那一轮它留着，它开的那一轮重做不了；子会话里收到的不欠父会话回报 |
+| `crates/gqy-kernel/src/session/tests/scenario/watch.rs`（施工 C-6） | 空了的通知：在等的记下、叫醒、`cause` 照命令；不在等的拒、什么都不记；撤掉订它的那一轮不等了、恢复了又等；作废到点才记（含正好那一刻）、只记下、`cause` 是订它的那一轮的；又订从新的时刻算；`gone` 只记下；执行器交的 `idle` 不理；`vacant()` 要子代理都报完、后台命令不算；`last_line()` 的截法；它开的那一轮重做不了、撤销不带走；能恢复撤销时记在一边、载入以后恢复了接着开 |
+| `crates/gqy-kernel/src/session/tests/scenario/flood.rs`（施工 C-2） | 防刷屏：第 6 句拒、被拒的什么都不记、别的发话方照收；正好 600 秒那一刻还算、过了 1 毫秒就收；一字不差的拒、不占数、别的发话方发同样的照收、窗口过了又收；没听到的第 51 句拒、听到以后又收；重启以后限速、一字不差、没听到的数照日志算回来；子代理的留言不受「5 句」管 |
+| `crates/gqy-kernel/src/session/tests/scenario/messages.rs`（施工 7-7） | 子代理的留言：闲着开一轮、`trigger` 和 `cause` 照它、回应只附它；正忙下一次请求听到、不带回合编号；最后一步里到的接着开；打断两种都不撤回、不接着开；不作废在等人回答的题；没人看着的一次性会话只记下、有头订阅着照常开；派它的那一轮撤掉了的不开轮；能恢复撤销时记在一边、载入以后恢复了接着开；由它接着开的一轮撤掉，人的话跟着撤、留言留着；载入以后下一轮听到；不是她派的会话发来的是别的会话发来的话（施工 C-2），不带回合编号；`subagents()` 的每一种；中间一层答完孙代理的留言不报、孙代理报完再报；孙代理在回报里问、它留言答了（`job.messaged`）也等孙代理再报 |
+| `crates/gqy-kernel/src/session/tests/scenario/upward.rs`、`scenario/upward_load.rs`、`session/report/tests.rs`（施工 7-6） | 向上回报：做完交代报那一轮最后说的、只报一次；主会话不报；人自己开的不报；人开的一轮里进了父会话的留言报、注明人；交代那一轮里人插过话注明；超长的截头尾、中间那一行；出错报半截、没说话的正文空、步数上限报最后说的；孙代理都报完、被叫醒的那一轮结束才报一次；孙代理崩了闲着当场报；它自己的子代理开的不报；崩在那一轮里载入报 `aborted`；报过的载入再交一次；重启接着干、做完再报，没接着干的报 `aborted`；打断的等下一轮；补的一批没全落盘不报；收到「要重启了」以后不交、再载入时交一次；父会话挤掉最近 1024 个编号以后照样认出重交的，换编号的是新的一份。截正文：到上限原样、头尾各一半、单数尾巴多一个、空的那一行只留换行 |
+| `crates/gqy-kernel/src/session/tests/queue.rs` | 最后一步里来的开下一轮；由最后一条触发；出错、到上限的也接着开；被后一步听到的不再开；打断接着发、退回；没排着的不写撤回；触发不算排队 |
+| `crates/gqy-kernel/src/session/tests/interrupt.rs` | 空闲时打断被拒；请求前、请求中、调工具时打断；什么都没收到不写回复；急着插话的三种时候；空闲时急着插话开回合；在跑的写叫它停、排在后面的当场补、10 秒以后叫醒、改完了的带着效果记、收了尾到点不理 |
+| `crates/gqy-kernel/src/session/tests/landed.rs`（施工 3-8 六补） | `landed()`：造会话那一条落盘以前没有；追加了、还没落盘的不算，落一部分走一部分；载入的是日志里最后一条 |
+| `crates/gqy-kernel/src/session/tests/meta.rs`（施工 3-8 三补） | 改名记一条、落了盘才回应、同一个编号再来不再记；只写变了的格，和现在一样的（含没有标题时去掉、没置顶时取消、两格都不写）当场回应、编号照记；去掉标题记成空的；回合进行中的带上回合；载入以后照日志算回来，撤掉的回合里改的也算；`deletable()`：空闲的删得了，开了回合、`turn.ended` 没落盘的是有回合在进行，改回文件的时候是正在改回 |
+| `crates/gqy-kernel/src/session/tests/scenario/permission_changed.rs`（施工 2-7 补） | 切了级别以后的那一块：空闲时切的下一轮开头用切换那一份；来回切了一圈的不注入；回合中途切的这一轮下一次请求之前注入；连着切、压缩以后、撤掉带着上一块的几轮以后、撤掉的回合里切的载入以后照样算、崩了载入以后不重发、以前的快照 |
+| `crates/gqy-kernel/src/session/tests/scenario/session_fact.rs`（施工 1-13 再补） | 会话编号：第一轮排在环境、权限后面注入，第二轮不注入；压缩以后再注入一次；撤掉带着它的那一轮以后下一轮重新注入；崩了载入以后编号一样、不重发；子会话写它自己的编号；以前的快照没有模板的不注入 |
+| `crates/gqy-kernel/src/session/tests/permission.rs` | 空闲时切、切成一样的、不认识的级别；收紧成只读拦下回复里的、这一步里等着的写入；放宽等下一次请求；来回切不注入；挂接点前后切；收紧成工作区什么都不拦；只读下改常用的那一级；事实写这一轮的工作目录 |
+| `crates/gqy-kernel/src/session/tests/restart.rs` | 重启照打断收拾；接着干；排着的由最后一条开；连着 4 次不接；走完一轮、你开口以后从头数 |
+| `crates/gqy-kernel/src/session/tests/scenario/commands.rs`（施工 7-3） | 用过的最大任务编号：没派过的 0，撤掉的回合里派的也算，载入以后照日志算回来；崩了载入补 `aborted`（只补后台命令、`by` 是内核、没有 `cause`、回合编号、用时、输出，不开轮，再载入不再补），结束过的不补，补的排在那一轮收尾前面；要重启了以后到的结束只记下、不开轮，接着干的那一轮看得到它 |
+| `crates/gqy-kernel/src/session/tests/tools.rs` 的 `a_dispatched_call_carries_the_cause_of_its_turn`（施工 7-3） | 派出去的调用带着这一轮的 `cause`，链当场放行的、等人允许了的一样 |
+| `crates/gqy-kernel/src/session/tests/load.rs` | 走完的载入一样往下走；坏日志拒绝；崩在哪都收尾、等你开口；崩之前的命令不再生效；生效的权限回来；检查点重读过文件的，第一个动作是 `Recall`（施工 6-9；撤掉压缩的撤销载入以后见 `history.md`「守着它的」） |
+| `crates/gqy-kernel/src/session/tests/spans.rs`、`scenario/spans.rs`（施工 2-3 补） | 回复每一块的起止：思考、正文、工具调用各一块照增量的时刻，收块不算；驱动流完了才一起收块、字交错着来、私有数据、时钟往回拨；出错收的半截、打断收的半截只记留下的，空块不记；出错没收到字的没有这一格 |
+| `crates/gqy-kernel/src/session/tests/scenario.rs`、`scenario/retrying.rs`、`scenario/stopping.rs` | 执行器替身（`testkit`）把真会话一整轮一整轮地跑：两个读一起跑、中间来一句；只读拦写入；步数上限和失败的请求；重试的每一种（原样再来、半截接着说、半截的调用丢掉、带着 HTTP 状态码、照供应商等、5 次放弃、不该再来的、等的时候打断、重启、切级别、不算步数、说完清零）；打断接着发、重启接着干、崩了等你；停着的写：停在改之前、改完了、到 10 秒、又打断一次、等的时候来的消息排队和撤销被拒、等的时候重启（退回的不再接着干，接着发的交给下一轮） |
+| `crates/gqy-kernel/src/session/tests/random.rs` 和 `random/` | 三百例随机输入（CI 另跑两万例），每一步查：不变量（第 5 条一个会话查不了）；块的起止写了回复的才有、和回复的块一块一项，摘要请求没有（施工 2-3 补）；挂接点、请求、派工具、步数上限、只读的规矩；打断时停着的（叫它停只在打断里、停着的交回来才收尾、到点和又打断就不等，十个种子里一个多调写文件的专走这里）；崩了、重启了载入以后照规矩走；回报（施工 7-2，另一串随机数，七个种子里一个是一次性的会话）：对不上的拒绝、不理，开轮、排着、只记下、回合结束接着开、恢复撤销以后接着开照「回报」的规矩（`random/watch/reports.rs`）；清空（施工 6-8 补，另一串随机数）：照规矩收下或者拒绝，收下的一批三条（`random/watch/clear.rs`）；重做（施工 4-7 再补，和撤销同一串随机数）：照规矩收下或者拒绝，收下的撤最后一轮、重发撤掉的人的话、由最后一句开一轮（`random/watch/redo.rs`）；改标题、置顶（施工 3-8 三补，另一串随机数，每一例最后喂一次：夹在中间会让难得走到的几条路走不到）；回顾（施工 3-8 四补，另一串随机数，四个种子里一个）：照落了盘的有效历史判出拒绝、交回、并进、请求，请求照重建的有效历史组装，替身送的回报照内核的规矩算出写没写成，两条不带回合编号、回应照判出来的，排着的、回报、压缩的边界都不看它；有回顾在路上时不崩，跑完以前让它说完（`random/watch/recap.rs`、`random/recapping.rs`）；别的会话发来的话（施工 C-2，另一串随机数，三个发话方、四句话，随机的策略把数调小成 3 句、20 秒、5 句）：防刷屏照看守自己数的拒、原因对得上，收下的不带回合编号、同一批里不作废不撤回，叫不叫醒她照回报的规矩（`random/watch/peers.rs`、`random/peering.rs`）；出错再来（施工 8-9 加换端点、全在冷却）：再来的只有能再来的分类和端口说换了端点的，换了端点、全在冷却的没到 5 次、要等的不超过 2 分钟就一定再来，推的 `status` 带的 `failover` 照端口说的，换了端点又没说等多久的等 0 毫秒（`random/watch/model.rs`、`random/endings.rs`）；换模型（施工 8-10，另一串随机数、另一串命令编号，四个种子里一个）：一样的不记，不一样的只记一条，回合开始交的是看守照日志算的引用，挂接点结果里的退回对得上才记、记在注入前面，熔断只看换过去以后的（`random/watch/configure.rs`、`random/configuring.rs`；施工 8-18 曾在这个种子里再多生成一串思考强度的命令，8-18（补）去掉了）；每条路、每一种输入都走到过 |
+| `crates/gqy-kernel/src/tool/tests.rs`、`tool/texts/tests.rs` | 参数修正的每一种，嵌套的对象、数组里的也修；访问类别不认识的算写入；那几句的字段转义、每句带说法 |
+| `crates/gqy-kernel/src/accumulate/tests.rs` | 拼回复、调用编号、空块、交错的字、截断只留收全的调用、增量对不上的六种；每一块带着它在流里是第几块（施工 2-3 补） |
+| `crates/gqy-kernel/tests/resources.rs` | 出厂的那几句读得进来，带字段的换出来一字不差 |
+| `crates/gqy-kernel/tests/transient_sample.rs` | `model.delta`、`tool.progress`、`status` 写出去和样本一字不差 |
 
 ### 出处
 
@@ -604,7 +604,7 @@
 
 ### 还没有的
 
-- 别的挂接点：命令进入、模型输出后、工具执行后、订阅（`05-内核接口.md` 第五节）。现在只有回合开始、回合结束和执行前的链；回合开始、回合结束还没有模块挂，会话 actor 交回空的注入（`crates/miyu-session/src/actor.rs`）。
+- 别的挂接点：命令进入、模型输出后、工具执行后、订阅（`05-内核接口.md` 第五节）。现在只有回合开始、回合结束和执行前的链；回合开始、回合结束还没有模块挂，会话 actor 交回空的注入（`crates/gqy-session/src/actor.rs`）。
 - 换策略快照（`02-内核.md` K3）：内核不写带 `policy` 的 `session.policy_changed`，载入时也不看它。
 - 压缩（`compaction.md`）：`context_too_long` 现在结束回合，不先压缩（被动压缩，6-7）；截掉最老的再试、隔离式回退（6-6 下）；撤销能撤掉压缩（6-9）。
 - 子代理、后台命令（`02-内核.md` 第七节，M7）：回报到了开不开轮施工 7-2 做好了，施工 7-3 起有真的后台命令，载入时给没结束的补 `aborted`；子会话向上回报施工 7-6 做好了；撤销时一起停下施工 7-8 做好了（`history.md`「撤销」第 5 条）。

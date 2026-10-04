@@ -220,7 +220,7 @@
           },
           "keys": {
             "default": [],
-            "description": "Write { secret = \"name\" } (saved with miyu login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header. Allowed: a list of { secret = \"…\" } or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
+            "description": "Write { secret = \"name\" } (saved with gqy login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header. Allowed: a list of { secret = \"…\" } or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
             "items": {
               "oneOf": [
                 {

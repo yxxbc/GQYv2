@@ -8,24 +8,24 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-store/src/env.rs` | 环境快照：找数据根、资源目录要看的几样，从进程里读一次；系统的语言 `locale`（施工 8-1，都没设的看系统设置 `system_locale`，施工 8-2） |
-| `crates/miyu-store/src/config_file.rs` | 读配置文件（施工 8-2，`config.md`「怎么走」第二条第 2 条）：没有的是空的，1 MiB 的上限，去掉开头的 BOM（记下有没有），不是 UTF-8 的报错，版本是整份字节的 SHA-256。写（施工 8-3，第五条第 4 到 7 条）：顺着链接写本体、临时文件在本体旁边、带上原来的权限位、替换前再读一次（和调用的一方读的版本不一样的放弃）、Windows 上改名失败歇 20 毫秒再试、最多 5 次 |
-| `crates/miyu-store/src/watch.rs` | 监视几份文件（施工 8-4，`config.md`「怎么走」第七条）：看它们所在的目录（链接的另看本体所在的目录），照真实的位置和文件名认，只读的动静不理，一份 200 毫秒里没有新的变动了才交出去；系统的监视起不来的退回每 2 秒轮询，交回原因 |
-| `crates/miyu-store/src/accounts.rs`、`logins.rs`、`private_json.rs` | 网页登录的凭据 `system/accounts.json`（argon2id，`m=19456`、`t=2`、`p=1`）、登录令牌的哈希 `home/<账号>/logins.json`（加的时候删过期的、最多 64 行）；只给自己看的 JSON 小文件照配置文件的规矩读、照密钥文件的规矩写（Unix 上 0600）（施工 W-8，`web-module.md`「怎么走」第一条） |
-| `crates/miyu-store/src/secrets.rs` | 密钥文件 `system/secrets.toml`（施工 8-5，`config.md` 第九条）：照配置文件的规矩读，另看组、别人读不读得到；照配置文件的规矩写，Unix 上一律 0600，临时文件建的时候就是 |
-| `crates/miyu-store/src/journal.rs` | 系统日志、账号日志 `journal.jsonl`（施工 8-3，`config.md`「系统日志、账号日志」）：每追加一条都重新打开、截掉最后那半行、读最后一行接着数 `seq`，外壳照事件的写法，追加、同步；8-15 起一个核心里照一把锁一条一条追加（写的不止配置服务），用量汇总从记下的字节往后读（`read_from`） |
-| `crates/miyu-store/src/root.rs` | 数据根在哪、建骨架、认标记；账号的目录；缓存目录在哪 |
-| `crates/miyu-store/src/durable.rs` | 建目录、同步目录；新建临时文件（只许新建，撞名换下一个；施工 8-5 起能建成 Unix 上 0600 的，`create_temp_with`）、删用不上的临时文件（施工 8-1 从 `blob.rs` 挪来，两处共用） |
-| `crates/miyu-store/src/generated.rs` | 核心生成的派生文件：一样的不写，不一样的先写临时文件再替换（施工 8-1，`config.md`「怎么走」第一条第 7 条） |
-| `crates/miyu-store/src/log.rs` | 会话日志：新建、追加、换段 |
-| `crates/miyu-store/src/log/open.rs` | 打开时自检、截半行；只读地读；从记下的位置读起（施工 3-8 七补）；只读第一条 |
-| `crates/miyu-store/src/blob.rs` | blob：存、取、核对哈希；分块暂存、改名进位置、扔掉、核心起来时清（施工 W-5）；读一段（施工 W-6） |
-| `crates/miyu-store/src/jobs.rs` | 会话目录下后台命令的输出：`jobs/<编号>.out`（施工 7-3） |
-| `crates/miyu-store/src/trash.rs` | 回收处：删掉的会话挪进来、满了时限的真删（施工 3-8 三补）；真删之前往账号日志留用量的底（施工 8-15） |
-| `crates/miyu-store/src/resources.rs`、`human.rs` | 资源目录、给人看的字（`store/resources.md`） |
-| `crates/miyu-store/src/index.rs`、`index/` | 会话列表的索引（`store/index.md`，施工 3-8 七补） |
-| `crates/miyu-store/src/usage.rs`、`usage/` | 用量汇总 `state/usage.db`（施工 8-15，`models.md`「怎么走」第九条第 4、5 条） |
-| `crates/miyu-store/src/sqlite.rs` | 派生数据的 SQLite 库怎么开、坏了怎么删掉重建（施工 8-15 从 `index.rs` 挪出来，索引和用量汇总共用） |
+| `crates/gqy-store/src/env.rs` | 环境快照：找数据根、资源目录要看的几样，从进程里读一次；系统的语言 `locale`（施工 8-1，都没设的看系统设置 `system_locale`，施工 8-2） |
+| `crates/gqy-store/src/config_file.rs` | 读配置文件（施工 8-2，`config.md`「怎么走」第二条第 2 条）：没有的是空的，1 MiB 的上限，去掉开头的 BOM（记下有没有），不是 UTF-8 的报错，版本是整份字节的 SHA-256。写（施工 8-3，第五条第 4 到 7 条）：顺着链接写本体、临时文件在本体旁边、带上原来的权限位、替换前再读一次（和调用的一方读的版本不一样的放弃）、Windows 上改名失败歇 20 毫秒再试、最多 5 次 |
+| `crates/gqy-store/src/watch.rs` | 监视几份文件（施工 8-4，`config.md`「怎么走」第七条）：看它们所在的目录（链接的另看本体所在的目录），照真实的位置和文件名认，只读的动静不理，一份 200 毫秒里没有新的变动了才交出去；系统的监视起不来的退回每 2 秒轮询，交回原因 |
+| `crates/gqy-store/src/accounts.rs`、`logins.rs`、`private_json.rs` | 网页登录的凭据 `system/accounts.json`（argon2id，`m=19456`、`t=2`、`p=1`）、登录令牌的哈希 `home/<账号>/logins.json`（加的时候删过期的、最多 64 行）；只给自己看的 JSON 小文件照配置文件的规矩读、照密钥文件的规矩写（Unix 上 0600）（施工 W-8，`web-module.md`「怎么走」第一条） |
+| `crates/gqy-store/src/secrets.rs` | 密钥文件 `system/secrets.toml`（施工 8-5，`config.md` 第九条）：照配置文件的规矩读，另看组、别人读不读得到；照配置文件的规矩写，Unix 上一律 0600，临时文件建的时候就是 |
+| `crates/gqy-store/src/journal.rs` | 系统日志、账号日志 `journal.jsonl`（施工 8-3，`config.md`「系统日志、账号日志」）：每追加一条都重新打开、截掉最后那半行、读最后一行接着数 `seq`，外壳照事件的写法，追加、同步；8-15 起一个核心里照一把锁一条一条追加（写的不止配置服务），用量汇总从记下的字节往后读（`read_from`） |
+| `crates/gqy-store/src/root.rs` | 数据根在哪、建骨架、认标记；账号的目录；缓存目录在哪 |
+| `crates/gqy-store/src/durable.rs` | 建目录、同步目录；新建临时文件（只许新建，撞名换下一个；施工 8-5 起能建成 Unix 上 0600 的，`create_temp_with`）、删用不上的临时文件（施工 8-1 从 `blob.rs` 挪来，两处共用） |
+| `crates/gqy-store/src/generated.rs` | 核心生成的派生文件：一样的不写，不一样的先写临时文件再替换（施工 8-1，`config.md`「怎么走」第一条第 7 条） |
+| `crates/gqy-store/src/log.rs` | 会话日志：新建、追加、换段 |
+| `crates/gqy-store/src/log/open.rs` | 打开时自检、截半行；只读地读；从记下的位置读起（施工 3-8 七补）；只读第一条 |
+| `crates/gqy-store/src/blob.rs` | blob：存、取、核对哈希；分块暂存、改名进位置、扔掉、核心起来时清（施工 W-5）；读一段（施工 W-6） |
+| `crates/gqy-store/src/jobs.rs` | 会话目录下后台命令的输出：`jobs/<编号>.out`（施工 7-3） |
+| `crates/gqy-store/src/trash.rs` | 回收处：删掉的会话挪进来、满了时限的真删（施工 3-8 三补）；真删之前往账号日志留用量的底（施工 8-15） |
+| `crates/gqy-store/src/resources.rs`、`human.rs` | 资源目录、给人看的字（`store/resources.md`） |
+| `crates/gqy-store/src/index.rs`、`index/` | 会话列表的索引（`store/index.md`，施工 3-8 七补） |
+| `crates/gqy-store/src/usage.rs`、`usage/` | 用量汇总 `state/usage.db`（施工 8-15，`models.md`「怎么走」第九条第 4、5 条） |
+| `crates/gqy-store/src/sqlite.rs` | 派生数据的 SQLite 库怎么开、坏了怎么删掉重建（施工 8-15 从 `index.rs` 挪出来，索引和用量汇总共用） |
 
 ### 对外的样子
 
@@ -34,11 +34,11 @@
 | 格 | 取自 | 用来 |
 |---|---|---|
 | `platform` | 编译的目标：macOS 是 `Macos`，Windows 是 `Windows`，别的（Linux 和别的类 Unix）是 `Linux` | 缓存目录的默认位置 |
-| `miyu_home` | 环境变量 `MIYU_HOME` | 数据根 |
+| `gqy_home` | 环境变量 `GQY_HOME` | 数据根 |
 | `home` | 标准库的 `std::env::home_dir()` | 数据根、缓存目录 |
 | `xdg_cache_home` | `XDG_CACHE_HOME` | Linux 的缓存目录 |
 | `local_app_data` | `LOCALAPPDATA` | Windows 的缓存目录 |
-| `miyu_resources` | `MIYU_RESOURCES` | 资源目录 |
+| `gqy_resources` | `GQY_RESOURCES` | 资源目录 |
 | `exe` | 程序的位置，顺着链接找到的本体；找不到本体的照原样 | 资源目录 |
 
 没设的、读不到的是空的。空的、相对的算不算数，由用它的地方定。
@@ -76,7 +76,7 @@
 
 ```text
 <数据根>/
-├── .miyu-root                          标记，一行字
+├── .gqy-root                          标记，一行字
 ├── system/
 │   ├── config.toml                     系统配置（config.md，施工 8-2 读，8-3 写）
 │   ├── secrets.toml                    密钥，Unix 上 0600，只经核心写（config.md，施工 8-5）
@@ -113,26 +113,26 @@
 
 **1. 找数据根**（`DataRoot::locate`）
 
-1. `MIYU_HOME` 设了、不是空的：就是它。开头是 `~` 的，照家目录接上：整个就是 `~` 的是家目录本身，`~/` 开头的接上后面（Windows 上 `~\` 也算）；`~别人` 不认，照原样当相对路径（施工 4-11：在终端里 `export X=~/…` 加了引号时，`~` 没被 shell 展开）。找不到家目录的，报找不到家目录。接好以后要是绝对路径，相对的报错，不猜。
-2. 没设或者是空的：家目录下的 `.miyu`，三个平台一样。家目录没有、不是绝对路径的，报错。
+1. `GQY_HOME` 设了、不是空的：就是它。开头是 `~` 的，照家目录接上：整个就是 `~` 的是家目录本身，`~/` 开头的接上后面（Windows 上 `~\` 也算）；`~别人` 不认，照原样当相对路径（施工 4-11：在终端里 `export X=~/…` 加了引号时，`~` 没被 shell 展开）。找不到家目录的，报找不到家目录。接好以后要是绝对路径，相对的报错，不猜。
+2. 没设或者是空的：家目录下的 `.gqy`，三个平台一样。家目录没有、不是绝对路径的，报错。
 
 **2. 建骨架**（`DataRoot::prepare`）
 
 1. 建数据根本身，缺的上级一起建。
-2. 看顶层有没有 `.miyu-root`。只看在不在：文件、目录、链接都算。
+2. 看顶层有没有 `.gqy-root`。只看在不在：文件、目录、链接都算。
 3. 没有标记：
    1. 目录里有任何东西（只有一个隐藏文件也算）：再看一眼标记，别处可能刚写下；还没有，报错，一个字节都不动它。
-   2. 目录是空的：只许新建地写标记，内容是 `This directory is a Miyu data root (layout 1).` 加换行；同步这个文件，再同步数据根。别处刚写下了的，也算成。
+   2. 目录是空的：只许新建地写标记，内容是 `This directory is a GQY data root (layout 1).` 加换行；同步这个文件，再同步数据根。别处刚写下了的，也算成。
 4. 四个顶层目录 `system/`、`home/`、`state/`、`run/`，缺的才建。
 5. 建两次不出错；两个进程同时第一次用同一个数据根，都成。该是目录的地方是个文件，报错。
 
-**3. 缓存目录**（`cache_root`）：整台机器共用，不跟着 `MIYU_HOME` 变。
+**3. 缓存目录**（`cache_root`）：整台机器共用，不跟着 `GQY_HOME` 变。
 
 | 平台 | 在哪 | 找不到时 |
 |---|---|---|
-| Linux | `XDG_CACHE_HOME` 设了、不是空的、是绝对路径的：`<它>/miyu`；不然 `~/.cache/miyu` | 要用家目录，家目录却没有、不是绝对路径：报错 |
-| macOS | `~/Library/Caches/Miyu` | 同上 |
-| Windows | `<LOCALAPPDATA>\Miyu\cache` | `LOCALAPPDATA` 没有、不是绝对路径：报错 |
+| Linux | `XDG_CACHE_HOME` 设了、不是空的、是绝对路径的：`<它>/gqy`；不然 `~/.cache/gqy` | 要用家目录，家目录却没有、不是绝对路径：报错 |
+| macOS | `~/Library/Caches/GQY` | 同上 |
+| Windows | `<LOCALAPPDATA>\GQY\cache` | `LOCALAPPDATA` 没有、不是绝对路径：报错 |
 
 **4. 建目录、同步**（`durable.rs`，这一页新建的目录都走它）
 
@@ -194,7 +194,7 @@
 
 **10. blob：取**（`Blobs::get`）：读出来，重新算哈希。没有这个文件：「no blob <哈希>」。算出来和名字对不上：报错，写明是哪一个，不自动修，也不删。
 
-读一段（`Blobs::read_range`，`blob.get`，施工 W-6，`web-module.md`「七、分块读」）：从 `offset` 起读最多 `length` 个字节，读到结尾就停；`offset` 过了结尾的是空的；`length` 是 0 只回大小。不重新核对整份内容的哈希：核对在整份取出来用的时候，就是上面这条。安全地打开照 `miyu-fs` 的 `read_range`，和 `fs.read` 共用一份，不另写一套跟链接的判断。没有这个文件：同上。
+读一段（`Blobs::read_range`，`blob.get`，施工 W-6，`web-module.md`「七、分块读」）：从 `offset` 起读最多 `length` 个字节，读到结尾就停；`offset` 过了结尾的是空的；`length` 是 0 只回大小。不重新核对整份内容的哈希：核对在整份取出来用的时候，就是上面这条。安全地打开照 `gqy-fs` 的 `read_range`，和 `fs.read` 共用一份，不另写一套跟链接的判断。没有这个文件：同上。
 
 **11. 后台命令的输出**（施工 7-3，`output_path`、`create_output`）：会话目录下的 `jobs/<编号>.out`，一条后台命令一份，执行器的任务表边跑边写、不截（`session/tools.md` 第 5 条）。建的时候没有 `jobs/` 的先建（第 4 条，Unix 上 0700）；文件已经有的清空重写：编号在这个会话里不重复，已经有的只会是崩溃前起了、没来得及记下的那一条留下的。会话日志只认名字是 12 位数字的段（第 6 条），`jobs/` 不碍着它。删会话挪整个会话目录，`jobs/` 跟着一起进回收处（第 12 条，施工 3-8 三补）；造会话没成时收拾会话目录的 `abandon` 只删只剩空的第一段的目录，那时还起不了后台命令。结束了整份存成 blob，`job.reported` 里记它的哈希。
 
@@ -208,7 +208,7 @@
    5. 会话目录不在的：写 `deleted_at` 时就出错（找不到），什么都没建。
 2. 清（`purge`）：核心起来时清一次（`core.md`「起来的先后」第 14 条），只清管理员的。
    1. 回收处里名字合会话编号写法的才看，别的不是这里放的。回收处还没有的，什么都不做。
-   2. 读它的 `deleted_at`：现在减去删的时刻，满了留的时限（7 天，`miyu-core` 的 `KEEP`）的，连目录整个删掉；正好满的也删。删之前先留用量的底（施工 8-15，`models.md`「怎么走」第九条第 5 条）：照它的日志算好按小时的合计，往这个账号的 `journal.jsonl` 追加一条 `usage.purged`（时刻是现在，`by` 是内核）；一次请求都没有的不写。日志读不了（磁盘出错）、账号日志写不进去的：留着，报出来，下次再清。没满的、删的时刻比现在还晚的（时钟往回拨过）留着。
+   2. 读它的 `deleted_at`：现在减去删的时刻，满了留的时限（7 天，`gqy-core` 的 `KEEP`）的，连目录整个删掉；正好满的也删。删之前先留用量的底（施工 8-15，`models.md`「怎么走」第九条第 5 条）：照它的日志算好按小时的合计，往这个账号的 `journal.jsonl` 追加一条 `usage.purged`（时刻是现在，`by` 是内核）；一次请求都没有的不写。日志读不了（磁盘出错）、账号日志写不进去的：留着，报出来，下次再清。没满的、删的时刻比现在还晚的（时钟往回拨过）留着。
    3. `deleted_at` 读不了、写法不对的：留着，报出来（`Purged::failed`）。说不清它删了多久，不猜。
    4. 删不掉的：留着，报出来，下次起来再清。回收处本身读不了：报错。
 3. blob 不动：删会话以后没人引用的 blob 随存储的回收那一步（第五节，「还没有的」）。找回删了的会话以后再做：回收处里的文件留着，挪回去就是。
@@ -217,14 +217,14 @@
 
 ### 出错
 
-数据根的几句（`RootError`、`PrepareError`）是中文：`miyu ask`、`miyu undo` 找数据根、建骨架出错时，照原样印在标准错误上，退出码 1（`cli/ask.md`），等界面语言那一步照界面语言说。别的只进运行日志，是英文（施工 4-9 再补四中：原来是中文）。
+数据根的几句（`RootError`、`PrepareError`）是中文：`gqy ask`、`gqy undo` 找数据根、建骨架出错时，照原样印在标准错误上，退出码 1（`cli/ask.md`），等界面语言那一步照界面语言说。别的只进运行日志，是英文（施工 4-9 再补四中：原来是中文）。
 
 | 类型 | 哪一种 | 说的话 |
 |---|---|---|
-| `RootError` | `RelativeMiyuHome` | `MIYU_HOME 要写绝对路径，写的是 <路径>` |
+| `RootError` | `RelativeGQYHome` | `GQY_HOME 要写绝对路径，写的是 <路径>` |
 | | `NoHome` | `找不到家目录` |
 | | `NoLocalAppData` | `找不到 LOCALAPPDATA，或者它不是绝对路径` |
-| `PrepareError` | `NotOurs` | `<数据根> 里有别的东西，认不出是 Miyu 的数据根（顶层没有 .miyu-root），不动它。设 MIYU_HOME 指到一个空目录` |
+| `PrepareError` | `NotOurs` | `<数据根> 里有别的东西，认不出是 GQY 的数据根（顶层没有 .gqy-root），不动它。设 GQY_HOME 指到一个空目录` |
 | | `Io` | 系统的原话 |
 | `OpenError` | `Missing` | `no session log in <目录>` |
 | | `Broken` | `<段> line <行>: <为什么>`，为什么见下表 |
@@ -251,23 +251,23 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-store/src/root/tests.rs` | 三个平台的默认位置；`XDG_CACHE_HOME` 只挪 Linux 的缓存；`MIYU_HOME` 挪数据根、不挪缓存；空的当没设，相对的 `MIYU_HOME` 拒绝，开头的 `~` 照家目录接、`~别人` 当相对的、没有家目录时报错，相对的 `XDG_CACHE_HOME` 当没设；找不到家目录、`LOCALAPPDATA`；骨架建两次不出错、挡路的文件报错；八个线程同时建都成；账号的家目录建一次、0700；列会话从新到旧；新建的 0700、已经有的不改；新的数据根写下标记；认不出的一个字节不动、报错写明目录和 `.miyu-root`；只有隐藏文件也不算空；进程的环境找得到 |
-| `crates/miyu-store/src/durable/tests.rs` | 一层层建、都是 0700、建两次不出错；挡路的文件报错 |
-| `crates/miyu-store/src/log/tests.rs`、`log/tests/real.rs`、`log/tests/marked.rs` | 写了读得回，每行 `\n`、没有 `\r`；满了换段、一批不拆；截半行；中间一行坏了、序号接不上、段名对不上、不是最后一段有半行，都只报不修；空的最后一段接着写、名字不对报坏了；没有会话；第一段已有的不覆盖；只读第一条不动日志；只读地读跳过半行、一个字节不写；造到一半的会话没有第一条；序号接不上的一批不写；真会话写进去、读回来载入得了（`real.rs`，施工 1-13 再补挪出来）；从记下的位置读起（`marked.rs`，施工 3-8 七补，`store/index.md`） |
-| `crates/miyu-store/src/blob/tests.rs` | 存了取得回、`tmp/` 是空的；放在前两位下、文件名没有冒号；同一份只存一个、刷修改时间；崩在改名前只留临时文件；撞名换名；改名时目标已经有了算成；读出来不对报错、不删；两个账号各存各的；分块暂存：两块写完照 `put` 一样收齐、已经有的删暂存；编号撞了拒绝；扔掉一个的暂存文件；核心起来时清 `upload-*`，不碰 `put` 自己的临时文件、不碰 `tmp/` 还没建过的账号（施工 W-5）；读一段：读到结尾就停、过了结尾是空的、`length` 写 0 只问大小；没有这个 blob（施工 W-6） |
-| `crates/miyu-store/src/trash/tests.rs`（施工 3-8 三补） | 挪进回收处的整个目录一个字节不变、多一个 `deleted_at`，原处没了，列会话只剩别的；Unix 上 `trash/`、`trash/sessions/` 是 0700；会话不在的报找不到、回收处都没建；清：满 7 天的、正好满的删，差一毫秒的、删的时刻比现在晚的留，`deleted_at` 写法不对、没有的留并报出来，名字不合写法的不看；没有回收处什么都不做。时钟用测试的 |
-| `crates/miyu-store/src/jobs.rs` 的测试（施工 7-3） | 输出放在会话目录的 `jobs/<编号>.out`，几段的编号照原样（`jobs/j2.1.3.out`，施工 7-1 补）；已经有的清空；Unix 上 `jobs/` 是 0700 |
-| `crates/miyu-store/tests/snapshot.rs` | 策略快照存成 blob 的哈希就是快照的哈希，取回来重建，两份策略发的请求逐字节一样 |
+| `crates/gqy-store/src/root/tests.rs` | 三个平台的默认位置；`XDG_CACHE_HOME` 只挪 Linux 的缓存；`GQY_HOME` 挪数据根、不挪缓存；空的当没设，相对的 `GQY_HOME` 拒绝，开头的 `~` 照家目录接、`~别人` 当相对的、没有家目录时报错，相对的 `XDG_CACHE_HOME` 当没设；找不到家目录、`LOCALAPPDATA`；骨架建两次不出错、挡路的文件报错；八个线程同时建都成；账号的家目录建一次、0700；列会话从新到旧；新建的 0700、已经有的不改；新的数据根写下标记；认不出的一个字节不动、报错写明目录和 `.gqy-root`；只有隐藏文件也不算空；进程的环境找得到 |
+| `crates/gqy-store/src/durable/tests.rs` | 一层层建、都是 0700、建两次不出错；挡路的文件报错 |
+| `crates/gqy-store/src/log/tests.rs`、`log/tests/real.rs`、`log/tests/marked.rs` | 写了读得回，每行 `\n`、没有 `\r`；满了换段、一批不拆；截半行；中间一行坏了、序号接不上、段名对不上、不是最后一段有半行，都只报不修；空的最后一段接着写、名字不对报坏了；没有会话；第一段已有的不覆盖；只读第一条不动日志；只读地读跳过半行、一个字节不写；造到一半的会话没有第一条；序号接不上的一批不写；真会话写进去、读回来载入得了（`real.rs`，施工 1-13 再补挪出来）；从记下的位置读起（`marked.rs`，施工 3-8 七补，`store/index.md`） |
+| `crates/gqy-store/src/blob/tests.rs` | 存了取得回、`tmp/` 是空的；放在前两位下、文件名没有冒号；同一份只存一个、刷修改时间；崩在改名前只留临时文件；撞名换名；改名时目标已经有了算成；读出来不对报错、不删；两个账号各存各的；分块暂存：两块写完照 `put` 一样收齐、已经有的删暂存；编号撞了拒绝；扔掉一个的暂存文件；核心起来时清 `upload-*`，不碰 `put` 自己的临时文件、不碰 `tmp/` 还没建过的账号（施工 W-5）；读一段：读到结尾就停、过了结尾是空的、`length` 写 0 只问大小；没有这个 blob（施工 W-6） |
+| `crates/gqy-store/src/trash/tests.rs`（施工 3-8 三补） | 挪进回收处的整个目录一个字节不变、多一个 `deleted_at`，原处没了，列会话只剩别的；Unix 上 `trash/`、`trash/sessions/` 是 0700；会话不在的报找不到、回收处都没建；清：满 7 天的、正好满的删，差一毫秒的、删的时刻比现在晚的留，`deleted_at` 写法不对、没有的留并报出来，名字不合写法的不看；没有回收处什么都不做。时钟用测试的 |
+| `crates/gqy-store/src/jobs.rs` 的测试（施工 7-3） | 输出放在会话目录的 `jobs/<编号>.out`，几段的编号照原样（`jobs/j2.1.3.out`，施工 7-1 补）；已经有的清空；Unix 上 `jobs/` 是 0700 |
+| `crates/gqy-store/tests/snapshot.rs` | 策略快照存成 blob 的哈希就是快照的哈希，取回来重建，两份策略发的请求逐字节一样 |
 
 ### 出处
 
-- `07-存储.md` 第二节：目录布局、默认位置、怎么找、认得出自己的数据根才动它、第一次用时建骨架；S6（数据根放在家目录的 `.miyu` 里）。
+- `07-存储.md` 第二节：目录布局、默认位置、怎么找、认得出自己的数据根才动它、第一次用时建骨架；S6（数据根放在家目录的 `.gqy` 里）。
 - `07-存储.md` 第三节：一个会话一个目录、段怎么存、一个写者、一批一次写入一次同步。
 - `07-存储.md` 第四节：先落盘后推送、先落 blob、打开日志时自检三件事、各平台的坑（同步目录）。
 - `07-存储.md` 第五节、S5：blob 的路径、写、读的时候核对哈希、不跨账号去重。
 - `04-核心协议.md` 第九节 `session.delete`：删会话进回收处、留 7 天（2026-09-30 项目主人定，施工 3-8 三补）。
 - `03-事件模型.md` E4：大内容存成 blob，事件里只放引用。
-- `22-命令行.md` 第六节：权限不对由 `miyu doctor` 报告。
+- `22-命令行.md` 第六节：权限不对由 `gqy doctor` 报告。
 
 ### 还没有的
 
@@ -278,5 +278,5 @@
 - 找回删了的会话；清别的账号的回收处（现在只有管理员）；留多久放进配置（施工 3-8 三补）。
 - 派生数据：全文搜索、用量汇总的 SQLite（`07-存储.md` 第六节）。会话列表的索引做了（`store/index.md`，施工 3-8 七补）。
 - 数据根里别的文件：人格、预设、放行规则（`07-存储.md` 第二节、第九节）。成员自己的密钥 `home/<账号>/secrets.toml` 随多用户。
-- `miyu doctor` 查数据根的权限（`22-命令行.md` 第六节）。
+- `gqy doctor` 查数据根的权限（`22-命令行.md` 第六节）。
 - 用缓存目录的东西，例如语音的模型文件（`07-存储.md` 第二节）。

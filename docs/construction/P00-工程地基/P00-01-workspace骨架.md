@@ -100,8 +100,8 @@ workspace = true
 
 ## 实施步骤
 
-1. 工具链：`rustup update stable`，记录 `rustc -V`；把版本号同时写进 `rust-toolchain.toml` 与 `rust-version`（两者必须相同）。下限 1.85（tech-stack「Rust 2024 Edition / 1.85+」、01 §6）。**升级工具链单独走一张单，不随手升**——clippy 每个版本会加新检查，跟着 stable 漂会出现“没改一行代码，CI 变红”（参考 miyu-agent-remake 施工单 0-1）。
-2. 写根 `Cargo.toml`、`rust-toolchain.toml` 与 `.gitattributes`。`.gitattributes` 的作用是钉住换行：Windows 检出默认把文本换成 CRLF，会让按字节比对的夹具（04 的账本字节契约、19 §4 的 sha256 形状夹具）与 shell 脚本在不同平台上对不上（参考 miyu 0-3 的实测：没有它，字节级样本在 Windows 上必错）。
+1. 工具链：`rustup update stable`，记录 `rustc -V`；把版本号同时写进 `rust-toolchain.toml` 与 `rust-version`（两者必须相同）。下限 1.85（tech-stack「Rust 2024 Edition / 1.85+」、01 §6）。**升级工具链单独走一张单，不随手升**——clippy 每个版本会加新检查，跟着 stable 漂会出现“没改一行代码，CI 变红”（参考 gqy-agent-remake 施工单 0-1）。
+2. 写根 `Cargo.toml`、`rust-toolchain.toml` 与 `.gitattributes`。`.gitattributes` 的作用是钉住换行：Windows 检出默认把文本换成 CRLF，会让按字节比对的夹具（04 的账本字节契约、19 §4 的 sha256 形状夹具）与 shell 脚本在不同平台上对不上（参考 gqy 0-3 的实测：没有它，字节级样本在 Windows 上必错）。
 3. 生成 17 个空壳（可用一次性脚本生成，脚本不入库）。核对名单与 01 §3 完全一致。
 4. `cargo build --workspace` 生成 `Cargo.lock`；`cargo fmt --all`、`cargo clippy --workspace --all-targets -- -D warnings`、`cargo test --workspace` 全部跑绿。
 5. 自审：每个 `lib.rs` 的文档注释是否写清职责与出处；是否有多余文件（`.DS_Store` 等）。

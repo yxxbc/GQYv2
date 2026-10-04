@@ -10,10 +10,10 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/event.rs` | 外壳 `Event`；种类表 `Body`（宏 `bodies!`，加一种只加一行）；`Body::KINDS`、`Body::kind`；一行怎么读写 |
-| `crates/miyu-kernel/src/event/session.rs`、`turn.rs`、`restore.rs`、`message.rs`、`tool.rs`、`question.rs`、`context.rs`、`model.rs`、`effect.rs`、`job.rs`、`peer.rs`、`image.rs`（施工 8-17） | 各种 `body`（`kernel/events-bodies.md`） |
-| `crates/miyu-kernel/src/event/transient.rs` | 瞬时事件：外壳 `Transient` 和六种 `body`（`model.changed` 施工 8-9 加，由会话 actor 造） |
-| `crates/miyu-kernel/src/format_error.rs` | 编号、名字、时刻写法不对时的报错 `FormatError` |
+| `crates/gqy-kernel/src/event.rs` | 外壳 `Event`；种类表 `Body`（宏 `bodies!`，加一种只加一行）；`Body::KINDS`、`Body::kind`；一行怎么读写 |
+| `crates/gqy-kernel/src/event/session.rs`、`turn.rs`、`restore.rs`、`message.rs`、`tool.rs`、`question.rs`、`context.rs`、`model.rs`、`effect.rs`、`job.rs`、`peer.rs`、`image.rs`（施工 8-17） | 各种 `body`（`kernel/events-bodies.md`） |
+| `crates/gqy-kernel/src/event/transient.rs` | 瞬时事件：外壳 `Transient` 和六种 `body`（`model.changed` 施工 8-9 加，由会话 actor 造） |
+| `crates/gqy-kernel/src/format_error.rs` | 编号、名字、时刻写法不对时的报错 `FormatError` |
 | `docs/designs/samples/events/`、`docs/designs/samples/transient/` | 样本：每一种一份 |
 
 外壳里的几种写法（序号、时刻、种类、`by`、命令编号）见 `kernel/ids.md`，内容块见 `kernel/blocks.md`。追加一条之前照账本查的规矩（序号接不接得上、`turn` 对不对、调用对不对得上）见 `kernel/history.md`，这一页只管写法。
@@ -126,7 +126,7 @@
 9. 外壳上多出来、不认识的格，不管：读进内存时丢掉，写出去不再有。内存里的事件不带原文，原文在日志文件里（`store.md`）。
 10. `body` 先原样读下来，看过 `kind` 再照那一种读。
 11. 认识的种类，`body` 照那一种读；读不出来就是坏数据，报错写明是哪一种的 `body`，不当成不认识的。`body` 里多出来的格同样不管。
-12. 不认识的种类，包括不认识的 `ext.*`：`Body::Unknown`，记着种类名和原样的 `body`，写出去一字不差，空格都不变。投影跳过它（`crates/miyu-assemble/src/render.rs`，`kernel/request.md`）。
+12. 不认识的种类，包括不认识的 `ext.*`：`Body::Unknown`，记着种类名和原样的 `body`，写出去一字不差，空格都不变。投影跳过它（`crates/gqy-assemble/src/render.rs`，`kernel/request.md`）。
 13. 内核自己写出去的每一行，读回来再写出去一字不差：样本测试守着。
 14. 这一层只查写法。时刻的先后不查：时钟可能往回拨。别的规矩在追加时由账本查（`kernel/history.md`）。
 
@@ -171,19 +171,19 @@ serde_json 在每一句后面加上 ` at line <几> column <几>`（没有测试
 | `why` | 错在哪，例如 `must be 36 characters` |
 
 - 写成一句：`bad <what>: <why> (got <text>)`，`text` 带着引号，照 Rust 的调试写法转义（换行写成 `\n`，引号写成 `\"`）。例：`bad session id: must be 36 characters (got "x")`。
-- 从 `miyu_kernel::FormatError` 拿得到。在 JSON 里读的时候，它成了 serde_json 的报错。
+- 从 `gqy_kernel::FormatError` 拿得到。在 JSON 里读的时候，它成了 serde_json 的报错。
 - 报错是英文，给查问题的人看，写进运行日志（`28-运行日志.md` LG1；施工 4-9 再补四中：原来是中文）。要报给模型的错另写（`26-提示词.md` J3），不把它原样转给模型。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/event/tests.rs` | 图纸上的两行读写一字不差（`lines_from_the_drawing_round_trip`）；认识的读成对应的类型；第 12 条（`an_unknown_kind_keeps_its_body_byte_for_byte`）；第 2 条字段顺序（`fields_are_written_in_the_drawing_order`）；第 3、7 条（`optional_fields_missing_or_null_read_as_absent`）；第 9 条（`new_fields_on_the_envelope_are_ignored`）；「出错」表里的几种（`broken_lines_say_what_is_wrong`） |
-| `crates/miyu-kernel/src/event/transient/tests.rs` | 图纸上的那一行照写；四样增量各自的写法；没有 `turn`、`cause` 的不写；`tool.progress` 的写法 |
-| `crates/miyu-kernel/tests/samples.rs` | 第 13 条：每一份样本的每一行读写一字不差、认得出种类、种类和文件名对得上（`every_sample_round_trips_as_its_own_kind`）；认识的每一种都有样本（`every_known_kind_has_a_sample`）；几份样本讲同一个会话，序号不重复、时刻不往回走（`samples_tell_one_session_in_order`）；子代理的样本对得上：回报的会话、`by` 就是派它的 `job.started` 记的，子会话的第一条带着父会话、第 1 层（`the_child_in_the_samples_is_the_one_the_parent_started`，施工 7-1）；空了的通知对得上：等的会话前面订过，`idle` 的 `by` 是它、作废的是内核（`the_notices_in_the_samples_answer_the_watches`，施工 C-1） |
-| `crates/miyu-kernel/tests/transient_sample.rs` | 瞬时样本在代码里照着造、写出去一字不差（施工 8-9 加 `status` 带 `failover` 的一条、`model.changed`；施工 8-10 加 `why` 是 `turn` 的一条；施工 8-18 那一条带 `effort`，`from` 是 `system`，8-18（补）起）；推给头的几段增量交给累积器，拼出来的就是日志里 45 号回复的内容块 |
-| `crates/miyu-kernel/src/test_support.rs` 的 `read_body`，各种 `body` 的测试都用它 | 每一种读写一字不差、认得出种类 |
-| `crates/miyu-kernel/src/id/tests.rs` 的 `error_says_what_why_and_what_was_read`、`long_text_in_errors_is_cut` | `FormatError` 那一句的样子、80 个字符 |
+| `crates/gqy-kernel/src/event/tests.rs` | 图纸上的两行读写一字不差（`lines_from_the_drawing_round_trip`）；认识的读成对应的类型；第 12 条（`an_unknown_kind_keeps_its_body_byte_for_byte`）；第 2 条字段顺序（`fields_are_written_in_the_drawing_order`）；第 3、7 条（`optional_fields_missing_or_null_read_as_absent`）；第 9 条（`new_fields_on_the_envelope_are_ignored`）；「出错」表里的几种（`broken_lines_say_what_is_wrong`） |
+| `crates/gqy-kernel/src/event/transient/tests.rs` | 图纸上的那一行照写；四样增量各自的写法；没有 `turn`、`cause` 的不写；`tool.progress` 的写法 |
+| `crates/gqy-kernel/tests/samples.rs` | 第 13 条：每一份样本的每一行读写一字不差、认得出种类、种类和文件名对得上（`every_sample_round_trips_as_its_own_kind`）；认识的每一种都有样本（`every_known_kind_has_a_sample`）；几份样本讲同一个会话，序号不重复、时刻不往回走（`samples_tell_one_session_in_order`）；子代理的样本对得上：回报的会话、`by` 就是派它的 `job.started` 记的，子会话的第一条带着父会话、第 1 层（`the_child_in_the_samples_is_the_one_the_parent_started`，施工 7-1）；空了的通知对得上：等的会话前面订过，`idle` 的 `by` 是它、作废的是内核（`the_notices_in_the_samples_answer_the_watches`，施工 C-1） |
+| `crates/gqy-kernel/tests/transient_sample.rs` | 瞬时样本在代码里照着造、写出去一字不差（施工 8-9 加 `status` 带 `failover` 的一条、`model.changed`；施工 8-10 加 `why` 是 `turn` 的一条；施工 8-18 那一条带 `effort`，`from` 是 `system`，8-18（补）起）；推给头的几段增量交给累积器，拼出来的就是日志里 45 号回复的内容块 |
+| `crates/gqy-kernel/src/test_support.rs` 的 `read_body`，各种 `body` 的测试都用它 | 每一种读写一字不差、认得出种类 |
+| `crates/gqy-kernel/src/id/tests.rs` 的 `error_says_what_why_and_what_was_read`、`long_text_in_errors_is_cut` | `FormatError` 那一句的样子、80 个字符 |
 
 ### 出处
 

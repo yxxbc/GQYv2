@@ -10,35 +10,35 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-endpoint/src/lib.rs` | `Core`：核心的家底（数据根、资源目录、请求模型的端口、工具目录、系统的家目录、沙盒的助手（施工 5-4 上）、管理员、本机令牌、会话表、配置（施工 8-2））；数着几个连接；空不空闲；停下全部会话 |
-| `crates/miyu-endpoint/src/listen.rs` | `run`：在监听器上一个个接连接 |
-| `crates/miyu-endpoint/src/connection.rs` | `serve`：一个连接，读写分开；握手以前拦住；登记成在后台答的查询交给这个连接的一组后台任务，连接断了一起停（施工 W-7）；`subscribe`（回应带会话的限额、接下来请求的模型（施工 8-10）；带 `after` 的先补发，施工 3-8 六补）、`unsubscribe` |
-| `crates/miyu-endpoint/src/wire.rs` | 读一行、认成请求、回应写成一行 |
-| `crates/miyu-endpoint/src/hello.rs` | 握手 |
-| `crates/miyu-endpoint/src/methods.rs` | 握手以后的方法 |
-| `crates/miyu-endpoint/src/job_output.rs` | `job.output`：取最后几行、量上限（施工 7-4 补） |
-| `crates/miyu-endpoint/src/meta.rs` | `session.set_meta` 的参数：标题去掉前后空白、量长短，`null` 是去掉标题（施工 3-8 三补） |
-| `crates/miyu-endpoint/src/sessions.rs` | 会话表：造会话、找会话；工作目录太宽的退回工作区；造子会话（施工 7-5） |
-| `crates/miyu-endpoint/src/sessions/found.rs` | 找会话、载入（施工 7-8 从 `sessions.rs` 挪出来：表的锁在调的一方手里） |
-| `crates/miyu-endpoint/src/sessions/orphans.rs` | 载入时收掉派到一半的空子会话（施工 7-8，「会话表」第 8 条） |
-| `crates/miyu-endpoint/src/sessions/delete.rs` | 会话表删会话：认出它派的子会话、停下、挪进回收处（施工 3-8 三补）；删子会话照人停掉它、父会话记回报，都在表的锁里（施工 7-8） |
-| `crates/miyu-endpoint/src/from.rs` | `session.send` 的 `from`：去掉控制字符、截到 128 字节，记成 `harness`（施工 7-10） |
-| `crates/miyu-endpoint/src/spawn.rs` | 会话表交给会话的端口：造子会话、给会话发命令（施工 7-5，`session/tools.md`「派子代理」）；停下子会话、照日志看它（施工 7-4）；列主会话（施工 C-3） |
-| `crates/miyu-endpoint/src/list.rs` | `session.list`：标题、置顶照日志算（施工 3-8 三补）；工作目录、最近一次动静、忙不忙（施工 C-3）；读会话列表的索引、照日志补，起来时打开它，删会话删行（施工 3-8 七补，`store/index.md`）。她用 `sessions` 列会话也是这一个 `scan`（`tools/sessions.md`） |
-| `crates/miyu-endpoint/src/subscriptions.rs` | 订阅：每个订阅一个转发任务，先写补发的（施工 3-8 六补），再推 `event`、`resync`；换掉一个订阅时等它写完 |
-| `crates/miyu-endpoint/src/subscriptions/config.rs` | 配置的订阅（施工 8-4，`config.md`「协议」）：推 `config.changed`、掉队推 `resync`，`config.set` 的回应排在推送后面 |
-| `crates/miyu-endpoint/src/undo.rs` | 撤销、恢复、重做的回应里给人看的几样（`protocol/undo.md`） |
-| `crates/miyu-endpoint/src/attach.rs` | 附件（施工 3-9 三补）：`blob.put` 读、存；`session.send`、`session.redo` 的附件变成内容块；认是什么、文件名和媒体类型怎么查、存好了怎么拼回应，和分块上传共用（施工 W-5）；`model.call` 的图照哈希变成图片块（`images`，施工 8-20） |
-| `crates/miyu-endpoint/src/attach/kind.rs` | 认一个附件是什么：图片、PDF、别的文件，媒体类型 |
-| `crates/miyu-endpoint/src/uploads.rs` | `blob.open`、`blob.write`、`blob.close`：跟着连接走的上传表，60 秒不写、连接断了都作废（施工 W-5） |
-| `crates/miyu-endpoint/src/refusal.rs` | 拒绝：错误码、原因码、中英文的话 |
-| `crates/miyu-endpoint/src/settings.rs` | 端点的配置项：界面语言 `ui.language`，`auto` 照系统的语言算出 `zh`、`en`、`ja`（施工 8-1 声明，8-2 握手时用）；新会话开局只读 `permission.start_read_only`（施工 8-2） |
-| `crates/miyu-endpoint/src/config.rs`、`config/` | 配置服务：起来时读的几份配置、最终值，照目录找项目配置、认信不信任；`config.schema`、`config.get`、`config.check`（施工 8-2，`config.md`）；`config.set`、`config.trust`，住在核心家底的一把锁里（施工 8-3）；监视配置文件、推 `config.changed`（施工 8-4）；密钥文件也住在这里（施工 8-5） |
-| `crates/miyu-endpoint/src/secrets.rs`、`secrets/` | `secret.set`、`secret.delete`、`secret.list`：只能写、删、列名字，从不交出值；手改密钥文件被看到的、留痕（施工 8-5，`config.md` 第九条） |
-| `crates/miyu-endpoint/src/models.rs`、`models/` | `model.list`：配好的供应商、模型、每一格资料的值和来源（施工 8-7，`models.md`「协议」），池、用途（施工 8-8；挡位 8-8 补去掉了），模型和 key 的冷却（施工 8-9），`facts.effort` 多 `key`（8-18（补））；`session.create`、`session.configure` 的 `model` 怎么解析（`record`，施工 8-8、8-10）；`session.configure` 的参数（`ConfigureParams`）、`subscribe` 回应的 `model`（施工 8-10）；`subscribe` 的 `model` 多 `effort`（施工 8-18，`from` 是配置的哪一层，8-18（补）起）；`model.call`（`models/call.rs`，施工 8-20）：读参数、认图、调一次性入口（`miyu_session::OneShot`）、出错写成拒绝；8-15 起一次性调用记在这个连接的账号上 |
-| `crates/miyu-endpoint/src/usage.rs` | `usage.query`（施工 8-15，`models.md`「协议」）：读参数（`usage/tests.rs` 守着）、先补再查用量汇总、照 `usage.currency` 排金额、写成 `rows`；核心起来时开 `state/usage.db`（`open`） |
-| `crates/miyu-endpoint/src/providers.rs`、`providers/trial.rs` | 第一次接入的 `provider.detect`、`provider.catalog`、`provider.test`（施工 8-11，`models.md`「协议」、「怎么走」第七条）；探本机、试一次在会话那一层（`miyu_session::find_local`、`probe`） |
-| `crates/miyu-endpoint/src/queries.rs` | 可选软件包登记的查询：方法名到怎么答的一张表，`QueryError`；`mermaid.render` 经它接进来（施工 W-4，`mermaid.md`）；在后台答的一种登记 `register_background`，`link.preview` 照它接进来（施工 W-7，`net.md`） |
+| `crates/gqy-endpoint/src/lib.rs` | `Core`：核心的家底（数据根、资源目录、请求模型的端口、工具目录、系统的家目录、沙盒的助手（施工 5-4 上）、管理员、本机令牌、会话表、配置（施工 8-2））；数着几个连接；空不空闲；停下全部会话 |
+| `crates/gqy-endpoint/src/listen.rs` | `run`：在监听器上一个个接连接 |
+| `crates/gqy-endpoint/src/connection.rs` | `serve`：一个连接，读写分开；握手以前拦住；登记成在后台答的查询交给这个连接的一组后台任务，连接断了一起停（施工 W-7）；`subscribe`（回应带会话的限额、接下来请求的模型（施工 8-10）；带 `after` 的先补发，施工 3-8 六补）、`unsubscribe` |
+| `crates/gqy-endpoint/src/wire.rs` | 读一行、认成请求、回应写成一行 |
+| `crates/gqy-endpoint/src/hello.rs` | 握手 |
+| `crates/gqy-endpoint/src/methods.rs` | 握手以后的方法 |
+| `crates/gqy-endpoint/src/job_output.rs` | `job.output`：取最后几行、量上限（施工 7-4 补） |
+| `crates/gqy-endpoint/src/meta.rs` | `session.set_meta` 的参数：标题去掉前后空白、量长短，`null` 是去掉标题（施工 3-8 三补） |
+| `crates/gqy-endpoint/src/sessions.rs` | 会话表：造会话、找会话；工作目录太宽的退回工作区；造子会话（施工 7-5） |
+| `crates/gqy-endpoint/src/sessions/found.rs` | 找会话、载入（施工 7-8 从 `sessions.rs` 挪出来：表的锁在调的一方手里） |
+| `crates/gqy-endpoint/src/sessions/orphans.rs` | 载入时收掉派到一半的空子会话（施工 7-8，「会话表」第 8 条） |
+| `crates/gqy-endpoint/src/sessions/delete.rs` | 会话表删会话：认出它派的子会话、停下、挪进回收处（施工 3-8 三补）；删子会话照人停掉它、父会话记回报，都在表的锁里（施工 7-8） |
+| `crates/gqy-endpoint/src/from.rs` | `session.send` 的 `from`：去掉控制字符、截到 128 字节，记成 `harness`（施工 7-10） |
+| `crates/gqy-endpoint/src/spawn.rs` | 会话表交给会话的端口：造子会话、给会话发命令（施工 7-5，`session/tools.md`「派子代理」）；停下子会话、照日志看它（施工 7-4）；列主会话（施工 C-3） |
+| `crates/gqy-endpoint/src/list.rs` | `session.list`：标题、置顶照日志算（施工 3-8 三补）；工作目录、最近一次动静、忙不忙（施工 C-3）；读会话列表的索引、照日志补，起来时打开它，删会话删行（施工 3-8 七补，`store/index.md`）。她用 `sessions` 列会话也是这一个 `scan`（`tools/sessions.md`） |
+| `crates/gqy-endpoint/src/subscriptions.rs` | 订阅：每个订阅一个转发任务，先写补发的（施工 3-8 六补），再推 `event`、`resync`；换掉一个订阅时等它写完 |
+| `crates/gqy-endpoint/src/subscriptions/config.rs` | 配置的订阅（施工 8-4，`config.md`「协议」）：推 `config.changed`、掉队推 `resync`，`config.set` 的回应排在推送后面 |
+| `crates/gqy-endpoint/src/undo.rs` | 撤销、恢复、重做的回应里给人看的几样（`protocol/undo.md`） |
+| `crates/gqy-endpoint/src/attach.rs` | 附件（施工 3-9 三补）：`blob.put` 读、存；`session.send`、`session.redo` 的附件变成内容块；认是什么、文件名和媒体类型怎么查、存好了怎么拼回应，和分块上传共用（施工 W-5）；`model.call` 的图照哈希变成图片块（`images`，施工 8-20） |
+| `crates/gqy-endpoint/src/attach/kind.rs` | 认一个附件是什么：图片、PDF、别的文件，媒体类型 |
+| `crates/gqy-endpoint/src/uploads.rs` | `blob.open`、`blob.write`、`blob.close`：跟着连接走的上传表，60 秒不写、连接断了都作废（施工 W-5） |
+| `crates/gqy-endpoint/src/refusal.rs` | 拒绝：错误码、原因码、中英文的话 |
+| `crates/gqy-endpoint/src/settings.rs` | 端点的配置项：界面语言 `ui.language`，`auto` 照系统的语言算出 `zh`、`en`、`ja`（施工 8-1 声明，8-2 握手时用）；新会话开局只读 `permission.start_read_only`（施工 8-2） |
+| `crates/gqy-endpoint/src/config.rs`、`config/` | 配置服务：起来时读的几份配置、最终值，照目录找项目配置、认信不信任；`config.schema`、`config.get`、`config.check`（施工 8-2，`config.md`）；`config.set`、`config.trust`，住在核心家底的一把锁里（施工 8-3）；监视配置文件、推 `config.changed`（施工 8-4）；密钥文件也住在这里（施工 8-5） |
+| `crates/gqy-endpoint/src/secrets.rs`、`secrets/` | `secret.set`、`secret.delete`、`secret.list`：只能写、删、列名字，从不交出值；手改密钥文件被看到的、留痕（施工 8-5，`config.md` 第九条） |
+| `crates/gqy-endpoint/src/models.rs`、`models/` | `model.list`：配好的供应商、模型、每一格资料的值和来源（施工 8-7，`models.md`「协议」），池、用途（施工 8-8；挡位 8-8 补去掉了），模型和 key 的冷却（施工 8-9），`facts.effort` 多 `key`（8-18（补））；`session.create`、`session.configure` 的 `model` 怎么解析（`record`，施工 8-8、8-10）；`session.configure` 的参数（`ConfigureParams`）、`subscribe` 回应的 `model`（施工 8-10）；`subscribe` 的 `model` 多 `effort`（施工 8-18，`from` 是配置的哪一层，8-18（补）起）；`model.call`（`models/call.rs`，施工 8-20）：读参数、认图、调一次性入口（`gqy_session::OneShot`）、出错写成拒绝；8-15 起一次性调用记在这个连接的账号上 |
+| `crates/gqy-endpoint/src/usage.rs` | `usage.query`（施工 8-15，`models.md`「协议」）：读参数（`usage/tests.rs` 守着）、先补再查用量汇总、照 `usage.currency` 排金额、写成 `rows`；核心起来时开 `state/usage.db`（`open`） |
+| `crates/gqy-endpoint/src/providers.rs`、`providers/trial.rs` | 第一次接入的 `provider.detect`、`provider.catalog`、`provider.test`（施工 8-11，`models.md`「协议」、「怎么走」第七条）；探本机、试一次在会话那一层（`gqy_session::find_local`、`probe`） |
+| `crates/gqy-endpoint/src/queries.rs` | 可选软件包登记的查询：方法名到怎么答的一张表，`QueryError`；`mermaid.render` 经它接进来（施工 W-4，`mermaid.md`）；在后台答的一种登记 `register_background`，`link.preview` 照它接进来（施工 W-7，`net.md`） |
 
 ### 对外的样子
 
@@ -74,7 +74,7 @@
 接受的，`result` 里是这个方法的回应：
 
 ```json
-{"id":"c7","jsonrpc":"2.0","result":{"cwd":"/home/me/src/miyu","events":[41]}}
+{"id":"c7","jsonrpc":"2.0","result":{"cwd":"/home/me/src/gqy","events":[41]}}
 ```
 
 拒绝的，`code` 是 JSON-RPC 的错误码，`message` 照握手时的语言写，`data.reason` 是给程序看的原因码（「出错」一节）：
@@ -177,8 +177,8 @@
 | 参数 | 类型 | 说明 |
 |---|---|---|
 | `persona` | 字符串，可以不写 | 照哪个人格造；不写是出厂的 `engineer` |
-| `cwd` | 字符串，必写 | 头的工作目录，人看到的那种写法，例如 `~/src/miyu` |
-| `oneshot` | 布尔，不写是 `false` | 一次性的：`miyu ask` 开的写 `true`，记进 `session.created` |
+| `cwd` | 字符串，必写 | 头的工作目录，人看到的那种写法，例如 `~/src/gqy` |
+| `oneshot` | 布尔，不写是 `false` | 一次性的：`gqy ask` 开的写 `true`，记进 `session.created` |
 | `dirs` | 字符串的数组，可以不写 | 加进来的目录：和工作区一样能读能写（「加进来的目录」（施工 5-10 上））。不写是没有 |
 | `model` | 字符串，可以不写 | 用哪个模型：模型 `<供应商>/<模型>` 或池 `@<池>`（施工 8-8，`models.md`「两种写法」；挡位 8-8 补去掉了）。照这时的配置查过，记进 `session.created` 的 `model`；不写、写 `null` 的照这时的 `models.chat`，那也没配的不写 |
 
@@ -201,7 +201,7 @@
 回应：`{"sessions":[{"busy":true,"cwd":"<工作目录>","last_active":"<时刻>","oneshot":<布尔>,"parent":<编号或 null>,"pinned":true,"session":"<编号>","title":"<标题>"}, …]}`。`parent` 是子会话的父会话，主会话写 `null`（施工 7-5，`agents.md`）。`title`、`pinned` 照日志里的 `session.meta_changed` 算（施工 3-8 三补）：有标题的才写 `title`，置顶的才写 `pinned`（写 `true`），没有的不写。`cwd`、`last_active` 总有，`busy` 忙的才写（写 `true`）（施工 C-3，`cross-session.md`）：
 
 ```json
-{"busy":true,"cwd":"~/src/miyu","last_active":"2026-10-01T06:03:12.345Z","oneshot":false,"parent":null,"session":"0192f3a0-2222-7abc-8def-5566778899aa","title":"修 CI"}
+{"busy":true,"cwd":"~/src/gqy","last_active":"2026-10-01T06:03:12.345Z","oneshot":false,"parent":null,"session":"0192f3a0-2222-7abc-8def-5566778899aa","title":"修 CI"}
 ```
 
 1. 只列管理员的会话，从新到旧：照编号倒着排，编号照造的先后。子会话也列，和主会话排在一起。删了的（挪进了回收处）不列。
@@ -256,7 +256,7 @@
 2. 读 `path`，在阻塞线程里：照 `fs.md` 换成真实的位置（链接照指向的地方算），照边界表（管理员的工作区、数据根、这台机器的临时目录和系统目录，`fs.md` 第一节）落在谁都不能碰的那一片（数据根里、管理员的工作区以外）：`attachment_in_data_root`。别的地方都能读，和她读文件一样（`session/guard.md`：读哪儿都不问）。换不成真实的位置、打不开（没有、不是普通文件、没有权限）：`attachment_unreadable`。照 `fs.md` 第四节打开，路上一层链接都不跟。
 3. 一个最多 20 MiB（20,971,520 字节），多的 `attachment_too_big`；读到上限多一个字节就停，不整份读进来。`data` 放在一行 JSON 里，一行最长 1 MiB（「一行一条」），所以最多七百多 KiB，大的传 `path`；更大的（或者远程的头想一块一块传）用 `blob.open`、`blob.write`、`blob.close`（施工 W-5，下面）。
 4. 认是什么，照内容，不看扩展名：
-   1. 开头是四种图之一（PNG、JPEG、GIF、WebP）、量得出宽高的：图片，媒体类型照认出的，`media_type` 写了也不算。超过 5 MiB、哪一边超过 8000 像素：`attachment_too_big`，正好在线上的收。认法和上限和 `read` 读图片是同一份代码（`crates/miyu-tool/src/picture.rs`，`tools/read.md`「读图片」）：图跟着对话每次都发，被供应商拒掉的图会让这个会话以后的请求都失败。
+   1. 开头是四种图之一（PNG、JPEG、GIF、WebP）、量得出宽高的：图片，媒体类型照认出的，`media_type` 写了也不算。超过 5 MiB、哪一边超过 8000 像素：`attachment_too_big`，正好在线上的收。认法和上限和 `read` 读图片是同一份代码（`crates/gqy-tool/src/picture.rs`，`tools/read.md`「读图片」）：图跟着对话每次都发，被供应商拒掉的图会让这个会话以后的请求都失败。
    2. 别的都是文件。开头是 `%PDF-` 的，媒体类型是 `application/pdf`，`media_type` 写了也不算。
    3. 别的：`media_type` 写了的照写的，只是写成 `application/pdf`、`image/…` 的不算（驱动照它们把内容当 PDF、当图发，内容不是，供应商会拒）；没写、不算的，整份是 UTF-8、没有 NUL 字节的是 `text/plain`（和驱动认文本文件是同一条，`drivers/openai-chat.md` 第 9 条），别的 `application/octet-stream`。扩展名不认：头知道得更准的（例如浏览器给的类型）自己写 `media_type`（施工 3-9 三补定：扩展名的表是一份写死的名单，驱动给模型看的只有文件名和内容，用不上它）。
 5. 存成管理员的 blob（`store.md` 第九条），落了盘才回应；同一份内容再传，还是那一个 blob。存不下来：`internal_error`，记一条运行日志。
@@ -276,7 +276,7 @@
 4. 上传跟着连接走：编号只认开它的那个连接，别的连接拿来用回 `upload_unknown`。连接断了，它开的上传全部作废、删掉暂存文件。60 秒没有 `blob.write` 的，也作废。`close` 以后编号作废。
 5. 同一个连接上的请求本来就一条条办（「一个连接」第 1 条），一个上传不会同时写两块。一个附件拆成 40 块左右，一块一个来回。
 6. 核心起来时清掉 `blobs/tmp/` 里的 `upload-*`：崩了、被杀留下的。
-7. 不碰会话，不进会话的日志，和 `blob.put` 第 6 条一样。附件的大小上限和 `blob.put` 同一个数，一处定义（`crates/miyu-endpoint/src/attach.rs` 的 `LIMIT`）。
+7. 不碰会话，不进会话的日志，和 `blob.put` 第 6 条一样。附件的大小上限和 `blob.put` 同一个数，一处定义（`crates/gqy-endpoint/src/attach.rs` 的 `LIMIT`）。
 
 **`fs.list`**（施工 W-2，`web-module.md`「三、列文件、找文件」）
 
@@ -289,7 +289,7 @@
 回应 `{"items": […], "partial": <布尔>}`：`items` 每一条 `{"dir": <布尔>, "full": <绝对路径>, "marks": [<第几个字>…], "path": <列表上写的>, "size": <字节数>}`，`size` 只有文件才有；`partial` 列没列全。
 
 ```json
-{"building":false,"items":[{"dir":false,"full":"<家目录>/src/miyu/src/main.rs","marks":[4,5,6,7],"path":"src/main.rs","size":2048}],"partial":false}
+{"building":false,"items":[{"dir":false,"full":"<家目录>/src/gqy/src/main.rs","marks":[4,5,6,7],"path":"src/main.rs","size":2048}],"partial":false}
 ```
 
 1. `cwd` 照 `fs.md` 换成真实的位置（`~` 照家目录接），要是一个目录。换不成、不在、不是目录：`path_unreadable`。落在数据根里、又不在这个账号的工作区里：`path_forbidden`。
@@ -502,7 +502,7 @@
 2. `tools` 合成一张，软件包盖掉内核的同名工具；`said` 的编号前面加上它在资源目录里的位置（`core/…`、`software/<包>/…`），模板原样给、一个字不换：换字段是头的事，照 `store/resources.md`「怎么走」第 4 条，控制字符换成 `�`。
 3. 不给 `config` 那一格：配置的名字、说明在 `config.schema` 里。
 4. `language` 不合写法：`bad_params`。读得到却读不懂：`internal_error`，记一行 `WARN human not read error=…`，写明是哪一份。
-5. 回应的 `language` 是要的那一种；哪一份退回了英文，回应里不分，和 `miyu ask` 读到的一样。
+5. 回应的 `language` 是要的那一种；哪一份退回了英文，回应里不分，和 `gqy ask` 读到的一样。
 
 **`mermaid.render`**（施工 W-4，`mermaid.md`）
 
@@ -512,7 +512,7 @@
 
 回应 `{"marks": {"label": <色>, "line": <色>, "text": <色>}, "svg": <SVG 的字>}`：SVG 里字、线、连线标签垫底用的三种记号色，头照它们换成自己的颜色。详细的怎么走、出错、缓存、懒初始化都在 `mermaid.md`，这一页只列进方法表、出错表（照 `config.md` 的先例）。
 
-1. 编进了 `mermaid` 包才有（核心起来时经 `crates/miyu-core/src/packages.rs` 往查询表 `crates/miyu-endpoint/src/queries.rs` 里登记）；没编进来的回 `unknown_method`，和没有这个方法一样。
+1. 编进了 `mermaid` 包才有（核心起来时经 `crates/gqy-core/src/packages.rs` 往查询表 `crates/gqy-endpoint/src/queries.rs` 里登记）；没编进来的回 `unknown_method`，和没有这个方法一样。
 2. 查询，不改会话：不推送。
 
 **`link.preview`**（施工 W-7，`net.md`）
@@ -538,7 +538,7 @@
 
 回应 `{"text": <正文>, "provider": <供应商编号>, "model": <模型名>, "usage": <四项> 或 null}`。消息的样子、出错、用量的形状都在 `models.md`「协议」`model.call`，这一页只列进方法表、出错表（照 `mermaid.render` 的先例）。
 
-1. 命令：经一次性入口发一次（`miyu_session::OneShot`），和会话的路由共用冷却表、池的指针。连上来的头都能调；有了扩展以后前面加一道能力的检查。
+1. 命令：经一次性入口发一次（`gqy_session::OneShot`），和会话的路由共用冷却表、池的指针。连上来的头都能调；有了扩展以后前面加一道能力的检查。
 2. 不进任何会话的日志，不推送；一个连接的请求一条一条答，等它说完才答下一条。
 
 **`usage.query`**（施工 8-15，`models.md`「协议」`usage.query`、「怎么走」第九条）
@@ -729,12 +729,12 @@
 
 - `Core::idle`：没有连接，执行器的任务表里没有在跑的后台命令（结束了、记录还没落盘的也算，施工 7-3），会话表里也没有哪个会话忙着：在跑回合、回合结束了 `turn.ended` 还没落盘、在改回文件，都算忙；停了的会话不算。核心照它空闲退出（`core.md`）。
 - `Core::stop_sessions`：有计划地停下表里全部的会话，跑到一半的回合记成「重启了」，下次载入接着干（`kernel/session.md`）；各会话在跑的后台命令先记 `restarted`、落了盘再整组杀（`session/actor.md` 第 9 条，施工 7-3）；会话表清空。
-- 任务表（`miyu_session::Jobs`）是核心的家底里的一张，造会话、载入时交给会话（施工 7-3）。
+- 任务表（`gqy_session::Jobs`）是核心的家底里的一张，造会话、载入时交给会话（施工 7-3）。
 - 接不了连接（例如打开的文件太多）：歇 100 毫秒再接，不空转。
 
 ### 出错
 
-JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写在 `data.reason`。
+JSON-RPC 自己的几种照它的标准码；GQY 的一律 `-32010`，原因写在 `data.reason`。
 
 | 原因码 | `code` | 什么时候 |
 |---|---|---|
@@ -794,7 +794,7 @@ JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写
 - 从 `empty_message` 起，除了 `dir_too_wide`、附件的四个和 `not_a_command`，十三个是内核拒命令时给的原因码（`kernel/session.md`）。
 - 内核还有六个原因码，现在没有方法碰得到：`unknown_level`（协议上的级别只认两种，别的先是 `bad_params`）、`not_asking`、`unknown_decision`、`no_rule`、`unexpected_reason`、`bad_answer`。它们没有配话，说的是最后那一句「被拒绝了」。
 
-运行日志（目标 `miyu::endpoint`，`log.md`）：
+运行日志（目标 `gqy::endpoint`，`log.md`）：
 
 | 级别 | 这件事 | 什么时候 |
 |---|---|---|
@@ -840,11 +840,11 @@ JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写
 | `WARN` | `upload not stored error=…` | 分块上传暂存、改名进位置没成（施工 W-5） |
 | `ERROR` | `upload panicked error=…`、`upload cleanup panicked` | 分块上传在阻塞线程里崩了；连接断了、作废时删暂存那一步崩了（施工 W-5） |
 
-`mermaid.render` 的日志目标是 `miyu::mermaid`，不是 `miyu::endpoint`：`WARN not ready error=…`，画图的库初始化不了。见 `mermaid.md`「出错」。
+`mermaid.render` 的日志目标是 `gqy::mermaid`，不是 `gqy::endpoint`：`WARN not ready error=…`，画图的库初始化不了。见 `mermaid.md`「出错」。
 
-`link.preview` 的日志目标是 `miyu::net`：`WARN link preview failed host=… why=…`、`WARN link image not stored error=…`、`WARN not ready error=…`，见 `net.md`「出错」。在后台答的任务崩了（它的回应永远不会来了）记 `ERROR background request panicked error=…`，目标 `miyu::endpoint`（施工 W-7）。
+`link.preview` 的日志目标是 `gqy::net`：`WARN link preview failed host=… why=…`、`WARN link image not stored error=…`、`WARN not ready error=…`，见 `net.md`「出错」。在后台答的任务崩了（它的回应永远不会来了）记 `ERROR background request panicked error=…`，目标 `gqy::endpoint`（施工 W-7）。
 
-`model.call` 的 `model` 解析不出记 `DEBUG unknown model why=…`（目标 `miyu::endpoint`）；调一次记一行 `INFO model call …` 或 `INFO model call failed …`，目标 `miyu::session`，不带会话编号（施工 8-20，`models.md`「出错」）。
+`model.call` 的 `model` 解析不出记 `DEBUG unknown model why=…`（目标 `gqy::endpoint`）；调一次记一行 `INFO model call …` 或 `INFO model call failed …`，目标 `gqy::session`，不带会话编号（施工 8-20，`models.md`「出错」）。
 
 撤销、恢复的回应写不成的两行见 `protocol/undo.md`。
 
@@ -868,13 +868,13 @@ JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写
 | `session_stopped` | 这个会话停了，详情在运行日志里；再发一次会重新载入。 | This session has stopped; the runtime log has the details. Sending again reloads it. |
 | `session_broken` | 这个会话载入不了：它的日志或者策略快照坏了。 | This session cannot be loaded: its log or policy snapshot is broken. |
 | `empty_message` | 消息是空的。 | The message is empty. |
-| `dir_too_wide` | 加进来的目录太宽：家目录、根目录、Miyu 的数据根不能整个放行。 | An added directory is too wide: the home directory, the root and Miyu's data root cannot be opened up whole. |
+| `dir_too_wide` | 加进来的目录太宽：家目录、根目录、GQY 的数据根不能整个放行。 | An added directory is too wide: the home directory, the root and GQY's data root cannot be opened up whole. |
 | `attachment_unreadable` | 读不了这个文件：没有、不是普通文件，或者没有权限。 | This file cannot be read: it is missing, not a regular file, or not permitted. |
 | `attachment_too_big` | 附件太大：一个最多 20 MiB，图片最多 5 MiB、每边最多 8000 像素。 | The attachment is too big: at most 20 MiB, and an image at most 5 MiB and 8000 pixels a side. |
-| `attachment_in_data_root` | Miyu 的数据根里的文件不能当附件。 | Files in Miyu's data root cannot be attached. |
+| `attachment_in_data_root` | GQY 的数据根里的文件不能当附件。 | Files in GQY's data root cannot be attached. |
 | `unknown_attachment` | 附件不在核心里：先用 blob.put 传上来。 | The attachment is not in the core; upload it with blob.put first. |
 | `path_unreadable` | 读不了这个路径。 | This path cannot be read. |
-| `path_forbidden` | 这是 Miyu 自己的数据，不给看。 | This is Miyu's own data and is not shown. |
+| `path_forbidden` | 这是 GQY 自己的数据，不给看。 | This is GQY's own data and is not shown. |
 | `mermaid_too_long` | 这张图的源码太长了。 | The diagram source is too long. |
 | `mermaid_failed` | 这张图画不出来。 | The diagram could not be drawn. |
 | `too_many_uploads` | 同时传的文件太多了，等前面的传完。 | Too many uploads at once; wait for the others to finish. |
@@ -897,7 +897,7 @@ JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写
 | `unknown_config_key` | 没有这一项配置。 | There is no such setting. |
 | `config_invalid` | 配置有几处不对，没有改。 | Some settings are not right. Nothing was changed. |
 | `config_conflict` | 这一项刚被别处改过，没有改：先看看现在的值。 | This was just changed elsewhere. Nothing was changed. Look at the current value first. |
-| `config_file_broken` | 配置文件现在读不进来，没法只改一项：先把它改好，比如用 miyu config edit。 | The config file cannot be read right now, so a single setting cannot be changed. Fix the file first, e.g. with miyu config edit. |
+| `config_file_broken` | 配置文件现在读不进来，没法只改一项：先把它改好，比如用 gqy config edit。 | The config file cannot be read right now, so a single setting cannot be changed. Fix the file first, e.g. with gqy config edit. |
 | `no_project_config` | 这个目录找不到项目配置。 | There is no project config for this directory. |
 | `unknown_secret` | 没有这个密钥。 | There is no such secret. |
 | `unknown_provider` | 没有这个供应商。 | There is no such provider. |
@@ -912,60 +912,60 @@ JSON-RPC 自己的几种照它的标准码；Miyu 的一律 `-32010`，原因写
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-endpoint/src/wire/tests.rs` | 认请求的每一条、回应是一行、去掉行尾、太长的 |
-| `crates/miyu-endpoint/tests/endpoint.rs` | 握手先行、令牌（长短也比）、版本对不上，被拒的断开；握手的回应照核心探到的报沙盒，四种（施工 5-4 下）；造会话、说话；同一个造会话只造一个；没有的会话；载入上一次运行的会话；两个连接只载入一次；照头的语言拒绝；JSON-RPC 的错误码、通知不回应；太长的断开；工作目录跟着头；不能输入的头造的会话没人确认；空消息；停了的会话下次再载入；打断时排着的接着发 |
-| `crates/miyu-endpoint/tests/limits.rs` | 订阅的回应带限额（施工 6-3 补）：窗口、压缩线照核心的模型算；没报窗口的是 `{}`，窗口太小的只有 `window`；已经订阅着的再订阅也带；核心重启以后载入的照样带；`unsubscribe` 还是 `{}`；回应带 `model`，照蓝图的例子一字不差（施工 8-10） |
-| `crates/miyu-endpoint/tests/subscribe.rs` | 先见结果后见回应；两个会话不串；取消订阅以后不推；掉队推 `resync`、回应一条不丢、重新订阅照常推；积压时回应排在推送后面；取消订阅时已经交给转发任务的回应照样到；会话停了推 `resync`；订阅要握手、要有这个会话、只认 `events` |
-| `crates/miyu-endpoint/tests/replay.rs`（施工 3-8 六补） | 补发：`after` 是 0 补整份日志、一字不差、都在回应前面、回应带 `upto`、没有瞬时的，补完接着推下一条；中间的序号补之后的；最后一条、比最后一条大的什么都不补、照常推、一条不重；不写、写 `null` 的照旧、回应没有 `upto`；写错的八种 `bad_params`、先查参数不找会话、一个都没订阅上；核心重启以后要载入的照样补；订阅着、推送堵着时带 `after` 再订阅，旧的手里的回应照样到、补的中间不夹旧的、之后只有新的在推；日志坏了的 `session_broken`、没订阅上，没有要补的不读日志 |
-| `crates/miyu-endpoint/tests/replay_race.rs`（施工 3-8 六补） | 掉了队的头带上最后看到的序号重新订阅，看到的和补的合起来就是日志；真核心：另一个头一句接一句地说、会话一直在追加，中途几个头先后从头订阅，每个头补的和推的合起来都和日志一字不差 |
-| `crates/miyu-endpoint/tests/restart.rs` | 核心重启以后：不带 `cwd` 载入的会话照最后一轮的工作目录、没开过回合的照造会话时的；重发的造会话交回原来那一个 |
-| `crates/miyu-endpoint/tests/edges.rs` | 不握手的到时断开、握手了的不受管；数组的 `params` 参数不对；握手被拒照它报的语言说；人格目录不存在是 `unknown_persona`、目录在而读不了是 `internal_error` |
-| `crates/miyu-endpoint/tests/list.rs` | 从新到旧、只要一次性的、`limit`、参数不对、空的；每一项带 `cwd`、合写法的 `last_active`，闲着的不写 `busy`（施工 C-3） |
-| `crates/miyu-endpoint/src/list/tests/indexed.rs`、`tests/index.rs`、`tests/index_log.rs`（施工 3-8 七补） | 读索引的和整份读的一字不差；补上、重读、重建；索引那一行跟着会话走、删会话删行；几行运行日志（`store/index.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/sessions.rs`、`src/list/tests.rs`（施工 C-3） | 工作目录跟着头报的换、忙着的写 `busy`（子会话也算）、最近一次动静是日志最后一条；工作目录照最后一条带 `cwd` 的、不带的不盖、一条都没记的写 `~`，哪种事件都算动静，叫停的旗举了一个都不读；她用 `sessions` 列的和它是同一份（`tools/sessions.md`） |
-| `crates/miyu-endpoint/tests/meta.rs` | 改标题、置顶（施工 3-8 三补）：改名去掉空白、只写改了的那一格、推送在回应前面、`by`、`cause`；置顶、取消、两样一起；`null` 去掉标题记成空的；和现在一样的六种什么都不记；200 个字收、201 个字和空白的不收；两格都不写（含 `pinned` 写 `null`、会话没有的）、类型不对、会话编号不对是参数不对，没有的会话找不到；回合进行中改的带上回合；`session.list` 带标题、置顶，取消了、去掉了的不写，核心重启以后照样，载入以后照日志接着比；日志坏了的照样列出来，工作目录、最近一次动静照第一条（施工 C-3） |
-| `crates/miyu-endpoint/tests/delete.rs` | 删除会话（施工 3-8 三补）：空闲的整个目录挪进回收处、日志不变、`deleted_at` 是删的时刻，列不出来，再发命令、订阅、改名、打断、再删都是没有这个会话，重发造它的那一条另造一个；回合进行中的拒绝、什么都没动，打断以后删得掉；核心重启以后没在跑的不载入就删（被重启打断的那一轮不接着干）；参数不对、没有的会话 |
-| `crates/miyu-endpoint/src/sessions/delete/tests.rs`（施工 7-8） | 删子会话在表的锁里停它、父会话记回报：父会话一记下它停了就去叫醒它，拿到表的锁时它已经删掉了，删得掉（挪进锁以前，这时它又开了一轮，删的时候说有回合在进行） |
-| `crates/miyu-endpoint/tests/orphans.rs`（施工 7-8） | 真核心：父会话派出去一个子代理，没来得及记下 `job.started` 就崩了（日志截在派它的那条回复后面），再载入父会话时子会话挪进回收处；一次派两个、只记下一个的只收那一个；记下了的照留 |
-| `crates/miyu-endpoint/tests/delete_children.rs` | 删会话连子会话（施工 3-8 三补）：主会话派的子代理、子代理派的孙代理一起停下、各自挪进回收处，两条后台命令各杀一次、谁都不记回报；删一个正忙的子会话，主会话记一条 `stopped` 的回报（`by` 是子会话、不带 `by_model`）、被叫醒，子会话挪走、主会话还在；报过 `done` 又被留了言、主会话又在等它的，删它也记一条 `stopped`、叫醒主会话（施工 7-7）；主会话已经进了回收处的，删子会话照样删、不送；子代理派的编号带着它自己的 `j1`（`j1.1`、`j1.2`），删孙会话时子会话记的 `stopped` 回报是 `j1.1`（施工 7-1 补） |
-| `crates/miyu-endpoint/tests/spawn.rs` | 会话里派子代理，会话表造出子会话、交代送进去、替身模型在子会话里答话；`session.list` 里子会话写着父会话、主会话写 `null`（施工 7-5） |
-| `crates/miyu-endpoint/tests/revert.rs` | 协议上撤销、恢复；三种拒绝的中文；`turn` 写 0 |
-| `crates/miyu-endpoint/tests/permission.rs` | 协议上切权限级别（施工 3-8 再补）：切到完全放开、开只读、两样一起换，各记一条、推给订阅着的头、回应 `{}`；和现在一样的四种什么都不记不推；两格都不写（含写 `null`、会话没有的）、级别和只读的值不对、会话编号不对、没写会话是参数不对；没有的会话找不到，停了的会话是停了；回合进行中收紧成只读，真核心走一遍：等着的写入当场补 `denied`、和切权限同一批、推送在回应前面，放行以后请求之前注入只读那一块（切换那一份，带上一级 `workspace`，施工 2-7 补），写的一次没跑 |
-| `crates/miyu-endpoint/tests/job_stop.rs` | 协议上停子代理（施工 7-4）：回应 `{}`、回应之前父会话记下了回报、子会话那一轮被父会话打断；停过的、没有的 `unknown_job`，中文、英文；编号不合写法、不是字符串的参数不对；没有这个会话 |
-| `crates/miyu-endpoint/tests/job_output.rs` | 协议上读后台命令的输出（施工 7-4 补），后台命令用假的：跑着的读到这时为止的、`running` 是真，和她用 `jobs` 读到的一样；结束了的读 blob（拿掉输出文件照样读得到）、`running` 是假，和 `jobs` 读到的一字不差；`tail` 截尾、`truncated`、`lines`，最后一段没有换行的照样，不写 `tail` 交最后 200 行；超了上限从前面按整行去掉；开不了的输出文件当是空的；空的；没有这个任务、编号不合写法、`tail` 不对的七种（先查、不找会话）、没有这个会话、子代理的拒绝，中文、英文；拒绝的什么都不写 |
-| `crates/miyu-endpoint/src/job_output/tests.rs` | 取尾巴（施工 7-4 补）：照 `jobs` 数行、只照换行切；最后几行；上限正好 131,072 字节的一行整行给、多一个字节只留末尾；超了从前面按整行去掉；最后一行太长只交末尾、前面的不接上（前面那一行正好放得下也不接），读的时候就去掉过前面的也一样；中间太长的一行、截过的一行后面又来了行，整行去掉；截处从一个字的开头起，剩半个字的跳过；解不开的字节换成 `�`；读不下去的读到多少算多少；最坏的回应（每个字节都转义成六个、编号全是引号）放得进一行；回应的格 |
-| `crates/miyu-endpoint/tests/human.rs`（施工 W-1） | 协议上 `human.get`：和 `Human::load` 读到的一样，工具的样子一样、说法的编号带位置（`core/…`、`software/<包>/…`）、模板是原文一个字不换；软件包盖掉内核的同名工具；没有这种语言照英文；不写 `language` 照握手的语言；`language` 不合写法参数不对；回应里没有 `config` 那一格；读不懂 `internal_error`；改了资源，核心不重启下一次调就是新的；真核心照源码树的资源，`zh`、`en`、`ja` 三种都交得出 `tools`、`said` |
-| `crates/miyu-endpoint/src/queries/tests.rs`、`crates/miyu-core/tests/packages.rs`（施工 W-4） | 查询表：没登记的方法交回 `None`、照协议是 `unknown_method`；登记过的名字正好对上才找得到。`mermaid.render`：真核心走一遍，一张流程图、一张时序图都出 SVG，回应的 `marks` 和 SVG 里用的三种记号色对得上，同一份源码两次拿到一样的回应；空的 `bad_params`、超过 64 KiB `mermaid_too_long`、画不出 `mermaid_failed`（`data.detail` 不是空的）。细节见 `mermaid.md`「守着它的」 |
-| `crates/miyu-endpoint/src/queries.rs` 里的测试、`crates/miyu-core/tests/packages.rs`、`crates/miyu/tests/link_preview.rs`（施工 W-7） | 在后台答的只有照 `register_background` 登记的；同一个名字两种登记也 panic。`link.preview`：没登记回 `unknown_method`；登记了的读不成地址、不是 http 不碰网络就答；`url` 没写、不是字符串、`params` 是数组 `bad_params`；在后台答的不挡后面的请求、回应照 `id` 对上、连接断了它跟着停；真的核心照环境变量里的代理做出卡片、图用 `blob.get` 读得回来。细节见 `net.md`「守着它的」 |
-| `crates/miyu-endpoint/tests/redo.rs` | 协议上重做（施工 4-7 再补）：回应带撤销的几样和重发的那一句、推送里是一批撤销、原话、新的一轮，新的一轮的请求和撤掉的那一轮的一字不差；换了话的推送里是新的话、`said` 是原来的；改过文件的先改回、回应带 `files`；重做以后恢复不了；最后一轮是清空、没说过话的，有回合在进行、换成空的拒绝，中文、英文；`text` 不是字符串、会话编号不对的参数不对，写 `null` 当没写；附件照带、换掉、不要，没有的 blob `unknown_attachment` 什么都不写 |
-| `crates/miyu-endpoint/tests/compact.rs` | 协议上手动压缩（施工 6-8）：回应是那一轮的开头、推送里压好了；要求原样到了摘要请求里；撤掉那一轮的回应里没有 `said`；有回合在进行、没有能压的两种拒绝，中文、英文；`instructions` 不是字符串的参数不对 |
-| `crates/miyu-endpoint/tests/recap.rs`（施工 3-8 四补） | 协议上要回顾：回应是那一句、照到的、不是交回的；推送里先有回顾的 `model.called`、`session.recapped`，都不带回合编号、`cause` 是这一条，再是回应，别的头也收到；请求是一条 user、没有 system 和工具面；没有新内容再要一次交回上一句、不请求；有回合在进行时照收、照到的是这一轮那句话；没有能回顾的、没写成的两种拒绝，中文、英文，没写成的不再来；会话编号不对、没写、不是字符串的参数不对，没有的会话找不到 |
-| `crates/miyu-endpoint/tests/title.rs`（施工 3-8 五补） | 自动起标题：第一轮答完，订阅着的头收到起标题的 `model.called`（`purpose: "title"`）和 `session.meta_changed`，`by` 是内核、不带回合编号和 `cause`；请求是一条 user、没有 system 和工具面，只喂第一轮；`session.list` 带上标题，核心重启以后照样；第二轮不再起；人先起过名的不起 |
-| `crates/miyu-endpoint/tests/clear.rs` | 协议上清空（施工 6-8 补）：回应是那一轮的开头、订阅的推送里是那一批三条、不请求模型；下一次请求里没有清空以前的；撤掉那一轮回应里撤掉了一次压缩、没有 `said`，再问看得到了；有回合在进行、本来就空的两种拒绝，中文、英文；会话编号不对、没写的参数不对 |
-| `crates/miyu-endpoint/src/sessions/tests.rs` | 父会话不在会话表里的不再造子会话、什么都没建（施工 3-8 三补） |
-| `crates/miyu-endpoint/tests/workspace.rs` | 太宽的五种（`~`、家目录、根目录、数据根、数据根里面）和读不出家目录时的 `~`；项目目录、账号的工作区照旧；回应里的 `cwd`、重发的造会话 |
-| `crates/miyu-endpoint/tests/dirs.rs` | 加进来的目录（施工 5-10 上）：造会话、说话时报的记进这一轮，不写的照旧、写空的就没有；太宽的五种整条命令都不收、什么都没写；核心重启以后照最后一轮的 |
-| `crates/miyu-endpoint/tests/idle.rs` | 连着连接、跑着回合不空闲；停下全部会话，跑到一半的记成重启了 |
-| `crates/miyu-endpoint/tests/attach.rs` | `blob.put`（施工 3-9 三补）：传路径、传内容；照内容认图片（扩展名不算）、PDF、文本、别的文件，量宽高，回应的格照字母排、存成管理员的 blob；写了的媒体类型什么时候算、改名、写 `null` 等于没写；太大（20 MiB、图片的宽高和 5 MiB，正好在线上的收）；数据根里的不给、管理员的工作区给、指到数据根里的链接不给；读不了（没有、目录、没有家目录时的 `~`）；参数不对的十二种、一个都没存；四种拒绝的中英文 |
-| `crates/miyu-endpoint/tests/uploads.rs`、`crates/miyu-core/tests/packages.rs`（施工 W-5） | `blob.open`、`blob.write`、`blob.close`：分块传完和 `blob.put` 同一个回应、同一个 blob；接不上回 `upload_offset`（`data.received` 对）；没收齐 `close` 回 `upload_incomplete`，还能接着写完；别的连接拿编号用不了；连接断了、60 秒不写都作废并删暂存；`size` 超过 20 MiB 当场 `attachment_too_big`；同时开到第 5 个 `too_many_uploads`，关掉一个腾出位置；`data` 不是 base64、一块超过 512 KiB、加起来超过 `size` 都是 `bad_params`；图片照 `blob.put` 的规矩认、查上限。`packages.rs` 另测 `packages::clear_uploads`：崩了留下的 `upload-*` 清掉、真的 blob 不碰、账号还没存过东西时不出错 |
-| `crates/miyu-endpoint/tests/attach_send.rs` | `session.send` 带附件（施工 3-9 三补）：照先后接在文字后面，宽高、种类照核心量的，图片块带着 `blob.put` 的名字（施工 3-9 四补），她收到的请求里就是这几块；只有附件也是一句话，`null` 是没有；blob 不在的拒绝、什么都没写、换的工作目录也没送进会话；附件的格不对的七种 |
-| `crates/miyu-endpoint/tests/files.rs` | `fs.list`、`fs.find`（施工 W-2）：真核心上数据根不列不找、账号的工作区照样列；开头对、大小写不论、点开头的打了点才列、目录在前、50 条截断、`marks`；模糊找有 `marks`、子目录的 `path` 用 `/`；清单没建完先给一部分、`building`；`fresh` 隔一段时间才重建、不是 `true` 不重建；最多记 4 份、多了丢最久没用的；换不成真实的位置、不是目录的 `path_unreadable`；没写 `cwd` 的 `bad_params` |
-| `crates/miyu-endpoint/tests/hello.rs`（施工 W-3） | 握手的 `host`：三格总有、`platform` 是这台机器的、`workspace` 换成真实的位置（链接也换成指的地方）、没有系统的家目录 `home` 是 `null`、没人建过工作区就回原样的路径（不替连上来的头造目录）。`fs.realpath`：`~` 照家目录接、`cwd` 可以不写也可以本身是 `~`；相对的没给 `cwd` 的 `bad_params`；往上找最近在的一层、后面几段原样接上；路中间的链接换成指的地方；落在数据根里的照样换，不查边界；一层都不在（没有家目录）`path_unreadable` |
-| `crates/miyu-endpoint/tests/login.rs`、`login_log.rs`（施工 W-8） | 握手的四种凭据、`account.setup_code`、`account.setup`、`account.logout`、作废了断开、运行日志里没有码、密码、令牌（`web-module.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/reads.rs`（施工 W-6） | `blob.get`：读一段、读到结尾就停、`offset` 过了结尾是空的、不写 `offset`、`length` 的默认值、`length` 写 0 只问大小；没有这个 blob `unknown_blob`。`fs.read`：数据根拒、工作区能读、相对的 `bad_params`、`~` 接系统的家目录；没有、目录、（Unix）套接字 `path_unreadable`。两个方法 `length` 超过 512 KiB 都是 `bad_params`；拒绝的中英文 |
-| `crates/miyu-endpoint/tests/from.rs`、`src/from/tests.rs` | `session.send` 带 `from`（施工 7-10）：记成 `harness`、带着名字，不带的、`null` 照旧记成本人；闲着开一轮、`cause` 是这一条，正忙排进这一轮；附件照收；控制字符去掉、截到 128 字节不截断一个字；空的、只有控制字符的、不是字符串的参数不对，什么都没写；`session.create`、`session.redo` 写了不理 |
-| `crates/miyu-endpoint/src/attach/kind/tests.rs` | 认附件：量得出的图是图片、头写的不算，量不出的当文件；图片的上限和线上的；PDF 照开头认；别的文件照头写的，写成 PDF、图片的照内容认，文本、空的、二进制、不是 UTF-8 的 |
-| `crates/miyu-endpoint/tests/tools.rs` | 造会话、载入时用核心的工具目录；核心的沙盒造会话、载入时都交给会话，沙盒用不了的核心上执行命令没人能确认就拒（施工 5-4 上） |
-| `crates/miyu-endpoint/tests/socket.rs` | 真的套接字（Windows 上是命名管道）上握手、造会话、说话，第二个头也连得上 |
-| `crates/miyu-endpoint/tests/config.rs`、`config_trust.rs`（施工 8-2） | 握手的 `language`、`config_errors`；`config.schema`、`config.get`、`config.check`；`unknown_config_key` 带 `problems`；开局只读照配置、照信任着的项目配置；造会话、说话的回应带 `untrusted_project`（`config.md`「守着它的」）。`config.trust` 的回答、拒绝、日志（施工 8-3） |
-| `crates/miyu-endpoint/tests/models.rs`（施工 8-7） | `model.list` 的形状、来源、状态；`provider` 只看一家、`unknown_provider`、参数不对；`refresh` 拉完再答、不写的在后台拉；冷却（施工 8-9）：模型照能用的 key 里最好的那个，都在冷却的带最早恢复的 `until`、`class`，认证失败停了整个 key 的那个 key 也是 `cooling`，取不到值的 key 不算（`models.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/models_pools.rs`（施工 8-8） | `model.list` 的 `pools`（8-8 补多 `subagent`、`description`，没有 `tiers`）、`uses`；`session.create` 的 `model` 记下解析出的、`unknown_model` 什么都不造、不是字符串的 `bad_params`；`session.configure` 照这时的配置解析好记一条、先推再回应、一样的不记，参数不对的几种 `bad_params`、先找会话、解析不出的 `unknown_model`、都什么都不记；`subscribe` 的 `model` 照真路由解析出的写，轮换的池只有 `ref`，一个都没有的不写（施工 8-10，`models.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/models_effort.rs`（施工 8-18；8-18（补）去掉会话那一层） | `session.configure` 写了 `effort` 回 `bad_params`、不写 `model` 回 `bad_params`；`subscribe` 的 `model` 多 `effort`，`from` 是配置的哪一层；`model.list` 的 `facts.effort`、多一格 `key`；配置里写错的 `unknown_effort`（`models.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/providers.rs`、`providers_test.rs`、`providers_log.rs`（施工 8-11） | `provider.detect`、`provider.catalog`、`provider.test` 的形状、参数不对、`unknown_provider`，`{value}` 的 key 不进回应和运行日志（`models.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/model_call.rs`、`model_call_log.rs`（施工 8-20） | `model.call` 的回应形状、参数校验、blob 的账号、几种出错的 `data`、不进会话日志、运行日志那两行（`models.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/secrets.rs`、`secrets_log.rs`（施工 8-5） | `secret.*` 的回应、拒绝、日志；值不进回应、拒绝、系统日志、运行日志（`config.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/config_set.rs`（施工 8-3） | `config.set` 的回应、每一种拒绝、`expect`、版本、手改重读、全收或者全不收、写不成什么都没变、日志（`config.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/config_watch.rs`、`config_watch_log.rs`（施工 8-4） | 订阅配置、取消、参数不对；手改推 `config.changed`；`config.set` 先见推送后见回应；掉队推 `resync`；改了语言下一句照新的（`config.md`「守着它的」） |
+| `crates/gqy-endpoint/src/wire/tests.rs` | 认请求的每一条、回应是一行、去掉行尾、太长的 |
+| `crates/gqy-endpoint/tests/endpoint.rs` | 握手先行、令牌（长短也比）、版本对不上，被拒的断开；握手的回应照核心探到的报沙盒，四种（施工 5-4 下）；造会话、说话；同一个造会话只造一个；没有的会话；载入上一次运行的会话；两个连接只载入一次；照头的语言拒绝；JSON-RPC 的错误码、通知不回应；太长的断开；工作目录跟着头；不能输入的头造的会话没人确认；空消息；停了的会话下次再载入；打断时排着的接着发 |
+| `crates/gqy-endpoint/tests/limits.rs` | 订阅的回应带限额（施工 6-3 补）：窗口、压缩线照核心的模型算；没报窗口的是 `{}`，窗口太小的只有 `window`；已经订阅着的再订阅也带；核心重启以后载入的照样带；`unsubscribe` 还是 `{}`；回应带 `model`，照蓝图的例子一字不差（施工 8-10） |
+| `crates/gqy-endpoint/tests/subscribe.rs` | 先见结果后见回应；两个会话不串；取消订阅以后不推；掉队推 `resync`、回应一条不丢、重新订阅照常推；积压时回应排在推送后面；取消订阅时已经交给转发任务的回应照样到；会话停了推 `resync`；订阅要握手、要有这个会话、只认 `events` |
+| `crates/gqy-endpoint/tests/replay.rs`（施工 3-8 六补） | 补发：`after` 是 0 补整份日志、一字不差、都在回应前面、回应带 `upto`、没有瞬时的，补完接着推下一条；中间的序号补之后的；最后一条、比最后一条大的什么都不补、照常推、一条不重；不写、写 `null` 的照旧、回应没有 `upto`；写错的八种 `bad_params`、先查参数不找会话、一个都没订阅上；核心重启以后要载入的照样补；订阅着、推送堵着时带 `after` 再订阅，旧的手里的回应照样到、补的中间不夹旧的、之后只有新的在推；日志坏了的 `session_broken`、没订阅上，没有要补的不读日志 |
+| `crates/gqy-endpoint/tests/replay_race.rs`（施工 3-8 六补） | 掉了队的头带上最后看到的序号重新订阅，看到的和补的合起来就是日志；真核心：另一个头一句接一句地说、会话一直在追加，中途几个头先后从头订阅，每个头补的和推的合起来都和日志一字不差 |
+| `crates/gqy-endpoint/tests/restart.rs` | 核心重启以后：不带 `cwd` 载入的会话照最后一轮的工作目录、没开过回合的照造会话时的；重发的造会话交回原来那一个 |
+| `crates/gqy-endpoint/tests/edges.rs` | 不握手的到时断开、握手了的不受管；数组的 `params` 参数不对；握手被拒照它报的语言说；人格目录不存在是 `unknown_persona`、目录在而读不了是 `internal_error` |
+| `crates/gqy-endpoint/tests/list.rs` | 从新到旧、只要一次性的、`limit`、参数不对、空的；每一项带 `cwd`、合写法的 `last_active`，闲着的不写 `busy`（施工 C-3） |
+| `crates/gqy-endpoint/src/list/tests/indexed.rs`、`tests/index.rs`、`tests/index_log.rs`（施工 3-8 七补） | 读索引的和整份读的一字不差；补上、重读、重建；索引那一行跟着会话走、删会话删行；几行运行日志（`store/index.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/sessions.rs`、`src/list/tests.rs`（施工 C-3） | 工作目录跟着头报的换、忙着的写 `busy`（子会话也算）、最近一次动静是日志最后一条；工作目录照最后一条带 `cwd` 的、不带的不盖、一条都没记的写 `~`，哪种事件都算动静，叫停的旗举了一个都不读；她用 `sessions` 列的和它是同一份（`tools/sessions.md`） |
+| `crates/gqy-endpoint/tests/meta.rs` | 改标题、置顶（施工 3-8 三补）：改名去掉空白、只写改了的那一格、推送在回应前面、`by`、`cause`；置顶、取消、两样一起；`null` 去掉标题记成空的；和现在一样的六种什么都不记；200 个字收、201 个字和空白的不收；两格都不写（含 `pinned` 写 `null`、会话没有的）、类型不对、会话编号不对是参数不对，没有的会话找不到；回合进行中改的带上回合；`session.list` 带标题、置顶，取消了、去掉了的不写，核心重启以后照样，载入以后照日志接着比；日志坏了的照样列出来，工作目录、最近一次动静照第一条（施工 C-3） |
+| `crates/gqy-endpoint/tests/delete.rs` | 删除会话（施工 3-8 三补）：空闲的整个目录挪进回收处、日志不变、`deleted_at` 是删的时刻，列不出来，再发命令、订阅、改名、打断、再删都是没有这个会话，重发造它的那一条另造一个；回合进行中的拒绝、什么都没动，打断以后删得掉；核心重启以后没在跑的不载入就删（被重启打断的那一轮不接着干）；参数不对、没有的会话 |
+| `crates/gqy-endpoint/src/sessions/delete/tests.rs`（施工 7-8） | 删子会话在表的锁里停它、父会话记回报：父会话一记下它停了就去叫醒它，拿到表的锁时它已经删掉了，删得掉（挪进锁以前，这时它又开了一轮，删的时候说有回合在进行） |
+| `crates/gqy-endpoint/tests/orphans.rs`（施工 7-8） | 真核心：父会话派出去一个子代理，没来得及记下 `job.started` 就崩了（日志截在派它的那条回复后面），再载入父会话时子会话挪进回收处；一次派两个、只记下一个的只收那一个；记下了的照留 |
+| `crates/gqy-endpoint/tests/delete_children.rs` | 删会话连子会话（施工 3-8 三补）：主会话派的子代理、子代理派的孙代理一起停下、各自挪进回收处，两条后台命令各杀一次、谁都不记回报；删一个正忙的子会话，主会话记一条 `stopped` 的回报（`by` 是子会话、不带 `by_model`）、被叫醒，子会话挪走、主会话还在；报过 `done` 又被留了言、主会话又在等它的，删它也记一条 `stopped`、叫醒主会话（施工 7-7）；主会话已经进了回收处的，删子会话照样删、不送；子代理派的编号带着它自己的 `j1`（`j1.1`、`j1.2`），删孙会话时子会话记的 `stopped` 回报是 `j1.1`（施工 7-1 补） |
+| `crates/gqy-endpoint/tests/spawn.rs` | 会话里派子代理，会话表造出子会话、交代送进去、替身模型在子会话里答话；`session.list` 里子会话写着父会话、主会话写 `null`（施工 7-5） |
+| `crates/gqy-endpoint/tests/revert.rs` | 协议上撤销、恢复；三种拒绝的中文；`turn` 写 0 |
+| `crates/gqy-endpoint/tests/permission.rs` | 协议上切权限级别（施工 3-8 再补）：切到完全放开、开只读、两样一起换，各记一条、推给订阅着的头、回应 `{}`；和现在一样的四种什么都不记不推；两格都不写（含写 `null`、会话没有的）、级别和只读的值不对、会话编号不对、没写会话是参数不对；没有的会话找不到，停了的会话是停了；回合进行中收紧成只读，真核心走一遍：等着的写入当场补 `denied`、和切权限同一批、推送在回应前面，放行以后请求之前注入只读那一块（切换那一份，带上一级 `workspace`，施工 2-7 补），写的一次没跑 |
+| `crates/gqy-endpoint/tests/job_stop.rs` | 协议上停子代理（施工 7-4）：回应 `{}`、回应之前父会话记下了回报、子会话那一轮被父会话打断；停过的、没有的 `unknown_job`，中文、英文；编号不合写法、不是字符串的参数不对；没有这个会话 |
+| `crates/gqy-endpoint/tests/job_output.rs` | 协议上读后台命令的输出（施工 7-4 补），后台命令用假的：跑着的读到这时为止的、`running` 是真，和她用 `jobs` 读到的一样；结束了的读 blob（拿掉输出文件照样读得到）、`running` 是假，和 `jobs` 读到的一字不差；`tail` 截尾、`truncated`、`lines`，最后一段没有换行的照样，不写 `tail` 交最后 200 行；超了上限从前面按整行去掉；开不了的输出文件当是空的；空的；没有这个任务、编号不合写法、`tail` 不对的七种（先查、不找会话）、没有这个会话、子代理的拒绝，中文、英文；拒绝的什么都不写 |
+| `crates/gqy-endpoint/src/job_output/tests.rs` | 取尾巴（施工 7-4 补）：照 `jobs` 数行、只照换行切；最后几行；上限正好 131,072 字节的一行整行给、多一个字节只留末尾；超了从前面按整行去掉；最后一行太长只交末尾、前面的不接上（前面那一行正好放得下也不接），读的时候就去掉过前面的也一样；中间太长的一行、截过的一行后面又来了行，整行去掉；截处从一个字的开头起，剩半个字的跳过；解不开的字节换成 `�`；读不下去的读到多少算多少；最坏的回应（每个字节都转义成六个、编号全是引号）放得进一行；回应的格 |
+| `crates/gqy-endpoint/tests/human.rs`（施工 W-1） | 协议上 `human.get`：和 `Human::load` 读到的一样，工具的样子一样、说法的编号带位置（`core/…`、`software/<包>/…`）、模板是原文一个字不换；软件包盖掉内核的同名工具；没有这种语言照英文；不写 `language` 照握手的语言；`language` 不合写法参数不对；回应里没有 `config` 那一格；读不懂 `internal_error`；改了资源，核心不重启下一次调就是新的；真核心照源码树的资源，`zh`、`en`、`ja` 三种都交得出 `tools`、`said` |
+| `crates/gqy-endpoint/src/queries/tests.rs`、`crates/gqy-core/tests/packages.rs`（施工 W-4） | 查询表：没登记的方法交回 `None`、照协议是 `unknown_method`；登记过的名字正好对上才找得到。`mermaid.render`：真核心走一遍，一张流程图、一张时序图都出 SVG，回应的 `marks` 和 SVG 里用的三种记号色对得上，同一份源码两次拿到一样的回应；空的 `bad_params`、超过 64 KiB `mermaid_too_long`、画不出 `mermaid_failed`（`data.detail` 不是空的）。细节见 `mermaid.md`「守着它的」 |
+| `crates/gqy-endpoint/src/queries.rs` 里的测试、`crates/gqy-core/tests/packages.rs`、`crates/gqy/tests/link_preview.rs`（施工 W-7） | 在后台答的只有照 `register_background` 登记的；同一个名字两种登记也 panic。`link.preview`：没登记回 `unknown_method`；登记了的读不成地址、不是 http 不碰网络就答；`url` 没写、不是字符串、`params` 是数组 `bad_params`；在后台答的不挡后面的请求、回应照 `id` 对上、连接断了它跟着停；真的核心照环境变量里的代理做出卡片、图用 `blob.get` 读得回来。细节见 `net.md`「守着它的」 |
+| `crates/gqy-endpoint/tests/redo.rs` | 协议上重做（施工 4-7 再补）：回应带撤销的几样和重发的那一句、推送里是一批撤销、原话、新的一轮，新的一轮的请求和撤掉的那一轮的一字不差；换了话的推送里是新的话、`said` 是原来的；改过文件的先改回、回应带 `files`；重做以后恢复不了；最后一轮是清空、没说过话的，有回合在进行、换成空的拒绝，中文、英文；`text` 不是字符串、会话编号不对的参数不对，写 `null` 当没写；附件照带、换掉、不要，没有的 blob `unknown_attachment` 什么都不写 |
+| `crates/gqy-endpoint/tests/compact.rs` | 协议上手动压缩（施工 6-8）：回应是那一轮的开头、推送里压好了；要求原样到了摘要请求里；撤掉那一轮的回应里没有 `said`；有回合在进行、没有能压的两种拒绝，中文、英文；`instructions` 不是字符串的参数不对 |
+| `crates/gqy-endpoint/tests/recap.rs`（施工 3-8 四补） | 协议上要回顾：回应是那一句、照到的、不是交回的；推送里先有回顾的 `model.called`、`session.recapped`，都不带回合编号、`cause` 是这一条，再是回应，别的头也收到；请求是一条 user、没有 system 和工具面；没有新内容再要一次交回上一句、不请求；有回合在进行时照收、照到的是这一轮那句话；没有能回顾的、没写成的两种拒绝，中文、英文，没写成的不再来；会话编号不对、没写、不是字符串的参数不对，没有的会话找不到 |
+| `crates/gqy-endpoint/tests/title.rs`（施工 3-8 五补） | 自动起标题：第一轮答完，订阅着的头收到起标题的 `model.called`（`purpose: "title"`）和 `session.meta_changed`，`by` 是内核、不带回合编号和 `cause`；请求是一条 user、没有 system 和工具面，只喂第一轮；`session.list` 带上标题，核心重启以后照样；第二轮不再起；人先起过名的不起 |
+| `crates/gqy-endpoint/tests/clear.rs` | 协议上清空（施工 6-8 补）：回应是那一轮的开头、订阅的推送里是那一批三条、不请求模型；下一次请求里没有清空以前的；撤掉那一轮回应里撤掉了一次压缩、没有 `said`，再问看得到了；有回合在进行、本来就空的两种拒绝，中文、英文；会话编号不对、没写的参数不对 |
+| `crates/gqy-endpoint/src/sessions/tests.rs` | 父会话不在会话表里的不再造子会话、什么都没建（施工 3-8 三补） |
+| `crates/gqy-endpoint/tests/workspace.rs` | 太宽的五种（`~`、家目录、根目录、数据根、数据根里面）和读不出家目录时的 `~`；项目目录、账号的工作区照旧；回应里的 `cwd`、重发的造会话 |
+| `crates/gqy-endpoint/tests/dirs.rs` | 加进来的目录（施工 5-10 上）：造会话、说话时报的记进这一轮，不写的照旧、写空的就没有；太宽的五种整条命令都不收、什么都没写；核心重启以后照最后一轮的 |
+| `crates/gqy-endpoint/tests/idle.rs` | 连着连接、跑着回合不空闲；停下全部会话，跑到一半的记成重启了 |
+| `crates/gqy-endpoint/tests/attach.rs` | `blob.put`（施工 3-9 三补）：传路径、传内容；照内容认图片（扩展名不算）、PDF、文本、别的文件，量宽高，回应的格照字母排、存成管理员的 blob；写了的媒体类型什么时候算、改名、写 `null` 等于没写；太大（20 MiB、图片的宽高和 5 MiB，正好在线上的收）；数据根里的不给、管理员的工作区给、指到数据根里的链接不给；读不了（没有、目录、没有家目录时的 `~`）；参数不对的十二种、一个都没存；四种拒绝的中英文 |
+| `crates/gqy-endpoint/tests/uploads.rs`、`crates/gqy-core/tests/packages.rs`（施工 W-5） | `blob.open`、`blob.write`、`blob.close`：分块传完和 `blob.put` 同一个回应、同一个 blob；接不上回 `upload_offset`（`data.received` 对）；没收齐 `close` 回 `upload_incomplete`，还能接着写完；别的连接拿编号用不了；连接断了、60 秒不写都作废并删暂存；`size` 超过 20 MiB 当场 `attachment_too_big`；同时开到第 5 个 `too_many_uploads`，关掉一个腾出位置；`data` 不是 base64、一块超过 512 KiB、加起来超过 `size` 都是 `bad_params`；图片照 `blob.put` 的规矩认、查上限。`packages.rs` 另测 `packages::clear_uploads`：崩了留下的 `upload-*` 清掉、真的 blob 不碰、账号还没存过东西时不出错 |
+| `crates/gqy-endpoint/tests/attach_send.rs` | `session.send` 带附件（施工 3-9 三补）：照先后接在文字后面，宽高、种类照核心量的，图片块带着 `blob.put` 的名字（施工 3-9 四补），她收到的请求里就是这几块；只有附件也是一句话，`null` 是没有；blob 不在的拒绝、什么都没写、换的工作目录也没送进会话；附件的格不对的七种 |
+| `crates/gqy-endpoint/tests/files.rs` | `fs.list`、`fs.find`（施工 W-2）：真核心上数据根不列不找、账号的工作区照样列；开头对、大小写不论、点开头的打了点才列、目录在前、50 条截断、`marks`；模糊找有 `marks`、子目录的 `path` 用 `/`；清单没建完先给一部分、`building`；`fresh` 隔一段时间才重建、不是 `true` 不重建；最多记 4 份、多了丢最久没用的；换不成真实的位置、不是目录的 `path_unreadable`；没写 `cwd` 的 `bad_params` |
+| `crates/gqy-endpoint/tests/hello.rs`（施工 W-3） | 握手的 `host`：三格总有、`platform` 是这台机器的、`workspace` 换成真实的位置（链接也换成指的地方）、没有系统的家目录 `home` 是 `null`、没人建过工作区就回原样的路径（不替连上来的头造目录）。`fs.realpath`：`~` 照家目录接、`cwd` 可以不写也可以本身是 `~`；相对的没给 `cwd` 的 `bad_params`；往上找最近在的一层、后面几段原样接上；路中间的链接换成指的地方；落在数据根里的照样换，不查边界；一层都不在（没有家目录）`path_unreadable` |
+| `crates/gqy-endpoint/tests/login.rs`、`login_log.rs`（施工 W-8） | 握手的四种凭据、`account.setup_code`、`account.setup`、`account.logout`、作废了断开、运行日志里没有码、密码、令牌（`web-module.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/reads.rs`（施工 W-6） | `blob.get`：读一段、读到结尾就停、`offset` 过了结尾是空的、不写 `offset`、`length` 的默认值、`length` 写 0 只问大小；没有这个 blob `unknown_blob`。`fs.read`：数据根拒、工作区能读、相对的 `bad_params`、`~` 接系统的家目录；没有、目录、（Unix）套接字 `path_unreadable`。两个方法 `length` 超过 512 KiB 都是 `bad_params`；拒绝的中英文 |
+| `crates/gqy-endpoint/tests/from.rs`、`src/from/tests.rs` | `session.send` 带 `from`（施工 7-10）：记成 `harness`、带着名字，不带的、`null` 照旧记成本人；闲着开一轮、`cause` 是这一条，正忙排进这一轮；附件照收；控制字符去掉、截到 128 字节不截断一个字；空的、只有控制字符的、不是字符串的参数不对，什么都没写；`session.create`、`session.redo` 写了不理 |
+| `crates/gqy-endpoint/src/attach/kind/tests.rs` | 认附件：量得出的图是图片、头写的不算，量不出的当文件；图片的上限和线上的；PDF 照开头认；别的文件照头写的，写成 PDF、图片的照内容认，文本、空的、二进制、不是 UTF-8 的 |
+| `crates/gqy-endpoint/tests/tools.rs` | 造会话、载入时用核心的工具目录；核心的沙盒造会话、载入时都交给会话，沙盒用不了的核心上执行命令没人能确认就拒（施工 5-4 上） |
+| `crates/gqy-endpoint/tests/socket.rs` | 真的套接字（Windows 上是命名管道）上握手、造会话、说话，第二个头也连得上 |
+| `crates/gqy-endpoint/tests/config.rs`、`config_trust.rs`（施工 8-2） | 握手的 `language`、`config_errors`；`config.schema`、`config.get`、`config.check`；`unknown_config_key` 带 `problems`；开局只读照配置、照信任着的项目配置；造会话、说话的回应带 `untrusted_project`（`config.md`「守着它的」）。`config.trust` 的回答、拒绝、日志（施工 8-3） |
+| `crates/gqy-endpoint/tests/models.rs`（施工 8-7） | `model.list` 的形状、来源、状态；`provider` 只看一家、`unknown_provider`、参数不对；`refresh` 拉完再答、不写的在后台拉；冷却（施工 8-9）：模型照能用的 key 里最好的那个，都在冷却的带最早恢复的 `until`、`class`，认证失败停了整个 key 的那个 key 也是 `cooling`，取不到值的 key 不算（`models.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/models_pools.rs`（施工 8-8） | `model.list` 的 `pools`（8-8 补多 `subagent`、`description`，没有 `tiers`）、`uses`；`session.create` 的 `model` 记下解析出的、`unknown_model` 什么都不造、不是字符串的 `bad_params`；`session.configure` 照这时的配置解析好记一条、先推再回应、一样的不记，参数不对的几种 `bad_params`、先找会话、解析不出的 `unknown_model`、都什么都不记；`subscribe` 的 `model` 照真路由解析出的写，轮换的池只有 `ref`，一个都没有的不写（施工 8-10，`models.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/models_effort.rs`（施工 8-18；8-18（补）去掉会话那一层） | `session.configure` 写了 `effort` 回 `bad_params`、不写 `model` 回 `bad_params`；`subscribe` 的 `model` 多 `effort`，`from` 是配置的哪一层；`model.list` 的 `facts.effort`、多一格 `key`；配置里写错的 `unknown_effort`（`models.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/providers.rs`、`providers_test.rs`、`providers_log.rs`（施工 8-11） | `provider.detect`、`provider.catalog`、`provider.test` 的形状、参数不对、`unknown_provider`，`{value}` 的 key 不进回应和运行日志（`models.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/model_call.rs`、`model_call_log.rs`（施工 8-20） | `model.call` 的回应形状、参数校验、blob 的账号、几种出错的 `data`、不进会话日志、运行日志那两行（`models.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/secrets.rs`、`secrets_log.rs`（施工 8-5） | `secret.*` 的回应、拒绝、日志；值不进回应、拒绝、系统日志、运行日志（`config.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/config_set.rs`（施工 8-3） | `config.set` 的回应、每一种拒绝、`expect`、版本、手改重读、全收或者全不收、写不成什么都没变、日志（`config.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/config_watch.rs`、`config_watch_log.rs`（施工 8-4） | 订阅配置、取消、参数不对；手改推 `config.changed`；`config.set` 先见推送后见回应；掉队推 `resync`；改了语言下一句照新的（`config.md`「守着它的」） |
 
 ### 出处
 

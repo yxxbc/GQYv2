@@ -10,10 +10,10 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-endpoint/src/methods.rs` | 三个方法的参数；交给会话，等它的回应 |
-| `crates/miyu-endpoint/src/undo.rs` | 照会话的日志写回应里给人看的几样 |
-| `crates/miyu-endpoint/src/undo/jobs.rs` | 停掉了哪几个任务（施工 7-8） |
-| `crates/miyu-kernel/src/session/revert.rs` | 能不能撤、撤哪几轮、能不能恢复（`kernel/history.md`） |
+| `crates/gqy-endpoint/src/methods.rs` | 三个方法的参数；交给会话，等它的回应 |
+| `crates/gqy-endpoint/src/undo.rs` | 照会话的日志写回应里给人看的几样 |
+| `crates/gqy-endpoint/src/undo/jobs.rs` | 停掉了哪几个任务（施工 7-8） |
+| `crates/gqy-kernel/src/session/revert.rs` | 能不能撤、撤哪几轮、能不能恢复（`kernel/history.md`） |
 
 ### 对外的样子
 
@@ -107,18 +107,18 @@
 
 有文件没动、改回时出错的，不是拒绝：照上面交在 `files` 里。
 
-运行日志（目标 `miyu::endpoint`）：`WARN undo report not written error=…`（日志读不出来），`WARN undo report jobs not read seq=…`（撤销以前的日志过不了账本，施工 7-8），`ERROR undo report panicked error=…`（写的时候崩了）。
+运行日志（目标 `gqy::endpoint`）：`WARN undo report not written error=…`（日志读不出来），`WARN undo report jobs not read seq=…`（撤销以前的日志过不了账本，施工 7-8），`ERROR undo report panicked error=…`（写的时候崩了）。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-endpoint/tests/undo.rs` | 不写回合编号的撤最后一轮：`events`、`cwd`、`turns`、`said`、`commands`、`files`，没撤掉压缩的不写 `compactions`；恢复时不带 `commands`；改回了内容的、之后又被改过的都附差异，连同 `added`、`removed`（施工 4-7 再补）；最多 20 行、`more`；两轮的会话只算撤掉的那一轮、`said` 只取第一行去掉空白；恢复时对照改前的；上下文 3 行、不加「没有换行」；太大的、不是文本的不附差异；工作目录是链接的写真实的位置；被打断的一轮只算跑过的命令、排在后面没派的不算；`said` 跳过开头的空行，全是空白的没有这一格 |
-| `crates/miyu-endpoint/src/undo/tests.rs` | 数跑过的命令：跑过的、可能跑了一半的算，没跑过的不算；数压缩：`turn` 在撤掉的几轮里的才算，一轮里压过两次的是 2（施工 6-9）；清空另数，数压缩的不算它（施工 6-8 补）；改回了内容的附差异、`added`、`removed`，恢复时反过来；新建的文件改回以前当空的算；`trash`、`untrash`、两边一样的不附差异；太大的不附；长差异 `added`、`removed` 照整份算（施工 4-7 再补） |
-| `crates/miyu-endpoint/tests/redo.rs` | 重做的回应：撤销那几样照撤销写，`events` 最后是重发的那一句（施工 4-7 再补，`protocol.md`「守着它的」） |
-| `crates/miyu-endpoint/tests/undo_jobs.rs`（施工 7-8） | 撤销、重做的回应列出停掉的任务（编号、种类、标题），回应之前后台命令已经杀了、随后记 `undone`；恢复的不带、停过的再撤销不列 |
-| `crates/miyu-endpoint/tests/revert.rs` | 撤销、恢复的 `events`；`nothing_to_unrevert`、`unknown_turn`、`nothing_to_revert` 照头的语言；`turn` 写 0 |
-| `crates/miyu-session/tests/restore.rs` | 改回文件的那一半（`kernel/history.md`） |
+| `crates/gqy-endpoint/tests/undo.rs` | 不写回合编号的撤最后一轮：`events`、`cwd`、`turns`、`said`、`commands`、`files`，没撤掉压缩的不写 `compactions`；恢复时不带 `commands`；改回了内容的、之后又被改过的都附差异，连同 `added`、`removed`（施工 4-7 再补）；最多 20 行、`more`；两轮的会话只算撤掉的那一轮、`said` 只取第一行去掉空白；恢复时对照改前的；上下文 3 行、不加「没有换行」；太大的、不是文本的不附差异；工作目录是链接的写真实的位置；被打断的一轮只算跑过的命令、排在后面没派的不算；`said` 跳过开头的空行，全是空白的没有这一格 |
+| `crates/gqy-endpoint/src/undo/tests.rs` | 数跑过的命令：跑过的、可能跑了一半的算，没跑过的不算；数压缩：`turn` 在撤掉的几轮里的才算，一轮里压过两次的是 2（施工 6-9）；清空另数，数压缩的不算它（施工 6-8 补）；改回了内容的附差异、`added`、`removed`，恢复时反过来；新建的文件改回以前当空的算；`trash`、`untrash`、两边一样的不附差异；太大的不附；长差异 `added`、`removed` 照整份算（施工 4-7 再补） |
+| `crates/gqy-endpoint/tests/redo.rs` | 重做的回应：撤销那几样照撤销写，`events` 最后是重发的那一句（施工 4-7 再补，`protocol.md`「守着它的」） |
+| `crates/gqy-endpoint/tests/undo_jobs.rs`（施工 7-8） | 撤销、重做的回应列出停掉的任务（编号、种类、标题），回应之前后台命令已经杀了、随后记 `undone`；恢复的不带、停过的再撤销不列 |
+| `crates/gqy-endpoint/tests/revert.rs` | 撤销、恢复的 `events`；`nothing_to_unrevert`、`unknown_turn`、`nothing_to_revert` 照头的语言；`turn` 写 0 |
+| `crates/gqy-session/tests/restore.rs` | 改回文件的那一半（`kernel/history.md`） |
 
 ### 出处
 

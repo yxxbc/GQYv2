@@ -19,11 +19,11 @@
 
 | 文件 | 装什么 |
 |---|---|
-| `crates/miyu-store/src/blob.rs` | 一个账号的 blob：存（临时文件、同步、改名、同步目录；已经有了的刷修改时间）、取（核对哈希）、路径 |
-| `crates/miyu-store/src/durable.rs` | 落盘的两件小事，从 `root.rs`、`log.rs` 挪过来合成一处：同步目录；建目录，新建的每一层都同步它的上一层 |
-| `crates/miyu-store/src/root.rs` | 一个账号的 blob 目录 `home/<账号>/blobs/`；写完标记同步数据根 |
-| `crates/miyu-store/src/log.rs` | 新会话的目录照 `durable.rs` 的建法建 |
-| `crates/miyu-kernel/src/id.rs` | `ContentHash::hex`：去掉 `sha256:` 的那 64 位 |
+| `crates/gqy-store/src/blob.rs` | 一个账号的 blob：存（临时文件、同步、改名、同步目录；已经有了的刷修改时间）、取（核对哈希）、路径 |
+| `crates/gqy-store/src/durable.rs` | 落盘的两件小事，从 `root.rs`、`log.rs` 挪过来合成一处：同步目录；建目录，新建的每一层都同步它的上一层 |
+| `crates/gqy-store/src/root.rs` | 一个账号的 blob 目录 `home/<账号>/blobs/`；写完标记同步数据根 |
+| `crates/gqy-store/src/log.rs` | 新会话的目录照 `durable.rs` 的建法建 |
+| `crates/gqy-kernel/src/id.rs` | `ContentHash::hex`：去掉 `sha256:` 的那 64 位 |
 | 测试 | 见「验收」第 2 条 |
 | 施工图 | 3-3 那一张 |
 

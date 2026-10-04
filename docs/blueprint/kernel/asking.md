@@ -10,12 +10,12 @@
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/session/approval.rs` | 链的结论；人的确认 |
-| `crates/miyu-kernel/src/session/question.rs` | 在跑的调用问人；人的回答；来了一句话，在等人的作废 |
-| `crates/miyu-kernel/src/session/step.rs` | 每个调用走到了哪 |
-| `crates/miyu-kernel/src/session/tools.rs` | 交给链、允许了派、答完了交回答；打断、插话、收紧成只读时补结果 |
-| `crates/miyu-kernel/src/session/input.rs` | `Verdict`、`Answer` |
-| `crates/miyu-kernel/src/event/tool.rs`、`event/question.rs` | 请求、决定、题目、回答；回答对不对得上题目（`fits`） |
+| `crates/gqy-kernel/src/session/approval.rs` | 链的结论；人的确认 |
+| `crates/gqy-kernel/src/session/question.rs` | 在跑的调用问人；人的回答；来了一句话，在等人的作废 |
+| `crates/gqy-kernel/src/session/step.rs` | 每个调用走到了哪 |
+| `crates/gqy-kernel/src/session/tools.rs` | 交给链、允许了派、答完了交回答；打断、插话、收紧成只读时补结果 |
+| `crates/gqy-kernel/src/session/input.rs` | `Verdict`、`Answer` |
+| `crates/gqy-kernel/src/event/tool.rs`、`event/question.rs` | 请求、决定、题目、回答；回答对不对得上题目（`fits`） |
 | `resources/core/tool-results/` | 给模型看的六句 |
 | `resources/core/human/{zh,en}.json` | 这六句给人看的说法 |
 
@@ -139,7 +139,7 @@
 | `question-voided` | 问着人的时候来了一句话 | `skipped` | `The question was not answered: the user sent a new message instead.` |
 | `question-unattended` | 要问人，没人能回答 | `skipped` | `The question was not answered: no one can answer here.` |
 
-请求、决定、题目、回答都不进请求：她看到的只有那次调用的结果（默认的组装不渲染它们，`crates/miyu-assemble/src/render.rs`）。
+请求、决定、题目、回答都不进请求：她看到的只有那次调用的结果（默认的组装不渲染它们，`crates/gqy-assemble/src/render.rs`）。
 
 ### 给人看的字
 
@@ -154,19 +154,19 @@
 | `question-voided` | 你发了一句话，这一题作废了 | dropped: you sent a message |
 | `question-unattended` | 这里没人能回答 | nobody here can answer |
 
-链拒绝的，说法是模块交的，没交就没有。`not_asking`、`unknown_decision`、`no_rule`、`unexpected_reason`、`bad_answer` 这几个原因码，核心现在还没配专门的话，照「被拒绝了。」「Refused.」说（`crates/miyu-endpoint/src/refusal.rs`）。
+链拒绝的，说法是模块交的，没交就没有。`not_asking`、`unknown_decision`、`no_rule`、`unexpected_reason`、`bad_answer` 这几个原因码，核心现在还没配专门的话，照「被拒绝了。」「Refused.」说（`crates/gqy-endpoint/src/refusal.rs`）。
 
 ### 守着它的
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/session/tests/approval.rs` | 每个调用都先过链、带上实际生效的那一级；链拒绝的 `by` 是模块、说法原样；要问人记请求、调用等着；等着的占着位置；允许的决定落了盘才派；拒绝的记决定和结果、空理由当没写、她接着干；四个原因码；没人能确认当场拒绝；收紧成只读拦下要写入的；打断、急着插话时在等的补结果；过时的结论不理 |
-| `crates/miyu-kernel/src/session/tests/question.rs` | 在跑的调用问人、等人；回答落了盘才交给工具；答完了还能再问；对不上的回答、答错了种类、先答者胜；没人能回答跳过、叫停；打断时问着人的、答完了的；来了一句话作废提问、跳过确认；工具先交回结果了结题目；不是在跑的调用问的不理 |
-| `crates/miyu-kernel/src/session/tests/load.rs` | 崩在等确认、等回答的时候，载入时补结果，之后的回答拒绝 |
-| `crates/miyu-kernel/src/session/tests/scenario/asking.rs` | 执行器替身跑整轮：她问、工具拿到回答；允许、拒绝两种决定以后她都接着干 |
-| `crates/miyu-kernel/src/session/tests/random/asking.rs`、`random/watch/approval.rs`、`random/watch/question.rs` | 随机输入里的结论、题目、回答；每一步查请求只在链要问人时记、没人能确认和只读的当场拒绝、回答照规矩接受或拒绝、`by` 写对 |
-| `crates/miyu-kernel/src/event/question/tests.rs` | 回答对不对得上题目 |
-| `crates/miyu-kernel/src/tool/texts/tests.rs`、`crates/miyu-kernel/tests/resources.rs` | 拒绝的理由照模板转义、只收 `reason` 一个字段；样本里被拒绝的那一条就是资源里带理由的那一句 |
+| `crates/gqy-kernel/src/session/tests/approval.rs` | 每个调用都先过链、带上实际生效的那一级；链拒绝的 `by` 是模块、说法原样；要问人记请求、调用等着；等着的占着位置；允许的决定落了盘才派；拒绝的记决定和结果、空理由当没写、她接着干；四个原因码；没人能确认当场拒绝；收紧成只读拦下要写入的；打断、急着插话时在等的补结果；过时的结论不理 |
+| `crates/gqy-kernel/src/session/tests/question.rs` | 在跑的调用问人、等人；回答落了盘才交给工具；答完了还能再问；对不上的回答、答错了种类、先答者胜；没人能回答跳过、叫停；打断时问着人的、答完了的；来了一句话作废提问、跳过确认；工具先交回结果了结题目；不是在跑的调用问的不理 |
+| `crates/gqy-kernel/src/session/tests/load.rs` | 崩在等确认、等回答的时候，载入时补结果，之后的回答拒绝 |
+| `crates/gqy-kernel/src/session/tests/scenario/asking.rs` | 执行器替身跑整轮：她问、工具拿到回答；允许、拒绝两种决定以后她都接着干 |
+| `crates/gqy-kernel/src/session/tests/random/asking.rs`、`random/watch/approval.rs`、`random/watch/question.rs` | 随机输入里的结论、题目、回答；每一步查请求只在链要问人时记、没人能确认和只读的当场拒绝、回答照规矩接受或拒绝、`by` 写对 |
+| `crates/gqy-kernel/src/event/question/tests.rs` | 回答对不对得上题目 |
+| `crates/gqy-kernel/src/tool/texts/tests.rs`、`crates/gqy-kernel/tests/resources.rs` | 拒绝的理由照模板转义、只收 `reason` 一个字段；样本里被拒绝的那一条就是资源里带理由的那一句 |
 
 ### 出处
 
@@ -179,7 +179,7 @@
 ### 还没有的
 
 - 核心还不收 `session.answer`（`04-核心协议.md` 第九节）：头回答不了确认和提问。
-- 提问的工具 `ask_user`（`10-自带软件.md`）还没有：现在没有工具会问人，会话 actor 收到 `AnswerTool` 只记一条运行日志（`crates/miyu-session/src/actor.rs`）。
+- 提问的工具 `ask_user`（`10-自带软件.md`）还没有：现在没有工具会问人，会话 actor 收到 `AnswerTool` 只记一条运行日志（`crates/gqy-session/src/actor.rs`）。
 - 记住的放行规则照日志去用：本会话的读这个会话里的决定，这个工作区以后的存进工作区的配置（`02-内核.md` 第六节「确认怎么走」第 3 条，M5）。
 - 扩展的守卫（`05-内核接口.md` 第五节）：现在链里只有权限策略。
 - `question.asked` 选项的 `preview`（一段文字画）、`question.answered` 每道回答的 `notes`（补一句备注）：2026-09-29 项目主人定，随 M8 的抽屉加（`03-事件模型.md` 第三节「提问的事件怎么写」）。

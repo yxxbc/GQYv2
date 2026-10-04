@@ -46,6 +46,6 @@ macOS 上沙盒真的管住写：助手把规格写成一份 Seatbelt 配置，�
 
 - Seatbelt 的规矩不在文档里，是在 CI 的 macOS 26 上量出来的：写得细的规则压过笼统的，写得一样细的后面的压过前面的；套在 `deny default` 的沙盒里装不上。苹果改了规矩，`tests/macos/` 会红。
 - `sandbox_init_with_parameters` 不在公开的头文件里（`sandbox-exec -D` 用的就是它）：苹果哪天改了，探测报不出 `seatbelt`，核心照沙盒用不了办。
-- 本机端口上能替人跑命令的服务（例如旧版 Miyu 的 8300）照样连得上：网络不管。Unix 套接字只连得上能写的地方的，Docker、ssh-agent 连不上。
+- 本机端口上能替人跑命令的服务（例如旧版 GQY 的 8300）照样连得上：网络不管。Unix 套接字只连得上能写的地方的，Docker、ssh-agent 连不上。
 - 写除了 `/dev/null`，还放行 `/dev/fd`（`> /dev/stdout`）、终端、`/dev/zero`、`dtrace` 的设备：不放行，平常的命令就会坏。
 - 连 HTTPS 的测试要上网（CI 上连 `github.com`），没网的 Mac 上它会红。

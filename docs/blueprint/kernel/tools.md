@@ -4,18 +4,18 @@
 
 工具由软件包提供，内核不内置。内核对一件工具只要知道两样：访问类别，定它能不能和别的调用一起跑、只读时拦不拦；参数格式，照它修正模型写坏了的参数。没派出去、没跑完的调用，内核替工具写一句给模型看的英文，连同给人看的说法一起记进 `tool.result`：每个调用都要有结果。
 
-工具完整的规格（名字、说明、参数格式、访问类别）、一次调用要碰的路径、交给工具的和工具交回的、效果怎么报，在工具接口那一层（`crates/miyu-tool`，`tools/interface.md`）。
+工具完整的规格（名字、说明、参数格式、访问类别）、一次调用要碰的路径、交给工具的和工具交回的、效果怎么报，在工具接口那一层（`crates/gqy-tool`，`tools/interface.md`）。
 
 ### 在哪
 
 | 代码 | 管什么 |
 |---|---|
-| `crates/miyu-kernel/src/tool.rs` | 访问类别 `Access`、内核要知道的一件工具 `ToolRule`、参数修正 `repair` |
-| `crates/miyu-kernel/src/tool/texts.rs` | 内核替工具写的十三句 `ToolTexts`、它们的原文 `ToolTextSources`、写成的一句 `Worded` |
-| `crates/miyu-kernel/src/event/tool.rs` | `tool.result`、状态 `ToolStatus`、给人看的说法 `Said`（`kernel/events-bodies.md`） |
-| `crates/miyu-kernel/src/session/policy.rs` | 冻结在会话上的 `tools`（工具名到 `ToolRule`）和 `tool_texts` |
-| `crates/miyu-kernel/src/session/tools.rs`、`approval.rs`、`question.rs`、`interrupt.rs`、`restart.rs`、`load.rs` | 什么时候写哪一句（`kernel/session.md`、`kernel/asking.md`） |
-| `crates/miyu-policy/src/tools.rs` | 造策略时，把快照里的工具面拆成组装器的 `ToolSpec` 和内核的 `ToolRule`（`policy.md`） |
+| `crates/gqy-kernel/src/tool.rs` | 访问类别 `Access`、内核要知道的一件工具 `ToolRule`、参数修正 `repair` |
+| `crates/gqy-kernel/src/tool/texts.rs` | 内核替工具写的十三句 `ToolTexts`、它们的原文 `ToolTextSources`、写成的一句 `Worded` |
+| `crates/gqy-kernel/src/event/tool.rs` | `tool.result`、状态 `ToolStatus`、给人看的说法 `Said`（`kernel/events-bodies.md`） |
+| `crates/gqy-kernel/src/session/policy.rs` | 冻结在会话上的 `tools`（工具名到 `ToolRule`）和 `tool_texts` |
+| `crates/gqy-kernel/src/session/tools.rs`、`approval.rs`、`question.rs`、`interrupt.rs`、`restart.rs`、`load.rs` | 什么时候写哪一句（`kernel/session.md`、`kernel/asking.md`） |
+| `crates/gqy-policy/src/tools.rs` | 造策略时，把快照里的工具面拆成组装器的 `ToolSpec` 和内核的 `ToolRule`（`policy.md`） |
 | `resources/core/tool-results/*.txt` | 给模型看的原文：内核写的十三句，执行器写的两句 |
 | `resources/core/permissions/*.txt` | 权限策略拒绝时写的两句 |
 | `resources/core/human/{zh,en}.json` | 给人看的字：上面每一句一条 |
@@ -47,7 +47,7 @@
 
 **参数修正** `repair(parameters, args)`：照参数格式修正模型给的参数原文，交回一个 JSON 对象的原文；参数不是 JSON 对象的，交回 `NotAnObject`。
 
-**内核替工具写的几句** `ToolTexts`：十三句，各是一份读好的模板（`crates/miyu-kernel/src/template.rs`）。
+**内核替工具写的几句** `ToolTexts`：十三句，各是一份读好的模板（`crates/gqy-kernel/src/template.rs`）。
 
 - `ToolTexts::new(ToolTextSources)`：交进十三份原文，读好以后拿字段试换一次，模板坏了、要了不该有的字段的，交回 `TemplateError`。
 - 每一句一个方法：`unknown(name)`、`not_an_object(name)`、`cancelled_before()`、`cancelled_running()`、`skipped()`、`read_only()`、`denied(reason)`（没有理由的写 `denied`，有的写 `denied-with-reason`）、`unattended()`、`question_interrupted()`、`question_voided()`、`question_unattended()`、`restarted()`。
@@ -56,7 +56,7 @@
 
 ### 怎么走
 
-**查一个调用**：回复里的每个调用，照先后查（`crates/miyu-kernel/src/session/tools.rs` 的 `start_tools`，`kernel/session.md`）：
+**查一个调用**：回复里的每个调用，照先后查（`crates/gqy-kernel/src/session/tools.rs` 的 `start_tools`，`kernel/session.md`）：
 
 1. 请求发出去以后有人急着插过话（插话记在回合上，下一次请求发出去时清掉）：这条回复里的调用不查，每个都记 `skipped`。
 2. 工具面上没有这个名字：记 `unknown`。
@@ -88,7 +88,7 @@
 14. 修正过的只用在执行上：执行前的链、工具拿到的是它；日志里的调用照模型给的原文记，发回去的字节不变。
 15. 修正只还原类型，不查必填的有没有、多写了什么：内核只说自己真正知道的，别的交给工具执行时报。
 
-**派的先后**：照调用的先后（`crates/miyu-kernel/src/session/step.rs` 的 `ready`）。
+**派的先后**：照调用的先后（`crates/gqy-kernel/src/session/step.rs` 的 `ready`）。
 
 16. 不是 `read` 的（包括不认识的类别）：前面的调用都有了结果才派；它没有结果，后面的都等着。
 17. `read` 的：前面没有还没结果、又不是 `read` 的调用，就派，和挨着的只读调用一起跑。
@@ -118,7 +118,7 @@
 
 **字段怎么换进去**：
 
-19. 给模型看的：每个字段先转义（`crates/miyu-kernel/src/template.rs` 的 `escape`）：照 JSON 字符串的写法，反斜杠、换行、回车、制表写成 `\\`、`\n`、`\r`、`\t`，别的控制字符写成 `\u001b` 这样；`"`、`&`、`<`、`>` 和 U+2028、U+2029 也写成 `\u` 加四位小写十六进制。转出来是一行字，没有引号、没有尖括号：模型编的工具名、人写的理由伪造不了标签，也伪造不了一行记录。例如工具名 `x"><tool` 写成 `There is no tool named "x\u0022\u003e\u003ctool".`。
+19. 给模型看的：每个字段先转义（`crates/gqy-kernel/src/template.rs` 的 `escape`）：照 JSON 字符串的写法，反斜杠、换行、回车、制表写成 `\\`、`\n`、`\r`、`\t`，别的控制字符写成 `\u001b` 这样；`"`、`&`、`<`、`>` 和 U+2028、U+2029 也写成 `\u` 加四位小写十六进制。转出来是一行字，没有引号、没有尖括号：模型编的工具名、人写的理由伪造不了标签，也伪造不了一行记录。例如工具名 `x"><tool` 写成 `There is no tool named "x\u0022\u003e\u003ctool".`。
 20. 给人看的说法里，字段是原样的值，不转义（换成字时怎么清理，见 `store.md`）。
 
 ### 样子
@@ -141,7 +141,7 @@
 | `skipped.txt` | `The call was skipped: the user sent a new message.` |
 | `question-voided.txt` | `The question was not answered: the user sent a new message instead.` |
 | `question-unattended.txt` | `The question was not answered: no one can answer here.` |
-| `restarted.txt` | `The call was cancelled: Miyu restarted before it finished. It may have been partly done.` |
+| `restarted.txt` | `The call was cancelled: GQY restarted before it finished. It may have been partly done.` |
 
 同一处还有几句，不是内核写的，编号的写法一样：
 
@@ -149,7 +149,7 @@
 |---|---|---|---|
 | `tool-results/unavailable.txt` | `The tool "{name}" is not available right now.` | 执行器：快照里有、核心的工具目录里没有这件（`session/actor.md`） | `error`，那次调用，没有用时 |
 | `tool-results/crashed.txt` | `The tool "{name}" stopped because of an internal error. It may have been partly done.` | 执行器：工具执行时崩了 | `error`，那次调用，用时算到崩为止 |
-| `permissions/forbidden.txt` | `"{path}" is inside Miyu's own data, which no tool can read or change.` | 权限策略：要碰的路径在数据根里（`session/guard.md`） | `denied`，模块 `permissions` |
+| `permissions/forbidden.txt` | `"{path}" is inside GQY's own data, which no tool can read or change.` | 权限策略：要碰的路径在数据根里（`session/guard.md`） | `denied`，模块 `permissions` |
 | `permissions/unresolvable.txt` | `Can't tell where "{path}" points: {reason}.` | 权限策略：路径换不成真实的位置 | `denied`，模块 `permissions` |
 
 权限策略在只读时要写的，也用 `read-only` 那一句，`by` 是模块 `permissions`。
@@ -172,10 +172,10 @@
 | `core/tool-results/skipped` | 跳过了 | skipped |
 | `core/tool-results/question-voided` | 你发了一句话，这一题作废了 | dropped: you sent a message |
 | `core/tool-results/question-unattended` | 这里没人能回答 | nobody here can answer |
-| `core/tool-results/restarted` | Miyu 重启了，没跑完 | Miyu restarted before it finished |
+| `core/tool-results/restarted` | GQY 重启了，没跑完 | GQY restarted before it finished |
 | `core/tool-results/unavailable` | 现在用不了 | not available right now |
 | `core/tool-results/crashed` | 内部出错了，可能做了一部分 | crashed, may be partly done |
-| `core/permissions/forbidden` | 这是 Miyu 自己的数据，谁都不能碰 | Miyu's own data, off limits |
+| `core/permissions/forbidden` | 这是 GQY 自己的数据，谁都不能碰 | GQY's own data, off limits |
 | `core/permissions/unresolvable` | 说不清它指向哪里：{reason} | can't tell where it points: {reason} |
 
 - 给人看的只用给模型的那一句有的字段，可以少用：`unknown` 给模型的有 `name`，给人的不用。
@@ -191,12 +191,12 @@
 
 | 测试 | 守哪几条 |
 |---|---|
-| `crates/miyu-kernel/src/tool/tests.rs` | 第 9 条每一种还原（`each_declared_shape_is_restored_from_a_string`）；第 10、11、13 条（`what_cannot_be_restored_or_is_a_string_is_left_alone`）；第 12 条（`only_changed_arguments_are_rewritten_and_the_rest_are_kept`）；第 6 条（`empty_arguments_are_an_empty_object`）；第 7 条（`arguments_that_are_not_an_object_are_refused`）；第 8 条（`a_schema_without_properties_passes_arguments_through`）；访问类别的写法和 `writes()` |
-| `crates/miyu-kernel/src/tool/texts/tests.rs` | 第 19 条转义工具名和理由；要了别的字段的拒收；带不带理由；每一句都带着说法，编号和字段对得上 |
-| `crates/miyu-kernel/tests/resources.rs` | 出厂的十三句读得进、换得出（`the_tool_result_sentences_are_usable`）；样本 71 号就是带理由的那一句（`the_sample_denial_is_the_sentence_with_the_reason`） |
-| `crates/miyu-kernel/src/session/tests/tools.rs` | 第 2、3 条当场记下、说法对（`unknown_tools_and_bad_arguments_are_answered_on_the_spot`）；第 14 条（`arguments_are_repaired_for_running_but_logged_as_given`）；第 16 条（`calls_that_are_not_read_only_run_alone_and_in_order`） |
-| `crates/miyu-kernel/src/session/tests/interrupt.rs`、`approval.rs`、`question.rs`、`restart.rs`、`load.rs`、`permission.rs` | 十三句那张表：每一种情况写哪一句、什么状态、`by` 是谁 |
-| `crates/miyu-store/tests/human.rs` | `core/tool-results/`、`core/permissions/` 下每一份，中文、英文都有给人看的一句，要的字段不多于给模型的那一句 |
+| `crates/gqy-kernel/src/tool/tests.rs` | 第 9 条每一种还原（`each_declared_shape_is_restored_from_a_string`）；第 10、11、13 条（`what_cannot_be_restored_or_is_a_string_is_left_alone`）；第 12 条（`only_changed_arguments_are_rewritten_and_the_rest_are_kept`）；第 6 条（`empty_arguments_are_an_empty_object`）；第 7 条（`arguments_that_are_not_an_object_are_refused`）；第 8 条（`a_schema_without_properties_passes_arguments_through`）；访问类别的写法和 `writes()` |
+| `crates/gqy-kernel/src/tool/texts/tests.rs` | 第 19 条转义工具名和理由；要了别的字段的拒收；带不带理由；每一句都带着说法，编号和字段对得上 |
+| `crates/gqy-kernel/tests/resources.rs` | 出厂的十三句读得进、换得出（`the_tool_result_sentences_are_usable`）；样本 71 号就是带理由的那一句（`the_sample_denial_is_the_sentence_with_the_reason`） |
+| `crates/gqy-kernel/src/session/tests/tools.rs` | 第 2、3 条当场记下、说法对（`unknown_tools_and_bad_arguments_are_answered_on_the_spot`）；第 14 条（`arguments_are_repaired_for_running_but_logged_as_given`）；第 16 条（`calls_that_are_not_read_only_run_alone_and_in_order`） |
+| `crates/gqy-kernel/src/session/tests/interrupt.rs`、`approval.rs`、`question.rs`、`restart.rs`、`load.rs`、`permission.rs` | 十三句那张表：每一种情况写哪一句、什么状态、`by` 是谁 |
+| `crates/gqy-store/tests/human.rs` | `core/tool-results/`、`core/permissions/` 下每一份，中文、英文都有给人看的一句，要的字段不多于给模型的那一句 |
 | `xtask/src/ledger.rs`（门禁「文档」） | `resources/` 下每一份给模型看的字都在登记簿里，指纹对得上 |
 
 ### 出处
