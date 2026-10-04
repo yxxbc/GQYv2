@@ -149,6 +149,7 @@ impl Routes {
                 }),
                 inputs: facts.driver_inputs(),
                 effort,
+                temperature: facts.temperature.value,
             },
             learn: Learn {
                 data: Arc::clone(&self.data),

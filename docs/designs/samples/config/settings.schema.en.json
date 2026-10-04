@@ -351,6 +351,13 @@
                   "title": "Reasoning levels",
                   "type": "array"
                 },
+                "temperature": {
+                  "description": "The sampling temperature this model uses by default, from 0.0 to 2.0. Left out, the provider decides. Allowed: a number from 0 to 2. Only in the system config or personal settings. Takes effect next turn.",
+                  "maximum": 2,
+                  "minimum": 0,
+                  "title": "Default sampling temperature",
+                  "type": "number"
+                },
                 "tools": {
                   "description": "Whether this model can call tools. Allowed: true or false. Only in the system config or personal settings. Takes effect next turn.",
                   "title": "Tool calls",

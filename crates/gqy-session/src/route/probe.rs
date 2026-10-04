@@ -250,6 +250,7 @@ async fn ask(
         max_output: None,
         inputs: Inputs::default(),
         effort: None,
+        temperature: None,
     };
     let encoded = driver
         .encode(&request, &call, &BTreeMap::new())

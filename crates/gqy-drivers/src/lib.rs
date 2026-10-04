@@ -38,10 +38,10 @@ use std::fmt;
 use std::ops::Range;
 
 use gqy_kernel::accumulate::Delta;
-use gqy_kernel::event::{CallError, Usage};
+use gqy_kernel::event::{CallError, Real, Usage};
 use gqy_kernel::id::{ContentHash, ModelName};
 
-/// 一次调用要定的：发给哪个模型、输出的上限、模型能收哪些输入、思考强度。
+/// 一次调用要定的：发给哪个模型、输出的上限、模型能收哪些输入、思考强度、默认采样温度。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Call {
     /// 模型名，照供应商那边的叫法。
@@ -54,6 +54,9 @@ pub struct Call {
     /// 这一次的思考强度（施工 8-18，`docs/blueprint/models.md`「驱动要守的约定」第 13 条）：规整过的名字，[`EFFORT_OFF`]、
     /// [`EFFORT_ON`]，或者目录里的档位名。没有的什么都不加，请求和以前一个字节不差。
     pub effort: Option<String>,
+    /// 这一次的采样温度（施工 8-22，`docs/blueprint/models.md`「驱动要守的约定」第 14 条）：0.0 到 2.0。
+    /// 没有的不发，照供应商的默认；不支持温度的模型（如开启思考时）由驱动抑制不发。
+    pub temperature: Option<Real>,
 }
 
 /// 思考强度「关」的名字（施工 8-18）：目录里写 `none`、`disabled` 的读成它，有开关的模型多这一档。

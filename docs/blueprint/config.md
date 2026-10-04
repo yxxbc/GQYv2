@@ -273,6 +273,7 @@ gqy_config::settings! {
 | `providers.<id>.models.<model>.tools` | 开关 | 没有：照模型资料 | 系统、个人 | 不能写 | `next_turn` | 8-7 |
 | `providers.<id>.models.<model>.reasoning` | 文字的列表，每个最多 32 个字符 | 没有：照模型资料 | 系统、个人 | 不能写 | `next_turn` | 8-7 |
 | `providers.<id>.models.<model>.effort` | 文字，最多 32 个字符：这个模型的一档（`models.md`「怎么走」第十一条） | 没有：请求里不带，照供应商的默认 | 系统、个人 | 不能写 | `next_turn` | 8-18 |
+| `providers.<id>.models.<model>.temperature` | 小数 0 到 2 | 没有：请求里不带，照供应商的默认 | 系统、个人 | 不能写 | `next_turn` | 8-22 |
 | `providers.<id>.models.<model>.price.input`、`output`、`cache_read`、`cache_write` | 小数 0 到 1000000 | 没有：照模型资料 | 系统、个人 | 不能写 | `next_turn` | 8-7 |
 | `providers.<id>.models.<model>.price.currency` | 文字，最多 3 个字符 | 没有：`USD` | 系统、个人 | 不能写 | `next_turn` | 8-7 |
 | `models.catalog.update` | 开关 | `true`，`GQY_CATALOG_UPDATE` 压过 | 系统、个人 | 不能写 | `now` | 8-7 |
@@ -1079,6 +1080,10 @@ keys = []
 # 能写：最多 32 个字的文字 的列表。只能写在系统配置或个人设置里。下一轮生效。
 # reasoning =
 
+# 默认采样温度：这个模型默认的采样温度，0.0 到 2.0。不写的照供应商的默认。
+# 能写：0 到 2 之间的数。只能写在系统配置或个人设置里。下一轮生效。
+# temperature =
+
 # 能调工具：这个模型能不能调工具。
 # 能写：true 或 false。只能写在系统配置或个人设置里。下一轮生效。
 # tools =
@@ -1480,6 +1485,13 @@ currency = "USD"
                   "title": "思考强度",
                   "type": "array"
                 },
+                "temperature": {
+                  "description": "这个模型默认的采样温度，0.0 到 2.0。不写的照供应商的默认。能写：0 到 2 之间的数。只能写在系统配置或个人设置里。下一轮生效。",
+                  "maximum": 2,
+                  "minimum": 0,
+                  "title": "默认采样温度",
+                  "type": "number"
+                },
                 "tools": {
                   "description": "这个模型能不能调工具。能写：true 或 false。只能写在系统配置或个人设置里。下一轮生效。",
                   "title": "能调工具",
@@ -1654,6 +1666,8 @@ currency = "USD"
 | 选项 | `contract` 照前缀计费、`best_effort` 尽量命中、`per_request` 按次计费 | Billed by prefix、Best effort、Per request | 前置きで課金、できるだけ当てる、リクエストごと |
 | `providers.<id>.models.<model>.effort` 名字（8-18） | 默认的思考强度 | Default reasoning effort | 既定の思考の強さ |
 | 说明 | 这个模型默认的思考强度，写它的一档，例如 high；能关思考的写 off。不写的照供应商的默认。 | The reasoning effort this model uses by default: one of its levels, for example high, or off where thinking can be turned off. Left out, the provider decides. | このモデルが既定で使う思考の強さ。段階のひとつを書きます（例：high）。思考を切れるモデルは off。書かなければプロバイダーの既定に従います。 |
+| `providers.<id>.models.<model>.temperature` 名字（8-22） | 默认采样温度 | Default sampling temperature | 既定のサンプリング温度 |
+| 说明 | 这个模型默认的采样温度，0.0 到 2.0。不写的照供应商的默认。 | The sampling temperature this model uses by default, from 0.0 to 2.0. Left out, the provider decides. | このモデルが既定で使うサンプリング温度。0.0から2.0。書かなければプロバイダーの既定に従います。 |
 
 页和组（`config.pages`、`config.groups`，编号到名字；资源里只放清单用到的，`permissions`、`sessions` 随 8-2 加，`interface`、`tui` 随 8-3 加）：
 
@@ -2252,6 +2266,7 @@ Options:
 | `unknown_effort` 是新的原因码（`Code::UnknownEffort`），话是 `config/unknown-effort`，`name` 是写的那一档 | 说得出写的是哪一档，人一眼看出是写错了还是目录变了 | 借 `bad_format`：写法本身没错 |
 | 查法放在端点的配置服务（`config/effort.rs`，`Config::missing` 调它），档位照核心一份的模型资料算（核心起来时交给配置服务，`Core::with_model_data`）；纯的那一半在 `gqy_models::effort::unknown` | 档位要档案、目录，配置那一层没有；照 `bad_reference` 挂在同一处 | 合并时丢掉：目录一变，配置就跟着变 |
 | 目录读完以前、那一家用不了的不查 | 起来那一刻目录还没读，查了会把每一个都报成错；用不了的那一家推不出档案，开关算不出来 | 照手里的查：起来时多报一堆错 |
+| `providers.<id>.models.<model>.temperature` 是小数（`float [0, 2]`），系统和个人两层，`next_turn` 生效（8-22） | 0.0 到 2.0 覆盖主流大模型温度范围；与 `effort` 并在模型手写资料中 | 放在供应商层：不够细 |
 
 ### 要跟着改的别的页
 

@@ -136,6 +136,13 @@ gqy_config::settings! {
             applies: next_turn,
             ui: { page: "models", group: "providers", control: text },
         },
+        /// 默认的采样温度（施工 8-22，`models.md`「驱动要守的约定」第 14 条）：0.0 到 2.0。不写的请求里不带，照供应商的默认。
+        temperature: Option<Number> = none {
+            kind: float [0, 2],
+            layers: [System, Personal],
+            applies: next_turn,
+            ui: { page: "models", group: "providers", control: number },
+        },
         /// 倍率：盖过供应商上写的（施工 8-7）。
         price_multiplier: Option<Number> = none {
             kind: float [0, 1000],
@@ -145,6 +152,9 @@ gqy_config::settings! {
         },
     }
 }
+
+/// 配置里模型默认采样温度那一项（[`ModelSettings`] 的 `temperature`）。
+pub const TEMPERATURE_ITEM: &str = "providers.<id>.models.<model>.temperature";
 
 gqy_config::settings! {
     /// 一个模型手写的价格（施工 8-7）：每一百万 token 的价。写了一格就整份用手写的，不和目录的拼（「模型的资料」第一条）。

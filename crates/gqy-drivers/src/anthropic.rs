@@ -43,7 +43,7 @@ pub const FALLBACK_MAX_TOKENS: u32 = 8192;
 /// 打点的写法，一份请求里只有这一种（「缓存打点」第 3 条）：接在一块的最后一格后面。
 const MARK: &[u8] = br#","cache_control":{"type":"ephemeral"}"#;
 
-/// 编码：顶层照 `model`、`max_tokens`、`system`、`tools`、`messages`、`"stream":true`、思考强度的先后写，别的字段一概不发。
+/// 编码：顶层照 `model`、`max_tokens`、`system`、`tools`、`messages`、`"stream":true`、温度（施工 8-22，未开启思考时）、思考强度的先后写，别的字段一概不发。
 /// 带着接着写记号的照原样发（这一家不会接着写，图纸「起草时定的」第 16 条），发到 [`PATH`]。
 ///
 /// # Errors
@@ -102,6 +102,12 @@ pub fn encode(
         ranges.push(start..body.len());
     }
     body.extend_from_slice(b"],\"stream\":true");
+    let thinking_inactive =
+        call.effort.as_deref().is_none() || call.effort.as_deref() == Some(crate::EFFORT_OFF);
+    if let (Some(temperature), true) = (call.temperature, thinking_inactive) {
+        body.extend_from_slice(b",\"temperature\":");
+        json(&mut body, &temperature);
+    }
     effort::write(&mut body, call.effort.as_deref());
     body.push(b'}');
     Ok(Encoded {

@@ -110,6 +110,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 | `tools` | 布尔 | 能不能调工具 |
 | `reasoning` | 字符串的列表 | 思考强度有哪几档，盖过目录的。`none`、`disabled` 读成 `off`（8-18）。`effort` 照它查 |
 | `effort` | 一档的名字，最多 32 个字符 | 这个模型默认的思考强度（8-18，生效时机 `next_turn`）。不写的请求里不带，照供应商的默认。写的不在这时的档位里（目录变了、写错了）：照没写发，配置报 `unknown_effort`（「怎么走」第十一条第 2 条），配置不改 |
+| `temperature` | 小数，0.0 到 2.0 | 这个模型默认的采样温度（8-22，生效时机 `next_turn`）。不写的请求里不带，照供应商的默认。不支持温度的模型（如开启思考时）由驱动抑制不发 |
 | `price` | `{ input, output, cache_read, cache_write, currency }`：每一百万 token 的价，`currency` 是币种，写 ISO 4217 的三个大写字母，不写是 `USD` | 价格。写了就整份用它，不和目录的拼。中转站按人民币标价的写 `currency = "CNY"` |
 | `price_multiplier` | 不小于 0 的数 | 盖过供应商上写的 |
 | `driver` | 同供应商的 `driver` | 这个模型走另一种驱动，例如 opencode Zen 的 Claude 走 `anthropic` |
@@ -507,6 +508,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 11. 输出上限：一定要写的（Anthropic），路由替它填 `Call.max_output`：一次性入口写了的照它，没写的照真发的那个模型资料的最大输出（`facts.max_output`），资料也没有的驱动写 8192（`drivers/anthropic.md`，8-12）。openai-chat 照旧不写（`drivers/openai-chat.md`）。
 12. 接着写被打断的回复：一个开关，实测过的才开（`05-内核接口.md` 第七节）。
 13. **思考强度**（8-18）：`Call.effort` 是这一次要的一档，规整过的名字（`off`、`on`，或者目录里的档位名）；没有的什么都不加，请求和以前一个字节不差。openai-chat 照档案的 `compat`：档位发 `reasoning_effort`；`off` 档案写了开关（`toggle`）的发开关的「关」（DeepSeek 是 `"thinking":{"type":"disabled"}`），没写的发 `"reasoning_effort":"none"`（目录写 `none` 的那种）；`on` 写了开关的发开关的「开」，没写的什么都不加。两样都接在请求最后。Anthropic（8-12）：开关是接口自带的；档位写 `"thinking":{"type":"adaptive","display":"summarized"}` 加 `"output_config":{"effort":"<档位>"}`，`off` 写 `"thinking":{"type":"disabled"}`，`on` 写 `adaptive` 那一格，都接在最后（`drivers/anthropic.md`「思考强度」）；换了思考设置，前面对话的缓存作废（system、工具的照旧），这是人自己改的，认这一次的钱。Responses（8-13）：没有开关；档位写 `"reasoning":{"effort":"<档位>","summary":"auto"}` 加 `"include":["reasoning.encrypted_content"]`（要摘要给人看、要加密的思考好回传），`off` 写 `"reasoning":{"effort":"none"}`，`on` 什么都不加，没有的不加（`drivers/openai-responses.md`「思考强度」）。
+14. **默认采样温度**（8-22）：`Call.temperature` 是这一次要的小数（0.0 到 2.0）；没有的什么都不加，照供应商的默认。openai-chat：紧接在输出上限之后、思考强度之前写入 `,"temperature":...`（整数写成整数，如 `1`、`2`，小数写最短精确表示，如 `0.7`）。Anthropic（8-12）：仅在思考未启用时（`Call.effort` 是没有或者 `off`）紧接在 `"stream":true` 之后写入 `,"temperature":...`；开启思考时（`adaptive` 档位或 `on`）抑制不发，避免 API 报错。Responses（8-13）：仅在未启用思考档位时（没有思考或者 `off`）紧接在 `max_output_tokens` 之后、思考强度之前写入 `,"temperature":...`；开启思考档位时抑制不发。
 
 ### 怎么走
 
@@ -810,6 +812,16 @@ opencode 有两个端点：Zen（`https://opencode.ai/zen/v1`，按量付费）�
 9. **头**：日志里记的始终是原图，头照原图画。`image.described` 照常推送，头可以不显示（时间线上「视觉分析」的标签随前端设计）。没有瞬时提示，`status` 不推。
 10. **给模型看的字**：转述那一次请求里的两份（`core/vision/instruction.txt`、`question.txt`），主请求里图的位置的三份（`core/drivers/image-description-open.txt`、`image-description-open-named.txt`、`image-description-close.txt`）。都冻结在策略快照里（`core.vision`、`core.drivers.image_description`，`policy.md`），老会话照它造时的样子；登记在 `26-提示词.md` 第十节。
 11. **这一步不做**：给她留一个追问的口子（先实测转述够不够细，不够再开一步、找项目主人定）；视频、音频；头上显示转述。本地估算的用量照旧照图算，不照转述的字算（「还没有的」）。
+
+**十四、模型默认温度**（8-22；2026-10-05 项目主人定）
+
+人能给每个模型配置默认采样温度（`temperature`，0.0 到 2.0），写在模型手写资料中。
+
+1. **配置**：`providers.<id>.models.<model>.temperature`，小数（0.0 到 2.0，`float [0, 2]`），系统配置与个人设置两层，`next_turn` 生效。不写的请求里不带，照供应商的默认。
+2. **一次请求**：路由底子（`route/base.rs`）从该模型资料（`Facts.temperature`）读出默认温度，填入 `Call.temperature`。主请求与一次性入口（第十二条）同样遵循这一规则。
+3. **驱动处理**：`Call.temperature` 有值时写入请求；不支持温度的模型或状态（如 Anthropic 开启思考时、OpenAI Responses 启用思考档位时）由驱动抑制不发，避免 API 报错。
+4. **头看得到**：`model.list` 每一个模型的 `facts` 多一格 `temperature`（值、来源），并带完整配置键名 `key`（如 `providers.dev.models."deepseek-chat".temperature`）；头照抄 `key` 发 `config.set`，选「默认」发 `unset: true`。
+5. **不出提示**：改温度不给模型看字，不推额外提示。
 
 ### 样子
 
@@ -1515,4 +1527,5 @@ mimo = ["xiaomi"]
 | 8-20 跟着改的几页 | 模型调用口：`protocol.md`（方法表、`model.call` 一段、出错多三个原因码、`bad_params`、`unknown_model`、`unknown_attachment` 多 `model.call` 的、运行日志、给人看的字、「在哪」「守着它的」）、`session/actor.md`（「在哪」、端口的表、第 8 条路由调底子、测试表）、`log.md`（`model call` 两行，`endpoint cooling`、`failover` 一次性的不带会话编号）。8-20 都改了 | 8-20 |
 | 8-18（补）跟着改的几页 | 去掉思考强度的会话那一层：`protocol.md`（`session.configure` 改回只收 `model`、`subscribe`、`model.changed` 的 `effort.from`、`unknown_effort` 原因码去掉）、`kernel/events-bodies.md`（`session.policy_changed` 不再写 `effort`，旧日志照读）、`kernel/events.md`（`model.changed` 的 `effort.from`）、`kernel/session.md`（`Configure` 改回 `model: String`、`RunTurnStartHooks` 去掉 `efforts`）、`session/actor.md`（`ModelPort::turn` 去掉 `efforts` 参数）。8-18（补）都改了 | 8-18（补） |
 | 8-17 跟着改的几页 | 替看不了图的模型看图：`kernel/events.md`（种类表、24 种）、`kernel/events-bodies.md`（`image.described`）、样本 `image.described.jsonl`；`kernel/request.md`（`Request.described`、渲染表、「替它看的图」一段、`Assembler::describe`）；`kernel/session.md`（`Limits.blind`、`Describe`、`Described`、阶段 `Looking`、「替它看图」一节）；`drivers/openai-chat.md`（第 9 条、`DriverTexts`）；`session/actor.md`（端口的 `describe`、`Back::Described`）；`policy.md`、`store/resources.md`（快照的 `core.vision`、`core.drivers.image_description`，资源的五份）；`log.md`（`image not described`）；`26-提示词.md` 第十节登记五份、`prompts.md` 重新生成；请求形状探针多一张脸（`docs/designs/samples/probe/vision/`） | 8-17 |
+| 8-22 跟着改的几页 | 模型默认温度：`config.md`（清单、样本）、`protocol.md`（`model.list` 的 `facts.temperature`）、`drivers/openai-chat.md`、`drivers/anthropic.md`、`drivers/openai-responses.md`（`Call.temperature` 与各驱动抑制规则）。8-22 都改了 | 8-22 |
 | 终端界面、网页两个演示 | 合进 main 以后各发一条：开发端点改成 `xtask dev-home`，协议多的方法和推送 | 8-6、8-10 |

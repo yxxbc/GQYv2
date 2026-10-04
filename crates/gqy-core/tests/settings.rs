@@ -65,6 +65,7 @@ fn the_registered_list_is_well_formed() {
             "providers.<id>.models.<model>.tools",
             "providers.<id>.models.<model>.reasoning",
             "providers.<id>.models.<model>.effort",
+            "providers.<id>.models.<model>.temperature",
             "providers.<id>.models.<model>.price_multiplier",
             "providers.<id>.models.<model>.price.input",
             "providers.<id>.models.<model>.price.output",
@@ -110,6 +111,9 @@ fn generated_files_match_the_samples_byte_for_byte() {
         for (name, text) in FILES.into_iter().zip(rendered) {
             let text = text.unwrap_or_else(|error| panic!("{language} {name}：{error}"));
             let path = sample(name, language);
+            if std::env::var_os("GQY_UPDATE_SAMPLES").is_some() {
+                std::fs::write(&path, &text).expect("写入样本成功");
+            }
             let expected = std::fs::read_to_string(&path)
                 .unwrap_or_else(|error| panic!("{} 读不到：{error}", path.display()));
             assert_eq!(text, expected, "{language} {name} 和样本不一样");

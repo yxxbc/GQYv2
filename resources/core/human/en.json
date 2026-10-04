@@ -142,6 +142,10 @@
         "name": "Default reasoning effort",
         "description": "The reasoning effort this model uses by default: one of its levels, for example high, or off where thinking can be turned off. Left out, the provider decides."
       },
+      "providers.<id>.models.<model>.temperature": {
+        "name": "Default sampling temperature",
+        "description": "The sampling temperature this model uses by default, from 0.0 to 2.0. Left out, the provider decides."
+      },
       "providers.<id>.models.<model>.price_multiplier": {
         "name": "Price multiplier",
         "description": "Prices of this model are multiplied by it, over the one on the provider."

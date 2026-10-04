@@ -30,7 +30,7 @@ pub const FAMILY: &str = "openai-responses";
 /// 请求发到供应商地址后面的这一截。
 pub const PATH: &str = "/responses";
 
-/// 编码：顶层照 `model`、`instructions`、`input`、`tools`、`"store":false`、`"stream":true`、`max_output_tokens`、思考强度的
+/// 编码：顶层照 `model`、`instructions`、`input`、`tools`、`"store":false`、`"stream":true`、`max_output_tokens`、温度（施工 8-22，未开启思考档位时）、思考强度的
 /// 先后写，别的字段一概不发。带着接着写记号的照原样发（这一家没有前缀续写），发到 [`PATH`]。
 ///
 /// # Errors
@@ -72,6 +72,12 @@ pub fn encode(
     body.extend_from_slice(b",\"store\":false,\"stream\":true");
     if let Some(limit) = call.max_output {
         body.extend_from_slice(format!(",\"max_output_tokens\":{limit}").as_bytes());
+    }
+    let reasoning_inactive =
+        call.effort.as_deref().is_none() || call.effort.as_deref() == Some(crate::EFFORT_OFF);
+    if let (Some(temperature), true) = (call.temperature, reasoning_inactive) {
+        body.extend_from_slice(b",\"temperature\":");
+        json(&mut body, &temperature);
     }
     effort::write(&mut body, call.effort.as_deref());
     body.push(b'}');

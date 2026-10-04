@@ -20,6 +20,7 @@ pub use source::Source;
 use gqy_config::merge::{Origin, Resolved};
 use gqy_config::{Value, key};
 use gqy_drivers::Inputs;
+use gqy_kernel::event::Real;
 use serde_json::{Map, Value as Json, json};
 
 use crate::catalog::{CatalogModel, Price, Rates, USD};
@@ -62,6 +63,8 @@ pub struct Facts {
     pub reasoning: Fact<Option<Vec<String>>>,
     /// 默认的思考强度（施工 8-18）：配置写的、在这时的档位里的那一档；没写的、不在档位里的没有（请求照没写发）。
     pub effort: Fact<Option<String>>,
+    /// 默认的采样温度（施工 8-22）：配置写的（0.0 到 2.0）；没写的没有（请求照供应商默认）。
+    pub temperature: Fact<Option<Real>>,
     /// 价格。没有：不算金额。
     pub price: Fact<Option<Price>>,
     /// 倍率。
@@ -111,6 +114,11 @@ impl Facts {
             &self.reasoning.source,
         );
         put("effort", json!(self.effort.value), &self.effort.source);
+        put(
+            "temperature",
+            json!(self.temperature.value),
+            &self.temperature.source,
+        );
         let price = self.price.value.as_ref().map_or(Json::Null, Price::json);
         put("price", price, &self.price.source);
         put(
@@ -221,6 +229,11 @@ pub fn facts(
         ),
         reasoning,
         effort: fact(chosen),
+        temperature: fact(
+            written
+                .float(&["temperature"])
+                .map(|(temp, source)| (Real::new(temp), source)),
+        ),
         price: price(&written, provider.local, entry),
         multiplier: or_default(
             written

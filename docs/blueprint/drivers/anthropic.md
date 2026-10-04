@@ -49,9 +49,9 @@
 
 ### 怎么走：编码
 
-1. **顶层**，照这个先后，别的字段一概不发：`model`、`max_tokens`、`system`（第 2 条）、`tools`（第 8 条）、`messages`、`"stream":true`、思考强度（「思考强度」一节：`thinking`、`output_config`，有才写）。紧凑的 JSON，结构体照声明的先后写，参数格式原样照抄。
+1. **顶层**，照这个先后，别的字段一概不发：`model`、`max_tokens`、`system`（第 2 条）、`tools`（第 8 条）、`messages`、`"stream":true`、温度（`Call.temperature` 有且思考未开启才写，施工 8-22）、思考强度（「思考强度」一节：`thinking`、`output_config`，有才写）。紧凑的 JSON，结构体照声明的先后写，参数格式原样照抄。
    - `max_tokens`：`Call.max_output`；没有的写 `FALLBACK_MAX_TOKENS`。路由替这一家填 `Call.max_output`：一次性入口写了的照它，没写的照真发的那个模型资料的最大输出（`models.md`「模型的资料」）；资料也没有的才轮到 8192。openai-chat 照旧不填。
-   - 不发：`metadata`、`temperature`、`tool_choice`（默认就是 `auto`）、`stop_sequences`、顶层的 `cache_control`（自动缓存，见「缓存打点」第 6 条）、任何 `anthropic-beta` 头。
+   - 不发：`metadata`、`tool_choice`（默认就是 `auto`）、`stop_sequences`、顶层的 `cache_control`（自动缓存，见「缓存打点」第 6 条）、任何 `anthropic-beta` 头。开启思考时（`adaptive` 或 `on`）不发 `temperature`。
 2. **system**：`[{"type":"text","text":<system>}]`，写成一块的数组，好打点。空的不发这一格。
 3. **消息先合并**：统一的请求里的 user、tool 都写成线上的 `user`，assistant 写成 `assistant`。相邻两条线上的角色一样的，合成一条：后一条的块接在前一条后面。一串 tool 消息因此合成一条 user（这一家要一次调用的结果都在同一条里），tool 后面跟着的 user（上一次没等到回复，后来的话）也合进去，接在结果后面。一块都没有的消息不发（这一家不收空的 `content`），它前后两条要是同一个角色也照上面合。
 4. **user** 的块，一块一块写，不拼：

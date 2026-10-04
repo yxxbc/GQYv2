@@ -31,7 +31,7 @@ use gqy_models::keys;
 use gqy_models::matching::Found;
 use gqy_models::provider::{self, NoModel};
 use gqy_models::reference::named;
-use gqy_models::settings::ProviderSettings;
+use gqy_models::settings::{ProviderSettings, TEMPERATURE_ITEM};
 use gqy_session::ModelData;
 
 use super::Snapshot;
@@ -114,6 +114,8 @@ pub(crate) fn provider(data: &ModelData, snapshot: &Snapshot, id: &str, now: Tim
                         });
                         entry["facts"]["effort"]["key"] =
                             json!(config_key::fill(effort::ITEM, &[id, &model]));
+                        entry["facts"]["temperature"]["key"] =
+                            json!(config_key::fill(TEMPERATURE_ITEM, &[id, &model]));
                         match no_key {
                             true => entry["state"] = json!("no_key"),
                             false => {

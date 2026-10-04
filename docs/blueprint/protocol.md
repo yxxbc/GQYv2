@@ -159,7 +159,7 @@
 | `secret.set` | 写入或者换掉一个密钥（`name`、`value`），落了盘、记了日志才回应 `{"replaced"}`（施工 8-5，`config.md`「协议」） |
 | `secret.delete` | 删掉一个密钥（`name`），回应 `{}`（施工 8-5） |
 | `secret.list` | 密钥的名字、设没设、谁在用（`used_by`），从不交出值（施工 8-5） |
-| `model.list` | 配好的供应商和模型，每一格资料的值和来源、状态，在用的目录（施工 8-7）；池、两种用途（施工 8-8：`pools`、`uses` 多 `vision`；8-8 补去掉 `tiers`，池多 `subagent`、`description`）；模型、key 的状态多 `cooling`，带 `until`、`class`（施工 8-9）；每个模型的 `facts` 多 `effort`（施工 8-18），多一格 `key`（8-18（补））。参数 `provider`（只看这一家）、`refresh`（先拉一遍供应商的模型列表）都可以不写；形状照 `models.md`「协议」`model.list` |
+| `model.list` | 配好的供应商和模型，每一格资料的值和来源、状态，在用的目录（施工 8-7）；池、两种用途（施工 8-8：`pools`、`uses` 多 `vision`；8-8 补去掉 `tiers`，池多 `subagent`、`description`）；模型、key 的状态多 `cooling`，带 `until`、`class`（施工 8-9）；每个模型的 `facts` 多 `effort`（施工 8-18）、多 `temperature`（施工 8-22），都带 `key`（8-18（补）、8-22）。参数 `provider`（只看这一家）、`refresh`（先拉一遍供应商的模型列表）都可以不写；形状照 `models.md`「协议」`model.list` |
 | `provider.detect` | 找现成的：核心的环境里设了的 key（不交值）、本机跑着的模型服务、找了哪些环境变量（施工 8-11）；形状照 `models.md`「协议」 |
 | `provider.catalog` | 搜目录和档案里的供应商：`query`、`limit` 都可以不写；每一家能不能用、在不在本机（施工 8-11） |
 | `provider.test` | 试一家：配好了的（`provider`）或者还没写进配置的（`candidate`），列模型、真发一句、收到第一段正文就停，交回成没成、哪一步、出错；会花一点额度（施工 8-11） |

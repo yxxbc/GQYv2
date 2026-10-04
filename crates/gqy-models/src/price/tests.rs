@@ -59,6 +59,7 @@ fn facts(price: Option<Price>, source: Source, multiplier: f64) -> Facts {
         tools: none(),
         reasoning: none(),
         effort: none(),
+        temperature: none(),
         price: Fact {
             value: price,
             source,

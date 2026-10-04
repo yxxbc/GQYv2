@@ -142,6 +142,10 @@
         "name": "默认的思考强度",
         "description": "这个模型默认的思考强度，写它的一档，例如 high；能关思考的写 off。不写的照供应商的默认。"
       },
+      "providers.<id>.models.<model>.temperature": {
+        "name": "默认采样温度",
+        "description": "这个模型默认的采样温度，0.0 到 2.0。不写的照供应商的默认。"
+      },
       "providers.<id>.models.<model>.price_multiplier": {
         "name": "倍率",
         "description": "这个模型的价格照它乘，盖过供应商上写的。"
