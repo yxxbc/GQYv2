@@ -1,4 +1,3 @@
-# cargo xtask 别名（P00-02）：`cargo xtask <子命令>` 等价于 `cargo run --package xtask -- <子命令>`。
-# 创建：AI 助手（Cline 会话），2026-09-28 07:05:00。
 [alias]
-xtask = "run --package xtask --"
+# cargo xtask check：跑完全部门禁，见 xtask/src/main.rs。
+xtask = "run --quiet --package xtask --"

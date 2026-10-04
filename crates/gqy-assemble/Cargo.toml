@@ -1,0 +1,23 @@
+[package]
+name = "gqy-assemble"
+description = "默认的请求组装：从有效历史出一份统一的请求，纯逻辑"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+gqy-kernel = { path = "../gqy-kernel" }
+
+[dev-dependencies]
+# 探针和随机日志由真会话跑出来：执行器替身在内核的 testkit 开关后面（施工 2-9 下）。
+gqy-kernel = { path = "../gqy-kernel", features = ["testkit"] }
+# 探针和随机日志把每一次请求编码成线上的字节，查线上的前缀延伸、存档（施工 3-4 上）。DeepSeek 那一套开关在 testkit
+# 后面（施工 8-6 起出厂的住在档案里，核心的测试守着两边一样）。
+gqy-drivers = { path = "../gqy-drivers", features = ["testkit"] }
+# 测试里拼事件、读工具的参数格式（原样的 JSON 只能从 serde_json 读）。
+serde_json = { version = "1.0", features = ["raw_value"] }
+
+[lints]
+workspace = true

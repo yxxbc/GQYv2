@@ -1,0 +1,62 @@
+[package]
+name = "gqy-session"
+description = "会话 actor：把内核的会话状态机接上磁盘，动作照表回（施工 3-7 中）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# 驱动：请求编码成字节、读回来的分片解码（施工 3-7 下）。
+gqy-drivers = { path = "../gqy-drivers" }
+# HTTP 执行器：照编码好的字节发请求，流式读回来（施工 3-7 下）。
+gqy-http = { path = "../gqy-http" }
+# 会话的状态机、事件、编号。
+gqy-kernel = { path = "../gqy-kernel" }
+# 造会话时照人格拼策略快照，载入时照它重建（施工 3-6 上）。
+gqy-policy = { path = "../gqy-policy" }
+# 数据根、会话日志、blob、资源目录。
+gqy-store = { path = "../gqy-store" }
+# 工具目录：造会话时照它存下工具面（施工 4-1）。
+gqy-tool = { path = "../gqy-tool" }
+# 权限策略：换成真实的位置、查边界（施工 4-3 下）。
+gqy-fs = { path = "../gqy-fs" }
+# 执行器给每次调用写沙盒的规格（施工 5-4 上）。
+gqy-sandbox = { path = "../gqy-sandbox" }
+# 回合开始时冻结的配置是它合出来的最终值（施工 8-4，`config.md` 第八条第 3 条）。
+gqy-config = { path = "../gqy-config" }
+gqy-models = { path = "../gqy-models" }
+# 权限策略提的放行规则、给头看的说明写成 JSON（施工 4-3 下）。
+serde_json = "1.0"
+# 理由见 docs/construction/3-7-会话actor（中）.md「我定的」：一个会话一个异步任务，收件箱、推送、
+# 到点叫醒、写盘用的阻塞线程。
+tokio = { version = "1", features = ["macros", "rt", "sync", "time"] }
+# 运行日志的门面（施工 3-7 上）：只发，写成什么样、写到哪是 gqy-log 的事。
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+# 会话编号：UUIDv7，前 48 位是毫秒时间，随机数取自系统。
+uuid = { version = "1", features = ["v7"] }
+
+[features]
+# 测试用的请求模型的端口（`src/testkit.rs`，施工 3-8 上）：别的 crate 的测试要用它，在自己的
+# dev-dependencies 里打开；这个包自己的测试也经下面那一行打开。
+testkit = []
+
+[dev-dependencies]
+# 测试用的假工具（施工 4-2）。
+gqy-tool = { path = "../gqy-tool", features = ["testkit"] }
+# 测试里用真的基础系统（施工 4-4 上）。
+gqy-basesystem = { path = "../gqy-basesystem" }
+# 自己的集成测试用上剧本端口。
+gqy-session = { path = ".", features = ["testkit"] }
+# 测试里的假服务器：本机回环上的 HTTP/1.1（施工 3-7 下）。
+gqy-http = { path = "../gqy-http", features = ["testkit"] }
+# 测试里弄坏会话列表的索引（施工 3-8 七补）：和 gqy-store 用的是同一个。
+rusqlite = { version = "0.40", features = ["bundled"] }
+# 测试里接住发出来的日志，查写了什么、没写什么。
+gqy-log = { path = "../gqy-log" }
+# 测试里真的经助手起命令（施工 5-4 上）：cargo 编出来的助手在哪。
+gqy-sandbox = { path = "../gqy-sandbox", features = ["testkit"] }
+
+[lints]
+workspace = true

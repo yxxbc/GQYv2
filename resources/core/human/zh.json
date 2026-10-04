@@ -1,0 +1,308 @@
+{
+  "config": {
+    "items": {
+      "log.level": {
+        "name": "运行日志的级别",
+        "description": "运行日志记到哪一级。排查问题时调成 debug。设了环境变量 GQY_LOG 的，那一次启动照它。",
+        "options": {
+          "error": "只记错误",
+          "warn": "错误和警告",
+          "info": "来龙去脉",
+          "debug": "更细，排查用",
+          "trace": "全记",
+          "off": "不记"
+        }
+      },
+      "ui.language": {
+        "name": "界面语言",
+        "description": "终端、网页、命令行给你看的字用哪种话。auto 跟着终端或浏览器的语言。",
+        "options": {
+          "auto": "跟随系统",
+          "zh": "中文",
+          "en": "English",
+          "ja": "日本語"
+        }
+      },
+      "usage.currency": {
+        "name": "显示的币种",
+        "description": "用量的金额照币种各加各的，不换算；这一种排在最前，别的照代码的字母先后。三个大写字母，例如 USD、CNY。"
+      },
+      "tui.startup": {
+        "name": "启动时打开",
+        "description": "终端界面启动时开一个新会话，还是接着最近的那一个。",
+        "options": {
+          "new": "新会话",
+          "recent": "最近的会话"
+        }
+      },
+      "permission.start_read_only": {
+        "name": "新会话开局只读",
+        "description": "打开以后，新会话一开始就是只读。她只能查、写计划，要改文件时你再关掉只读。项目配置里只能把它打开。"
+      },
+      "models.chat": {
+        "name": "主对话的模型",
+        "description": "新会话默认用的模型，写成 供应商/模型，例如 deepseek/deepseek-flash；也能写 @池。"
+      },
+      "models.vision": {
+        "name": "看图的模型",
+        "description": "主对话的模型看不了图时，替它看图的模型。写法同主对话的模型。"
+      },
+      "pools.<id>.models": {
+        "name": "池的成员",
+        "description": "几个模型编成一组，每个写成 供应商/模型。"
+      },
+      "pools.<id>.strategy": {
+        "name": "池的分法",
+        "description": "一个会话一直用一个成员，还是每次请求换下一个。不写的：成员全是按次计费的轮换，别的钉住。",
+        "options": {
+          "pin": "钉住",
+          "rotate": "轮换"
+        }
+      },
+      "pools.<id>.subagent": {
+        "name": "子代理能选",
+        "description": "打开以后，新会话里她派子代理时能选这个池。池里有成员才列出来。"
+      },
+      "pools.<id>.description": {
+        "name": "给模型看的说明",
+        "description": "她派子代理时看到的一句，接在池名后面。用英文写，一行。"
+      },
+      "providers.<id>.driver": {
+        "name": "驱动",
+        "description": "怎么和这家说话。认得出的供应商可以不写。",
+        "options": {
+          "openai-chat": "OpenAI 兼容的对话接口",
+          "anthropic": "Anthropic 消息接口",
+          "openai-responses": "OpenAI Responses 接口"
+        }
+      },
+      "providers.<id>.base_url": {
+        "name": "地址",
+        "description": "这家的接口地址，路径由驱动接在后面。认得出的供应商可以不写。"
+      },
+      "providers.<id>.keys": {
+        "name": "key",
+        "description": "写 { secret = \"名字\" }（用 gqy login 存）或 { env = \"环境变量\" }，一个会话钉在其中一个上。空的不带认证头。"
+      },
+      "providers.<id>.name": {
+        "name": "显示名",
+        "description": "界面上给人看的名字。编号只用来引用模型；不写的照资料里那一家的名字，再没有的照编号。"
+      },
+      "providers.<id>.catalog": {
+        "name": "对应的供应商",
+        "description": "这家对应资料里的哪一家，例如只转 DeepSeek 的中转写 deepseek。"
+      },
+      "providers.<id>.models.<model>.window": {
+        "name": "上下文窗口",
+        "description": "这个模型的上下文窗口，单位 token。"
+      },
+      "providers.<id>.price_multiplier": {
+        "name": "倍率",
+        "description": "这家的价格照它乘，不写是 1。模型上写的盖过它。"
+      },
+      "providers.<id>.local": {
+        "name": "本机的服务",
+        "description": "本机跑的模型服务，价格当 0。不写的照地址：在本机的是。"
+      },
+      "providers.<id>.cache": {
+        "name": "缓存类别",
+        "description": "这家的缓存怎么算钱。现在只用来定池不写分法时怎么分。不写照驱动的默认。",
+        "options": {
+          "contract": "照前缀计费",
+          "best_effort": "尽量命中",
+          "per_request": "按次计费"
+        }
+      },
+      "providers.<id>.models.<model>.catalog": {
+        "name": "对应目录里的",
+        "description": "照 models.dev 目录里的哪一个：<供应商>/<模型>。不写的照名字找。"
+      },
+      "providers.<id>.models.<model>.max_output": {
+        "name": "最大输出",
+        "description": "这个模型一次最多输出多少 token。"
+      },
+      "providers.<id>.models.<model>.inputs": {
+        "name": "能收哪些输入",
+        "description": "这个模型能读的：文字、图片、PDF。",
+        "options": {
+          "text": "文字",
+          "image": "图片",
+          "pdf": "PDF"
+        }
+      },
+      "providers.<id>.models.<model>.tools": {
+        "name": "能调工具",
+        "description": "这个模型能不能调工具。"
+      },
+      "providers.<id>.models.<model>.reasoning": {
+        "name": "思考强度",
+        "description": "这个模型的思考强度有哪几级。"
+      },
+      "providers.<id>.models.<model>.effort": {
+        "name": "默认的思考强度",
+        "description": "这个模型默认的思考强度，写它的一档，例如 high；能关思考的写 off。不写的照供应商的默认。"
+      },
+      "providers.<id>.models.<model>.price_multiplier": {
+        "name": "倍率",
+        "description": "这个模型的价格照它乘，盖过供应商上写的。"
+      },
+      "providers.<id>.models.<model>.price.input": {
+        "name": "输入价",
+        "description": "每一百万输入 token 的价。写了价格就整份用手写的。"
+      },
+      "providers.<id>.models.<model>.price.output": {
+        "name": "输出价",
+        "description": "每一百万输出 token 的价。"
+      },
+      "providers.<id>.models.<model>.price.cache_read": {
+        "name": "读缓存的价",
+        "description": "每一百万读缓存 token 的价。"
+      },
+      "providers.<id>.models.<model>.price.cache_write": {
+        "name": "写缓存的价",
+        "description": "每一百万写缓存 token 的价。"
+      },
+      "providers.<id>.models.<model>.price.currency": {
+        "name": "币种",
+        "description": "价格的币种，三个大写字母，例如 USD、CNY。不写是 USD。"
+      },
+      "models.catalog.update": {
+        "name": "后台更新目录",
+        "description": "在后台去 models.dev 拉新的模型目录。关掉只用安装包带的和已经拉过的。"
+      },
+      "models.catalog.url": {
+        "name": "目录的地址",
+        "description": "从哪拉模型目录。"
+      },
+      "models.catalog.every": {
+        "name": "多久更新一次",
+        "description": "缓存的目录旧过这么久才再拉。"
+      },
+      "models.cooldown.rate_limited.base": {
+        "name": "限速后先冷却多久",
+        "description": "一个端点被限速，第一次停用这么久，连着再被限速就翻倍。"
+      },
+      "models.cooldown.rate_limited.max": {
+        "name": "限速最多冷却多久",
+        "description": "限速的冷却翻倍到这么久为止，供应商说要等更久的也不超过它。"
+      },
+      "models.cooldown.retryable.base": {
+        "name": "出错后先冷却多久",
+        "description": "连不上、服务端出错，第一次停用这么久，连着再出错就翻倍。"
+      },
+      "models.cooldown.retryable.max": {
+        "name": "出错最多冷却多久",
+        "description": "这类错的冷却翻倍到这么久为止。"
+      },
+      "models.cooldown.auth.base": {
+        "name": "认证失败先停用多久",
+        "description": "认证失败、额度用完时，整个 key 第一次停用这么久，连着再失败就翻倍。"
+      },
+      "models.cooldown.auth.max": {
+        "name": "认证失败最多停用多久",
+        "description": "整个 key 的停用翻倍到这么久为止。"
+      }
+    },
+    "pages": {
+      "general": "通用",
+      "interface": "界面",
+      "advanced": "高级",
+      "permissions": "权限",
+      "models": "模型"
+    },
+    "groups": {
+      "display": "显示",
+      "tui": "终端界面",
+      "log": "运行日志",
+      "sessions": "会话",
+      "uses": "用途",
+      "pools": "池",
+      "providers": "供应商",
+      "catalog": "模型目录",
+      "cooldown": "冷却"
+    }
+  },
+  "said": {
+    "tool-results/unknown": "没有这件工具",
+    "tool-results/not-an-object": "参数不是一个 JSON 对象",
+    "tool-results/cancelled-before": "打断了，没跑",
+    "tool-results/cancelled-running": "打断了，跑到一半",
+    "tool-results/skipped": "跳过了",
+    "tool-results/read-only": "只读，没写",
+    "tool-results/denied": "你拒绝了",
+    "tool-results/denied-with-reason": "你拒绝了：{reason}",
+    "tool-results/unattended": "要确认，这里没人能确认",
+    "tool-results/question-interrupted": "打断了，没回答",
+    "tool-results/question-voided": "你发了一句话，这一题作废了",
+    "tool-results/question-unattended": "这里没人能回答",
+    "tool-results/restarted": "GQY 重启了，没跑完",
+    "tool-results/unavailable": "现在用不了",
+    "tool-results/crashed": "内部出错了，可能做了一部分",
+    "permissions/forbidden": "这是 GQY 自己的数据，谁都不能碰",
+    "permissions/unresolvable": "说不清它指向哪里：{reason}",
+    "config/reference-header": "GQY 的全部配置项和默认值。这份是生成的，改它没有用。",
+    "config/reference-where": "系统配置写在 system/config.toml，个人设置写在 home/<账号>/settings.toml。",
+    "config/reference-item": "{name}：{description}",
+    "config/facts": "能写：{values}。只能写在{layers}里。{applies}。",
+    "config/schema-description": "{description}{facts}",
+    "config/layer/system": "系统配置",
+    "config/layer/personal": "个人设置",
+    "config/applies/now": "当场生效",
+    "config/or": "{rest}或{last}",
+    "config/or-values": "{rest} 或 {last}",
+    "config/list": "{rest}、{next}",
+    "config/layer/project": "项目配置",
+    "config/layer/default": "默认值",
+    "config/layer/env": "环境变量",
+    "config/applies/new_session": "以后开的会话生效",
+    "config/applies/head_start": "下次打开界面时生效",
+    "config/secrets-header": "GQY 的密钥：只经 GQY 写入、替换、删除。不要把这份文件贴给别人。",
+    "config/unknown-secret": "{key} 引用的密钥 {name} 还没设",
+    "config/env-not-set": "{key} 引用的环境变量 {name} 核心起来时没有设",
+    "config/no-provider": "{key} 指的供应商 {name} 没有配",
+    "config/no-pool": "{key} 指的池 {name} 没有配",
+    "config/unknown-effort": "{key} 写的 {name} 不是这个模型现在有的一档：请求照没写发",
+    "config/bad-secret-name": "{key} 不能当密钥的名字：小写字母开头，只有小写字母、数字、-、_，最长 64 个字符",
+    "config/bad-secret-value": "{key} 的值要写成带引号的字，不能是空的",
+    "config/trust-header": "GQY 记着的项目配置的信任：哪个仓库、哪一份内容、信不信任。",
+    "config/unreadable": "读不了这份文件：{why}",
+    "config/too-big": "这份文件超过 1 MiB，不读",
+    "config/not-utf8": "这份文件不是 UTF-8",
+    "config/syntax": "TOML 写法不对：{why}",
+    "config/unknown-key": "没有 {key} 这一项。是不是想写 {suggest}？",
+    "config/unknown-key-plain": "没有 {key} 这一项",
+    "config/wrong-type": "{key} 要写 {expected}，写的是 {got}",
+    "config/not-an-option": "{key} 只能是 {options}，写的是 {got}",
+    "config/wrong-layer": "{key} 只能写在{layers}里，写在{layer}里不算",
+    "config/not-tightening": "项目配置只能让限制更严。{key} 现在是 {current}，这里写的 {got} 更宽，不算",
+    "config/untrusted-project": "这份项目配置还没信任，先不用",
+    "config/fix-example": "改成其中一个，例如 {example}",
+    "config/fix-write": "改成 {example}",
+    "config/fix-move": "挪到{layers}里去",
+    "config/kept": "这一行先不管，原样留着",
+    "config/using-value": "这一项先照 {value} 用着（{from}）",
+    "config/using-last-good": "这份文件先照上一次读进来的用着",
+    "config/using-nothing": "这份文件先不用",
+    "config/expected/bool": "true 或 false",
+    "config/expected/table": "一张表",
+    "config/sentence": "{text}。",
+    "config/then": "{rest}{next}",
+    "config/stops": "。？！",
+    "config/applies/next_turn": "下一轮生效",
+    "config/expected/int": "{min} 到 {max} 之间的整数",
+    "config/expected/float": "{min} 到 {max} 之间的数",
+    "config/expected/text": "最多 {max} 个字的文字",
+    "config/expected/english": "最多 {max} 个字的一行英文",
+    "config/expected/duration": "{min} 到 {max} 之间的时长，写成 30s、10m、1h 这样",
+    "config/expected/url": "http:// 或 https:// 开头的网址",
+    "config/expected/name": "小写字母开头的名字，只有小写字母、数字、-、_，最长 64 个字符",
+    "config/expected/reference": "<供应商>/<模型> 或 @<池>",
+    "config/expected/model": "<供应商>/<模型>",
+    "config/expected/list": "{item} 的列表",
+    "config/expected/id": "小写字母开头，只有小写字母、数字、-、_，最长 32 个字符",
+    "config/expected/model-name": "1 到 128 个字节，没有控制字符",
+    "config/bad-format": "{key} 要写 {expected}，写的是 {got}",
+    "config/out-of-range": "{key} 要在 {min} 到 {max} 之间，写的是 {got}",
+    "config/bad-segment": "{key} 里的 {name} 不能当名字：{expected}"
+  }
+}

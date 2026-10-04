@@ -1,156 +1,41 @@
-# CI：三平台检查与测试矩阵（19 §8.2；P00-06）。
-# 本地与 CI 走同一实现：作业只调用 scripts/ci-*.sh 与 cargo xtask；所有 uses 固定完整 commit SHA。
-# 创建：AI 助手（Cline 会话），2026-09-29 00:22:26。
+# 三平台 CI：每台机器跑 cargo xtask check，和本地验收是同一条命令；另有一项长跑，只在 Linux 上。
+# 为什么这样定，见 docs/construction/0-3-三平台CI.md。
 name: CI
 
 on:
-  pull_request:
   push:
-    branches: [main]
+    branches: [main, "step/**"]
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
-concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
+# 每项最多跑 30 分钟：现在三分钟上下。测试卡住时（例如会话 actor 的测试等一个不会来的回应），
+# 不白等 GitHub 默认的六个小时（施工 3-7 中）。
 jobs:
-  checks:
-    name: checks
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+  check:
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        # Linux 钉 24.04：发行构建以 glibc 2.39 为基线（12-进程形态与分发 R11）。
+        os: [ubuntu-24.04, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: 门禁（fmt / clippy / arch / size）
-        run: bash scripts/ci-checks.sh
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 装上 rust-toolchain.toml 钉住的工具链
+        run: rustup toolchain install
+      - name: 门禁
+        run: cargo xtask check
 
-  test-linux:
-    name: test-linux
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+  # 长跑：随机测试接着平时的往后跑两万例（照 niri 的 randomized-tests，施工 2-10）。平时的
+  # cargo test 和本地门禁跳过这几个 #[ignore] 的测试；纯逻辑不碰平台，只在 Linux 上、release 模式跑。
+  randomized:
+    timeout-minutes: 30
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: 跑测试（全量）
-        run: bash scripts/ci-test.sh
-      - name: 上传测试报告
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gqy-test-report-linux
-          path: target/gqy-test-report/
-          retention-days: 14
-      - name: 写入作业摘要
-        if: ${{ !cancelled() }}
-        run: |
-          if [[ -f target/gqy-test-report/report.md ]]; then
-            cat target/gqy-test-report/report.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf '未生成 target/gqy-test-report/report.md\n' >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-  test-macos:
-    name: test-macos
-    runs-on: macos-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: 跑测试（全量）
-        run: bash scripts/ci-test.sh
-      - name: 上传测试报告
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gqy-test-report-macos
-          path: target/gqy-test-report/
-          retention-days: 14
-      - name: 写入作业摘要
-        if: ${{ !cancelled() }}
-        run: |
-          if [[ -f target/gqy-test-report/report.md ]]; then
-            cat target/gqy-test-report/report.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf '未生成 target/gqy-test-report/report.md\n' >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-  test-windows:
-    name: test-windows
-    runs-on: windows-latest
-    permissions:
-      contents: read
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: 跑单元测试（Git Bash，19 §8.2）
-        run: bash scripts/ci-test.sh --unit
-      - name: 上传测试报告
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: gqy-test-report-windows
-          path: target/gqy-test-report/
-          retention-days: 14
-      - name: 写入作业摘要
-        if: ${{ !cancelled() }}
-        run: |
-          if [[ -f target/gqy-test-report/report.md ]]; then
-            cat target/gqy-test-report/report.md >> "$GITHUB_STEP_SUMMARY"
-          else
-            printf '未生成 target/gqy-test-report/report.md\n' >> "$GITHUB_STEP_SUMMARY"
-          fi
-
-  docs:
-    name: docs
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Cache Rust artifacts
-        uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
-      - name: 文档门禁（rustdoc）
-        run: bash scripts/ci-docs.sh
-
-  supply-chain:
-    name: supply-chain
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: 供应链检查（cargo deny check，deny.toml）
-        uses: EmbarkStudios/cargo-deny-action@3c6349835b2b7b196a839186cb8b78e02f7b5f25 # v2.1.1
-        with:
-          command: check
-
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 装上 rust-toolchain.toml 钉住的工具链
+        run: rustup toolchain install
+      - name: 长跑
+        run: cargo test --release --workspace -- --ignored

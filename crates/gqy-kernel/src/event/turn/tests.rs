@@ -1,0 +1,77 @@
+//! 回合事件的测试：图纸上的写法读写一字不差、认得出种类；每种结束原因认得出；
+//! 不认识的原因原样留着；坏的报错说清是哪一种。
+
+use super::*;
+use crate::event::{Body, Event};
+use crate::test_support::{event_line, read_body, rejected};
+
+#[test]
+fn turn_events_from_the_drawing_round_trip() {
+    match read_body("turn.started", r#"{"trigger":41}"#) {
+        Body::TurnStarted(started) => assert_eq!(started.trigger.map(Seq::get), Some(41)),
+        other => panic!("{other:?}"),
+    }
+    match read_body("turn.reverted", r#"{"turns":[42,50]}"#) {
+        Body::TurnReverted(reverted) => assert_eq!(reverted.turns.len(), 2),
+        other => panic!("{other:?}"),
+    }
+    match read_body("turn.unreverted", r#"{"turns":[42,50]}"#) {
+        Body::TurnUnreverted(unreverted) => assert_eq!(unreverted.turns.len(), 2),
+        other => panic!("{other:?}"),
+    }
+}
+
+#[test]
+fn each_end_reason_reads_into_its_own_variant() {
+    for (text, reason) in [
+        ("completed", EndReason::Completed),
+        ("interrupted", EndReason::Interrupted),
+        ("error", EndReason::Error),
+        ("step_limit", EndReason::StepLimit),
+        ("aborted", EndReason::Aborted),
+        ("restarted", EndReason::Restarted),
+    ] {
+        match read_body("turn.ended", &format!(r#"{{"reason":"{text}"}}"#)) {
+            Body::TurnEnded(ended) => assert_eq!(ended.reason, reason),
+            other => panic!("{other:?}"),
+        }
+    }
+}
+
+#[test]
+fn an_unknown_end_reason_is_kept_as_it_is() {
+    match read_body("turn.ended", r#"{"reason":"paused"}"#) {
+        Body::TurnEnded(ended) => assert_eq!(ended.reason, EndReason::Other("paused".to_string())),
+        other => panic!("{other:?}"),
+    }
+}
+
+#[test]
+fn broken_turn_bodies_say_which_kind() {
+    let line = event_line("turn.started", r#"{"trigger":0}"#);
+    rejected::<Event>(&line, "body of turn.started not readable");
+    let line = event_line("turn.reverted", r#"{"turns":["42"]}"#);
+    rejected::<Event>(&line, "body of turn.reverted not readable");
+    let line = event_line("turn.unreverted", r#"{"turns":42}"#);
+    rejected::<Event>(&line, "body of turn.unreverted not readable");
+    let line = event_line("turn.ended", r#"{"reason":7}"#);
+    rejected::<Event>(&line, "body of turn.ended not readable");
+}
+
+/// 手动压缩单开的那一轮没有触发（施工 6-8）：不写这一格，读回来也没有；原来的日志照旧。
+#[test]
+fn a_turn_without_a_trigger_is_written_without_one() {
+    let Body::TurnStarted(started) = read_body("turn.started", r#"{"cwd":"~/src/gqy"}"#) else {
+        panic!("应该是回合开始");
+    };
+    assert_eq!(started.trigger, None);
+    assert_eq!(
+        serde_json::to_string(&started).unwrap(),
+        r#"{"cwd":"~/src/gqy"}"#
+    );
+    let line = event_line("turn.started", r#"{"trigger":null}"#);
+    let Body::TurnStarted(started) = Event::from_line(&line).unwrap().body else {
+        panic!("应该是回合开始");
+    };
+    assert_eq!(started.trigger, None, "写成 null 的当没有");
+}

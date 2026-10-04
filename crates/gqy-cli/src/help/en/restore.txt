@@ -1,0 +1,7 @@
+Usage: gqy restore [options]
+
+Bring back what the latest undo took, until you say something else.
+
+Options:
+  -s, --session <id>  Which session; default is the one the last gqy ask opened
+  -h, --help          Print help

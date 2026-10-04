@@ -1,0 +1,1 @@
+<turn-ended reason="restarted">A planned restart of GQY stopped this turn.</turn-ended>

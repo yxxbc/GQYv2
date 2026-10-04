@@ -1,0 +1,472 @@
+//! 随机测试的看守：一路看着会话吐出来的动作，边看边查；也替执行器记着哪些请求、哪些调用
+//! 在路上，好送下一条像样的回报。
+
+use std::collections::{BTreeMap, BTreeSet};
+
+use super::kinds::InputKind;
+use super::*;
+
+mod approval;
+mod breaker;
+mod clear;
+mod compaction;
+mod configure;
+mod invariants;
+mod jobs;
+mod load;
+mod lookup;
+mod manual;
+pub(super) mod model;
+mod overflow;
+mod peers;
+mod permission;
+mod question;
+mod queue;
+mod rebuild;
+mod recap;
+mod redo;
+mod reports;
+mod restore;
+mod shorten;
+mod sight;
+mod stopping;
+mod transient;
+mod undo;
+
+pub(super) use reports::Job;
+
+/// 看守。
+pub(super) struct Watch {
+    pub(super) seed: u64,
+    /// 追加过的事件，照先后。
+    events: Vec<Event>,
+    pushed: BTreeSet<Seq>,
+    /// 每个编号收到了几次、回应了几次。
+    pub(super) received: BTreeMap<CommandId, usize>,
+    pub(super) replied: BTreeMap<CommandId, usize>,
+    /// 接受过的编号：再来不再生效。拒绝过的不算，再来就重新判（`02-内核.md` 第四节）。
+    accepted: BTreeSet<CommandId>,
+    /// 叫跑过挂接点的回合；送回过对得上的结果的回合；跑过结束挂接点的回合。
+    pub(super) hooked: BTreeSet<TurnId>,
+    done: BTreeSet<TurnId>,
+    end_hooked: BTreeSet<TurnId>,
+    /// 每个回合请求过几次模型。
+    requests: BTreeMap<TurnId, u32>,
+    /// 交给执行器的请求；报过「发出去了」的；记了 `model.called` 的；在路上的那次。
+    issued: BTreeSet<Seq>,
+    sent: BTreeSet<Seq>,
+    recorded: BTreeSet<Seq>,
+    pub(super) asking: Option<Seq>,
+    /// 交给了链的调用；在跑的调用；有了结果的调用；在跑时被打断、补了「已取消」的调用。
+    admitted: BTreeSet<CallId>,
+    pub(super) running: BTreeSet<CallId>,
+    resulted: BTreeSet<CallId>,
+    stopped: BTreeSet<CallId>,
+    /// 现在的工作目录，和每个回合开始时的那一个。
+    pub(super) cwd: String,
+    turn_cwd: BTreeMap<TurnId, String>,
+    /// 走到过哪些路：随机的输入要真走到这些地方，查的才不是空话。
+    pub(super) seen_paths: BTreeSet<&'static str>,
+    /// 执行器替身：在路上的那次请求，下一块从第几块开始、开着的那一块（第几块、是不是工具
+    /// 调用、参数写了没有）。
+    pub(super) next_block: usize,
+    pub(super) open_block: Option<(usize, bool, bool)>,
+    /// 风平浪静：打断、乱来的增量少，一轮才走得深。
+    pub(super) calm: bool,
+    /// 多调写文件的、不开只读，写的在跑时常被打断（施工 4-9 再补一）。
+    pub(super) writing: bool,
+    /// 排着队的消息：这一轮里来的，还没被请求看到过。
+    queued: Vec<Seq>,
+    /// 正在送进去的那次新的打断，排着队的怎么办。
+    interrupting: Option<Queued>,
+    /// 现在的权限，和看守照规矩推出来的实际生效的那一级。
+    permission: Permission,
+    effective: Permission,
+    /// 确认：交给链的、链的结论、在等人的、人允许了的。
+    pub(super) approvals: approval::Approvals,
+    /// 提问：问着人的、答完了还没交给工具的。
+    pub(super) questions: question::Questions,
+    /// 重启：连着几轮被有计划的重启打断，最后那一轮结束时排着队的。
+    restarts: load::Restarts,
+    /// 撤销：有效历史里还有哪几轮、能恢复的几次、请求里不该有的几条。
+    pub(super) undo: undo::Undo,
+    /// 重做（施工 4-7 再补）：在等读回的、在等改回文件的那一次。
+    redoing: redo::Redoing,
+    /// 改回文件：交出去了、结局还没回来的那几步（施工 4-7 上）。
+    pub(super) restoring: restore::Restoring,
+    /// 喂过的输入种类（`kinds.rs` 的清单）。
+    pub(super) fed: BTreeSet<InputKind>,
+    /// 重试：该交出到点叫醒的、在等的、叫醒了的，这一步连着几次。
+    retries: model::Retries,
+    /// 停着的：叫它停过的调用、那次打断排着队的怎么办、到点叫醒的记号（施工 4-9 再补一）。
+    pub(super) stopping: stopping::Stopping,
+    /// 压缩：交过的摘要请求、在路上的那次、最近一次替代到哪（施工 6-2 上）。
+    compactions: compaction::Compactions,
+    /// 截短重试（施工 6-6 中）、被动压缩（施工 6-7）。
+    shortenings: shorten::Shortenings,
+    passives: overflow::Passives,
+    /// 回报（施工 7-2）：派出去的任务、排着的、记在一边的、有没有头订阅着。
+    pub(super) reports: reports::Reports,
+    /// 别的会话发来的话（施工 C-2）：收下的、还没听到的。
+    peers: peers::Peers,
+    /// 回顾（施工 3-8 四补）：在路上的那一次、等着的回应。
+    pub(super) recaps: recap::Recaps,
+    /// 换模型（施工 8-10）：会话的引用、最近一次换模型写在第几条。
+    models: configure::Models,
+    /// 替它看图（施工 8-17）：在路上的、转述过的、每一轮没成的。
+    pub(super) sight: sight::Sight,
+}
+
+impl Watch {
+    pub(super) fn new(seed: u64) -> Watch {
+        Watch {
+            seed,
+            events: Vec::new(),
+            pushed: BTreeSet::from([seq(1)]),
+            received: BTreeMap::new(),
+            replied: BTreeMap::new(),
+            accepted: BTreeSet::new(),
+            hooked: BTreeSet::new(),
+            done: BTreeSet::new(),
+            end_hooked: BTreeSet::new(),
+            requests: BTreeMap::new(),
+            issued: BTreeSet::new(),
+            sent: BTreeSet::new(),
+            recorded: BTreeSet::new(),
+            asking: None,
+            admitted: BTreeSet::new(),
+            running: BTreeSet::new(),
+            resulted: BTreeSet::new(),
+            stopped: BTreeSet::new(),
+            cwd: "~/src/gqy".to_string(),
+            turn_cwd: BTreeMap::new(),
+            seen_paths: BTreeSet::new(),
+            next_block: 0,
+            open_block: None,
+            calm: false,
+            writing: false,
+            queued: Vec::new(),
+            interrupting: None,
+            permission: lookup::created_permission(),
+            effective: lookup::created_permission(),
+            approvals: approval::Approvals::new(),
+            questions: question::Questions::new(),
+            restarts: load::Restarts::default(),
+            undo: undo::Undo::default(),
+            redoing: redo::Redoing::default(),
+            restoring: restore::Restoring::default(),
+            fed: BTreeSet::new(),
+            retries: model::Retries::default(),
+            stopping: stopping::Stopping::default(),
+            compactions: compaction::Compactions::default(),
+            shortenings: shorten::Shortenings::default(),
+            passives: overflow::Passives::default(),
+            reports: reports::Reports::default(),
+            peers: peers::Peers::default(),
+            recaps: recap::Recaps::default(),
+            models: configure::Models::default(),
+            sight: sight::Sight::default(),
+        }
+    }
+
+    /// 交出了到点叫醒、还在等的那次请求（`watch/model.rs`）。
+    pub(super) fn waiting_retry(&self) -> Option<Seq> {
+        self.retries.waiting
+    }
+
+    /// 在路上、还没报发出去了的那次请求。
+    pub(super) fn unsent(&self) -> Option<Seq> {
+        self.asking.filter(|seen| !self.sent.contains(seen))
+    }
+
+    /// 这个编号送进去，内核会不会当新命令判：没接受过的都会，拒绝过的也会。
+    pub(super) fn fresh(&self, id: &CommandId) -> bool {
+        !self.accepted.contains(id)
+    }
+
+    /// 追加过的最后一条。造会话那一条算在里面。
+    pub(super) fn last(&self) -> u64 {
+        self.events.last().map_or(1, |event| event.seq.get())
+    }
+
+    /// 送进一条输入之前记下它，送进去以后查吐出来的动作。新的打断：回合开着的，这一批以
+    /// 被打断的 `turn.ended` 收尾；没开着的，拒绝，原因码 `not_running`。
+    pub(super) fn feed(&mut self, session: &mut Session, input: Input) {
+        self.fed.insert(InputKind::of(&input));
+        self.reread_fed(&input);
+        self.retry_fed(&input);
+        self.sight_fed(&input);
+        let repeated = match &input {
+            Input::Command(command) if !self.fresh(&command.id) => Some(command.id.clone()),
+            _ => None,
+        };
+        // 改回文件的时候来的新命令一律拒绝（`watch/restore.rs`）：别的看守不再照自己的规矩判。
+        let refused = self.restoring_refuses(&input);
+        let judged = self.before_approval(&input).filter(|_| !refused);
+        let replied = self.before_question(&input).filter(|_| !refused);
+        let undone = self.before_undo(&input).filter(|_| !refused);
+        let redone = self.before_redo(&input).filter(|_| !refused);
+        let reverting = undone
+            .as_ref()
+            .and_then(undo::Expect::turns)
+            .or_else(|| redone.as_ref().and_then(redo::Expect::turns));
+        let restore = self.before_restore(&input);
+        let recorded = matches!(restore, Some(restore::Expect::Recorded(_)));
+        let compact = self.before_compact(&input).filter(|_| !refused);
+        let clear = self.before_clear(&input).filter(|_| !refused);
+        let report = self.before_report(&input).filter(|_| !refused);
+        let peer = self.before_peer(&input).filter(|_| !refused);
+        let notice = self.before_notice(session, &input).filter(|_| !refused);
+        let recap = self.before_recap(&input, refused);
+        let configure = self.before_configure(&input, refused);
+        let stop = self.before_stop(&input);
+        let fresh_interrupt = match &input {
+            Input::Command(command) if !refused => match command.command {
+                Command::Interrupt { queued } if self.fresh(&command.id) => Some(queued),
+                _ => None,
+            },
+            _ => None,
+        };
+        self.interrupting = fresh_interrupt;
+        let was_open = self.turn_open();
+        let command = match &input {
+            Input::Command(command) => Some(command.id.clone()),
+            _ => None,
+        };
+        let input_kind = match &input {
+            Input::Command(command) => Some(command.command.clone()),
+            _ => None,
+        };
+        match &input {
+            Input::Command(command) => {
+                *self.received.entry(command.id.clone()).or_default() += 1;
+            }
+            Input::TurnStartHooksDone { turn, .. } if self.hooked.contains(turn) => {
+                self.done.insert(*turn);
+            }
+            Input::RequestSent { seen, .. } if Some(*seen) == self.asking => {
+                self.sent.insert(*seen);
+            }
+            Input::Environment(environment) => self.cwd = environment.cwd.clone(),
+            Input::Limits(limits) => self.compactions.limits = Some(limits.clone()),
+            _ => {}
+        }
+        let actions = session.handle(input);
+        if let Some(id) = &repeated {
+            self.applied_once(id, &actions);
+        }
+        // 回顾不记编号（施工 3-8 四补）：再来一次就是再要一次。
+        let recapping = matches!(&input_kind, Some(Command::Recap));
+        if let Some(id) = command.filter(|_| !recapping) {
+            let rejected = actions.iter().any(|action| {
+                matches!(action, Action::Reply { id: replied, outcome: Outcome::Rejected { .. } } if *replied == id)
+            });
+            if !rejected {
+                self.accepted.insert(id);
+            }
+        }
+        if let Some(queued) = fresh_interrupt {
+            self.interrupted(&actions, was_open, queued);
+        }
+        self.after_stop(&actions, stop);
+        self.after_approval(&actions, judged);
+        self.after_question(&actions, replied);
+        self.after_undo(&actions, undone);
+        self.after_redo(&actions, redone);
+        self.after_restore(&actions, restore);
+        self.redo_restored(&actions, recorded);
+        self.after_compact(&actions, compact);
+        self.after_clear(&actions, clear);
+        self.after_report(&actions, report);
+        self.after_peer(&actions, peer);
+        self.after_notice(session, &actions, notice);
+        self.after_recap(&actions, recap);
+        self.after_configure(&actions, configure);
+        self.restore_matches(&actions, reverting);
+        for action in actions {
+            self.check(action);
+        }
+        self.interrupting = None;
+        // 取回原文：执行器做完才收收件箱，马上交回（施工 6-9）。
+        if let Some(recalled) = self.recall_answer() {
+            self.feed(session, recalled);
+        }
+    }
+
+    fn check(&mut self, action: Action) {
+        let seed = self.seed;
+        if let Some(pending) = self.compactions.reread.take() {
+            assert!(
+                matches!(&action, Action::CallModel { seen, .. } if *seen == pending),
+                "种子 {seed}：重读后面跟的不是它那次摘要请求：{action:?}"
+            );
+        }
+        match action {
+            Action::Append(events) => self.appended(events),
+            Action::Reread { seen, paths, .. } => self.reread_issued(seen, &paths),
+            Action::Push(events) => self.pushed.extend(events.iter().map(|event| event.seq)),
+            Action::Reply { id, outcome } => {
+                self.recap_replied(&id, &outcome);
+                if let Outcome::Accepted { events } = &outcome {
+                    assert!(
+                        events.iter().all(|event| self.pushed.contains(event)),
+                        "种子 {seed}：{id} 的事件还没推送就回应了"
+                    );
+                }
+                *self.replied.entry(id.clone()).or_default() += 1;
+                self.replied_at_most_received(&id);
+            }
+            Action::RunTurnStartHooks { turn, model } => {
+                self.start_hooks(turn);
+                self.hooks_model(model.as_deref());
+            }
+            Action::CallModel { seen, request, .. } => self.called(seen, &request),
+            Action::Aside { upto, request, .. } => self.recap_issued(upto, &request),
+            Action::Describe { blob, request } => self.describe_issued(blob, &request),
+            Action::Wake { seen, .. } => self.wake_asked(seen),
+            Action::PushTransient(transient) => self.transient(&transient),
+            Action::CancelModel { seen } => {
+                self.seen_paths.insert("叫执行器别再发");
+                assert!(
+                    self.recorded.contains(&seen),
+                    "种子 {seed}：叫执行器别再发的请求 {seen}，没记出错"
+                );
+            }
+            Action::RunTurnEndHooks { turn } => {
+                self.seen_paths.insert("跑了回合结束的挂接点");
+                let ended = self.events.iter().find(|event| {
+                    event.turn == Some(turn) && matches!(event.body, Body::TurnEnded(_))
+                });
+                assert!(
+                    ended.is_some_and(|event| self.pushed.contains(&event.seq)),
+                    "种子 {seed}：回合 {turn} 的结束还没落盘就跑挂接点"
+                );
+                assert!(
+                    self.end_hooked.insert(turn),
+                    "种子 {seed}：回合 {turn} 的结束挂接点跑了两次"
+                );
+            }
+            Action::GuardTool {
+                call_id,
+                name,
+                cwd,
+                permission,
+                ..
+            } => self.guard(call_id, &name, &cwd, &permission),
+            Action::RunTool { call_id, .. } => self.run(call_id),
+            Action::Restore { steps } => self.restore_asked(steps),
+            Action::StopJobs { jobs, by, cause } => self.stop_checked(&jobs, &by, &cause),
+            // 读回日志照撤销的规矩查（`watch/undo.rs`）；取回原文在这一条输入送完以后交回。
+            Action::ReadBack { .. } => {}
+            Action::Recall { blobs } => self.compactions.rebuild.recalling = Some(blobs),
+            Action::AnswerTool { call_id, answers } => self.handed(call_id, &answers),
+            Action::StopTool { call_id } => self.stop_asked(call_id),
+            Action::CancelTool { call_id } => {
+                self.seen_paths.insert("打断了工具");
+                assert!(
+                    self.stopped.contains(&call_id),
+                    "种子 {seed}：叫停的 {call_id} 不是在跑时被取消的"
+                );
+            }
+            // 随机的会话都是主会话（施工 7-6）：没有父会话，什么都不欠。
+            Action::Report(upward) => panic!("种子 {seed}：主会话向上回报了：{upward:?}"),
+        }
+    }
+
+    /// 追加的一批：序号连着；`model.called` 每次请求至多一条（`watch/model.rs`）；工具结果每个
+    /// 调用一条；步数上限只在请求满了的回合。
+    fn appended(&mut self, events: Vec<Event>) {
+        let seed = self.seed;
+        for (k, event) in events.iter().enumerate() {
+            assert_eq!(event.seq.get(), self.last() + 1, "种子 {seed}：序号要连着");
+            match &event.body {
+                Body::TurnStarted(_) => {
+                    if !self.hooked.is_empty() {
+                        self.seen_paths.insert("开了第二轮");
+                    }
+                    self.turn_cwd
+                        .insert(TurnId::new(event.seq), self.cwd.clone());
+                }
+                Body::MessageAssistant(reply)
+                    if reply
+                        .blocks
+                        .iter()
+                        .any(|block| matches!(block, Block::ToolCall(_))) =>
+                {
+                    self.seen_paths.insert("回复里有工具调用");
+                }
+                Body::ModelCalled(called) => self.model_called(called, &events, k),
+                Body::SessionRecapped(_) => self.recapped_appended(event, &events, k),
+                Body::ImageDescribed(described) => self.described_appended(event, described),
+                Body::ContextCompacted(compacted) => self.compaction_appended(event, compacted),
+                Body::CompactionPaused(paused) => self.pause_appended(event, paused),
+                Body::ToolResult(result) => {
+                    assert!(
+                        self.resulted.insert(result.call_id),
+                        "种子 {seed}：{} 有了两条结果",
+                        result.call_id
+                    );
+                    self.jobs_seen(result);
+                    let was_running = self.running.remove(&result.call_id);
+                    self.stopping.calls.remove(&result.call_id);
+                    if matches!(event.by, By::Tool(_)) {
+                        assert!(was_running, "种子 {seed}：没在跑的调用有了结果");
+                    }
+                    match result.status {
+                        ToolStatus::Cancelled if was_running => {
+                            if matches!(event.by, By::Tool(_)) {
+                                self.seen_paths.insert("没叫停却交回停了");
+                            }
+                            self.stopped.insert(result.call_id);
+                        }
+                        ToolStatus::Skipped if was_running => {
+                            assert!(
+                                self.skips_running(event, result.call_id),
+                                "种子 {seed}：在跑的调用被跳过了"
+                            );
+                            self.stopped.insert(result.call_id);
+                        }
+                        ToolStatus::Skipped => {
+                            self.seen_paths.insert("急着插话跳过");
+                        }
+                        _ => {}
+                    }
+                }
+                Body::TurnEnded(ended) if ended.reason == EndReason::StepLimit => {
+                    self.seen_paths.insert("走到步数上限");
+                    let turn = self.open_turn();
+                    assert_eq!(
+                        self.requests.get(&turn).copied(),
+                        Some(STEP_LIMIT),
+                        "种子 {seed}：请求没满就说到了上限"
+                    );
+                }
+                _ => {}
+            }
+            match &event.body {
+                Body::TurnEnded(ended) => {
+                    self.main_request_sent();
+                    self.shorten_turn_ended();
+                    self.passive_turn_ended();
+                    self.all_resulted(self.open_turn());
+                    self.note_ended(event, &ended.reason, self.manual_turn().is_none());
+                    self.retry_ended();
+                    self.stop_ended(&ended.reason);
+                }
+                Body::TurnStarted(started) => {
+                    self.one_turn();
+                    self.note_started(started.trigger);
+                }
+                _ => {}
+            }
+            self.queue_check(&events, k);
+            self.undo_check(&events, k);
+            self.report_check(&events, k);
+            self.permission_check(&events, k);
+            self.model_appended(event);
+            self.approval_check(&events, k);
+            self.question_check(&events, k);
+            self.events.push(event.clone());
+        }
+    }
+}

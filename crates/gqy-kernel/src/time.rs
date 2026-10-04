@@ -1,0 +1,255 @@
+//! 时间：UTC，精确到毫秒。JSON 里写成 `"2026-09-25T07:04:05.123Z"`，固定 24 个字符
+//! （`docs/designs/03-事件模型.md` 第二节）。只存 UTC，显示成本地时间是头的事。
+//!
+//! 给模型看的当地钟点和时区也在这里（[`Timestamp::local_hour`]、[`UtcOffset`]），环境那一块
+//! 事实要用（`08-上下文投影.md` 第五节「环境和状态的事实怎么写」）。
+//!
+//! 公历日期和天数的互转用的是 Howard Hinnant 的标准算法（days_from_civil），不引入日期库。
+
+use std::fmt;
+
+use serde::de::Error as _;
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
+
+use crate::format_error::FormatError;
+
+const MS_PER_DAY: i64 = 86_400_000;
+/// 0000-01-01T00:00:00.000Z
+const MIN: i64 = -62_167_219_200_000;
+/// 9999-12-31T23:59:59.999Z
+const MAX: i64 = 253_402_300_799_999;
+
+/// 一个时刻：从 1970-01-01T00:00:00.000Z 起的毫秒数，UTC。
+///
+/// 只收 0000 年到 9999 年，所以写出去永远是 24 个字符。内核自己不读时钟：
+/// 事件的时间取自执行器送进来的输入（`02-内核.md` 第四节）。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub struct Timestamp(i64);
+
+impl Timestamp {
+    /// 由 Unix 毫秒数得到时刻。超出 0000 年到 9999 年返回 `None`。
+    pub fn from_unix_millis(ms: i64) -> Option<Timestamp> {
+        (MIN..=MAX).contains(&ms).then_some(Timestamp(ms))
+    }
+
+    /// 从 1970-01-01T00:00:00.000Z 起的毫秒数；1970 年以前是负数。
+    pub fn unix_millis(self) -> i64 {
+        self.0
+    }
+
+    /// 读 `2026-09-25T07:04:05.123Z` 这样的写法。
+    ///
+    /// # Errors
+    ///
+    /// 只认这一种写法：长度不是 24、分隔符不对、有不是数字的地方、日期或时刻不存在
+    /// （例如 2 月 30 日、24 点、闰秒 60 秒），都返回 [`FormatError`]。
+    pub fn parse(text: &str) -> Result<Timestamp, FormatError> {
+        let bad = |why| FormatError::new("time", text, why);
+        let b = text.as_bytes();
+        if b.len() != 24 {
+            return Err(bad("must be 24 characters, like 2026-09-25T07:04:05.123Z"));
+        }
+        let separators = [
+            (4, b'-'),
+            (7, b'-'),
+            (10, b'T'),
+            (13, b':'),
+            (16, b':'),
+            (19, b'.'),
+            (23, b'Z'),
+        ];
+        if separators.iter().any(|&(i, sep)| b[i] != sep) {
+            return Err(bad("write it like 2026-09-25T07:04:05.123Z"));
+        }
+        let number = |from: usize, to: usize| {
+            let digits = &b[from..to];
+            if !digits.iter().all(u8::is_ascii_digit) {
+                return Err(bad("date and time must be digits"));
+            }
+            Ok(digits.iter().fold(0, |n, d| n * 10 + i64::from(d - b'0')))
+        };
+        let (year, month, day) = (number(0, 4)?, number(5, 7)?, number(8, 10)?);
+        let (hour, minute, second) = (number(11, 13)?, number(14, 16)?, number(17, 19)?);
+        let milli = number(20, 23)?;
+        if !(1..=12).contains(&month) || day < 1 || day > days_in_month(year, month) {
+            return Err(bad("no such day"));
+        }
+        if hour > 23 || minute > 59 || second > 59 {
+            return Err(bad("no such time"));
+        }
+        let in_day = ((hour * 60 + minute) * 60 + second) * 1000 + milli;
+        Ok(Timestamp(
+            days_from_civil(year, month, day) * MS_PER_DAY + in_day,
+        ))
+    }
+}
+
+impl fmt::Display for Timestamp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let (year, month, day) = civil_from_days(self.0.div_euclid(MS_PER_DAY));
+        let in_day = self.0.rem_euclid(MS_PER_DAY);
+        let (second, milli) = (in_day / 1000, in_day % 1000);
+        write!(
+            f,
+            "{year:04}-{month:02}-{day:02}T{:02}:{:02}:{:02}.{milli:03}Z",
+            second / 3600,
+            second / 60 % 60,
+            second % 60
+        )
+    }
+}
+
+impl Serialize for Timestamp {
+    fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
+        s.collect_str(self)
+    }
+}
+
+impl<'de> Deserialize<'de> for Timestamp {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        Timestamp::parse(&String::deserialize(d)?).map_err(D::Error::custom)
+    }
+}
+
+/// 星期的三个字母，从星期日数起。1970-01-01 是星期四。
+const WEEKDAYS: [&str; 7] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+/// 时区最多离 UTC 多少分钟。地球上用的时区都在 −14:00 到 +14:00 之间。
+const MAX_OFFSET_MINUTES: i32 = 14 * 60;
+
+impl Timestamp {
+    /// 这个时刻在 `offset` 那个时区落在哪一个小时，写成这个小时的起止：`Fri 2026-09-25 16:00–17:00`。
+    ///
+    /// 星期写三个字母，日期写成年-月-日，二十四小时制，分钟都写 `00`，中间是连接号 `–`：同一个小时里
+    /// 字节不变；23 点写 `23:00–24:00`，日期还是这一天。只写 `16:00` 的话，她会当成正好 16 点（施工 1-13 补，
+    /// `08-上下文投影.md` 第五节「环境和状态的事实怎么写」）。
+    pub fn local_hour(self, offset: UtcOffset) -> String {
+        let local = self.0 + i64::from(offset.0) * 60_000;
+        let days = local.div_euclid(MS_PER_DAY);
+        let (year, month, day) = civil_from_days(days);
+        let hour = local.rem_euclid(MS_PER_DAY) / 3_600_000;
+        // rem_euclid 出来一定在 0 到 6 之间，转成下标不会截断。
+        let weekday = WEEKDAYS[(days + 4).rem_euclid(7) as usize];
+        let end = hour + 1;
+        format!("{weekday} {year:04}-{month:02}-{day:02} {hour:02}:00–{end:02}:00")
+    }
+
+    /// 这个时刻在 `offset` 那个时区的钟点，到分钟：`2026-09-29 14:03`（施工 6-4，`history` 给每一条写时刻）。
+    pub fn local_minute(self, offset: UtcOffset) -> String {
+        let local = self.0 + i64::from(offset.0) * 60_000;
+        let (year, month, day) = civil_from_days(local.div_euclid(MS_PER_DAY));
+        let minutes = local.rem_euclid(MS_PER_DAY) / 60_000;
+        format!(
+            "{year:04}-{month:02}-{day:02} {:02}:{:02}",
+            minutes / 60,
+            minutes % 60
+        )
+    }
+
+    /// 这个时刻在 `offset` 那个时区是哪一天：`2026-10-01`（施工 8-15，用量按天分组）。
+    pub fn local_date(self, offset: UtcOffset) -> String {
+        let local = self.0 + i64::from(offset.0) * 60_000;
+        let (year, month, day) = civil_from_days(local.div_euclid(MS_PER_DAY));
+        format!("{year:04}-{month:02}-{day:02}")
+    }
+
+    /// `offset` 那个时区的某年某月某日某时某分，换回时刻（施工 6-4，`history` 读 `since`、`until`）。日期不存在的、
+    /// 钟点不在 0:00 到 23:59 之间的、出了 0000 年到 9999 年的，没有。
+    pub fn from_local(
+        year: i64,
+        month: i64,
+        day: i64,
+        hour: i64,
+        minute: i64,
+        offset: UtcOffset,
+    ) -> Option<Timestamp> {
+        let exists = (1..=12).contains(&month)
+            && (1..=days_in_month(year, month)).contains(&day)
+            && (0..24).contains(&hour)
+            && (0..60).contains(&minute);
+        if !exists {
+            return None;
+        }
+        let local = days_from_civil(year, month, day) * MS_PER_DAY + (hour * 60 + minute) * 60_000;
+        Timestamp::from_unix_millis(local - i64::from(offset.0) * 60_000)
+    }
+}
+
+/// 一个时区：比 UTC 早多少分钟，东边是正的。
+///
+/// 给模型看时写成 `UTC+09:00`，零时区也写成 `UTC+00:00`，字数固定（08 第五节）。内核不读
+/// 本机的时区设置，时区由执行器送进来；夏令时一换，送进来的就跟着变。
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct UtcOffset(i32);
+
+impl UtcOffset {
+    /// 零时区。
+    pub const UTC: UtcOffset = UtcOffset(0);
+
+    /// 由分钟数得到时区，东边是正的。超出 −14:00 到 +14:00 返回 `None`。
+    pub fn from_minutes(minutes: i32) -> Option<UtcOffset> {
+        (-MAX_OFFSET_MINUTES..=MAX_OFFSET_MINUTES)
+            .contains(&minutes)
+            .then_some(UtcOffset(minutes))
+    }
+
+    /// 比 UTC 早多少分钟，东边是正的。
+    pub fn minutes(self) -> i32 {
+        self.0
+    }
+}
+
+/// 写成 `UTC+09:00`、`UTC-05:30`、`UTC+00:00`。
+impl fmt::Display for UtcOffset {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let sign = if self.0 < 0 { '-' } else { '+' };
+        let minutes = self.0.unsigned_abs();
+        write!(f, "UTC{sign}{:02}:{:02}", minutes / 60, minutes % 60)
+    }
+}
+
+fn is_leap(year: i64) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+fn days_in_month(year: i64, month: i64) -> i64 {
+    match month {
+        2 if is_leap(year) => 29,
+        2 => 28,
+        4 | 6 | 9 | 11 => 30,
+        _ => 31,
+    }
+}
+
+/// 公历日期 → 从 1970-01-01 起的天数。
+fn days_from_civil(year: i64, month: i64, day: i64) -> i64 {
+    let year = if month <= 2 { year - 1 } else { year };
+    let era = year.div_euclid(400);
+    let year_of_era = year.rem_euclid(400);
+    let month_from_march = (month + 9) % 12;
+    let day_of_year = (153 * month_from_march + 2) / 5 + day - 1;
+    let day_of_era = year_of_era * 365 + year_of_era / 4 - year_of_era / 100 + day_of_year;
+    era * 146_097 + day_of_era - 719_468
+}
+
+/// 从 1970-01-01 起的天数 → 公历日期。
+fn civil_from_days(days: i64) -> (i64, i64, i64) {
+    let days = days + 719_468;
+    let era = days.div_euclid(146_097);
+    let day_of_era = days.rem_euclid(146_097);
+    let year_of_era =
+        (day_of_era - day_of_era / 1460 + day_of_era / 36_524 - day_of_era / 146_096) / 365;
+    let day_of_year = day_of_era - (365 * year_of_era + year_of_era / 4 - year_of_era / 100);
+    let month_from_march = (5 * day_of_year + 2) / 153;
+    let day = day_of_year - (153 * month_from_march + 2) / 5 + 1;
+    let month = if month_from_march < 10 {
+        month_from_march + 3
+    } else {
+        month_from_march - 9
+    };
+    let year = year_of_era + era * 400 + i64::from(month <= 2);
+    (year, month, day)
+}
+
+#[cfg(test)]
+mod tests;

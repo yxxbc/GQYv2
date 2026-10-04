@@ -1,0 +1,308 @@
+{
+  "config": {
+    "items": {
+      "log.level": {
+        "name": "実行ログのレベル",
+        "description": "実行ログにどこまで記録するかです。問題を調べるときは debug にします。環境変数 GQY_LOG があれば、その起動ではそちらが優先されます。",
+        "options": {
+          "error": "エラーのみ",
+          "warn": "エラーと警告",
+          "info": "経過も記録",
+          "debug": "詳細（調査用）",
+          "trace": "すべて",
+          "off": "記録しない"
+        }
+      },
+      "ui.language": {
+        "name": "表示言語",
+        "description": "端末、ウェブ、コマンドラインで表示する言語です。auto は端末やブラウザの言語に合わせます。",
+        "options": {
+          "auto": "システムに合わせる",
+          "zh": "中文",
+          "en": "English",
+          "ja": "日本語"
+        }
+      },
+      "usage.currency": {
+        "name": "先に表示する通貨",
+        "description": "使用量の金額は通貨ごとに合計し、換算はしません。この通貨を先頭に、ほかはコード順に並べます。USD、CNY のような大文字 3 文字。"
+      },
+      "tui.startup": {
+        "name": "起動時に開く",
+        "description": "端末画面を起動したときに、新しいセッションを始めるか、最近のセッションを続けるかです。",
+        "options": {
+          "new": "新しいセッション",
+          "recent": "最近のセッション"
+        }
+      },
+      "permission.start_read_only": {
+        "name": "新しいセッションを読み取り専用で始める",
+        "description": "オンにすると、新しいセッションは読み取り専用で始まります。調査と計画だけを行い、ファイルを変更するときに読み取り専用をオフにします。プロジェクト設定ではオンにすることしかできません。"
+      },
+      "models.chat": {
+        "name": "会話のモデル",
+        "description": "新しいセッションが使うモデル。プロバイダー/モデル の形で書きます。例：deepseek/deepseek-flash。@プール でもかまいません。"
+      },
+      "models.vision": {
+        "name": "画像を見るモデル",
+        "description": "会話のモデルが画像を見られないとき、代わりに見るモデル。書き方は会話のモデルと同じです。"
+      },
+      "pools.<id>.models": {
+        "name": "プールのメンバー",
+        "description": "いくつかのモデルをひとまとめにします。それぞれ プロバイダー/モデル の形で書きます。"
+      },
+      "pools.<id>.strategy": {
+        "name": "プールの分け方",
+        "description": "ひとつのセッションでずっと同じメンバーを使うか、リクエストごとに次のメンバーに替えるか。書かなければ、メンバーがすべてリクエストごとの課金なら順番に替え、ほかは固定します。",
+        "options": {
+          "pin": "固定",
+          "rotate": "順番に替える"
+        }
+      },
+      "pools.<id>.subagent": {
+        "name": "サブエージェントが選べる",
+        "description": "オンにすると、新しいセッションでサブエージェントを出すときにこのプールを選べます。メンバーがいるときだけ並びます。"
+      },
+      "pools.<id>.description": {
+        "name": "モデル向けの説明",
+        "description": "サブエージェントを出すときに、プール名のあとに見える一行です。英語で書きます。"
+      },
+      "providers.<id>.driver": {
+        "name": "ドライバー",
+        "description": "このプロバイダーとの話し方。知っているプロバイダーなら書かなくてもかまいません。",
+        "options": {
+          "openai-chat": "OpenAI 互換のチャット",
+          "anthropic": "Anthropic Messages",
+          "openai-responses": "OpenAI Responses"
+        }
+      },
+      "providers.<id>.base_url": {
+        "name": "アドレス",
+        "description": "このプロバイダーの API のアドレス。パスはドライバーが付けます。知っているプロバイダーなら書かなくてもかまいません。"
+      },
+      "providers.<id>.keys": {
+        "name": "キー",
+        "description": "{ secret = \"名前\" }（gqy login で保存）か { env = \"環境変数\" } を書きます。セッションはそのうちの一つを使い続けます。空なら認証ヘッダーを付けません。"
+      },
+      "providers.<id>.name": {
+        "name": "表示名",
+        "description": "画面に出す名前。ID はモデルの参照にだけ使います。書かなければモデル資料のプロバイダー名、それもなければ ID を使います。"
+      },
+      "providers.<id>.catalog": {
+        "name": "対応するプロバイダー",
+        "description": "モデル資料のどのプロバイダーに当たるか。DeepSeek だけを中継するなら deepseek と書きます。"
+      },
+      "providers.<id>.models.<model>.window": {
+        "name": "コンテキストウィンドウ",
+        "description": "このモデルのコンテキストウィンドウ。単位はトークン。"
+      },
+      "providers.<id>.price_multiplier": {
+        "name": "倍率",
+        "description": "このプロバイダーの価格に掛ける数。書かなければ 1。モデルに書いたほうが優先されます。"
+      },
+      "providers.<id>.local": {
+        "name": "ローカルのサービス",
+        "description": "このマシンで動くモデルのサービスで、価格は 0 として数えます。書かなければアドレスで決まります。"
+      },
+      "providers.<id>.cache": {
+        "name": "キャッシュの種類",
+        "description": "このプロバイダーのキャッシュの課金のしかた。いまは分け方を書いていないプールの分け方を決めるだけです。書かなければドライバーの既定に従います。",
+        "options": {
+          "contract": "前置きで課金",
+          "best_effort": "できるだけ当てる",
+          "per_request": "リクエストごと"
+        }
+      },
+      "providers.<id>.models.<model>.catalog": {
+        "name": "カタログの項目",
+        "description": "models.dev のどの項目に合わせるか：<プロバイダー>/<モデル>。書かなければ名前で探します。"
+      },
+      "providers.<id>.models.<model>.max_output": {
+        "name": "最大出力",
+        "description": "このモデルが一度に出力できるトークン数の上限。"
+      },
+      "providers.<id>.models.<model>.inputs": {
+        "name": "入力",
+        "description": "このモデルが読めるもの：テキスト、画像、PDF。",
+        "options": {
+          "text": "テキスト",
+          "image": "画像",
+          "pdf": "PDF"
+        }
+      },
+      "providers.<id>.models.<model>.tools": {
+        "name": "ツール呼び出し",
+        "description": "このモデルがツールを呼べるかどうか。"
+      },
+      "providers.<id>.models.<model>.reasoning": {
+        "name": "思考の強さ",
+        "description": "このモデルの思考の強さの段階。"
+      },
+      "providers.<id>.models.<model>.effort": {
+        "name": "既定の思考の強さ",
+        "description": "このモデルが既定で使う思考の強さ。段階のひとつを書きます（例：high）。思考を切れるモデルは off。書かなければプロバイダーの既定に従います。"
+      },
+      "providers.<id>.models.<model>.price_multiplier": {
+        "name": "倍率",
+        "description": "このモデルの価格に掛ける数。プロバイダーに書いたものより優先されます。"
+      },
+      "providers.<id>.models.<model>.price.input": {
+        "name": "入力の価格",
+        "description": "入力 100 万トークンあたりの価格。書いた価格はまるごと使われます。"
+      },
+      "providers.<id>.models.<model>.price.output": {
+        "name": "出力の価格",
+        "description": "出力 100 万トークンあたりの価格。"
+      },
+      "providers.<id>.models.<model>.price.cache_read": {
+        "name": "キャッシュ読み出しの価格",
+        "description": "キャッシュから読む 100 万トークンあたりの価格。"
+      },
+      "providers.<id>.models.<model>.price.cache_write": {
+        "name": "キャッシュ書き込みの価格",
+        "description": "キャッシュに書く 100 万トークンあたりの価格。"
+      },
+      "providers.<id>.models.<model>.price.currency": {
+        "name": "通貨",
+        "description": "価格の通貨。USD、CNY のような大文字 3 文字。書かなければ USD。"
+      },
+      "models.catalog.update": {
+        "name": "カタログを更新",
+        "description": "バックグラウンドで models.dev から新しいモデルカタログを取ってきます。オフなら同梱のものと取得済みのものだけを使います。"
+      },
+      "models.catalog.url": {
+        "name": "カタログのアドレス",
+        "description": "モデルカタログをどこから取ってくるか。"
+      },
+      "models.catalog.every": {
+        "name": "更新の間隔",
+        "description": "キャッシュのカタログがこれより古くなったら取り直します。"
+      },
+      "models.cooldown.rate_limited.base": {
+        "name": "レート制限後の休止",
+        "description": "エンドポイントがレート制限されたとき、最初に休ませる時間。続けて制限されると倍になります。"
+      },
+      "models.cooldown.rate_limited.max": {
+        "name": "レート制限の休止の上限",
+        "description": "レート制限の休止はここまでで倍にするのをやめます。プロバイダーがもっと長く待つよう言っても超えません。"
+      },
+      "models.cooldown.retryable.base": {
+        "name": "エラー後の休止",
+        "description": "つながらない、サーバー側のエラーのとき、最初に休ませる時間。続けて失敗すると倍になります。"
+      },
+      "models.cooldown.retryable.max": {
+        "name": "エラーの休止の上限",
+        "description": "このエラーの休止はここまでで倍にするのをやめます。"
+      },
+      "models.cooldown.auth.base": {
+        "name": "認証失敗後の停止",
+        "description": "認証に失敗したり利用枠を使い切ったりしたとき、キー全体を最初に止める時間。続けて失敗すると倍になります。"
+      },
+      "models.cooldown.auth.max": {
+        "name": "認証失敗の停止の上限",
+        "description": "キー全体の停止はここまでで倍にするのをやめます。"
+      }
+    },
+    "pages": {
+      "general": "一般",
+      "interface": "画面",
+      "advanced": "詳細",
+      "permissions": "権限",
+      "models": "モデル"
+    },
+    "groups": {
+      "display": "表示",
+      "tui": "端末画面",
+      "log": "実行ログ",
+      "sessions": "セッション",
+      "uses": "用途",
+      "pools": "プール",
+      "providers": "プロバイダー",
+      "catalog": "モデルカタログ",
+      "cooldown": "クールダウン"
+    }
+  },
+  "said": {
+    "tool-results/unknown": "そのツールはありません",
+    "tool-results/not-an-object": "引数が JSON オブジェクトではありません",
+    "tool-results/cancelled-before": "中断しました：実行していません",
+    "tool-results/cancelled-running": "中断しました：途中まで実行しました",
+    "tool-results/skipped": "スキップしました",
+    "tool-results/read-only": "読み取り専用のため、書き込んでいません",
+    "tool-results/denied": "拒否しました",
+    "tool-results/denied-with-reason": "拒否しました：{reason}",
+    "tool-results/unattended": "確認が必要ですが、ここには確認できる人がいません",
+    "tool-results/question-interrupted": "中断しました：回答していません",
+    "tool-results/question-voided": "新しいメッセージが送られたため、この質問は無効になりました",
+    "tool-results/question-unattended": "ここには回答できる人がいません",
+    "tool-results/restarted": "GQY が再起動したため、完了していません",
+    "tool-results/unavailable": "今は使えません",
+    "tool-results/crashed": "内部エラーが起きました。一部は実行されたかもしれません",
+    "permissions/forbidden": "GQY 自身のデータなので、誰も触れられません",
+    "permissions/unresolvable": "どこを指しているか判断できません：{reason}",
+    "config/reference-header": "GQY のすべての設定項目と既定値です。このファイルは生成されたもので、編集しても効果はありません。",
+    "config/reference-where": "システム設定は system/config.toml に、個人設定は home/<アカウント>/settings.toml に書きます。",
+    "config/reference-item": "{name}：{description}",
+    "config/facts": "書ける値：{values}。{layers}にだけ書けます。{applies}。",
+    "config/schema-description": "{description}{facts}",
+    "config/layer/system": "システム設定",
+    "config/layer/personal": "個人設定",
+    "config/applies/now": "すぐに反映されます",
+    "config/or": "{rest}または{last}",
+    "config/or-values": "{rest} または {last}",
+    "config/list": "{rest}、{next}",
+    "config/layer/project": "プロジェクト設定",
+    "config/layer/default": "既定値",
+    "config/layer/env": "環境変数",
+    "config/applies/new_session": "これから開くセッションに反映されます",
+    "config/applies/head_start": "次に画面を開いたときに反映されます",
+    "config/secrets-header": "GQY のシークレット：GQY を通してだけ書き込み、置き換え、削除します。このファイルを他人に渡さないでください。",
+    "config/unknown-secret": "{key} が参照しているシークレット {name} はまだ設定されていません",
+    "config/env-not-set": "{key} が参照している環境変数 {name} はコア起動時に設定されていませんでした",
+    "config/no-provider": "{key} が指しているプロバイダー {name} は設定されていません",
+    "config/no-pool": "{key} が指しているプール {name} は設定されていません",
+    "config/unknown-effort": "{key} の {name} は、このモデルのいまの段階にありません。リクエストは書かなかったものとして送ります",
+    "config/bad-secret-name": "{key} はシークレットの名前にできません：小文字で始め、小文字、数字、-、_ だけで、64 文字まで",
+    "config/bad-secret-value": "{key} の値は引用符で囲んだ文字列にしてください。空にはできません",
+    "config/trust-header": "GQY が記録しているプロジェクト設定の信頼：どのリポジトリの、どの内容を、信頼するかどうか。",
+    "config/unreadable": "このファイルを読めません：{why}",
+    "config/too-big": "このファイルは 1 MiB を超えているので読みません",
+    "config/not-utf8": "このファイルは UTF-8 ではありません",
+    "config/syntax": "TOML の書き方が正しくありません：{why}",
+    "config/unknown-key": "{key} という項目はありません。{suggest} のことですか？",
+    "config/unknown-key-plain": "{key} という項目はありません",
+    "config/wrong-type": "{key} には {expected} を書きます。書かれているのは {got} です",
+    "config/not-an-option": "{key} に書けるのは {options} だけです。書かれているのは {got} です",
+    "config/wrong-layer": "{key} は{layers}にだけ書けます。{layer}に書いても効きません",
+    "config/not-tightening": "プロジェクト設定では制限を厳しくすることしかできません。{key} は今 {current} で、ここに書かれた {got} のほうが緩いので効きません",
+    "config/untrusted-project": "このプロジェクト設定はまだ信頼されていないので、使いません",
+    "config/fix-example": "どれかに直してください。例：{example}",
+    "config/fix-write": "{example} に直してください",
+    "config/fix-move": "{layers}に移してください",
+    "config/kept": "この行はそのまま残し、使いません",
+    "config/using-value": "この項目はひとまず {value} を使います（{from}）",
+    "config/using-last-good": "このファイルはひとまず前回読んだ内容を使います",
+    "config/using-nothing": "このファイルはひとまず使いません",
+    "config/expected/bool": "true または false",
+    "config/expected/table": "テーブル",
+    "config/sentence": "{text}。",
+    "config/then": "{rest}{next}",
+    "config/stops": "。？！",
+    "config/applies/next_turn": "次のターンから反映されます",
+    "config/expected/int": "{min} から {max} までの整数",
+    "config/expected/float": "{min} から {max} までの数",
+    "config/expected/text": "{max} 文字までのテキスト",
+    "config/expected/english": "{max} 文字までの英語一行",
+    "config/expected/duration": "{min} から {max} までの時間（30s、10m、1h のように書く）",
+    "config/expected/url": "http:// か https:// で始まるアドレス",
+    "config/expected/name": "小文字で始め、小文字、数字、-、_ だけで、64 文字までの名前",
+    "config/expected/reference": "<プロバイダー>/<モデル> または @<プール>",
+    "config/expected/model": "<プロバイダー>/<モデル>",
+    "config/expected/list": "{item} のリスト",
+    "config/expected/id": "小文字で始め、小文字、数字、-、_ だけで、32 文字まで",
+    "config/expected/model-name": "1 から 128 バイトで、制御文字なし",
+    "config/bad-format": "{key} には {expected} を書きます。書かれているのは {got} です",
+    "config/out-of-range": "{key} は {min} から {max} までです。書かれているのは {got} です",
+    "config/bad-segment": "{key} の {name} は名前にできません：{expected}"
+  }
+}

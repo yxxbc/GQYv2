@@ -1,0 +1,21 @@
+[package]
+name = "gqy-policy"
+description = "策略快照：一个会话发请求要用的全部字和几样开关，按内容哈希存档（施工 3-6）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# 照快照造出组装器、驱动的占位。
+gqy-assemble = { path = "../gqy-assemble" }
+gqy-drivers = { path = "../gqy-drivers" }
+# 内核的策略、事实模板、内核替工具写的几句、内容哈希。
+gqy-kernel = { path = "../gqy-kernel" }
+# 快照写成规范的 JSON、读回来。
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = ["raw_value"] }
+
+[lints]
+workspace = true

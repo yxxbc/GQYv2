@@ -486,7 +486,7 @@ The question was not answered: no one can answer here.
 - 什么时候加进来：有计划的重启打断了调用
 - token：20
 - 为什么加：同上（施工 2-8）
-- 指纹：`243bc2aa`
+- 指纹：`1573d7d6`
 
 ```text
 The call was cancelled: GQY restarted before it finished. It may have been partly done.
@@ -519,7 +519,7 @@ The tool "{name}" stopped because of an internal error. It may have been partly 
 - 什么时候加进来：权限策略拒绝：要碰的路径在 GQY 的数据根里
 - token：27（路径按 `~/.gqy/run/token` 算）
 - 为什么加：告诉她为什么没做、哪一条路径，别换个说法再来（施工 4-3 下，`11-权限与沙盒.md` A9）
-- 指纹：`245c770b`
+- 指纹：`b3d49409`
 
 ```text
 "{path}" is inside GQY's own data, which no tool can read or change.
@@ -2295,7 +2295,7 @@ Reply with OK.
 - 什么时候加进来：核心崩了、那一轮没走完以后
 - token：23
 - 为什么加：同上。原来说程序重启了，其实是核心没走完就停了，有计划的重启另有一句；施工 4-9 再补四下改成实情
-- 指纹：`e82c8e69`
+- 指纹：`952f254c`
 
 ```text
 <turn-ended reason="aborted">GQY stopped unexpectedly and this turn did not finish.</turn-ended>
@@ -2306,7 +2306,7 @@ Reply with OK.
 - 什么时候加进来：有计划的重启打断了那一轮以后
 - token：21
 - 为什么加：同上（施工 2-8）
-- 指纹：`5a9d12ba`
+- 指纹：`28ff39ff`
 
 ```text
 <turn-ended reason="restarted">A planned restart of GQY stopped this turn.</turn-ended>

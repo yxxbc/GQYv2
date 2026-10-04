@@ -1,0 +1,41 @@
+[package]
+name = "gqy"
+description = "主程序：一个程序，像 busybox 那样按子命令分发（施工 3-9 上）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "gqy"
+path = "src/main.rs"
+
+[dependencies]
+# 子命令和参数。
+clap = { version = "4", features = ["derive"] }
+# 命令行的头：gqy ask、给人看的话（施工 3-9 下）。
+gqy-cli = { path = "../gqy-cli" }
+# 核心进程：gqy core（施工 3-9 上）。
+gqy-core = { path = "../gqy-core" }
+
+[dev-dependencies]
+# 测试 `cargo xtask dev-home` 造的配置照清单读得进来（施工 8-6）。
+gqy-config = { path = "../gqy-config" }
+# 测试里拉起核心、连上它（施工 3-9 上）。
+gqy-ipc = { path = "../gqy-ipc" }
+# 测试里的假模型：本机回环上照剧本回的 HTTP 服务器（施工 7-8：核心崩了后台命令跟着没）。
+gqy-http = { path = "../gqy-http", features = ["testkit"] }
+# 测试里写回收处的 `deleted_at`：事件的时刻写法（施工 3-8 三补）。
+gqy-kernel = { path = "../gqy-kernel" }
+# 测试里的数据根。
+gqy-store = { path = "../gqy-store" }
+# 测试里开一对真的伪终端，贴 key 时按 `Ctrl+C` 走一遍真的子进程（施工 8-5 补，Unix 上才用得到；`termios`、`pty` 两个
+# 模块本身就只在 Unix 编）。
+rustix = { version = "1", features = ["termios", "pty"] }
+# 测试里在套接字上说 JSON-RPC。
+serde_json = "1.0"
+tokio = { version = "1", features = ["io-util", "macros", "rt", "time"] }
+
+[lints]
+workspace = true

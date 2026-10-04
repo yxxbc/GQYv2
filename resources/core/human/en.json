@@ -1,0 +1,308 @@
+{
+  "config": {
+    "items": {
+      "log.level": {
+        "name": "Runtime log level",
+        "description": "How much the runtime log records. Set debug when chasing a problem. GQY_LOG, when set, wins for that launch.",
+        "options": {
+          "error": "Errors only",
+          "warn": "Errors and warnings",
+          "info": "What happens",
+          "debug": "More detail, for debugging",
+          "trace": "Everything",
+          "off": "Nothing"
+        }
+      },
+      "ui.language": {
+        "name": "Interface language",
+        "description": "The language terminals, the web page and the command line use for you. auto follows the terminal or browser.",
+        "options": {
+          "auto": "Follow the system",
+          "zh": "中文",
+          "en": "English",
+          "ja": "日本語"
+        }
+      },
+      "usage.currency": {
+        "name": "Currency shown first",
+        "description": "Amounts are added up per currency, never converted. This one is listed first, the others by code. Three capital letters such as USD or CNY."
+      },
+      "tui.startup": {
+        "name": "On start, open",
+        "description": "Whether the terminal interface starts a new session or picks up the most recent one.",
+        "options": {
+          "new": "A new session",
+          "recent": "The most recent session"
+        }
+      },
+      "permission.start_read_only": {
+        "name": "Start new sessions read-only",
+        "description": "When on, new sessions begin read-only. She can look around and plan, and you turn read-only off when files should change. A project config can only turn it on."
+      },
+      "models.chat": {
+        "name": "Chat model",
+        "description": "The model new sessions use, written as provider/model, for example deepseek/deepseek-flash, or @pool."
+      },
+      "models.vision": {
+        "name": "Vision model",
+        "description": "Looks at images for the chat model when it cannot. Written like the chat model."
+      },
+      "pools.<id>.models": {
+        "name": "Pool members",
+        "description": "A group of models, each written as provider/model."
+      },
+      "pools.<id>.strategy": {
+        "name": "Pool strategy",
+        "description": "Keep a session on one member, or take the next member for every request. Left out, a pool whose members are all billed per request rotates and the others pin.",
+        "options": {
+          "pin": "Pin",
+          "rotate": "Rotate"
+        }
+      },
+      "pools.<id>.subagent": {
+        "name": "Subagents can pick it",
+        "description": "When on, she can pick this pool for a subagent in new sessions. It is listed only once it has members."
+      },
+      "pools.<id>.description": {
+        "name": "Description for the model",
+        "description": "One line she sees after the pool name when she starts a subagent. Write it in English."
+      },
+      "providers.<id>.driver": {
+        "name": "Driver",
+        "description": "How to talk to this provider. Known providers can leave it out.",
+        "options": {
+          "openai-chat": "OpenAI-compatible chat",
+          "anthropic": "Anthropic Messages",
+          "openai-responses": "OpenAI Responses"
+        }
+      },
+      "providers.<id>.base_url": {
+        "name": "Address",
+        "description": "The address of this provider's API; the driver adds the path. Known providers can leave it out."
+      },
+      "providers.<id>.keys": {
+        "name": "Keys",
+        "description": "Write { secret = \"name\" } (saved with gqy login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header."
+      },
+      "providers.<id>.name": {
+        "name": "Display name",
+        "description": "The name people see. The id is only for referring to models; without one, the model data's name for this provider is used, then the id."
+      },
+      "providers.<id>.catalog": {
+        "name": "Catalog provider",
+        "description": "Which provider in the model data this one is, for example deepseek for a relay that only forwards DeepSeek."
+      },
+      "providers.<id>.models.<model>.window": {
+        "name": "Context window",
+        "description": "The context window of this model, in tokens."
+      },
+      "providers.<id>.price_multiplier": {
+        "name": "Price multiplier",
+        "description": "Prices of this provider are multiplied by it. 1 if left out. A multiplier on the model wins."
+      },
+      "providers.<id>.local": {
+        "name": "Local service",
+        "description": "A model service on this machine, counted as free. Left out, it follows the address: on this machine means yes."
+      },
+      "providers.<id>.cache": {
+        "name": "Cache class",
+        "description": "How this provider bills its cache. For now it only decides how a pool without a strategy splits. Left out, it follows the driver.",
+        "options": {
+          "contract": "Billed by prefix",
+          "best_effort": "Best effort",
+          "per_request": "Per request"
+        }
+      },
+      "providers.<id>.models.<model>.catalog": {
+        "name": "Catalog entry",
+        "description": "Which models.dev entry to use: <provider>/<model>. Left out, it is found by name."
+      },
+      "providers.<id>.models.<model>.max_output": {
+        "name": "Max output",
+        "description": "How many tokens this model can write at most in one reply."
+      },
+      "providers.<id>.models.<model>.inputs": {
+        "name": "Inputs",
+        "description": "What this model can read: text, images, PDF.",
+        "options": {
+          "text": "Text",
+          "image": "Images",
+          "pdf": "PDF"
+        }
+      },
+      "providers.<id>.models.<model>.tools": {
+        "name": "Tool calls",
+        "description": "Whether this model can call tools."
+      },
+      "providers.<id>.models.<model>.reasoning": {
+        "name": "Reasoning levels",
+        "description": "Which reasoning levels this model offers."
+      },
+      "providers.<id>.models.<model>.effort": {
+        "name": "Default reasoning effort",
+        "description": "The reasoning effort this model uses by default: one of its levels, for example high, or off where thinking can be turned off. Left out, the provider decides."
+      },
+      "providers.<id>.models.<model>.price_multiplier": {
+        "name": "Price multiplier",
+        "description": "Prices of this model are multiplied by it, over the one on the provider."
+      },
+      "providers.<id>.models.<model>.price.input": {
+        "name": "Input price",
+        "description": "Price per million input tokens. A written price is used whole."
+      },
+      "providers.<id>.models.<model>.price.output": {
+        "name": "Output price",
+        "description": "Price per million output tokens."
+      },
+      "providers.<id>.models.<model>.price.cache_read": {
+        "name": "Cache read price",
+        "description": "Price per million tokens read from the cache."
+      },
+      "providers.<id>.models.<model>.price.cache_write": {
+        "name": "Cache write price",
+        "description": "Price per million tokens written to the cache."
+      },
+      "providers.<id>.models.<model>.price.currency": {
+        "name": "Currency",
+        "description": "Currency of the price, three capital letters such as USD or CNY. USD if left out."
+      },
+      "models.catalog.update": {
+        "name": "Update the catalog",
+        "description": "Fetch a newer model catalog from models.dev in the background. Off uses only the bundled and already fetched ones."
+      },
+      "models.catalog.url": {
+        "name": "Catalog address",
+        "description": "Where to fetch the model catalog from."
+      },
+      "models.catalog.every": {
+        "name": "Update every",
+        "description": "Fetch again once the cached catalog is this old."
+      },
+      "models.cooldown.rate_limited.base": {
+        "name": "Rate limit cooldown",
+        "description": "How long an endpoint rests the first time it is rate limited. It doubles each time in a row."
+      },
+      "models.cooldown.rate_limited.max": {
+        "name": "Rate limit cooldown cap",
+        "description": "The rate limit cooldown stops doubling here, even when the provider asks for longer."
+      },
+      "models.cooldown.retryable.base": {
+        "name": "Error cooldown",
+        "description": "How long an endpoint rests the first time it cannot be reached or fails on its side. It doubles each time in a row."
+      },
+      "models.cooldown.retryable.max": {
+        "name": "Error cooldown cap",
+        "description": "The cooldown for these errors stops doubling here."
+      },
+      "models.cooldown.auth.base": {
+        "name": "Auth failure pause",
+        "description": "How long a whole key rests the first time it fails to authenticate or runs out of quota. It doubles each time in a row."
+      },
+      "models.cooldown.auth.max": {
+        "name": "Auth failure pause cap",
+        "description": "The pause for a whole key stops doubling here."
+      }
+    },
+    "pages": {
+      "general": "General",
+      "interface": "Interface",
+      "advanced": "Advanced",
+      "permissions": "Permissions",
+      "models": "Models"
+    },
+    "groups": {
+      "display": "Display",
+      "tui": "Terminal interface",
+      "log": "Runtime log",
+      "sessions": "Sessions",
+      "uses": "Uses",
+      "pools": "Pools",
+      "providers": "Providers",
+      "catalog": "Model catalog",
+      "cooldown": "Cooldown"
+    }
+  },
+  "said": {
+    "tool-results/unknown": "no such tool",
+    "tool-results/not-an-object": "the arguments are not a JSON object",
+    "tool-results/cancelled-before": "interrupted before it ran",
+    "tool-results/cancelled-running": "interrupted while running",
+    "tool-results/skipped": "skipped",
+    "tool-results/read-only": "read-only, not written",
+    "tool-results/denied": "you said no",
+    "tool-results/denied-with-reason": "you said no: {reason}",
+    "tool-results/unattended": "needs a confirmation nobody here can give",
+    "tool-results/question-interrupted": "interrupted before the answer",
+    "tool-results/question-voided": "dropped: you sent a message",
+    "tool-results/question-unattended": "nobody here can answer",
+    "tool-results/restarted": "GQY restarted before it finished",
+    "tool-results/unavailable": "not available right now",
+    "tool-results/crashed": "crashed, may be partly done",
+    "permissions/forbidden": "GQY's own data, off limits",
+    "permissions/unresolvable": "can't tell where it points: {reason}",
+    "config/reference-header": "Every GQY setting and its default. This file is generated. Editing it has no effect.",
+    "config/reference-where": "Write the system config in system/config.toml and personal settings in home/<account>/settings.toml.",
+    "config/reference-item": "{name}: {description}",
+    "config/facts": "Allowed: {values}. Only in {layers}. {applies}.",
+    "config/schema-description": "{description} {facts}",
+    "config/layer/system": "the system config",
+    "config/layer/personal": "personal settings",
+    "config/applies/now": "Takes effect at once",
+    "config/or": "{rest} or {last}",
+    "config/or-values": "{rest} or {last}",
+    "config/list": "{rest}, {next}",
+    "config/layer/project": "a project config",
+    "config/layer/default": "the default",
+    "config/layer/env": "the environment",
+    "config/applies/new_session": "Applies to sessions opened from now on",
+    "config/applies/head_start": "Takes effect the next time the interface opens",
+    "config/secrets-header": "GQY's secrets: written, replaced and deleted only through GQY. Do not share this file.",
+    "config/unknown-secret": "{key} refers to the secret {name}, which is not set",
+    "config/env-not-set": "{key} refers to {name}, which was not set when the core started",
+    "config/no-provider": "{key} points at the provider {name}, which is not configured",
+    "config/no-pool": "{key} points at the pool {name}, which is not configured",
+    "config/unknown-effort": "{key} is {name}, which is not one of this model's levels now. Requests go out as if it were not set",
+    "config/bad-secret-name": "{key} is not a valid secret name: start with a lowercase letter and use only lowercase letters, digits, - and _, up to 64 characters",
+    "config/bad-secret-value": "The value of {key} must be quoted text, not empty",
+    "config/trust-header": "Which project configs GQY trusts: the repository, the exact content, and the answer.",
+    "config/unreadable": "Cannot read this file: {why}",
+    "config/too-big": "The file is over 1 MiB and is not read",
+    "config/not-utf8": "The file is not UTF-8",
+    "config/syntax": "Not valid TOML: {why}",
+    "config/unknown-key": "There is no {key}. Did you mean {suggest}?",
+    "config/unknown-key-plain": "There is no {key}",
+    "config/wrong-type": "{key} needs {expected}, not {got}",
+    "config/not-an-option": "{key} must be {options}, not {got}",
+    "config/wrong-layer": "{key} belongs in {layers}. It does not count in {layer}",
+    "config/not-tightening": "A project config can only make limits stricter. {key} is {current}, and {got} here is looser, so it does not count",
+    "config/untrusted-project": "This project config is not trusted yet and is not used",
+    "config/fix-example": "Write one of them, e.g. {example}",
+    "config/fix-write": "Write {example}",
+    "config/fix-move": "Move it to {layers}",
+    "config/kept": "The line is ignored and kept as it is",
+    "config/using-value": "Using {value} ({from}) for now",
+    "config/using-last-good": "Using what was read from this file last time",
+    "config/using-nothing": "The file is not used for now",
+    "config/expected/bool": "true or false",
+    "config/expected/table": "a table",
+    "config/sentence": "{text}.",
+    "config/then": "{rest} {next}",
+    "config/stops": ".?!",
+    "config/applies/next_turn": "Takes effect next turn",
+    "config/expected/int": "a whole number from {min} to {max}",
+    "config/expected/float": "a number from {min} to {max}",
+    "config/expected/text": "text of at most {max} characters",
+    "config/expected/english": "one line of English, at most {max} characters",
+    "config/expected/duration": "a length of time from {min} to {max}, written like 30s, 10m or 1h",
+    "config/expected/url": "an address starting with http:// or https://",
+    "config/expected/name": "a name starting with a lowercase letter, using only lowercase letters, digits, - and _, up to 64 characters",
+    "config/expected/reference": "<provider>/<model> or @<pool>",
+    "config/expected/model": "<provider>/<model>",
+    "config/expected/list": "a list of {item}",
+    "config/expected/id": "start with a lowercase letter and use only lowercase letters, digits, - and _, up to 32 characters",
+    "config/expected/model-name": "1 to 128 bytes without control characters",
+    "config/bad-format": "{key} needs {expected}, not {got}",
+    "config/out-of-range": "{key} must be between {min} and {max}, not {got}",
+    "config/bad-segment": "{name} in {key} cannot be a name: {expected}"
+  }
+}

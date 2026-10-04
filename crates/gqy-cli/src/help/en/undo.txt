@@ -1,0 +1,7 @@
+Usage: gqy undo [options]
+
+Undo the last turn and restore the files she changed. Also: gqy rewind.
+
+Options:
+  -s, --session <id>  Which session; default is the one the last gqy ask opened
+  -h, --help          Print help

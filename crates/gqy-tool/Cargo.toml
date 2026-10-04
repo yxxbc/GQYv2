@@ -1,0 +1,32 @@
+[package]
+name = "gqy-tool"
+description = "工具的接口和工具目录：每件工具报出自己的规格，核心起来时登记进目录（施工 4-1）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# 规格里的访问类别、参数格式的原样 JSON。
+gqy-kernel = { path = "../gqy-kernel" }
+# 登记时查参数格式是不是一个对象。
+serde_json = "1.0"
+# 认图片时量宽高：只看文件头，不解码（施工 4-13 用在 read 里，3-9 三补挪来，read 和附件共用）。MIT。
+imagesize = "0.15"
+# 一次调用带的沙盒：助手在哪、规格是什么（施工 5-1）。
+gqy-sandbox = { path = "../gqy-sandbox" }
+# 测试用的假工具：几件一起跑的等凑齐（施工 4-2）、等叫它停（施工 4-9 再补一），只在 testkit 开关打开时要。
+tokio = { version = "1", features = ["sync", "time"], optional = true }
+
+[features]
+# 测试用的假工具（`src/testkit.rs`，施工 4-2）：会话、协议端点的测试要用它，在自己的 dev-dependencies
+# 里打开；这个包自己的测试也经下面那一行打开。
+testkit = ["dep:tokio"]
+
+[dev-dependencies]
+# 自己的测试用上假工具。
+gqy-tool = { path = ".", features = ["testkit"] }
+
+[lints]
+workspace = true

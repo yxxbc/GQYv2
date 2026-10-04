@@ -1,0 +1,68 @@
+[package]
+name = "gqy-endpoint"
+description = "协议端点：连接上的 JSON-RPC，握手、造会话、说话、打断，会话表（施工 3-8 上）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# 时区：核心所在的机器现在的偏移，写进会话的环境。
+jiff = "0.2"
+# 本机的监听器：一个个接连接（施工 3-8 下）。
+gqy-ipc = { path = "../gqy-ipc" }
+# 编号、命令、拒绝的原因。
+gqy-kernel = { path = "../gqy-kernel" }
+# 配置项 `ui.language` 照配置清单声明（施工 8-1）；读配置、合最终值、说清哪里写错了（施工 8-2）。
+gqy-config = { path = "../gqy-config" }
+# 读项目配置的信任记录 `trust.toml`（施工 8-2）：和配置清单读配置用的是同一个。
+toml_edit = { version = "0.25", default-features = false, features = ["parse"] }
+# 模型这一块：`model.list` 照它算资料、来源（施工 8-7）。
+gqy-models = { path = "../gqy-models" }
+# 会话 actor：造会话、载入、发命令（施工 3-7）。
+gqy-session = { path = "../gqy-session" }
+# 这台机器上的沙盒能不能用：握手时报给头，能用的把助手交给会话（施工 5-4 下）。
+gqy-sandbox = { path = "../gqy-sandbox" }
+# 数据根、资源目录、会话日志打不开的几种情形。
+gqy-store = { path = "../gqy-store" }
+# 工具目录：造会话时交给它，照它存下工具面（施工 4-1）。
+gqy-tool = { path = "../gqy-tool" }
+# 头报来的工作目录太不太宽（施工 4-3 下）。
+gqy-fs = { path = "../gqy-fs" }
+# 附件（施工 3-9 三补）：blob.put 传来的内容是 base64；和基础系统用的是同一个。
+base64 = "0.22"
+# 分块上传的编号：16 位小写十六进制（施工 W-5）；和本机令牌用的是同一份。
+getrandom = { version = "0.4", features = ["std"] }
+# 附件（施工 3-9 三补）：认文本文件和驱动照同一条（text_file）。
+gqy-drivers = { path = "../gqy-drivers" }
+# 协议是 JSON-RPC 2.0（04-核心协议.md P1）。
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# 连接是异步的字节流：一行一条消息。接不了连接时歇一会儿再接。
+tokio = { version = "1", features = ["io-util", "macros", "rt", "sync", "time"] }
+# 运行日志的门面（施工 3-7 上）。
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+# 撤销时之后又被改过的文件，算她改完的和现在的差异（施工 4-7 下）：Rust 里通用的那一个，只开文本。
+similar = { version = "2", default-features = false, features = ["text"] }
+
+[dev-dependencies]
+# 撤销的回应（施工 4-7 下）：她用真的写文件的工具改过文件。
+gqy-basesystem = { path = "../gqy-basesystem" }
+# 测试用的假工具（施工 4-2）。
+gqy-tool = { path = "../gqy-tool", features = ["testkit"] }
+# 测试里的配置清单带上 `log.level`（施工 8-2）：和核心登记的一样。
+gqy-log = { path = "../gqy-log" }
+# 测试里读会话的策略快照：有没有人能确认。
+gqy-policy = { path = "../gqy-policy" }
+# 测试里的假服务器：`model.list` 带 `refresh` 去拉供应商的列表（施工 8-7）。
+gqy-http = { path = "../gqy-http", features = ["testkit"] }
+# 测试里请求模型照剧本回（施工 3-8 上）。
+gqy-session = { path = "../gqy-session", features = ["testkit"] }
+# 测试里弄坏会话列表的索引（施工 3-8 七补）：和 gqy-store 用的是同一个。
+rusqlite = { version = "0.40", features = ["bundled"] }
+# 测试里的等待有时限。
+tokio = { version = "1", features = ["io-util", "macros", "rt", "sync", "time"] }
+
+[lints]
+workspace = true

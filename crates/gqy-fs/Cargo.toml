@@ -1,0 +1,40 @@
+[package]
+name = "gqy-fs"
+description = "核心进程里的文件工具怎么碰文件：边界表、换成真实的位置、安全地打开（施工 4-3 上），整体换内容、系统的回收站（施工 4-7 上挪来）"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+# 运行日志的门面：没删掉的临时文件、回收站里没删掉的记录记一条（施工 4-6 上、下，4-7 上挪来）。
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+# 模糊找文件建清单走目录（施工 W-2）：认 .gitignore、跳过隐藏的，和 gqy-basesystem 的 glob、grep 同一套
+# （MIT OR Unlicense）；依赖树里本来就有它。
+ignore = "0.4"
+
+[target.'cfg(unix)'.dependencies]
+# 打开时不跟随最后一层的链接、不阻塞：O_NOFOLLOW、O_NONBLOCK、ELOOP 在各个 Unix 上的值不一样，从这里取，
+# 不自己写（施工 4-3 上）。只取常量，不调它的函数，不用 unsafe。
+libc = "0.2"
+# 路上一层链接都不跟地打开、相对打开了的目录建临时文件和改名（施工 5-10 下）：openat2、O_NOFOLLOW_ANY、openat、
+# renameat 这几个系统接口的安全封装，不用自己写 unsafe。依赖树里本来就有它（gqy-basesystem、gqy-ipc）。
+# Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT。
+rustix = { version = "1", features = ["fs"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# Linux 的回收站里记删的时间，要本地时间（施工 4-6 下）。
+jiff = "0.2"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# macOS 的回收站：系统的 NSFileManager 交回东西在回收站里的新位置（施工 4-6 下）。只开用到的几样。
+objc2 = "0.6"
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "FoundationErrors", "NSError", "NSFileManager", "NSString", "NSURL"] }
+
+[target.'cfg(windows)'.dependencies]
+# Windows 的回收站：系统的 IFileOperation，删完读回收站里的 `$I` 记录找回它（施工 4-6 下）。
+trash = "5"
+
+[lints]
+workspace = true

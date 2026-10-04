@@ -1,0 +1,245 @@
+//! 供应商的档案（`docs/blueprint/models.md`「在哪」`resources/models/profiles.toml`、「怎么走」第一条第 2、3 条，施工 8-6）：
+//! 认得出的供应商可以少写，驱动、地址、开关照档案推。档案是资源目录里的 TOML，核心读成 JSON 再交进来（这一层不读 TOML
+//! 的资源文件，`models.md`「在哪」末尾）。
+//!
+//! 档案只有用得上的几格：驱动、地址、`openai-chat` 的开关（8-18 多开关思考的 `toggle`）、一张图怎么算（8-6），`[npm]`：目录里的 AI SDK 包名 → 驱动
+//! （8-7，照目录推驱动），名字（8-11：只在档案里的一家，第一次接入列给人看），另配的头（8-14：值是模板，只认
+//! `{session_digest}`，[`crate::headers`]）。找 key 的环境变量随第一家用得上它的。8-6 加的「能收哪些输入」8-7 拿掉了：
+//! 照模型资料（目录、手写的，「施工时定的」8-7）。
+
+use std::collections::BTreeMap;
+
+use serde::Deserialize;
+
+use crate::headers;
+use gqy_drivers::openai_chat::{
+    Compat, Continuation, ContinuationField, OutputLimit, ReasoningField, ReasoningReplay, Toggle,
+};
+
+/// 读好的档案。
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Profiles {
+    /// 目录里的 AI SDK 包名 → 驱动（`openai-chat` 这类，施工 8-7）：照目录推驱动时查（`models.md`「怎么走」第一条第 2 条）。
+    #[serde(default)]
+    pub npm: BTreeMap<String, String>,
+    /// 认得出的供应商：编号（照目录里的编号）到它的档案。
+    #[serde(default)]
+    pub providers: BTreeMap<String, Profile>,
+}
+
+/// 一家认得出的供应商的档案：每一格都可以不写。
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Profile {
+    /// 给人看的名字（施工 8-11）：目录里没有的一家（`ollama`）靠它；目录里有的压过目录的。
+    #[serde(default)]
+    pub name: Option<String>,
+    /// 驱动，写法同配置的 `driver`。
+    #[serde(default)]
+    pub driver: Option<String>,
+    /// 地址。
+    #[serde(default)]
+    pub base_url: Option<String>,
+    /// `openai-chat` 的开关。
+    #[serde(default)]
+    pub compat: Option<CompatSpec>,
+    /// 一张图怎么算 token：现在只有 `deepseek`（官方计算器的算法）。不写照策略的固定数。
+    #[serde(default)]
+    pub image_tokens: Option<ImageTokens>,
+    /// 另配的头（施工 8-14）：名字 → 模板，值里只认 `{session_digest}`（[`crate::headers`]）。
+    #[serde(default)]
+    pub headers: BTreeMap<String, String>,
+    /// 工具面里缺这几件时补同名的占位声明（施工 8-14 补，`models.md`「八、opencode Zen」第 2 条）：说明是
+    /// `resources/core/drivers/placeholder-tool.txt` 那一句。
+    #[serde(default)]
+    pub placeholder_tools: Vec<String>,
+}
+
+/// 一张图怎么算 token 的算法。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ImageTokens {
+    /// DeepSeek 官方计算器的算法（`gqy_drivers::DeepSeekImages`）。
+    DeepSeek,
+}
+
+/// 档案里 `compat` 的写法（`models.md`「对外的样子」`compat` 那张表）：一格对 [`Compat`] 的一格，没写的用驱动的默认。
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CompatSpec {
+    /// `"max_tokens"`、`"max_completion_tokens"`。
+    #[serde(default)]
+    pub output_limit: Option<OutputLimitSpec>,
+    /// `"drop"`，或者 `{ replay, always }`。
+    #[serde(default)]
+    pub reasoning: Option<ReasoningSpec>,
+    /// 要不要在流里报用量。
+    #[serde(default)]
+    pub stream_usage: Option<bool>,
+    /// `"none"`，或者 `{ field, path }`。
+    #[serde(default)]
+    pub continuation: Option<ContinuationSpec>,
+    /// 开关思考写在哪个字段（施工 8-18）：`{ field, on, off }`。
+    #[serde(default)]
+    pub toggle: Option<ToggleSpec>,
+}
+
+/// 开关思考的写法（施工 8-18，`models.md`「对外的样子」`compat` 那张表）：顶层的哪个字段，开、关各写什么（照原样的 JSON 发）。
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct ToggleSpec {
+    /// 顶层的字段，例如 `thinking`。
+    pub field: String,
+    /// 开：例如 `{ type = "enabled" }`。
+    pub on: serde_json::Value,
+    /// 关：例如 `{ type = "disabled" }`。
+    pub off: serde_json::Value,
+}
+
+/// 输出上限写在哪个字段。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OutputLimitSpec {
+    /// `max_tokens`。
+    MaxTokens,
+    /// `max_completion_tokens`。
+    MaxCompletionTokens,
+}
+
+/// 思考怎么回传。
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(untagged)]
+pub enum ReasoningSpec {
+    /// `"drop"`：不回传。
+    Word(DropWord),
+    /// `{ replay = "reasoning_content" 或 "reasoning", always = true 或 false }`。
+    Replay {
+        /// 写进哪个字段。
+        replay: ReasoningFieldSpec,
+        /// 没有思考时也写。
+        always: bool,
+    },
+}
+
+/// 只认 `"drop"` 这一个词。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DropWord {
+    /// 不回传。
+    Drop,
+}
+
+/// 思考写进哪个字段。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ReasoningFieldSpec {
+    /// `reasoning_content`。
+    ReasoningContent,
+    /// `reasoning`。
+    Reasoning,
+}
+
+/// 会不会接着写被打断的回复。
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
+#[serde(untagged)]
+pub enum ContinuationSpec {
+    /// `"none"`：不会。
+    Word(NoneWord),
+    /// `{ field = "prefix" 或 "partial", path = "…" }`。
+    Prefix {
+        /// 半截那条 assistant 上加哪个字段。
+        field: ContinuationFieldSpec,
+        /// 发到地址后面的哪一截。
+        path: String,
+    },
+}
+
+/// 只认 `"none"` 这一个词。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum NoneWord {
+    /// 不会接着写。
+    None,
+}
+
+/// 接着写的时候加的字段。
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum ContinuationFieldSpec {
+    /// `prefix`。
+    Prefix,
+    /// `partial`。
+    Partial,
+}
+
+impl Profiles {
+    /// 读档案：核心把 TOML 读成的 JSON。
+    ///
+    /// # Errors
+    ///
+    /// 不是这个形状（多了不认识的格、写法不对）：原因写明是档案。
+    pub fn parse(json: &serde_json::Value) -> Result<Profiles, String> {
+        let profiles = Profiles::deserialize(json)
+            .map_err(|error| format!("models/profiles.toml not readable: {error}"))?;
+        for (id, profile) in &profiles.providers {
+            for (name, template) in &profile.headers {
+                headers::check(template).map_err(|error| {
+                    format!("models/profiles.toml not readable: header {name:?} of provider {id:?}: {error}")
+                })?;
+            }
+        }
+        Ok(profiles)
+    }
+}
+
+impl CompatSpec {
+    /// 一格格盖在驱动的默认上面。
+    pub fn compat(&self) -> Compat {
+        let mut compat = Compat::default();
+        if let Some(limit) = self.output_limit {
+            compat.output_limit = match limit {
+                OutputLimitSpec::MaxTokens => OutputLimit::MaxTokens,
+                OutputLimitSpec::MaxCompletionTokens => OutputLimit::MaxCompletionTokens,
+            };
+        }
+        if let Some(reasoning) = &self.reasoning {
+            compat.reasoning = match reasoning {
+                ReasoningSpec::Word(DropWord::Drop) => ReasoningReplay::Drop,
+                ReasoningSpec::Replay { replay, always } => ReasoningReplay::Replay {
+                    field: match replay {
+                        ReasoningFieldSpec::ReasoningContent => ReasoningField::ReasoningContent,
+                        ReasoningFieldSpec::Reasoning => ReasoningField::Reasoning,
+                    },
+                    always: *always,
+                },
+            };
+        }
+        if let Some(usage) = self.stream_usage {
+            compat.stream_usage = usage;
+        }
+        if let Some(continuation) = &self.continuation {
+            compat.continuation = match continuation {
+                ContinuationSpec::Word(NoneWord::None) => Continuation::None,
+                ContinuationSpec::Prefix { field, path } => Continuation::Prefix {
+                    field: match field {
+                        ContinuationFieldSpec::Prefix => ContinuationField::Prefix,
+                        ContinuationFieldSpec::Partial => ContinuationField::Partial,
+                    },
+                    path: path.clone(),
+                },
+            };
+        }
+        compat.toggle = self.toggle.as_ref().map(|toggle| {
+            Box::new(Toggle {
+                field: toggle.field.clone(),
+                on: toggle.on.clone(),
+                off: toggle.off.clone(),
+            })
+        });
+        compat
+    }
+}
+
+#[cfg(test)]
+mod tests;

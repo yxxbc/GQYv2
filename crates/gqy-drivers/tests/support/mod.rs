@@ -1,0 +1,263 @@
+//! 驱动测试用的：出厂的占位、造块、造一次调用、和样本逐字节比对。
+//!
+//! 样本在 `docs/designs/samples/drivers/<驱动家族>/`，一种写法一个文件，写的是请求字节，末尾一个
+//! 换行。字节变了必须是有意的：设上 `GQY_PROBE_WRITE=1` 跑一遍，重写样本，提交说明里写为什么变。
+//! `sample`、`sample_file`、`dir` 是 openai-chat 的，`anthropic_*` 是 Anthropic 的（施工 8-12），`responses_*` 是 Responses 的
+//! （施工 8-13）。
+
+#![allow(dead_code, reason = "几个测试文件各用其中一部分")]
+
+use std::fs;
+use std::path::PathBuf;
+
+use gqy_drivers::openai_chat::Compat;
+use gqy_drivers::{
+    Call, DriverTextSources, DriverTexts, ImageDescriptionSources, ImageNameSources, Inputs,
+    TextFileSources,
+};
+use gqy_kernel::block::{Block, File, Image, Private, Reasoning, Text, ToolCall};
+use gqy_kernel::id::{CallId, ContentHash, DriverFamily, FileName, MediaType, ModelName};
+use gqy_kernel::raw::RawJson;
+use gqy_kernel::request::ToolSpec;
+
+/// 出厂的占位，从资源目录读。
+pub fn texts() -> DriverTexts {
+    DriverTexts::new(DriverTextSources {
+        image_omitted: include_str!("../../../../resources/core/drivers/image-omitted.txt"),
+        file_omitted: include_str!("../../../../resources/core/drivers/file-omitted.txt"),
+        no_output: include_str!("../../../../resources/core/drivers/no-output.txt"),
+        tool_attachments: include_str!("../../../../resources/core/drivers/tool-attachments.txt"),
+        tool_attachments_only: include_str!(
+            "../../../../resources/core/drivers/tool-attachments-only.txt"
+        ),
+        text_file: Some(TextFileSources {
+            file_open: include_str!("../../../../resources/core/drivers/file-open.txt"),
+            file_cut: include_str!("../../../../resources/core/drivers/file-cut.txt"),
+            file_close: include_str!("../../../../resources/core/drivers/file-close.txt"),
+        }),
+        image_name: Some(ImageNameSources {
+            image_open: include_str!("../../../../resources/core/drivers/image-open.txt"),
+            image_close: include_str!("../../../../resources/core/drivers/image-close.txt"),
+            image_omitted_named: include_str!(
+                "../../../../resources/core/drivers/image-omitted-named.txt"
+            ),
+        }),
+        image_description: Some(ImageDescriptionSources {
+            image_description_open: include_str!(
+                "../../../../resources/core/drivers/image-description-open.txt"
+            ),
+            image_description_open_named: include_str!(
+                "../../../../resources/core/drivers/image-description-open-named.txt"
+            ),
+            image_description_close: include_str!(
+                "../../../../resources/core/drivers/image-description-close.txt"
+            ),
+        }),
+    })
+    .expect("出厂的占位用得了")
+}
+
+/// 发给 `deepseek-v4`，能收哪些输入照 `inputs`。
+pub fn call(inputs: Inputs, max_output: Option<u32>) -> Call {
+    Call {
+        model: ModelName::parse("deepseek-v4").expect("模型名合写法"),
+        max_output,
+        inputs,
+        effort: None,
+    }
+}
+
+/// 能看图、能读 PDF。
+pub fn sees_all() -> Inputs {
+    Inputs {
+        images: true,
+        pdf: true,
+    }
+}
+
+/// DeepSeek 那一套（出厂的 [`Compat::deepseek`]）：每条 assistant 都带 `reasoning_content`，没有就发
+/// 空串；会接着写。
+pub fn deepseek() -> Compat {
+    Compat::deepseek()
+}
+
+pub fn text(text: &str) -> Block {
+    Block::Text(Text {
+        text: text.to_string(),
+    })
+}
+
+pub fn thought(text: &str) -> Block {
+    Block::Reasoning(Reasoning {
+        text: text.to_string(),
+        private: None,
+    })
+}
+
+/// 一次工具调用；`provider` 是供应商自己的编号，记在这个驱动的私有数据里。
+pub fn tool_call(call_id: &str, name: &str, args: &str, provider: Option<&str>) -> Block {
+    family_call("openai-chat", call_id, name, args, provider)
+}
+
+/// 一次工具调用；`provider` 是供应商自己的编号，记在驱动家族 `family` 的私有数据里。
+pub fn family_call(
+    family: &str,
+    call_id: &str,
+    name: &str,
+    args: &str,
+    provider: Option<&str>,
+) -> Block {
+    Block::ToolCall(ToolCall {
+        call_id: id(call_id),
+        name: name.to_string(),
+        args: args.to_string(),
+        private: provider.map(|provider| private(family, &format!(r#"{{"id":"{provider}"}}"#))),
+    })
+}
+
+/// 一块带私有数据的思考：`family` 的，数据是 `data`（一段 JSON）。
+pub fn private_thought(text: &str, family: &str, data: &str) -> Block {
+    Block::Reasoning(Reasoning {
+        text: text.to_string(),
+        private: Some(private(family, data)),
+    })
+}
+
+/// 驱动家族 `family` 的私有数据。
+pub fn private(family: &str, data: &str) -> Private {
+    Private {
+        driver: DriverFamily::parse(family).expect("驱动家族合写法"),
+        data: raw(data),
+    }
+}
+
+/// 发给 `gpt-5.4`，能收哪些输入照 `inputs`（施工 8-13）。
+pub fn gpt(inputs: Inputs, max_output: Option<u32>) -> Call {
+    Call {
+        model: ModelName::parse("gpt-5.4").expect("模型名合写法"),
+        max_output,
+        inputs,
+        effort: None,
+    }
+}
+
+/// 发给 `claude-opus-5`，能收哪些输入照 `inputs`（施工 8-12）。
+pub fn claude(inputs: Inputs, max_output: Option<u32>) -> Call {
+    Call {
+        model: ModelName::parse("claude-opus-5").expect("模型名合写法"),
+        max_output,
+        inputs,
+        effort: None,
+    }
+}
+
+/// 不带名字的图：`read` 读出来的、以前的日志里的。
+pub fn image(content: &[u8], media_type: &str) -> Block {
+    picture(content, None, media_type)
+}
+
+/// 带名字的图：人附的（施工 3-9 四补）。
+pub fn named_image(content: &[u8], name: &str, media_type: &str) -> Block {
+    picture(content, Some(name), media_type)
+}
+
+fn picture(content: &[u8], name: Option<&str>, media_type: &str) -> Block {
+    Block::Image(Image {
+        blob: ContentHash::of(content),
+        name: name.map(|name| FileName::parse(name).expect("文件名合写法")),
+        media_type: MediaType::parse(media_type).expect("媒体类型合写法"),
+        width: 800,
+        height: 600,
+    })
+}
+
+pub fn file(content: &[u8], name: &str, media_type: &str) -> Block {
+    Block::File(File {
+        blob: ContentHash::of(content),
+        name: FileName::parse(name).expect("文件名合写法"),
+        media_type: MediaType::parse(media_type).expect("媒体类型合写法"),
+    })
+}
+
+pub fn id(call_id: &str) -> CallId {
+    CallId::parse(call_id).expect("调用编号合写法")
+}
+
+pub fn raw(json: &str) -> RawJson {
+    serde_json::from_str(json).expect("是 JSON")
+}
+
+/// 工具面上的 `read`。
+pub fn read_tool() -> ToolSpec {
+    ToolSpec {
+        name: "read".to_string(),
+        description: "Read a text file.".to_string(),
+        parameters: raw(
+            r#"{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}"#,
+        ),
+    }
+}
+
+/// 和样本逐字节比对；设上 `GQY_PROBE_WRITE=1` 时重写样本。
+pub fn sample(name: &str, body: &[u8]) {
+    let mut content = body.to_vec();
+    content.push(b'\n');
+    sample_file(&format!("{name}.json"), &content);
+}
+
+/// 样本目录下的一个文件，和 `content` 逐字节比对；设上 `GQY_PROBE_WRITE=1` 时重写它。
+pub fn sample_file(name: &str, content: &[u8]) {
+    compare(&dir().join(name), name, content);
+}
+
+/// `path` 和 `content` 逐字节比；设上 `GQY_PROBE_WRITE=1` 时重写它。
+fn compare(path: &std::path::Path, name: &str, content: &[u8]) {
+    if std::env::var_os("GQY_PROBE_WRITE").is_some() {
+        fs::create_dir_all(path.parent().expect("样本在样本目录里")).expect("建得了样本目录");
+        fs::write(path, content).expect("写得了样本");
+        return;
+    }
+    let archived = fs::read(path).unwrap_or_else(|e| panic!("读不了 {}：{e}", path.display()));
+    assert!(
+        archived == content,
+        "{name} 和样本不一样。要是有意改的，设上 GQY_PROBE_WRITE=1 跑一遍重写样本，提交说明里写为什么变\n样本：{}\n这次：{}",
+        String::from_utf8_lossy(&archived),
+        String::from_utf8_lossy(content)
+    );
+}
+
+/// 样本目录：这个 crate 的目录往上两级是仓库根。
+pub fn dir() -> PathBuf {
+    family_dir("openai-chat")
+}
+
+/// 驱动家族 `family` 的样本目录。
+pub fn family_dir(family: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../docs/designs/samples/drivers")
+        .join(family)
+}
+
+/// Anthropic 的样本（施工 8-12）：和 [`sample`] 一样，放在 `anthropic/` 下。
+pub fn anthropic_sample(name: &str, body: &[u8]) {
+    let mut content = body.to_vec();
+    content.push(b'\n');
+    anthropic_file(&format!("{name}.json"), &content);
+}
+
+/// Responses 的样本（施工 8-13）：和 [`sample`] 一样，放在 `openai-responses/` 下。
+pub fn responses_sample(name: &str, body: &[u8]) {
+    let mut content = body.to_vec();
+    content.push(b'\n');
+    responses_file(&format!("{name}.json"), &content);
+}
+
+/// Responses 样本目录下的一个文件，和 [`sample_file`] 一样比。
+pub fn responses_file(name: &str, content: &[u8]) {
+    compare(&family_dir("openai-responses").join(name), name, content);
+}
+
+/// Anthropic 样本目录下的一个文件，和 [`sample_file`] 一样比。
+pub fn anthropic_file(name: &str, content: &[u8]) {
+    compare(&family_dir("anthropic").join(name), name, content);
+}

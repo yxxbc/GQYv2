@@ -1,0 +1,381 @@
+//! 会话日志的测试：写几批、关掉再打开；换段；崩了留下的半行；坏了的几种；空的最后一段；没有这个
+//! 会话；只读地一段一段读；真会话来回一趟（`real.rs`）；从记下的位置读起（`marked.rs`，施工 3-8 七补）。都在临时目录里。
+
+mod marked;
+mod real;
+
+use std::fs;
+
+use super::*;
+use crate::test_support::Scratch;
+
+/// 第 `n` 号事件：alice 说的第 `n` 句。日志这一层不管事件之间的规矩，只管序号和能不能读。
+fn said(n: u64) -> Event {
+    Event::from_line(&format!(
+        r#"{{"seq":{n},"at":"2026-09-25T07:00:00.000Z","kind":"message.user","by":{{"kind":"person","account":"alice"}},"body":{{"blocks":[{{"type":"text","text":"第 {n} 句"}}]}}}}"#
+    ))
+    .unwrap()
+}
+
+/// 第 `from` 到第 `to` 号。
+fn said_range(from: u64, to: u64) -> Vec<Event> {
+    (from..=to).map(said).collect()
+}
+
+/// 一行事件写进文件是什么样：它的一行加换行。
+fn line_of(event: &Event) -> String {
+    event.to_line() + "\n"
+}
+
+fn dir(scratch: &Scratch) -> PathBuf {
+    scratch.path().join("sessions").join("s")
+}
+
+/// 目录里的段，照名字排。
+fn segment_names(dir: &Path) -> Vec<String> {
+    let mut names: Vec<String> = fs::read_dir(dir)
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+        .collect();
+    names.sort();
+    names
+}
+
+#[test]
+fn what_is_written_comes_back() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    let mut log = SessionLog::create(&dir, SEGMENT_LIMIT).unwrap();
+    log.append(&said_range(1, 3)).unwrap();
+    log.append(&said_range(4, 4)).unwrap();
+    log.append(&[]).unwrap();
+    assert_eq!(log.next_seq().get(), 5);
+    drop(log);
+    let (mut log, events) = SessionLog::open(&dir, SEGMENT_LIMIT).unwrap();
+    assert_eq!(events, said_range(1, 4));
+    assert_eq!(log.next_seq().get(), 5);
+    // 每行以 \n 结尾，没有 \r；接着写，序号接得上。
+    log.append(&said_range(5, 6)).unwrap();
+    let text = fs::read_to_string(dir.join("000000000001.jsonl")).unwrap();
+    assert_eq!(
+        text,
+        said_range(1, 6).iter().map(line_of).collect::<String>()
+    );
+    assert!(!text.contains('\r'));
+}
+
+#[test]
+fn a_full_segment_rolls_over_and_a_batch_is_not_split() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    // 上限比一行还短：每一批都另起一段，一批几行都在同一段里。
+    let mut log = SessionLog::create(&dir, 10).unwrap();
+    log.append(&said_range(1, 2)).unwrap();
+    log.append(&said_range(3, 5)).unwrap();
+    log.append(&said_range(6, 6)).unwrap();
+    assert_eq!(
+        segment_names(&dir),
+        [
+            "000000000001.jsonl",
+            "000000000003.jsonl",
+            "000000000006.jsonl"
+        ]
+    );
+    let second = fs::read_to_string(dir.join("000000000003.jsonl")).unwrap();
+    assert_eq!(
+        second,
+        said_range(3, 5).iter().map(line_of).collect::<String>()
+    );
+    drop(log);
+    let (_, events) = SessionLog::open(&dir, 10).unwrap();
+    assert_eq!(events, said_range(1, 6));
+}
+
+#[test]
+fn a_half_written_last_line_is_cut_off() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    let mut log = SessionLog::create(&dir, SEGMENT_LIMIT).unwrap();
+    log.append(&said_range(1, 2)).unwrap();
+    drop(log);
+    // 崩在写第 3 行的半中间。
+    let path = dir.join("000000000001.jsonl");
+    let whole = said_range(1, 2).iter().map(line_of).collect::<String>();
+    let half = &line_of(&said(3))[..20];
+    fs::write(&path, format!("{whole}{half}")).unwrap();
+    let (mut log, events) = SessionLog::open(&dir, SEGMENT_LIMIT).unwrap();
+    assert_eq!(events, said_range(1, 2));
+    assert_eq!(fs::read_to_string(&path).unwrap(), whole, "半行截掉了");
+    log.append(&said_range(3, 3)).unwrap();
+    drop(log);
+    let (_, events) = SessionLog::open(&dir, SEGMENT_LIMIT).unwrap();
+    assert_eq!(events, said_range(1, 3));
+}
+
+/// 打开要报「坏了」：第 `line` 行，原因里有 `why`。
+fn assert_broken(dir: &Path, segment: &str, line: usize, why: &str) {
+    match SessionLog::open(dir, SEGMENT_LIMIT) {
+        Err(OpenError::Broken {
+            segment: at,
+            line: got,
+            why: said,
+        }) => {
+            assert_eq!(at, dir.join(segment));
+            assert_eq!(got, line, "{said}");
+            assert!(said.contains(why), "{said}");
+            // 说的是英文，写进运行日志（施工 4-9 再补四中）。
+            assert!(said.is_ascii(), "{said}");
+        }
+        other => panic!("应该报坏了：{other:?}"),
+    }
+}
+
+#[test]
+fn a_broken_log_is_reported_not_fixed() {
+    // 中间一行读不出来。
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    fs::create_dir_all(&dir).unwrap();
+    let path = dir.join("000000000001.jsonl");
+    let text = format!("{}not json\n{}", line_of(&said(1)), line_of(&said(2)));
+    fs::write(&path, &text).unwrap();
+    assert_broken(&dir, "000000000001.jsonl", 2, "not readable");
+    assert_eq!(fs::read_to_string(&path).unwrap(), text, "不自动修");
+    // 一行不是 UTF-8。
+    let bytes = [line_of(&said(1)).as_bytes(), b"\xff\xfe\n"].concat();
+    fs::write(&path, &bytes).unwrap();
+    assert_broken(&dir, "000000000001.jsonl", 2, "not UTF-8");
+    // 序号接不上。
+    let text = format!("{}{}", line_of(&said(1)), line_of(&said(3)));
+    fs::write(&path, &text).unwrap();
+    assert_broken(&dir, "000000000001.jsonl", 2, "seq should be 2");
+    // 段的名字和第一条对不上。
+    fs::write(&path, line_of(&said(1))).unwrap();
+    fs::write(dir.join("000000000005.jsonl"), line_of(&said(2))).unwrap();
+    assert_broken(&dir, "000000000005.jsonl", 1, "the segment is named 5");
+    // 不是最后一段的末尾有半行。
+    fs::write(dir.join("000000000001.jsonl"), &line_of(&said(1))[..20]).unwrap();
+    assert_broken(&dir, "000000000001.jsonl", 1, "more segments follow");
+}
+
+#[test]
+fn a_broken_log_says_where_in_english() {
+    // 写进运行日志的一句：哪一段、第几行、为什么（施工 4-9 再补四中：原来是中文）。
+    let segment = PathBuf::from("sessions").join("000000000001.jsonl");
+    let error = OpenError::Broken {
+        segment: segment.clone(),
+        line: 3,
+        why: "not UTF-8".to_string(),
+    };
+    assert_eq!(
+        error.to_string(),
+        format!("{} line 3: not UTF-8", segment.display())
+    );
+}
+
+#[test]
+fn an_empty_last_segment_is_written_into() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    // 刚建好第一段就崩了：一行都没有。
+    drop(SessionLog::create(&dir, SEGMENT_LIMIT).unwrap());
+    let (mut log, events) = SessionLog::open(&dir, SEGMENT_LIMIT).unwrap();
+    assert!(events.is_empty());
+    log.append(&said_range(1, 1)).unwrap();
+    // 换段时建好新的一段就崩了。
+    drop(log);
+    fs::write(dir.join("000000000002.jsonl"), "").unwrap();
+    let (mut log, events) = SessionLog::open(&dir, SEGMENT_LIMIT).unwrap();
+    assert_eq!(events, said_range(1, 1));
+    log.append(&said_range(2, 2)).unwrap();
+    assert_eq!(
+        fs::read_to_string(dir.join("000000000002.jsonl")).unwrap(),
+        line_of(&said(2))
+    );
+    // 空的最后一段名字不对：报坏了。
+    drop(log);
+    fs::write(dir.join("000000000009.jsonl"), "").unwrap();
+    assert_broken(
+        &dir,
+        "000000000009.jsonl",
+        1,
+        "the empty last segment is named 9",
+    );
+}
+
+#[test]
+fn an_abandoned_session_leaves_nothing_but_only_when_it_is_empty() {
+    // 造会话没成，只剩空的第一段：连目录一起删掉（施工 4-9 再补四下）。
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    drop(SessionLog::create(&dir, SEGMENT_LIMIT).unwrap());
+    assert!(super::abandon(&dir).unwrap());
+    assert!(!dir.exists());
+    // 段里有了内容的：不动。
+    let mut log = SessionLog::create(&dir, SEGMENT_LIMIT).unwrap();
+    log.append(&[said(1)]).unwrap();
+    drop(log);
+    assert!(!super::abandon(&dir).unwrap());
+    assert!(dir.join("000000000001.jsonl").exists());
+    // 有别的东西的：不动。目录里几样东西的先后由文件系统定，换几个名字、先建别的再建段，哪种先后都查到。
+    for other in [
+        "notes.txt",
+        "a",
+        "zzz",
+        "b.tmp",
+        "000000000002.jsonl",
+        "old",
+        "x",
+        "y.json",
+    ] {
+        fs::remove_dir_all(&dir).unwrap();
+        fs::create_dir_all(&dir).unwrap();
+        fs::write(dir.join(other), "").unwrap();
+        fs::write(dir.join("000000000001.jsonl"), "").unwrap();
+        assert!(!super::abandon(&dir).unwrap(), "{other}");
+        assert!(dir.join("000000000001.jsonl").exists(), "{other}");
+        assert!(dir.join(other).exists(), "{other}");
+    }
+}
+
+#[test]
+fn no_session_no_log() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    assert!(matches!(
+        SessionLog::open(&dir, SEGMENT_LIMIT),
+        Err(OpenError::Missing(_))
+    ));
+    let said = SessionLog::open(&dir, SEGMENT_LIMIT)
+        .err()
+        .map(|error| error.to_string())
+        .unwrap_or_default();
+    assert_eq!(said, format!("no session log in {}", dir.display()));
+    fs::create_dir_all(&dir).unwrap();
+    fs::write(dir.join("notes.txt"), "不是段").unwrap();
+    assert!(matches!(
+        SessionLog::open(&dir, SEGMENT_LIMIT),
+        Err(OpenError::Missing(_))
+    ));
+    // 已经有第一段的，不再新建，不覆盖。
+    drop(SessionLog::create(&dir, SEGMENT_LIMIT).unwrap());
+    assert!(SessionLog::create(&dir, SEGMENT_LIMIT).is_err());
+}
+
+#[test]
+fn the_first_event_is_read_without_touching_the_log() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    let mut log = SessionLog::create(&dir, 64).unwrap();
+    log.append(&said_range(1, 2)).unwrap();
+    log.append(&said_range(3, 3)).unwrap();
+    // 最后一段末尾有半行：正在写。只读第一条，不截它。
+    let last = dir.join(segment_names(&dir).last().unwrap());
+    let mut text = fs::read_to_string(&last).unwrap();
+    text.push_str("{\"seq\":4,\"at\"");
+    fs::write(&last, &text).unwrap();
+    assert_eq!(first_event(&dir).unwrap(), said(1));
+    assert_eq!(fs::read_to_string(&last).unwrap(), text, "一个字节都没动");
+}
+
+#[test]
+fn reading_skips_a_half_written_line_and_writes_nothing() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    assert!(
+        matches!(read_events(&dir), Err(OpenError::Missing(_))),
+        "目录还没有"
+    );
+    let mut log = SessionLog::create(&dir, 64).unwrap();
+    assert!(read_events(&dir).unwrap().is_empty(), "第一段还是空的");
+    log.append(&said_range(1, 2)).unwrap();
+    log.append(&said_range(3, 3)).unwrap();
+    // 最后一段末尾有半行：正在写。只读，跳过它，不截。
+    let last = dir.join(segment_names(&dir).last().unwrap());
+    let mut text = fs::read_to_string(&last).unwrap();
+    text.push_str("{\"seq\":4,\"at\"");
+    fs::write(&last, &text).unwrap();
+    assert_eq!(read_events(&dir).unwrap(), said_range(1, 3));
+    assert_eq!(fs::read_to_string(&last).unwrap(), text, "一个字节都没动");
+    // 载入的那一种照旧截掉。
+    let (_, events) = SessionLog::open(&dir, 64).unwrap();
+    assert_eq!(events, said_range(1, 3));
+    assert_ne!(fs::read_to_string(&last).unwrap(), text, "载入截掉了半行");
+}
+
+#[test]
+fn segments_are_read_one_at_a_time_until_told_to_stop() {
+    // 施工 6-4：`history` 一段一段读，叫停了不读下去。
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    let mut log = SessionLog::create(&dir, 10).unwrap();
+    log.append(&said_range(1, 2)).unwrap();
+    log.append(&said_range(3, 5)).unwrap();
+    log.append(&said_range(6, 6)).unwrap();
+    let last = dir.join(segment_names(&dir).last().unwrap());
+    let mut text = fs::read_to_string(&last).unwrap();
+    text.push_str("{\"seq\":7,\"at\"");
+    fs::write(&last, &text).unwrap();
+    let mut got = Vec::new();
+    read_segments(&dir, |events| {
+        got.push(events);
+        true
+    })
+    .unwrap();
+    assert_eq!(got, [said_range(1, 2), said_range(3, 5), said_range(6, 6)]);
+    assert_eq!(
+        fs::read_to_string(&last).unwrap(),
+        text,
+        "半行跳过，一个字节都没动"
+    );
+    let mut got = Vec::new();
+    read_segments(&dir, |events| {
+        got.push(events);
+        false
+    })
+    .unwrap();
+    assert_eq!(got, [said_range(1, 2)], "说了不读就停");
+    assert!(matches!(
+        read_segments(&scratch.path().join("nobody"), |_| true),
+        Err(OpenError::Missing(_))
+    ));
+}
+
+#[test]
+fn a_session_still_being_created_has_no_first_event() {
+    let scratch = Scratch::new();
+    let dir = dir(&scratch);
+    assert!(
+        matches!(first_event(&dir), Err(OpenError::Missing(_))),
+        "目录还没有"
+    );
+    SessionLog::create(&dir, SEGMENT_LIMIT).unwrap();
+    assert!(
+        matches!(first_event(&dir), Err(OpenError::Missing(_))),
+        "第一段还是空的"
+    );
+    let first = dir.join(segment_names(&dir)[0].clone());
+    fs::write(&first, "{\"seq\":1,").unwrap();
+    assert!(
+        matches!(first_event(&dir), Err(OpenError::Missing(_))),
+        "第一行还没写完"
+    );
+    fs::write(&first, "not json\n").unwrap();
+    assert!(matches!(
+        first_event(&dir),
+        Err(OpenError::Broken { line: 1, .. })
+    ));
+}
+
+#[test]
+fn appending_out_of_order_is_refused() {
+    let scratch = Scratch::new();
+    let mut log = SessionLog::create(&dir(&scratch), SEGMENT_LIMIT).unwrap();
+    let error = log.append(&said_range(2, 3)).unwrap_err();
+    assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
+    assert_eq!(
+        error.to_string(),
+        "the next event in the log should be 1, got 2"
+    );
+    assert_eq!(log.next_seq(), Seq::FIRST, "什么都没写");
+}

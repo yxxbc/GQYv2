@@ -1,19 +1,69 @@
 [package]
 name = "gqy-core"
+description = "核心进程：由头拉起，建骨架、装运行日志、读配置和供应商的档案、在套接字上等连接，空闲够久了自己退出（施工 3-9 上）"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
+license.workspace = true
 publish.workspace = true
+
+[features]
+# 可选软件包，发行版默认打开（`10-自带软件.md` 第四节，施工 W-4）。画 mermaid：源码画成 SVG，经
+# `mermaid.render` 给头，没开这个开关的核心里没有这块代码，这个方法回 `unknown_method`。链接卡片（施工 W-7，
+# `net.md`）：抓别人家的网页，经 `link.preview` 给头，没开的同样回 `unknown_method`。
+default = ["mermaid", "net"]
+mermaid = ["dep:gqy-mermaid"]
+net = ["dep:gqy-net"]
+
+[dependencies]
+# 驱动：DeepSeek 那一套写法、一次调用要定的（施工 3-4）。
+gqy-drivers = { path = "../gqy-drivers" }
+# 协议端点：核心的家底、一个个接连接、空不空闲（施工 3-8）。
+gqy-endpoint = { path = "../gqy-endpoint" }
+# 可选软件包 mermaid：mermaid 源码画成 SVG（施工 W-4，`packages.rs`）。
+gqy-mermaid = { path = "../gqy-mermaid", optional = true }
+# 可选软件包 net：链接卡片（施工 W-7，`packages/net.rs`）。
+gqy-net = { path = "../gqy-net", optional = true }
+# 发请求的客户端、端点（施工 3-5）。
+gqy-http = { path = "../gqy-http" }
+# 单实例锁、在套接字上等连接、说「好了」的那一行（施工 3-8 下、3-9 上）。
+gqy-ipc = { path = "../gqy-ipc" }
+# 编号、出错的分类、发给了谁。
+gqy-kernel = { path = "../gqy-kernel" }
+# 配置清单：登记各模块的几项，起来时生成 JSON Schema 和参考文件（施工 8-1）。
+gqy-config = { path = "../gqy-config" }
+# 运行日志：state/logs/core.log（施工 3-7 上）。
+gqy-log = { path = "../gqy-log" }
+gqy-models = { path = "../gqy-models" }
+# 请求模型的端口（施工 3-7）。
+gqy-session = { path = "../gqy-session" }
+# 起来时找沙盒的助手、探一次（施工 5-1）。
+gqy-sandbox = { path = "../gqy-sandbox" }
+# 数据根、资源目录、环境快照。
+gqy-store = { path = "../gqy-store" }
+# 基础系统：核心起来时登记进工具目录（施工 4-4 起）。
+gqy-basesystem = { path = "../gqy-basesystem" }
+# 工具目录：核心起来时登记，交给协议端点（施工 4-1）。
+gqy-tool = { path = "../gqy-tool" }
+# 模型资料的 JSON（施工 6-3 上）。
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# 核心的运行时：接连接、会话、请求都在上面；空闲的钟；停的信号。
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "signal", "sync", "time"] }
+# 读供应商的档案（资源目录的 TOML，施工 8-6），和读配置用的是同一个。
+toml_edit = { version = "0.25", default-features = false, features = ["parse"] }
+# 运行日志的门面（施工 3-7 上）。
+tracing = { version = "0.1", default-features = false, features = ["std"] }
+
+[dev-dependencies]
+gqy-drivers = { path = "../gqy-drivers", features = ["testkit"] }
+# 测试里的假服务器：后台更新目录（施工 8-7），CI 不连外网。
+gqy-http = { path = "../gqy-http", features = ["testkit"] }
+# 测试里请求模型照剧本回。
+gqy-session = { path = "../gqy-session", features = ["testkit"] }
+# 测试里的假工具：把假的后台命令交给任务表（施工 7-3）。
+gqy-tool = { path = "../gqy-tool", features = ["testkit"] }
+tokio = { version = "1", features = ["io-util", "macros", "rt", "time"] }
 
 [lints]
 workspace = true
-
-[dependencies]
-thiserror = { workspace = true }
-tokio = { workspace = true, features = ["rt", "sync"] }
-tracing = { workspace = true }
-
-[dev-dependencies]
-# 测试用：`#[tokio::test]` 要 macros + rt；span 断言要 tracing-subscriber。
-tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
-tracing-subscriber = { workspace = true }

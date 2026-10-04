@@ -1,0 +1,183 @@
+{
+  "tools": {
+    "read": {
+      "name": "读取",
+      "subject": "file_path",
+      "icon": "→"
+    },
+    "glob": {
+      "name": "找文件",
+      "subject": "pattern",
+      "icon": "✱"
+    },
+    "grep": {
+      "name": "搜内容",
+      "subject": "pattern",
+      "icon": "✱"
+    },
+    "write": {
+      "name": "写入",
+      "subject": "file_path",
+      "icon": "←"
+    },
+    "edit": {
+      "name": "编辑",
+      "subject": "file_path",
+      "icon": "←",
+      "block": "edits"
+    },
+    "trash": {
+      "name": "删除",
+      "subject": "file_path",
+      "icon": "←"
+    },
+    "shell": {
+      "name": "执行命令",
+      "subject": "command",
+      "icon": "$",
+      "block": "command"
+    },
+    "history": {
+      "name": "翻记录",
+      "subject": "query",
+      "icon": "✱"
+    },
+    "subagent": {
+      "name": "派子代理",
+      "subject": "description",
+      "icon": "↗"
+    },
+    "agent": {
+      "name": "派子代理",
+      "subject": "description",
+      "icon": "↗"
+    },
+    "jobs": {
+      "name": "任务",
+      "subject": "action",
+      "icon": "≡"
+    },
+    "message_agent": {
+      "name": "留言",
+      "subject": "to",
+      "icon": "↗"
+    },
+    "sessions": {
+      "name": "列会话",
+      "icon": "≡"
+    },
+    "session_usage": {
+      "name": "查用量",
+      "icon": "≡"
+    },
+    "send_message": {
+      "name": "留言",
+      "subject": "to",
+      "icon": "↗"
+    }
+  },
+  "said": {
+    "read/lines": "{count} 行",
+    "read/lines-part": "第 {from}–{to} 行，一共 {total} 行",
+    "read/entries": "{count} 项",
+    "read/entries-part": "第 {from}–{to} 项，一共 {total} 项",
+    "read/empty": "空的",
+    "read/past-end": "过了结尾，一共 {total} 行",
+    "read/past-end-entries": "过了结尾，一共 {total} 项",
+    "read/not-a-file": "不是普通文件，也不是目录",
+    "read/binary": "是二进制文件，没读",
+    "read/image": "图片 {width}×{height}",
+    "read/image-too-big": "图太大（{size}），没读",
+    "read/image-too-wide": "图太大（{width}×{height}），没读",
+    "common/missing": "没有这个文件",
+    "common/missing-similar": "没有这个文件，是不是 {similar}",
+    "common/failed": "读不了：{error}",
+    "common/bad-args": "参数不对：{error}",
+    "common/bad-glob": "通配写得不对：{error}",
+    "common/no-files": "一个都没找到",
+    "glob/files": "{count} 个文件",
+    "glob/files-more": "{total} 个文件，列了 {shown} 个",
+    "glob/not-a-directory": "不是目录",
+    "grep/files": "{count} 个文件",
+    "grep/files-part": "第 {from}–{to} 个文件，一共 {total} 个",
+    "grep/counts": "{count} 个文件",
+    "grep/counts-part": "第 {from}–{to} 个文件，一共 {total} 个",
+    "grep/matches": "{count} 处",
+    "grep/matches-part": "第 {from}–{to} 处",
+    "grep/matches-more": "第 {from}–{to} 处，后面还有",
+    "grep/none": "没搜到",
+    "grep/past-end": "跳过了全部，一共 {total} 条",
+    "grep/bad-pattern": "正则写得不对：{error}",
+    "write/created": "新建，{count} 行",
+    "write/updated": "覆盖，{count} 行",
+    "common/not-read": "没读过，要先读",
+    "common/stale": "读过以后又改过了，要重读",
+    "common/directory": "是个目录",
+    "common/not-a-regular-file": "不是普通文件",
+    "common/write-failed": "写不了：{error}",
+    "edit/edited": "改了 {count} 处",
+    "edit/no-edits": "没给要改的",
+    "edit/empty": "第 {index} 处的原文是空的",
+    "edit/same": "第 {index} 处改前改后一样",
+    "edit/not-found": "第 {index} 处没找到",
+    "edit/not-found-near": "第 {index} 处没找到，最像的在第 {line} 行",
+    "edit/not-unique": "第 {index} 处对得上 {count} 个地方",
+    "edit/overlap": "第 {first} 处和第 {second} 处重叠了",
+    "edit/not-text": "不是文本文件",
+    "trash/trashed": "移进了回收站",
+    "trash/unavailable": "放不进回收站，没删",
+    "trash/protected": "工作目录、它的上级、家目录、根目录不能删",
+    "trash/lost": "删了，可回收站里找不到",
+    "trash/failed": "删不了：{error}",
+    "shell/done": "输出 {count} 行",
+    "shell/quiet": "没有输出",
+    "shell/exited": "退出码 {code}",
+    "shell/signal": "被信号 {signal} 停掉了",
+    "shell/timed-out": "超过 {seconds} 秒，停掉了",
+    "shell/failed": "执行不了：{error}",
+    "shell/no-background": "这里不能放到后台跑",
+    "shell/background": "放到后台了：{job}",
+    "history/found": "找到 {count} 条",
+    "history/read": "读了第 {from}–{to} 条",
+    "history/none": "没有找到",
+    "history/no-log": "读不了记录：{error}",
+    "history/no-session": "没有会话 {session}",
+    "history/ambiguous": "{session} 对得上不止一个会话",
+    "history/not-here": "这里不能读别的会话",
+    "agent/started": "派出去了：{job}",
+    "agent/not-started": "派不出去",
+    "jobs/listed": "列出 {count} 个任务",
+    "jobs/none": "没有任务",
+    "jobs/output": "读了 {job} 的输出",
+    "jobs/stopped": "停掉了 {job}",
+    "jobs/unknown": "没有任务 {id}",
+    "jobs/ended": "{job} 已经结束了",
+    "message_agent/sent": "送到了：{to}",
+    "message_agent/no-parent": "没有父会话",
+    "message_agent/not-yours": "{to} 不是它派的子代理",
+    "message_agent/stopped": "{to} 已经停了",
+    "message_agent/not-sent": "没送到",
+    "send_message/sent": "送到了：{to}",
+    "send_message/held": "存下了：{to} 是没人看着的一次性会话",
+    "send_message/no-parent": "没有父会话",
+    "send_message/not-yours": "{to} 不是它派的子代理",
+    "send_message/stopped": "{to} 已经停了",
+    "send_message/not-sent": "没送到",
+    "send_message/no-session": "没有会话 {to}",
+    "send_message/ambiguous": "{to} 对得上不止一个会话",
+    "send_message/self": "{to} 就是这个会话",
+    "send_message/not-here": "这里不能给别的会话发话",
+    "send_message/too-long": "太长了：{chars} 个字，最多 {limit}",
+    "send_message/too-many": "刚给 {to} 发得太多了",
+    "send_message/duplicate": "{to} 刚收到过一样的话",
+    "send_message/inbox-full": "{to} 没看的话太多了",
+    "send_message/watching": "{to} 空下来时告诉她",
+    "send_message/watch-peers-only": "只能等别的会话空下来",
+    "sessions/listed": "列出 {count} 个会话",
+    "sessions/none": "没有别的会话",
+    "sessions/past-end": "一共 {total} 个别的会话，已经列完了",
+    "sessions/failed": "没列出来：{error}",
+    "session_usage/shown": "查了用量",
+    "session_usage/failed": "用量读不出来：{error}"
+  }
+}

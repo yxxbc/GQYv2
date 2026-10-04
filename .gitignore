@@ -6,3 +6,6 @@
 
 # Cargo 构建产物
 /target/
+
+# 演示程序（照 0-1 施工单，不进仓库）
+/prototypes/

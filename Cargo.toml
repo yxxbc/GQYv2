@@ -3,32 +3,34 @@ resolver = "3"
 members = ["crates/*", "xtask"]
 
 [workspace.package]
-version = "0.5.0"          # 与 version.txt 同步；发布 PR 由 release-please-config.json 的 extra-files 一起更新
+version = "0.0.0"
 edition = "2024"
-rust-version = "1.98.1"    # 与 rust-toolchain.toml 的 channel 同一数值（P00-01）
+rust-version = "1.97"
+license = "GPL-3.0-or-later"
 publish = false
 
+# 每一条的理由见 docs/construction/0-1-仓库骨架.md「我定的」。
 [workspace.lints.rust]
-unsafe_code = "deny"       # 仅 gqy-sys 允许模块级 allow + // SAFETY:（01 §6；豁免在 P07-04 落地时按需添加）
-missing_docs = "deny"      # 公开项必须有文档（19 §6.1 第 3 项；P00-03）
+# 以后确实要用 unsafe 的 crate（例如沙盒助手），只在它自己那里放开。
+unsafe_code = "forbid"
+# 不吞错误：必须处理的返回值不许不理。
+unused_must_use = "deny"
+# 注释写详细：公开的东西都要有文档注释（AGENTS.md「代码的规矩」）。
+missing_docs = "warn"
 
 [workspace.lints.clippy]
-# 19 §6.1 第 2 项的全量名单（P00-03）。测试代码的放开策略见各 crate 的 cfg(test) 头部。
+# 不吞错误：不许用 `let _ =` 或 `.ok()` 把错误悄悄扔掉。真要扔，写 #[expect(..., reason = "...")]。
+let_underscore_must_use = "deny"
+unused_result_ok = "deny"
+# 读到坏数据要报错，不能直接崩。测试里允许，见 clippy.toml。
 unwrap_used = "deny"
-expect_used = "deny"
-panic = "deny"
-indexing_slicing = "deny"
-let_underscore_must_use = "deny"   # 吞错误：let _ = result（19 §6.1）
-unused_result_ok = "deny"          # 吞错误：result.ok(); 只是压掉 must_use 警告（19 §6.1）
-await_holding_lock = "deny"
-large_futures = "deny"
-missing_errors_doc = "deny"        # # Errors 一节（AGENTS.md 注释规范）
-missing_panics_doc = "deny"        # # Panics 一节（AGENTS.md 注释规范）
-disallowed_methods = "deny"        # 名单在 clippy.toml（Runtime::new / block_on / unbounded_channel，02 §2）
+# 会出错的函数写 # Errors，会 panic 的写 # Panics。
+missing_errors_doc = "warn"
+missing_panics_doc = "warn"
 
-[workspace.dependencies]
-# 跨 crate 共享的依赖版本集中在这里（P00-05 首次落地）；各 crate 用 `workspace = true` 引用。
-tokio = { version = "1", default-features = false }
-tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
-thiserror = "2"
+# argon2 不开优化时算一次密码哈希要零点几秒（施工 W-8）：开发、测试编的也优化它和它用的 blake2，测试不白等。
+[profile.dev.package.argon2]
+opt-level = 3
+
+[profile.dev.package.blake2]
+opt-level = 3
