@@ -1,0 +1,437 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "properties": {
+    "models": {
+      "properties": {
+        "catalog": {
+          "properties": {
+            "every": {
+              "default": "24h",
+              "description": "Fetch again once the cached catalog is this old. Allowed: a length of time from 1h to 720h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+              "pattern": "^[0-9]+[smh]?$",
+              "title": "Update every",
+              "type": "string"
+            },
+            "update": {
+              "default": true,
+              "description": "Fetch a newer model catalog from models.dev in the background. Off uses only the bundled and already fetched ones. Allowed: true or false. Only in the system config or personal settings. Takes effect at once.",
+              "title": "Update the catalog",
+              "type": "boolean"
+            },
+            "url": {
+              "default": "https://models.dev/api.json",
+              "description": "Where to fetch the model catalog from. Allowed: an address starting with http:// or https:// or { env = \"…\" }. Only in the system config or personal settings. Takes effect at once.",
+              "oneOf": [
+                {
+                  "format": "uri",
+                  "type": "string"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "env": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "env"
+                  ],
+                  "type": "object"
+                }
+              ],
+              "title": "Catalog address"
+            }
+          },
+          "type": "object"
+        },
+        "chat": {
+          "description": "The model new sessions use, written as provider/model, for example deepseek/deepseek-flash, or @pool. Allowed: <provider>/<model> or @<pool>. Only in the system config or personal settings. Applies to sessions opened from now on.",
+          "title": "Chat model",
+          "type": "string"
+        },
+        "cooldown": {
+          "properties": {
+            "auth": {
+              "properties": {
+                "base": {
+                  "default": "10m",
+                  "description": "How long a whole key rests the first time it fails to authenticate or runs out of quota. It doubles each time in a row. Allowed: a length of time from 1s to 1h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Auth failure pause",
+                  "type": "string"
+                },
+                "max": {
+                  "default": "2h",
+                  "description": "The pause for a whole key stops doubling here. Allowed: a length of time from 1s to 24h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Auth failure pause cap",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "rate_limited": {
+              "properties": {
+                "base": {
+                  "default": "30s",
+                  "description": "How long an endpoint rests the first time it is rate limited. It doubles each time in a row. Allowed: a length of time from 1s to 1h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Rate limit cooldown",
+                  "type": "string"
+                },
+                "max": {
+                  "default": "10m",
+                  "description": "The rate limit cooldown stops doubling here, even when the provider asks for longer. Allowed: a length of time from 1s to 24h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Rate limit cooldown cap",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            },
+            "retryable": {
+              "properties": {
+                "base": {
+                  "default": "10s",
+                  "description": "How long an endpoint rests the first time it cannot be reached or fails on its side. It doubles each time in a row. Allowed: a length of time from 1s to 1h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Error cooldown",
+                  "type": "string"
+                },
+                "max": {
+                  "default": "5m",
+                  "description": "The cooldown for these errors stops doubling here. Allowed: a length of time from 1s to 24h, written like 30s, 10m or 1h. Only in the system config or personal settings. Takes effect at once.",
+                  "pattern": "^[0-9]+[smh]?$",
+                  "title": "Error cooldown cap",
+                  "type": "string"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "type": "object"
+        },
+        "vision": {
+          "description": "Looks at images for the chat model when it cannot. Written like the chat model. Allowed: <provider>/<model> or @<pool>. Only in the system config or personal settings. Takes effect next turn.",
+          "title": "Vision model",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "permission": {
+      "properties": {
+        "start_read_only": {
+          "default": false,
+          "description": "When on, new sessions begin read-only. She can look around and plan, and you turn read-only off when files should change. A project config can only turn it on. Allowed: true or false. Only in the system config, personal settings or a project config. Applies to sessions opened from now on.",
+          "title": "Start new sessions read-only",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "pools": {
+      "additionalProperties": {
+        "properties": {
+          "description": {
+            "description": "One line she sees after the pool name when she starts a subagent. Write it in English. Allowed: one line of English, at most 60 characters. Only in the system config or personal settings. Applies to sessions opened from now on.",
+            "maxLength": 60,
+            "minLength": 1,
+            "title": "Description for the model",
+            "type": "string"
+          },
+          "models": {
+            "description": "A group of models, each written as provider/model. Allowed: a list of <provider>/<model>. Only in the system config or personal settings. Takes effect next turn.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Pool members",
+            "type": "array"
+          },
+          "strategy": {
+            "description": "Keep a session on one member, or take the next member for every request. Left out, a pool whose members are all billed per request rotates and the others pin. Allowed: pin or rotate. Only in the system config or personal settings. Takes effect next turn.",
+            "enum": [
+              "pin",
+              "rotate"
+            ],
+            "title": "Pool strategy",
+            "type": "string"
+          },
+          "subagent": {
+            "default": false,
+            "description": "When on, she can pick this pool for a subagent in new sessions. It is listed only once it has members. Allowed: true or false. Only in the system config or personal settings. Applies to sessions opened from now on.",
+            "title": "Subagents can pick it",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "providers": {
+      "additionalProperties": {
+        "properties": {
+          "base_url": {
+            "description": "The address of this provider's API; the driver adds the path. Known providers can leave it out. Allowed: an address starting with http:// or https:// or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
+            "oneOf": [
+              {
+                "format": "uri",
+                "type": "string"
+              },
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "env": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "env"
+                ],
+                "type": "object"
+              }
+            ],
+            "title": "Address"
+          },
+          "cache": {
+            "description": "How this provider bills its cache. For now it only decides how a pool without a strategy splits. Left out, it follows the driver. Allowed: contract, best_effort or per_request. Only in the system config or personal settings. Takes effect next turn.",
+            "enum": [
+              "contract",
+              "best_effort",
+              "per_request"
+            ],
+            "title": "Cache class",
+            "type": "string"
+          },
+          "catalog": {
+            "description": "Which provider in the model data this one is, for example deepseek for a relay that only forwards DeepSeek. Allowed: a name starting with a lowercase letter, using only lowercase letters, digits, - and _, up to 64 characters. Only in the system config or personal settings. Takes effect next turn.",
+            "title": "Catalog provider",
+            "type": "string"
+          },
+          "driver": {
+            "description": "How to talk to this provider. Known providers can leave it out. Allowed: openai-chat, anthropic or openai-responses. Only in the system config or personal settings. Takes effect next turn.",
+            "enum": [
+              "openai-chat",
+              "anthropic",
+              "openai-responses"
+            ],
+            "title": "Driver",
+            "type": "string"
+          },
+          "keys": {
+            "default": [],
+            "description": "Write { secret = \"name\" } (saved with miyu login) or { env = \"VARIABLE\" }. Each session sticks to one of them. Empty means no auth header. Allowed: a list of { secret = \"…\" } or { env = \"…\" }. Only in the system config or personal settings. Takes effect next turn.",
+            "items": {
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "secret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "secret"
+                  ],
+                  "type": "object"
+                },
+                {
+                  "additionalProperties": false,
+                  "properties": {
+                    "env": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "env"
+                  ],
+                  "type": "object"
+                }
+              ]
+            },
+            "title": "Keys",
+            "type": "array"
+          },
+          "local": {
+            "description": "A model service on this machine, counted as free. Left out, it follows the address: on this machine means yes. Allowed: true or false. Only in the system config or personal settings. Takes effect next turn.",
+            "title": "Local service",
+            "type": "boolean"
+          },
+          "models": {
+            "additionalProperties": {
+              "properties": {
+                "catalog": {
+                  "description": "Which models.dev entry to use: <provider>/<model>. Left out, it is found by name. Allowed: text of at most 256 characters. Only in the system config or personal settings. Takes effect next turn.",
+                  "maxLength": 256,
+                  "minLength": 1,
+                  "title": "Catalog entry",
+                  "type": "string"
+                },
+                "effort": {
+                  "description": "The reasoning effort this model uses by default: one of its levels, for example high, or off where thinking can be turned off. Left out, the provider decides. Allowed: text of at most 32 characters. Only in the system config or personal settings. Takes effect next turn.",
+                  "maxLength": 32,
+                  "minLength": 1,
+                  "title": "Default reasoning effort",
+                  "type": "string"
+                },
+                "inputs": {
+                  "description": "What this model can read: text, images, PDF. Allowed: a list of text, image or pdf. Only in the system config or personal settings. Takes effect next turn.",
+                  "items": {
+                    "enum": [
+                      "text",
+                      "image",
+                      "pdf"
+                    ],
+                    "type": "string"
+                  },
+                  "title": "Inputs",
+                  "type": "array"
+                },
+                "max_output": {
+                  "description": "How many tokens this model can write at most in one reply. Allowed: a whole number from 1 to 100000000. Only in the system config or personal settings. Takes effect next turn.",
+                  "maximum": 100000000,
+                  "minimum": 1,
+                  "title": "Max output",
+                  "type": "integer"
+                },
+                "price": {
+                  "properties": {
+                    "cache_read": {
+                      "description": "Price per million tokens read from the cache. Allowed: a number from 0 to 1000000. Only in the system config or personal settings. Takes effect next turn.",
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "title": "Cache read price",
+                      "type": "number"
+                    },
+                    "cache_write": {
+                      "description": "Price per million tokens written to the cache. Allowed: a number from 0 to 1000000. Only in the system config or personal settings. Takes effect next turn.",
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "title": "Cache write price",
+                      "type": "number"
+                    },
+                    "currency": {
+                      "description": "Currency of the price, three capital letters such as USD or CNY. USD if left out. Allowed: text of at most 3 characters. Only in the system config or personal settings. Takes effect next turn.",
+                      "maxLength": 3,
+                      "minLength": 1,
+                      "title": "Currency",
+                      "type": "string"
+                    },
+                    "input": {
+                      "description": "Price per million input tokens. A written price is used whole. Allowed: a number from 0 to 1000000. Only in the system config or personal settings. Takes effect next turn.",
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "title": "Input price",
+                      "type": "number"
+                    },
+                    "output": {
+                      "description": "Price per million output tokens. Allowed: a number from 0 to 1000000. Only in the system config or personal settings. Takes effect next turn.",
+                      "maximum": 1000000,
+                      "minimum": 0,
+                      "title": "Output price",
+                      "type": "number"
+                    }
+                  },
+                  "type": "object"
+                },
+                "price_multiplier": {
+                  "description": "Prices of this model are multiplied by it, over the one on the provider. Allowed: a number from 0 to 1000. Only in the system config or personal settings. Takes effect next turn.",
+                  "maximum": 1000,
+                  "minimum": 0,
+                  "title": "Price multiplier",
+                  "type": "number"
+                },
+                "reasoning": {
+                  "description": "Which reasoning levels this model offers. Allowed: a list of text of at most 32 characters. Only in the system config or personal settings. Takes effect next turn.",
+                  "items": {
+                    "maxLength": 32,
+                    "minLength": 1,
+                    "type": "string"
+                  },
+                  "title": "Reasoning levels",
+                  "type": "array"
+                },
+                "tools": {
+                  "description": "Whether this model can call tools. Allowed: true or false. Only in the system config or personal settings. Takes effect next turn.",
+                  "title": "Tool calls",
+                  "type": "boolean"
+                },
+                "window": {
+                  "description": "The context window of this model, in tokens. Allowed: a whole number from 1 to 100000000. Only in the system config or personal settings. Takes effect next turn.",
+                  "maximum": 100000000,
+                  "minimum": 1,
+                  "title": "Context window",
+                  "type": "integer"
+                }
+              },
+              "type": "object"
+            },
+            "type": "object"
+          },
+          "name": {
+            "description": "The name people see. The id is only for referring to models; without one, the model data's name for this provider is used, then the id. Allowed: text of at most 64 characters. Only in the system config or personal settings. Takes effect at once.",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Display name",
+            "type": "string"
+          },
+          "price_multiplier": {
+            "description": "Prices of this provider are multiplied by it. 1 if left out. A multiplier on the model wins. Allowed: a number from 0 to 1000. Only in the system config or personal settings. Takes effect next turn.",
+            "maximum": 1000,
+            "minimum": 0,
+            "title": "Price multiplier",
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "type": "object"
+    },
+    "tui": {
+      "properties": {
+        "startup": {
+          "default": "new",
+          "description": "Whether the terminal interface starts a new session or picks up the most recent one. Allowed: new or recent. Only in the system config or personal settings. Takes effect the next time the interface opens.",
+          "enum": [
+            "new",
+            "recent"
+          ],
+          "title": "On start, open",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "ui": {
+      "properties": {
+        "language": {
+          "default": "auto",
+          "description": "The language terminals, the web page and the command line use for you. auto follows the terminal or browser. Allowed: auto, zh, en or ja. Only in the system config or personal settings. Takes effect at once.",
+          "enum": [
+            "auto",
+            "zh",
+            "en",
+            "ja"
+          ],
+          "title": "Interface language",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "usage": {
+      "properties": {
+        "currency": {
+          "default": "USD",
+          "description": "Amounts are added up per currency, never converted. This one is listed first, the others by code. Three capital letters such as USD or CNY. Allowed: text of at most 3 characters. Only in the system config or personal settings. Takes effect at once.",
+          "maxLength": 3,
+          "minLength": 1,
+          "title": "Currency shown first",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "type": "object"
+}
