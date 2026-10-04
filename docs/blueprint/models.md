@@ -19,7 +19,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 | `crates/gqy-models/src/onboard.rs`、`onboard/` | 第一次接入的纯逻辑（8-11）：目录和档案里的每一家合起来（`Listed`：名字、驱动、地址、能不能用）、找哪些环境变量、探本机的哪几家（`listing.rs`）；`provider.catalog` 搜、排（`search`）；推荐哪个模型（`recommend.rs`）；还没写进配置的一家写成一份最终值（`candidate.rs`），和配好的一家走同一条路 | 8-11 |
 | `crates/gqy-models/src/matching.rs` | 四层对目录、名字规整、认供应商（`recognize`）、认原厂（`Vendors`） | 8-7 |
 | `crates/gqy-models/src/facts.rs`、`facts/source.rs` | 资料的每一格、来源、合起来，写成 `model.list` 的 `facts` | 8-7 |
-| `crates/gqy-models/src/observed.rs` | 用出来的（`learned.json`）、供应商的列表（`providers/<编号>.json`）的样子、读写、只记小的 | 8-7 |
+| `crates/gqy-models/src/observed.rs` | 用出来的（`learned.json`）、供应商的列表（`providers/<编号>.json`）的样子、读写、只记小的；两份列表比出下架的（`delisted`，8-23） | 8-7、8-23 |
 | `crates/gqy-models/src/knowledge.rs` | 查资料时手头的几份：档案、认原厂的表、目录、用出来的、列表（`Knowledge`） | 8-7 |
 | `crates/gqy-models/src/reference.rs` | 两种写法：读、哪里能写哪几种（8-6）；造会话记下的引用（`record`）、一个引用这一轮指到一个模型还是一个池（`resolve`）、用途池里点名的模型（`named`）（8-8；挡位 8-8 补去掉了） | 8-6、8-8 |
 | `crates/gqy-models/src/settings.rs` | 模型这一块的配置项：`UseSettings`（`models.chat`、`vision`）、`PoolSettings`（`pools.<id>` 的成员、分法，8-8；派子代理能不能选、给模型看的说明，8-8 补）、`ProviderSettings`（`providers.<id>` 的驱动、地址、key、`catalog`，8-8 加 `cache`）、`ModelSettings`（`providers.<id>.models.<model>` 的窗口，8-18 加 `effort`），核心登记进清单（`config.md`） | 8-6 起 |
@@ -33,7 +33,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 | `crates/gqy-session/src/route.rs`、`route/` | 每个会话的路由：实现 `ModelPort`，挑候选、钉 key、出错换、记冷却、交限额。取代 `http.rs` 里的 `HttpModels`（8-6：`route.rs` 挑、`route/send.rs` 发；8-8：`route/pool.rs` 池里挑成员、池的限额；8-9：`route/choice.rs` 排候选、挑没在冷却的，`route/ended.rs` 说完了记冷却、换端点、成了才钉；8-18：`route/effort.rs` 给头看的那一档从配置的哪一层来、空闲超时跟着放大，8-18（补）去掉会话那一层以后不再有会话给每个模型记的一格）。8-20 起它是模型调用口的会话入口（第十二条）：解析引用、退回 `models.chat`、钉 key、钉成员、说到一半断了、交限额留在 `route.rs`、`route/send.rs`（会话的发、说完了记会话的那几样 `Tried`），挑、发、记冷却调底子 | 8-6、8-8、8-9、8-18、8-20 |
 | `crates/gqy-session/src/route/base.rs`、`route/choice.rs`、`route/pool.rs`、`route/exchange.rs`、`route/ended.rs` | 模型调用口的底子（8-20 从会话的路由里拆出来，第十二条）：`Routes` 的几个方法，不认会话，只认「谁在挑」（`Seat`：钉 key 的种子、换过去的 key、钉着的成员、说到一半断了的）。照引用排候选、跳过冷却的、钉住的池从钉着的成员起、轮换的池走指针（`base.rs` 的 `pick`，`choice.rs`、`pool.rs` 排）；照真发的模型查资料、取配置的默认思考强度、挑客户端（`base.rs` 的 `ready`）；取 blob、编码、发、记用出来的窗口（`exchange.rs`）；出错照分类记冷却、说换没换端点，成了清零（`ended.rs` 的 `Attempt`） | 8-20 |
 | `crates/gqy-session/src/route/once.rs`、`once/reply.rs` | 一次性入口 `OneShot`（8-20，第十二条）：交进去 `Ask`（引用、用途、system、几条消息、`max_tokens`），交回 `Answer`（正文、真发给的供应商和模型、用量）或 `Unanswered`（四种出错）；出错换了端点的当场再来，最多 5 次；正文照增量拼（`once/reply.rs`）。核心经 `Models::one_shot()` 拿到它，和会话的路由是同一个 `Routes` | 8-20 |
-| `crates/gqy-session/src/route/shared.rs` | 核心一份的模型资料 `ModelData`：档案、认原厂的表、在用的目录（读完以前要它的等着）、用出来的、供应商的列表、拉列表的客户端、探本机的客户端（不走代理，8-11）；`state/models/` 的读写（8-7）；池的指针和它的 `pools.json`（8-8）；冷却表和 `[models.cooldown]` 的规矩，只在内存里（8-9）。8-20 起会话的路由和一次性入口共用这一份 | 8-7、8-8、8-9、8-20 |
+| `crates/gqy-session/src/route/shared.rs` | 核心一份的模型资料 `ModelData`：档案、认原厂的表、在用的目录（读完以前要它的等着）、用出来的、供应商的列表、拉列表的客户端、探本机的客户端（不走代理，8-11）；`state/models/` 的读写（8-7）；池的指针和它的 `pools.json`（8-8）；冷却表和 `[models.cooldown]` 的规矩，只在内存里（8-9）；下架的记着的（`(供应商, 模型)`，只在内存里，8-23）。8-20 起会话的路由和一次性入口共用这一份 | 8-7、8-8、8-9、8-20、8-23 |
 | `crates/gqy-session/src/actor/model.rs` | 请求说完了跟着端口的限额：变了交内核、`Handle` 的跟着换，模型变了推 `model.changed`（`session/actor.md` 第 7 条第 8 款）；回合开始叫端口重新解析，头看得到的变了推 `model.changed`（`why` 是 `turn`，8-10） | 8-9、8-10 |
 | `crates/gqy-session/src/route/turn.rs` | 回合开始照这一轮的配置重新解析会话的引用：换成内核交的、解析不出的退回 `models.chat`、钉着的成员还在的照旧、限额重算（`ModelPort::turn`） | 8-10 |
 | `crates/gqy-session/src/shown.rs` | 给头看的那一份 `Shown`：限额和会话接下来请求的模型 `Next`（8-18 多 `effort`），actor 写、`Handle` 读，`subscribe` 照它答 | 8-10、8-18 |
@@ -41,7 +41,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 | `crates/gqy-session/src/route/probe.rs` | `provider.test` 试一次（8-11）：推驱动、地址、key，列模型（列不出的照目录），挑模型，发一句、收到第一段正文就停；发的那一句照挑的模型的驱动、带档案另配的头（8-14） | 8-11、8-14 |
 | `crates/gqy-session/src/route/local.rs` | `provider.detect` 探本机的服务（8-11）：几家一起发，各等 300 毫秒，不走代理 | 8-11 |
 | `crates/gqy-core/src/models.rs`、`models/` | 起来时读档案、认原厂的表（TOML 读成 JSON），造路由；写了 `ready` 以后读目录、用出来的、供应商的列表、池的指针（`models/catalog.rs`：快照和缓存挑新的），后台更新（`models/refresh.rs`，8-8：地址可以是环境变量的引用，`Schedule`）；`[models.cooldown]` 照配置当场换（`follow_cooldown`，8-9）；多造一个不走代理的 GET 客户端，探本机的服务用（8-11） | 8-6 起 |
-| `crates/gqy-endpoint/src/models.rs`、`models/entry.rs` | 协议：`model.list`（8-7，`entry.rs` 写一家；8-8 加 `pools`、`uses.vision`，8-8 补去掉 `tiers`、池多 `subagent`、`description`；8-9 加模型、key 的冷却；8-18（补）起 `facts.effort` 多 `key`），`session.create` 的 `model` 怎么解析（`record`，8-8，`methods.rs` 调它）；`session.configure` 的参数（`methods.rs` 先查参数、再找会话、再 `record`，`ConfigureParams`，写了 `effort` 的 8-18（补）起 `bad_params`）、`subscribe` 回应的 `model`（`connection.rs` 调它，8-10；8-18 多 `effort`）；`provider.detect`、`provider.catalog`、`provider.test` 在 `providers.rs`、`providers/trial.rs`（8-11）；`model.call` 在 `models/call.rs`（8-20：参数、照这个账号的 blob 认图（`attach.rs` 的 `images`）、调一次性入口、出错写成拒绝；8-15 记在这个连接的账号上）；`usage.query` 在 `usage.rs`（8-15：开 `state/usage.db`、参数、先补再查、写成 `rows`） | 8-7 到 8-11、8-15、8-20 |
+| `crates/gqy-endpoint/src/models.rs`、`models/entry.rs`、`models/prune.rs` | 协议：`model.list`（8-7，`entry.rs` 写一家；8-8 加 `pools`、`uses.vision`，8-8 补去掉 `tiers`、池多 `subagent`、`description`；8-9 加模型、key 的冷却；8-18（补）起 `facts.effort` 多 `key`；8-23 起解析不出的池多 `problem`，`prune.rs` 把下架的从池里删掉、写回配置），`session.create` 的 `model` 怎么解析（`record`，8-8，`methods.rs` 调它）；`session.configure` 的参数（`methods.rs` 先查参数、再找会话、再 `record`，`ConfigureParams`，写了 `effort` 的 8-18（补）起 `bad_params`）、`subscribe` 回应的 `model`（`connection.rs` 调它，8-10；8-18 多 `effort`）；`provider.detect`、`provider.catalog`、`provider.test` 在 `providers.rs`、`providers/trial.rs`（8-11）；`model.call` 在 `models/call.rs`（8-20：参数、照这个账号的 blob 认图（`attach.rs` 的 `images`）、调一次性入口、出错写成拒绝；8-15 记在这个连接的账号上）；`usage.query` 在 `usage.rs`（8-15：开 `state/usage.db`、参数、先补再查、写成 `rows`） | 8-7 到 8-11、8-15、8-20、8-23 |
 | `crates/gqy-session/src/config.rs` | `Turn::new`：一次性调用照这一刻不算项目配置的最终值冻结一份（8-20） | 8-20 |
 | `crates/gqy-kernel/src/session/configure.rs` | 换模型的命令，会话的引用和最近一次换模型写在第几条（`Reference`，熔断照它），回合开始交出引用（`RunTurnStartHooks` 的 `model`），记 `replaced`（8-10）。8-18 曾在这里加过会话给每个模型记的一格思考强度，8-18（补）去掉了 | 8-10 |
 | `crates/gqy-kernel/src/session/retry.rs`、`event/model.rs`、`event/transient.rs` | 分类多 `no_model`（8-6，不再来）；`failover`、`cooling`（8-9）；瞬时的 `model.changed`、`status` 的 `failover`（8-9） | 8-6、8-9 |
@@ -306,7 +306,7 @@ GQY 怎么接上模型：配置里写几家供应商，每家带驱动、地址�
 |---|---|
 | `providers` | 配好的供应商，照编号排。每一家：`id`、`name`（显示名，施工 8-21：`{"value", "from", "key"}`，`from` 是 `config`（写了的，另带 `file`、`line`、`layer`，照资料那一格的写法）、`catalog`（目录里对上的那一家的名字）、`id`（都没有，照编号）；`key` 是完整的配置键名 `providers.<编号>.name`，头照抄它发 `config.set`；用不了的那一家也有）、`driver`、`base_url`（照配置写的样子交：写死的是地址本身，是 `{ env = … }` 的交 `{"env": "…"}`，不解出地址，施工 8-6b）、`keys`（每个 key 的 `ref`：`secret:<名字>` 或 `env:<变量>`，`set` 有没有值，`state`）、`catalog`（对上了目录里的哪一家，`how` 是怎么对上的：`config` 手写、`id` 编号一样、`similar_id` 去掉分隔以后一样、`url` 地址一样，没对上的不写）、`models`。这一家用不了的（推不出驱动、地址，驱动还没有）：`driver`、`base_url` 照手写的，没写的是 `null`，多一格 `problem`（`no_model` 的那一句原话），`models` 是空的（8-7） |
 | `models` 里的每一个 | `model` 模型名、`ref` 写成引用的样子、`listed` 从哪几处列出来的（`config`、`provider`、`catalog`，照这个先后）、`facts` 每一格的 `value` 和来源（上面「模型的资料」，十格都在：`window`、`max_output`、`inputs`、`tools`、`reasoning`、`effort`（8-18：配置的默认；没写的、写的不在档位里的是 `{"value":null,"from":"default"}`；多一格 `key`，8-18（补）：这一项完整的配置键名，模型名带点的加好引号，例如 `providers.dev.models."deepseek-v4.1-flash".effort`，头照抄它发 `config.set`（个人设置），选「默认」就发 `unset: true`）、`price`、`multiplier`、`name`、`status`）、`state`。手写指定的目录条目不存在的，多一格 `catalog_missing`：写的那个条目（8-7） |
-| `pools` | 每个池，照名字排：`name`、`strategy`（生效的分法：写了的照写的，没写的照成员定，一个成员都认不出的照写的或 `pin`）、`models`（照配置写的原样，认不出的也在）（8-8）；`subagent`（开关，没写的是 `false`）、`description`（没写的是 `null`）（8-8 补）。8-8 的 `tiers` 8-8 补去掉了 |
+| `pools` | 每个池，照名字排：`name`、`strategy`（生效的分法：写了的照写的，没写的照成员定，一个成员都认不出的照写的或 `pin`）、`models`（照配置写的原样，认不出的也在）（8-8）；`subagent`（开关，没写的是 `false`）、`description`（没写的是 `null`）（8-8 补）；解析不出的（没有成员，或者成员一个都认不出）多一格 `problem`（`no_model` 的那一句原话，照供应商那一家的写法，施工 8-23）。8-8 的 `tiers` 8-8 补去掉了 |
 | `uses` | `chat`、`vision` 各配的引用，没配的是 `null`（8-7 只有 `chat`，8-8 加 `vision`） |
 | `catalog` | 在用的目录：`source`（`snapshot` 或 `cache`）、`fetched`；两份都读不了的是 `null` |
 
@@ -823,6 +823,19 @@ opencode 有两个端点：Zen（`https://opencode.ai/zen/v1`，按量付费）�
 4. **头看得到**：`model.list` 每一个模型的 `facts` 多一格 `temperature`（值、来源），并带完整配置键名 `key`（如 `providers.dev.models."deepseek-chat".temperature`）；头照抄 `key` 发 `config.set`，选「默认」发 `unset: true`。
 5. **不出提示**：改温度不给模型看字，不推额外提示。
 
+**十五、下架的模型移出池**（8-23；2026-10-05 项目主人定：供应商的列表里原来有、这一份成功拉到的里没有，就算确认；人主动刷新和后台补拉到的都算，核心当场从池里删掉、写回配置）
+
+一家供应商的模型列表里原来列着的模型，这一份成功拉到的里没有了：核心确认它下架了，从所有池的成员里删掉，写回写着它的那一层。删空的池留着，`model.list` 照它说用不了。
+
+1. **认**（`gqy_models::observed::delisted`，`ModelData::set_list`）：换上某一家新拉的列表时，和上一份比：上一份里有、这一份里没有的模型，记下来（`(供应商, 模型)` 一对）。这家从没拉过列表的不算（没有「原来有」）。新列表里又有了的，从记着的里去掉（拉回来了）。记在核心一份、只在内存里（`ModelData`），不落盘：派生数据，丢了最多少清一次。
+2. **什么时候动手**：`model.list` 一开头清一遍（`models/prune.rs`），`refresh` 拉完再答的那一次也在里面：这一次就照清完的答。
+   - 各层各看各的：系统配置、个人设置里，`pools.<名字>.models` 写着的成员（`parsed` 里的真的键，一层一层看），照写的原样读（`parse_at`，`Place::PoolMember`），供应商、模型都对上记着的才删；读不成、指向别家的不动（逐字节匹配，不规整）。
+   - 一层里有几处改动一次写完（一层一个 `config.set` 那样的动作），走和 `config.set` 同一条路（重读、只改那几项、先写临时文件再替换、留痕、推送）：`via` 是 `core`，推送不带 `by`，日志里 `by` 是内核、没有 `cause`（`config.md`「怎么走」第五、六条、「协议」推送那张表）。删掉一处记一行 `INFO pool member removed pool=… member=…`。
+   - 写成了的从记着的里去掉；没写在任何一层里的（池里本来没有它）也去掉；写不成的记一行 `WARN pool not removed error=…`，留着，下一条 `model.list` 再试（核心重启后没了：文件本来也没改成）。
+3. **删空的池留着**：成员删空、或者一个都认不出的，池不删，别的格（分法、`subagent`、说明）不动；`model.list` 的池那一格多 `problem`（第「协议」表），头照它标成用不了。解析得出的池不带这一格。
+4. **头怎么知道**：订阅着配置的头收 `config.changed`（`via` 是 `core`）；没订阅的下一条 `model.list` 就照新的答。池是 `next_turn` 生效的项：开着的会话下一个回合用上新的成员（和别的池的配置一样）。
+5. **不认的**：报错里说没这个模型（404、「model not found」这类）还不认：各家说法不一样，没有实测不下结论（「还没有的」）。`models.chat`、`models.vision` 里点名了这个模型的不动：这一步只管池的成员。
+
 ### 样子
 
 配置（例子，地址用 `.invalid`）：
@@ -979,6 +992,8 @@ mimo = ["xiaomi"]
 | `INFO` | `failover from=… to=… class=…`（只换 key 的写 `key=…` 不写 `to`） | 换端点 |
 | `INFO` | `model fallback session=… from=… to=…` | 钉着的没了，退回默认 |
 | `WARN` | `pool member skipped pool=… member=…` | 池里认不出的成员（那一家没配），路由每次解析记一行（8-8） |
+| `INFO` | `pool member removed pool=… member=…` | 下架的模型从池里删掉（施工 8-23，第十五条） |
+| `WARN` | `pool not removed error=…` | 核心自己清池没写成（施工 8-23）：记着的等下一条 `model.list` 再试 |
 | `DEBUG` | `unknown model why=…` | `session.create`、`model.call`（8-20）的 `model` 解析不出，回 `unknown_model`（8-8，目标 `gqy::endpoint`） |
 | `INFO` | `provider tested provider=… model=… ok=…` | 试了一次 |
 | `INFO` | `model call purpose=… provider=… model=… input=… output=…` | 一次性入口成了一次（8-20，第十二条第 6 条；没报用量的没有 `input`、`output`） |
@@ -1102,6 +1117,9 @@ mimo = ["xiaomi"]
 | `crates/gqy-session/tests/route_vision.rs`、`vision_log.rs`（8-17） | 路由照资料认看不看得了图、经一次性入口问 `models.vision`、没配的照旧占位、运行日志（`session/actor.md`「守着它的」） | 8-17 |
 | `crates/gqy-policy/src/snapshot/tests/vision.rs`、`crates/gqy-store/src/resources/tests.rs`（8-17） | 快照带着两份字和三句标签、老快照没有的不转述；资源目录读得出五份 | 8-17 |
 | `crates/gqy-endpoint/tests/model_call.rs`、`model_call_log.rs` | `model.call` 的回应形状；参数校验（`purpose` 的写法、`messages` 的样子、`max_tokens`、`model` 是空字）、blob 不是这个账号的 `unknown_attachment`、不是图的 `bad_params`、`unknown_model`；出错的 `data`；不造会话、不进会话日志；测试的端口没有一次性入口的答 `no_model`；运行日志成了、没成各一行，不带 key（`model_call_log.rs`） | 8-20 |
+| `crates/gqy-models/src/observed/tests.rs`（8-23 那几条） | 两份列表比出下架的：上一份里有、这一份里没有的算；新加的、还在的不算；没有上一份的不算；照字节序排、去重 | 8-23 |
+| `crates/gqy-session/tests/route_delisted.rs` | 换上一份新的列表时记下下架的（这家、这个模型）；拉回来的从记着的里去掉；从没拉过的不算；清完了的去掉（`forget_delisted`） | 8-23 |
+| `crates/gqy-endpoint/tests/models_delisted.rs` | 池里的成员照新的列表删掉、写回配置文件（别的字节不动）、推送 `config.changed`（`via` 是 `core`、不带 `by`）、运行日志一条；系统配置、个人设置各改各的；删空的池 `model.list` 里带 `problem`；写不成的不动、记着的下一条 `model.list` 再试；拉回来的、从没列过的、拉不到的不动 | 8-23 |
 
 ### 出处
 
@@ -1134,7 +1152,7 @@ mimo = ["xiaomi"]
 - 辅助请求各自默认用哪个模型或池：随各子系统。
 - 模型调用口（8-20）没做的：流式的 `model.call`（第一版只交整段）；一次性入口带工具（谁要再加）；`model.call` 前面的能力检查（随扩展那一段）；一次性入口的用量 8-15 记进了账本（第九条第 4 条）。
 - 池的别的开关（例如给哪个人用）：随多用户。
-- 模型下架的认法：供应商的列表不一定全，报错的说法各家不一样，现在只认配置里删掉的。
+- 模型下架的认法：只照供应商的列表认（第十五条：列过又没了，施工 8-23）；报错里说没这个模型（404、「model not found」这类）还没认，各家说法不一样，没有实测不下结论。
 - 设置页里供应商、池的专门编辑器，`/models` 抽屉，底栏：M9。
 - 第一次接入（8-11）没做的：让核心空闲时重启（要一个新的协议方法，`gqy setup` 现在只说等它空闲退出）；档案的 `env` 补名字（Google 要另一种驱动）；`provider.test` 的 `candidate` 带另配的头（随 8-14）、地址写成环境变量的引用；`gqy setup` 接目录里没有的中转站（自己写驱动、地址），现在照旧写配置。本机的服务走请求时不走代理：8-11 补做了（`http.md`「客户端」第 5 条），探本机的服务、列模型、`provider.test`、会话真发时、拉模型列表，地址落在本机的都直连。
 
@@ -1491,6 +1509,17 @@ mimo = ["xiaomi"]
 | `model.list` 的 `name` 写成 `{"value", "from", "key"}`，写了的另带 `file`、`line`、`layer`；用不了的那一家也有 | 和资料的格、思考强度的 `key` 一个样子，头少写一种读法；照 `from` 知道是不是写了的 | 只交一个字符串 |
 | 名字不进请求、会话日志、用量记账，引用只认编号 | 名字改了不该让任何记录对不上 | — |
 
+8-23 施工时照推荐定的（2026-10-05 主会话；第 1 条项目主人定，写进了正文）：
+
+| 定了什么 | 为什么 | 别的选法 |
+|---|---|---|
+| 认的地方在 `ModelData::set_list`（换上一份新的列表时和前一份比），记在核心一份的内存里；不落盘 | 列表的读写本来就在这一处；派生数据，丢了最多少清一次 | 拉的时候另外比、把「下架」写进 `state/models/`：多一份文件和格式 |
+| 动手在 `model.list` 处理里（一开头清一遍），`refresh` 拉完当场就能看到；写成了的从记着的里去掉，写不成的留着等下一条 `model.list` | 端点手里有配置服务（写配置只有核心能办），`model.list` 是头问模型这一块的那一个口子 | 后台任务里接着清：要把 `Arc<Core>` 塞进每条拉列表的后台任务，动的地方多 |
+| 匹配照写的原样（逐字节），读不成、指向别家的不动 | 不猜大小写、不猜写法 | 规整以后比：写法不同、指的是别的模型的会被误删 |
+| 写回写着它的那一层（系统、个人各看各的 `pools.<名字>.models`），一层一次写完 | 分层各管各的，个人设置压着系统配置也不打架 | 只改最终值来源的那一层：下层留着一条已经下架的成员 |
+| `config.changed` 的 `via` 多一个 `core`（推送不带 `by`；日志里 `by` 是内核、没有 `cause`），运行日志 `INFO pool member removed`、`WARN pool not removed` | 头和查问题的人分得清谁改的：人改 `set`、手改 `file`、核心自己清 `core` | 复用 `file`：头分不出人手改和核心自动清 |
+| 池那一格加 `problem`（照供应商那一家的写法），不加 `usable` 这类新字段 | 一种读法两处用 | 只加一个布尔：头看不到为什么用不了 |
+
 ### 要跟着改的别的页
 
 这一页不改它们，施工时各步照这里改：
@@ -1528,4 +1557,5 @@ mimo = ["xiaomi"]
 | 8-18（补）跟着改的几页 | 去掉思考强度的会话那一层：`protocol.md`（`session.configure` 改回只收 `model`、`subscribe`、`model.changed` 的 `effort.from`、`unknown_effort` 原因码去掉）、`kernel/events-bodies.md`（`session.policy_changed` 不再写 `effort`，旧日志照读）、`kernel/events.md`（`model.changed` 的 `effort.from`）、`kernel/session.md`（`Configure` 改回 `model: String`、`RunTurnStartHooks` 去掉 `efforts`）、`session/actor.md`（`ModelPort::turn` 去掉 `efforts` 参数）。8-18（补）都改了 | 8-18（补） |
 | 8-17 跟着改的几页 | 替看不了图的模型看图：`kernel/events.md`（种类表、24 种）、`kernel/events-bodies.md`（`image.described`）、样本 `image.described.jsonl`；`kernel/request.md`（`Request.described`、渲染表、「替它看的图」一段、`Assembler::describe`）；`kernel/session.md`（`Limits.blind`、`Describe`、`Described`、阶段 `Looking`、「替它看图」一节）；`drivers/openai-chat.md`（第 9 条、`DriverTexts`）；`session/actor.md`（端口的 `describe`、`Back::Described`）；`policy.md`、`store/resources.md`（快照的 `core.vision`、`core.drivers.image_description`，资源的五份）；`log.md`（`image not described`）；`26-提示词.md` 第十节登记五份、`prompts.md` 重新生成；请求形状探针多一张脸（`docs/designs/samples/probe/vision/`） | 8-17 |
 | 8-22 跟着改的几页 | 模型默认温度：`config.md`（清单、样本）、`protocol.md`（`model.list` 的 `facts.temperature`）、`drivers/openai-chat.md`、`drivers/anthropic.md`、`drivers/openai-responses.md`（`Call.temperature` 与各驱动抑制规则）。8-22 都改了 | 8-22 |
+| 8-23 跟着改的几页 | 下架的模型移出池：「协议」`model.list` 的池多 `problem`（`protocol.md`）、运行日志两行（`log.md`）、`config.md`（「协议」推送 `config.changed` 的 `via`、「怎么走」第五、六条、核心自己改几项的入口）。8-23 都改了 | 8-23 |
 | 终端界面、网页两个演示 | 合进 main 以后各发一条：开发端点改成 `xtask dev-home`，协议多的方法和推送 | 8-6、8-10 |

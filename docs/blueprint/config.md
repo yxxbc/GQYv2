@@ -34,7 +34,7 @@
 | `crates/gqy-store/src/journal.rs` | 系统日志、账号日志 `journal.jsonl`：每追加一条都重新打开、截半行、读最后一行接着数 `seq`、追加、同步 | 8-3 |
 | `crates/gqy-store/src/watch.rs` | 监视几份文件所在的目录（`notify`），照真实的位置和文件名认，只读的动静不理，一份 200 毫秒没有新的变动了才交出去；系统的监视起不来的退回轮询，交回原因 | 8-4 |
 | `crates/gqy-store/src/secrets.rs` | 密钥文件（8-5）：照配置文件的规矩读，另看组、别人读不读得到（`Stored::open`）；照配置文件的规矩写，Unix 上一律 0600，临时文件建的时候就是（`config_file::write_with` 的 `Mode::Private`、`durable::create_temp_with`） | 8-5 |
-| `crates/gqy-endpoint/src/config.rs`、`config/` | 配置服务：手里的几份文件、当前的最终值（8-2）；改、重读（8-3）；推送、推送的订阅（8-4）。它住在核心家底的一把锁里（`Core::config`）。`config/observe.rs` 监视看到手改、`config.set` 写之前的重读（8-4），`config/hub.rs` 换上新的一份交给会话、核心，推给订阅着的连接（8-4），`config/push.rs` 的 `config.changed`（8-4），`config/file.rs` 一份文件读好的样子（8-3 起连同字和 BOM），`config/project.rs` 往上找项目配置，`config/effort.rs` 模型的 `effort` 不在档位里的（8-18），`config/methods.rs` 三个查询，`config/set.rs` 的 `config.set`（8-3），`config/journal.rs` 留痕（8-3），`config/wire.rs` 协议上的写法 | 8-2 起 |
+| `crates/gqy-endpoint/src/config.rs`、`config/` | 配置服务：手里的几份文件、当前的最终值（8-2）；改、重读（8-3）；推送、推送的订阅（8-4）。它住在核心家底的一把锁里（`Core::config`）。`config/observe.rs` 监视看到手改、`config.set` 写之前的重读（8-4），`config/hub.rs` 换上新的一份交给会话、核心，推给订阅着的连接（8-4），`config/push.rs` 的 `config.changed`（8-4），`config/file.rs` 一份文件读好的样子（8-3 起连同字和 BOM），`config/project.rs` 往上找项目配置，`config/effort.rs` 模型的 `effort` 不在档位里的（8-18），`config/methods.rs` 三个查询，`config/set.rs` 的 `config.set`（8-3；核心自己改几项 `core_set` 施工 8-23 起也在这里），`config/journal.rs` 留痕（8-3），`config/wire.rs` 协议上的写法 | 8-2 起 |
 | `crates/gqy-endpoint/src/settings.rs` | 端点自己的两项：`ui.language`（8-1 声明，`language_for` 照它和系统的语言算出用哪种语言）、`permission.start_read_only`（8-2） | 8-1、8-2 |
 | `crates/gqy-endpoint/src/config/trust.rs`、`config/trusting.rs` | 项目配置的信任：读 `trust.toml`、照仓库和版本认信不信任（8-2），在字上记一个回答（`recorded`，8-3）；`trusting.rs` 是 `config.trust`（8-3） | 8-2、8-3 |
 | `crates/gqy-endpoint/src/secrets.rs`、`secrets/file.rs` | `secret.set`、`secret.delete`、`secret.list`，手改密钥文件被看到的（`observe`），留痕 `secret.changed`（8-5）。`secrets/file.rs` 是手里的那一份密钥文件（`SecretsFile`，住在配置服务里：`Config::secrets`），`Debug` 不印字 | 8-5 |
@@ -476,7 +476,7 @@ gqy_config::settings! {
 | 格 | 是什么 |
 |---|---|
 | `layer` | `system` 或 `personal`。项目配置不推：不监视，每一轮开始时读（第三条） |
-| `via` | `set` 经 `config.set` 改的，`edit` 经 `config.set` 整份换的，`file` 手改、核心看到文件变了 |
+| `via` | `set` 经 `config.set` 改的，`edit` 经 `config.set` 整份换的，`file` 手改、核心看到文件变了，`core` 核心自己改的（施工 8-23：下架的模型移出池；也不带 `by`） |
 | `by` | 谁改的，`via` 是 `set`、`edit` 才有。写法照 `kernel/ids.md`，`kind` 在最前 |
 | `version` | 这份文件现在的版本。文件被删了是 `null` |
 | `keys` | 这一层里变了的每一项，格同 `config.set` 的回应 |
@@ -701,10 +701,11 @@ gqy_config::settings! {
 10. 写不成（没有权限、磁盘满了、目录是只读的）：`internal_error`，什么都没变，记一条 `WARN config not written file=… error=…`。
 11. 两个头同时改同一项：带 `expect` 的后到的被拒，头照 `data.current` 告诉人现在的值。不带的后写的算（`gqy config set` 不带）。
 12. `trust.toml`、密钥文件照同样的规矩写（第三条第 3 条、第九条第 4 条）。
+13. 核心自己改几项（施工 8-23，`models.md`「怎么走」第十五条）走的也是这一段：重读、只改那几项、先写临时文件再替换、留痕、推送（`via` 是 `core`，推送不带 `by`）。值由核心算好、已经过了类型，不查 `expect`、不带文件行列的报错；写不成（文件读不进来、放不进去、一瞬间的手改撞满三次、磁盘写不进）不往上报（没有连接、没有人的语言），交回调的一方记一行 `WARN`（`models.md`「出错」那张表），配置文件照旧一个字节不动。
 
 **六、留痕**（8-3，G5 第 6 条）
 
-1. 改动落了盘，照「系统日志、账号日志」的写法追加一条：系统配置的进系统日志，个人设置的进账号日志。一次 `config.set` 一条，`changes` 里是这一层真变了的那几项。`config.trust` 记一条 `trust.changed`，进账号日志。
+1. 改动落了盘，照「系统日志、账号日志」的写法追加一条：系统配置的进系统日志，个人设置的进账号日志。一次 `config.set` 一条，`changes` 里是这一层真变了的那几项。`config.trust` 记一条 `trust.changed`，进账号日志。核心自己改的（施工 8-23：下架的模型移出池）也记一条：`via` 是 `core`，`by` 是内核，没有 `cause`，`changes` 是这一层真变了的那几项。
 2. 日志的写法（`gqy-store` 的 `journal.rs`）：打开时照会话日志的规矩截掉最后那半行（`store.md` 第 6 条），读最后一行拿 `seq`。追加一行、`sync_data`。每追加一条都重新打开一次：改配置是很少的事，不用在内存里留一个开着的文件，手改过的也认得（8-3）。最后一行完整、却读不懂的（手改坏了）不往后写，当写不进去。8-15 起写的不止配置服务（清回收处、一次性调用也写）：一个核心里照一把锁一条一条追加，两个同时读最后一行不会撞号。用量汇总从记下的字节往后读（`read_from`）。
 3. 先写配置，后写日志：配置文件是真相，日志是留痕。日志写不进去（坏了、磁盘满了），记一条 `WARN journal not written file=… error=…`，配置照改、照推送、照回应。
 4. 手改被看到的（8-4），照样记一条，`via` 是 `file`，`by` 是内核，没有 `cause`。只动了注释、空行的不记；项没变、问题变了的（改坏了、改好了）记一条，`changes` 是空的。核心没在跑时的手改看不到，不记。
@@ -1954,7 +1955,7 @@ Options:
 | `crates/gqy-config/src/edit/tests.rs` | 改一项、加一项（有表、没表、表里还没有键、只因为子表才有的、点号连着的、行内表）、删一项（表空了连表头删、在末尾的连前面的空行、有注释的留、行内表连逗号）、只动那一项（前后字节比）、换行照原文件、新文件第一行是 `#:schema`、改了再删回到原样、放不进去的报出来、`input` 和 JSON 的值照类型读 | 8-3 |
 | `crates/gqy-store/src/config_file/tests.rs` | 写（8-3）：顺着链接写、链接不动、绕圈报错、指向没有的新建。临时文件在本体旁边、崩在改名前原文件不变、改名前一瞬间有人手改了就放弃、不留临时文件。权限位留着。Windows 上开着的文件重试。BOM 记下、照样加回 | 8-3 |
 | `crates/gqy-store/src/journal/tests.rs`、`crates/gqy-endpoint/src/config/journal/tests.rs` | 截半行、`seq` 从 1 数起、接着别人的数、一行一条照事件的外壳（没有 `turn`，内核照不认识的种类留着）、最后一行坏了不往后写；`config.changed`、`trust.changed` 和样本逐字节一样，没有的 `old`、`new` 不写 | 8-3 |
-| `crates/gqy-endpoint/tests/config_set.rs` | `config.set` 每一种拒绝（参数不对、不认识的键、值不对、层不对、文件读不进来）。`expect` 对不上、没写的是 `{}`、整份换的版本对不上、新的字有错误、只有警告的照存。写之前发现手改过先重读，BOM、换行照新的字。一次几项全收或者全不收。没变的不写、不记，删一项不新建文件。回应的样子、之后握手照新的语言。日志记了一条，系统配置的进系统日志。写不成什么都没变。先见推送、后见回应在 `config_watch.rs` | 8-3 |
+| `crates/gqy-endpoint/tests/config_set.rs` | `config.set` 每一种拒绝（参数不对、不认识的键、值不对、层不对、文件读不进来）。`expect` 对不上、没写的是 `{}`、整份换的版本对不上、新的字有错误、只有警告的照存。写之前发现手改过先重读，BOM、换行照新的字。一次几项全收或者全不收。没变的不写、不记，删一项不新建文件。回应的样子、之后握手照新的语言。日志记了一条，系统配置的进系统日志。写不成什么都没变。先见推送、后见回应在 `config_watch.rs`。核心自己改几项（`core_set`，施工 8-23）走的也是这条路，行为测试在 `crates/gqy-endpoint/tests/models_delisted.rs`（`models.md`「守着它的」） | 8-3、8-23 |
 | `crates/gqy-store/src/watch/tests.rs` | 先写新文件再改名的存法认得出、删掉的认得出。合并：连着的几下交一次、静够了才交，隔开的另一次。别的文件名、别的目录里同名的、只读的动静不理，事件丢了的每一份都交一次。链接指向的目录也看，经链接给的目录交的是给的那个路径。照真实的位置比（macOS 的临时目录在 `/var` 下）。系统的监视起不来退回轮询（Linux 上拿还没有的目录让 inotify 拒绝），轮询也看得到 | 8-4 |
 | `crates/gqy-endpoint/tests/config_watch.rs` | 手改推 `config.changed`（`via: file`，不带 `by`，样子逐格比）、记账号日志（`by` 是内核、没有 `cause`）、换上。`config.set` 先见推送、后见回应，推的和回应的一样，核心自己写的不重推、不重记。改坏了推问题（`using` 是 `last_good`，项照上一次的）、改好了推空的。只动注释的不推（换上），字节一样的什么都不做（不换），删了这一层变空（`version` 是 `null`）。订阅不带会话、`after`，别的流、`events` 不带会话的 `bad_params`；取消订阅以后不推，再订阅照推。掉队推 `resync`、之后不推、回应一条不丢。改了 `ui.language`，连接下一句的拒绝、`config.schema` 照新的语言。手改 `trust.toml` 记 `trust.changed`（`via: file`）、`config.get` 照新的信任、不推。每一轮照那一刻的配置：项目配置改了内容不算、回合之间 `config.set` 的下一轮用上 | 8-4 |
 | `crates/gqy-endpoint/tests/config_watch_log.rs` | 运行日志：手改被看到的记 `INFO config changed layer=… via=file keys=…`；监视起不来记 `WARN config watch unavailable`、退回轮询照样推（Linux） | 8-4 |
@@ -2267,6 +2268,13 @@ Options:
 | 查法放在端点的配置服务（`config/effort.rs`，`Config::missing` 调它），档位照核心一份的模型资料算（核心起来时交给配置服务，`Core::with_model_data`）；纯的那一半在 `gqy_models::effort::unknown` | 档位要档案、目录，配置那一层没有；照 `bad_reference` 挂在同一处 | 合并时丢掉：目录一变，配置就跟着变 |
 | 目录读完以前、那一家用不了的不查 | 起来那一刻目录还没读，查了会把每一个都报成错；用不了的那一家推不出档案，开关算不出来 | 照手里的查：起来时多报一堆错 |
 | `providers.<id>.models.<model>.temperature` 是小数（`float [0, 2]`），系统和个人两层，`next_turn` 生效（8-22） | 0.0 到 2.0 覆盖主流大模型温度范围；与 `effort` 并在模型手写资料中 | 放在供应商层：不够细 |
+
+8-23 施工时照推荐定的配置这一半（2026-10-05 施工时定，写进了正文；模型那一半在 `models.md`「施工时定的」8-23）：
+
+| 定了什么 | 为什么 | 别的选法 |
+|---|---|---|
+| `config.changed` 的 `via` 多一个 `core`：核心自己改几项（下架的模型移出池）记的、推的都写它；推送不带 `by`（和 `file` 一样），日志里 `by` 是内核、没有 `cause` | 头和查问题的人分得清是谁改的：人改 `set`、手改 `file`、核心自己清 `core` | 复用 `file`：分不出人手改和核心自动清 |
+| 核心自己改几项的入口 `set.rs` 的 `core_set`：走和 `config.set` 同一条路（重读、只改那几项、先写临时文件再替换、留痕、推送），值由核心算好、不查 `expect`、不带文件行列的报错；写不成不往上报，交回调的一方记一行 `WARN` | 只有核心写配置（G4）；重读、替换、留痕这一段只写一遍 | 另写一套写盘：重读、替换、留痕的事写第二遍 |
 
 ### 要跟着改的别的页
 
