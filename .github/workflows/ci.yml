@@ -23,6 +23,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # zizmor artipacked：checkout 的凭据不留在 .git/config 里（和别的工作流一样）。
+          persist-credentials: false
       - name: 装上 rust-toolchain.toml 钉住的工具链
         run: rustup toolchain install
       - name: 门禁
@@ -35,6 +38,9 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # zizmor artipacked：checkout 的凭据不留在 .git/config 里（和别的工作流一样）。
+          persist-credentials: false
       - name: 装上 rust-toolchain.toml 钉住的工具链
         run: rustup toolchain install
       - name: 长跑
