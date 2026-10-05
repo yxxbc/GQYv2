@@ -11,6 +11,7 @@
 | 代码 | 管什么 |
 |---|---|
 | `crates/gqy/src/main.rs` | 子命令 `config`，八个子命令都换上 `config` 那一页帮助 |
+| `crates/gqy-cli/src/config/head.rs` | 不带子命令：判是不是终端、找旁边的 `gqy-tui`、带 `--page config` 拉起它、退出码（施工 8-24） |
 | `crates/gqy-cli/src/config.rs` | 参数（`Config`、`ConfigCommand`）、连核心以前就拦的参数不对（`early`：`set --project`、不在终端里的 `edit`）、连核心、握手、`get`、`explain`、`path`；`config_on` 在连上了的连接上办一次，要问人、开编辑器的经 `Console`，测试照它走 |
 | `crates/gqy-cli/src/config/set.rs` | `set`、`unset`：`config.set`，照回应说一行（施工 8-3） |
 | `crates/gqy-cli/src/config/edit.rs` | `edit`：副本、开编辑器、查、问、存（施工 8-3） |
@@ -26,6 +27,7 @@
 
 | 子命令 | 做什么 | 选项 |
 |---|---|---|
+| （不带子命令） | 在终端里时拉起终端界面、停在配置页；不在终端里时印帮助、退出码 2（施工 8-24） | — |
 | `get [键…]` | 印出最终值。只写一个键的只印值 | `--format text\|json` |
 | `check [文件]` | 检查配置有没有写错 | `--system`、`--project`、`--format text\|json` |
 | `explain <键>` | 这一项每一层写的什么、哪一个生效 | `--format text\|json` |
@@ -35,7 +37,7 @@
 | `edit` | 用编辑器打开，存盘时先检查（施工 8-3） | `--system`、`--project` |
 | `trust` | 看当前目录的项目配置会改什么，信任或者不信任它（施工 8-3） | `--yes`、`--no`（只能写一个） |
 
-- `--system`、`--project` 只能写一个。子命令不认的选项、少了子命令、`explain` 没写键：参数不对，退出码 2（`cli/main.md`「参数写错时」）。
+- `--system`、`--project` 只能写一个。子命令不认的选项、**不带子命令又不在终端里**、`explain` 没写键：参数不对，退出码 2（`cli/main.md`「参数写错时」）。
 - 用到的环境变量：`GQY_HOME`、`NO_COLOR`，`edit` 还有 `VISUAL`、`EDITOR`；界面语言照 `cli/main.md`。
 
 ### 怎么走
@@ -54,6 +56,14 @@
    - 有错误退出码 1，只有警告、没有问题的 0。
 7. **`path`**：`config.get`（`--project` 的带 `cwd`），照 `files` 里那一层的 `file` 换成真的位置，一行，文件还没有也印。不写 `--system`、`--project` 的是个人设置。`--project` 没找到项目配置的：从当前目录往上找有 `.git` 的那一层（仓库的根），没有的就是当前目录，印它下面的 `.gqy/config.toml`，标准错误上说「还没有这个文件」。
 8. **`set`、`unset`、`edit`、`trust`**（施工 8-3）：照 `config.md` 第十条第 4、5、6、11 条。印的那一行都在标准错误上，灰（标准错误是终端、`NO_COLOR` 没设才上色）；`trust` 列出会改哪几项在标准输出上。`set --project`、不在终端里的 `edit` 连核心以前就说一句，退出码 2：参数不对不拉起核心，没设 key 时也是 2。
+9. **不带子命令**（施工 8-24，2026-10-04 项目主人定）：
+   - **不在终端里**（标准输入或标准输出不是终端，被脚本调、接管道）：不拉起界面，照旧印帮助，退出码 2。连核心以前就判（和 `edit`、`trust` 不在终端里一样）。
+   - **在终端里**：拉起终端界面，带 `--page config`，让它在**这个终端里**起来、停在配置页；等到它退出，退出码照它的。
+   - **拉起谁**：这一步先找**主程序旁边的** `gqy-tui`（和 `gqy web` 找 `gqy-web` 同一个办法：`current_exe` 的真实位置那里，Windows 上加 `.exe`）。找不到的：说怎么装（各家的包名），退出码 1。
+     - 走清单找（`ui.head`、软件包发现）随 M9：那时候 `gqy`、`gqy config`、`gqy web` 三个入口一起改成照清单找（施工方案第二节「拆 M9 时另带四样」第 4 条）。
+   - **不做信号**（2026-10-04 定）：界面没开着时没人收；Windows 上没有这种信号；开着几个推给谁说不清。
+   - **界面的参数**：`--page config` 是终端界面自己认的（`tui.md`「全屏配置页」第 1 条：`gqy-tui config` 和 `gqy-tui --page config` 同一个意思）。这一步说 `--page config`：以后页名多了，`gqy config` 只认这一个。
+   - **不占终端不放**：界面是前台全屏程序，`status()` 等它退出是对的（和 `gqy web` 一样）；它退出以后 shell 接着用。
 
 ### 样子
 
@@ -62,9 +72,10 @@
 样本 `crates/gqy-cli/src/help/zh/config.txt`（帮助页，中文）：
 
 ```text
-用法：gqy config <命令> [选项]
+用法：gqy config [命令] [选项]
 
-看配置、改配置、信任项目配置。
+看配置、改配置、信任项目配置。不写命令时：在终端里拉起终端界面、
+停在配置页；不在终端里（被脚本调、接管道）印这一页。
 
 命令：
   get [键…]      印出最终的值，只写一个键时只印值
@@ -89,9 +100,11 @@
 样本 `crates/gqy-cli/src/help/en/config.txt`（帮助页，英文）：
 
 ```text
-Usage: gqy config <command> [options]
+Usage: gqy config [command] [options]
 
-See and change settings, and trust a project config.
+See and change settings, and trust a project config. With no command: in a
+terminal it opens the terminal UI on the settings page; otherwise (piped,
+run from a script) it prints this page.
 
 Commands:
   get [key…]           Print the values in effect, or just the value of one key

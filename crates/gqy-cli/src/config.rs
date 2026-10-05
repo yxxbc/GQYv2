@@ -13,6 +13,7 @@
 mod check;
 mod console;
 mod edit;
+mod head;
 mod paths;
 mod render;
 mod set;
@@ -44,9 +45,9 @@ use crate::shown::{self, say, write};
 /// `gqy config` 的参数。给人看的说明在帮助页里（[`crate::help`]），这里的注释只给读代码的人看。
 #[derive(Debug, Clone, Args)]
 pub struct Config {
-    /// 哪个子命令。
+    /// 哪个子命令；**不写**时：在终端里拉起终端界面、停在配置页（施工 8-24）。
     #[command(subcommand)]
-    pub command: ConfigCommand,
+    pub command: Option<ConfigCommand>,
 }
 
 /// 参数不对（`cli/main.md`「参数写错时」）：不在终端里的 `edit`、`trust`，`set --project`（施工 8-3）。
@@ -170,10 +171,23 @@ pub fn config(args: Config, start: impl FnOnce() -> Command) -> ExitCode {
 }
 
 /// 在运行时里：找数据根、连上核心、照子命令办。
+///
+/// 不带子命令的在最前面拦下（施工 8-24）：在终端里时拉起界面、不连核心；不在终端里时印帮助、
+/// 退出码 2。两者都不该去碰数据根、拉起核心。
 async fn run(args: Config, start: impl FnOnce() -> Command) -> u8 {
     let language = language::current();
+    let Some(command) = args.command else {
+        let main = std::env::current_exe().unwrap_or_else(|_| PathBuf::from("gqy"));
+        return head::head_on(
+            head::in_terminal(),
+            &main,
+            language,
+            &mut io::stdout(),
+            &mut io::stderr(),
+        );
+    };
     let mut console = Terminal::current();
-    if let Some(code) = early(&args.command, language, &console, &mut io::stderr()) {
+    if let Some(code) = early(&command, language, &console, &mut io::stderr()) {
         return code;
     }
     let env = Env::current();
@@ -192,7 +206,7 @@ async fn run(args: Config, start: impl FnOnce() -> Command) -> u8 {
         Err(reason) => return failed(&reason),
     };
     let plan = ConfigPlan {
-        command: args.command,
+        command,
         language,
         cwd: std::env::current_dir().unwrap_or_else(|_| PathBuf::from(".")),
         root: root.path().to_path_buf(),

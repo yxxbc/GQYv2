@@ -1,6 +1,8 @@
-Usage: gqy config <command> [options]
+Usage: gqy config [command] [options]
 
-See and change settings, and trust a project config.
+See and change settings, and trust a project config. With no command: in a
+terminal it opens the terminal UI on the settings page; otherwise (piped,
+run from a script) it prints this page.
 
 Commands:
   get [key…]           Print the values in effect, or just the value of one key
