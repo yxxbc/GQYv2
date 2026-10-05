@@ -1,4 +1,4 @@
-use serde_json::json;
+use std::path::Path;
 
 use super::{Package, allowed, judge, third_party};
 
@@ -74,26 +74,56 @@ fn each_bad_package_is_named_once_with_its_platforms() {
 
 #[test]
 fn only_third_party_packages_in_the_graph_are_looked_at() {
-    let metadata = json!({
-        "workspace_members": ["path+file:///repo#gqy@0.0.0"],
-        "resolve": {"nodes": [
-            {"id": "path+file:///repo#gqy@0.0.0"},
-            {"id": "registry+https://github.com/rust-lang/crates.io-index#serde@1.0.0"},
-        ]},
-        "packages": [
-            {"id": "path+file:///repo#gqy@0.0.0", "name": "gqy", "version": "0.0.0", "license": "GPL-3.0-or-later"},
-            {"id": "registry+https://github.com/rust-lang/crates.io-index#serde@1.0.0", "name": "serde", "version": "1.0.0", "license": "MIT OR Apache-2.0"},
-            {"id": "registry+https://github.com/rust-lang/crates.io-index#winapi@0.3.9", "name": "winapi", "version": "0.3.9", "license": "MIT/Apache-2.0"},
-            {"id": "registry+https://github.com/rust-lang/crates.io-index#nolicense@1.0.0", "name": "nolicense", "version": "1.0.0", "license": null},
-        ],
-    });
+    // `cargo tree --format "{p}|{l}"` 的输出：一行一个 `<名字> v<版本>|<license>`，工作区自己的带路径。
+    let tree = "\
+gqy v0.0.0 (/repo/crates/gqy)|GPL-3.0-or-later
+serde v1.0.0|MIT OR Apache-2.0
+winapi v0.3.9|MIT/Apache-2.0
+nolicense v1.0.0|
+serde v1.0.0|MIT OR Apache-2.0
+";
     assert_eq!(
-        third_party(&metadata),
-        [Package {
-            name: "serde".to_string(),
-            version: "1.0.0".to_string(),
-            license: Some("MIT OR Apache-2.0".to_string()),
-        }],
-        "工作区自己的不看；依赖图里没有的（别的平台才用的）不看"
+        third_party(tree, Path::new("/repo")),
+        [
+            Package {
+                name: "nolicense".to_string(),
+                version: "1.0.0".to_string(),
+                license: None,
+            },
+            Package {
+                name: "serde".to_string(),
+                version: "1.0.0".to_string(),
+                license: Some("MIT OR Apache-2.0".to_string()),
+            },
+            Package {
+                name: "winapi".to_string(),
+                version: "0.3.9".to_string(),
+                license: Some("MIT/Apache-2.0".to_string()),
+            },
+        ],
+        "工作区自己的不看（带路径的那种）；重复的只算一次；没写 license 的是空的"
+    );
+}
+
+/// `cargo tree` 走的是真的编进包里的那一圈：没启用的可选依赖（`ratatui` 的 `termwiz`、
+/// `termwiz` 的 `terminfo`）不在里面，许可证一项也就不该报它们。这个测试从施工
+/// 演示并进 2026-10-05 起有——当时 `cargo metadata` 的 resolve 图把 `terminfo`（WTFPL）列了进去，
+/// 门禁报了一条本来不存在的依赖。
+#[test]
+fn optional_dependencies_that_were_never_enabled_are_not_looked_at() {
+    let tree = "\
+gqy v0.0.0 (/repo/crates/gqy)|GPL-3.0-or-later
+ratatui v0.30.2|MIT
+ratatui-crossterm v0.1.2|MIT
+crossterm v0.29.0|MIT
+";
+    let names: Vec<String> = third_party(tree, Path::new("/repo"))
+        .into_iter()
+        .map(|p| p.name)
+        .collect();
+    assert!(names.contains(&"ratatui".to_string()), "{names:?}");
+    assert!(
+        !names.contains(&"termwiz".to_string()) && !names.contains(&"terminfo".to_string()),
+        "没启用的可选依赖不该出现：{names:?}"
     );
 }

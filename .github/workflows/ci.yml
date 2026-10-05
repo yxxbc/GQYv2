@@ -1,5 +1,5 @@
 # 三平台 CI：每台机器跑 cargo xtask check，和本地验收是同一条命令；另有一项长跑，只在 Linux 上。
-# 为什么这样定，见 docs/construction/0-3-三平台CI.md。
+# 为什么这样定，见 docs/construction/0-3-三平台CI.md；缓存那两步是施工 演示并进 加的，见它的施工单。
 name: CI
 
 on:
@@ -10,11 +10,15 @@ on:
 permissions:
   contents: read
 
-# 每项最多跑 30 分钟：现在三分钟上下。测试卡住时（例如会话 actor 的测试等一个不会来的回应），
-# 不白等 GitHub 默认的六个小时（施工 3-7 中）。
+# 每项最多跑 60 分钟。这个数管的是「卡住」：测试卡死时（例如会话 actor 等一个不会来的
+# 回应）不白等 GitHub 默认的六个小时（施工 3-7 中）。
+# 为什么从 30 改成 60（施工 演示并进，带实测）：并进前这两个 job 就已经跑 28 分半
+# （main run 37300306391：Windows check 28m33s、长跑 28m47s），贴着 30 分钟的上限；
+# 加上 `gqy-tui` 带的重依赖（`resvg`、`ratex`、`image`）就装不下了——先卡在「冷编+存缓存」
+# 装不下、缓存存不上就永远冷编。这个数本来就不是用来限编译时间的，放宽不影响它防卡死。
 jobs:
   check:
-    timeout-minutes: 30
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -28,13 +32,17 @@ jobs:
           persist-credentials: false
       - name: 装上 rust-toolchain.toml 钉住的工具链
         run: rustup toolchain install
+      # 编译产物的缓存（施工 演示并进）。
+      # 键里自带 job 和操作系统，所以三个平台、长短跑之间天然分开，不用另写 shared-key。
+      # 只缓存 `~/.cargo` 的 registry 和仓库的 `target/`，密钥、数据根一概不碰。
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: 门禁
         run: cargo xtask check
 
   # 长跑：随机测试接着平时的往后跑两万例（照 niri 的 randomized-tests，施工 2-10）。平时的
   # cargo test 和本地门禁跳过这几个 #[ignore] 的测试；纯逻辑不碰平台，只在 Linux 上、release 模式跑。
   randomized:
-    timeout-minutes: 30
+    timeout-minutes: 60
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -43,5 +51,6 @@ jobs:
           persist-credentials: false
       - name: 装上 rust-toolchain.toml 钉住的工具链
         run: rustup toolchain install
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
       - name: 长跑
         run: cargo test --release --workspace -- --ignored

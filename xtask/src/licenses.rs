@@ -5,8 +5,6 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 use std::process::Command;
 
-use serde_json::Value;
-
 /// 发布的四个平台（`docs/designs/12-进程形态与分发.md` R11）。
 pub const PLATFORMS: [&str; 4] = [
     "x86_64-unknown-linux-gnu",
@@ -51,7 +49,7 @@ pub fn check(root: &Path, cargo: &str) -> Vec<String> {
     for platform in PLATFORMS {
         match packages(root, cargo, platform) {
             Ok(list) => found.extend(list.into_iter().map(|package| (package, platform))),
-            Err(e) => problems.push(format!("跑不了 cargo metadata（{platform}）：{e}")),
+            Err(e) => problems.push(format!("跑不了 cargo tree（{platform}）：{e}")),
         }
     }
     problems.extend(judge(&found));
@@ -80,10 +78,24 @@ pub(crate) fn judge(found: &[(Package, &str)]) -> Vec<String> {
 }
 
 /// 一个平台上用得到的第三方包。
+///
+/// 用 `cargo tree` 而不是 `cargo metadata`：`cargo tree` 走的是**真的编进包里的**依赖（照 feature、
+/// 可选依赖、目标平台都算过），而 `cargo metadata` 的 resolve 图会把**没启用的可选依赖**也算上、
+/// 还标成普通依赖，许可证一项会因此报本来不存在的依赖（`licenses.md`「怎么走」第 1 条）。
 fn packages(root: &Path, cargo: &str, platform: &str) -> Result<Vec<Package>, String> {
+    // `--locked` 跟原来一样：锁文件对不上就报错、不自己改。cargo tree 是顶层选项，要写在子命令前面。
     let output = Command::new(cargo)
-        .args(["metadata", "--format-version", "1", "--locked"])
-        .args(["--filter-platform", platform])
+        .args([
+            "--locked",
+            "tree",
+            "--edges",
+            "normal",
+            "--prefix",
+            "none",
+            "--no-dedupe",
+        ])
+        .args(["--format", "{p}|{l}"])
+        .args(["--target", platform])
         .current_dir(root)
         .output()
         .map_err(|e| e.to_string())?;
@@ -91,42 +103,40 @@ fn packages(root: &Path, cargo: &str, platform: &str) -> Result<Vec<Package>, St
         let said = String::from_utf8_lossy(&output.stderr);
         return Err(said.lines().next().unwrap_or_default().to_string());
     }
-    let json: Value = serde_json::from_slice(&output.stdout).map_err(|e| e.to_string())?;
-    Ok(third_party(&json))
+    let text = String::from_utf8_lossy(&output.stdout);
+    Ok(third_party(&text, root))
 }
 
-/// 从 `cargo metadata` 的输出里取：依赖图里用得到的包，去掉工作区自己的。
-pub(crate) fn third_party(json: &Value) -> Vec<Package> {
-    let strings = |value: &Value| -> BTreeSet<String> {
-        value
-            .as_array()
-            .into_iter()
-            .flatten()
-            .filter_map(|item| item.as_str().map(str::to_string))
-            .collect()
-    };
-    let members = strings(&json["workspace_members"]);
-    let used: BTreeSet<String> = json["resolve"]["nodes"]
-        .as_array()
-        .into_iter()
-        .flatten()
-        .filter_map(|node| node["id"].as_str().map(str::to_string))
-        .collect();
-    json["packages"]
-        .as_array()
-        .into_iter()
-        .flatten()
-        .filter(|package| {
-            package["id"]
-                .as_str()
-                .is_some_and(|id| used.contains(id) && !members.contains(id))
-        })
-        .map(|package| Package {
-            name: package["name"].as_str().unwrap_or_default().to_string(),
-            version: package["version"].as_str().unwrap_or_default().to_string(),
-            license: package["license"].as_str().map(str::to_string),
-        })
-        .collect()
+/// 从 `cargo tree --format "{p}|{l}"` 的输出里取第三方包：一行一个 `<名字> v<版本>|<license>`，
+/// 工作区自己的（路径形式的 `gqy v0.0.0 (/…/crates/gqy)`）不看，重复的只算一次。
+///
+/// 形状是 cargo 自己的输出（`p` 是包、`l` 是 license），要跟着 cargo 的版本看：升级 cargo 时
+/// 这一项会当场红（门禁自己跑得到），不会默默放过。
+pub(crate) fn third_party(text: &str, root: &Path) -> Vec<Package> {
+    let mut out: BTreeMap<String, Package> = BTreeMap::new();
+    for line in text.lines() {
+        let Some((left, license)) = line.split_once('|') else {
+            continue;
+        };
+        // 工作区自己的写成 `gqy v0.0.0 (/路径)`：路径形式的不算第三方。
+        if left.contains(" (") {
+            continue;
+        }
+        let Some((name, version)) = left.trim().rsplit_once(" v") else {
+            continue;
+        };
+        let name = name.trim().to_string();
+        let license = license.trim();
+        out.entry(format!("{name} {version}"))
+            .or_insert_with(|| Package {
+                name,
+                version: version.to_string(),
+                license: (!license.is_empty()).then(|| license.to_string()),
+            });
+    }
+    // 同一个工作区里没有的事：这里只保证形状；`root` 只为报错时能说清在哪个仓库。
+    let _ = root;
+    out.into_values().collect()
 }
 
 /// 一个 SPDX 表达式能不能用：`OR` 有一个能用就行（老写法的 `/` 也是 `OR`），`AND` 每个都要能用，括号照括号，

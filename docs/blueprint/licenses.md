@@ -27,7 +27,8 @@ GPL-3.0-or-later，见 `LICENSE`。
 
 ### 怎么走：门禁的「许可证」
 
-1. 对发布的四个平台各跑一次 `cargo metadata --format-version 1 --locked --filter-platform <平台>`：`x86_64-unknown-linux-gnu`、`aarch64-unknown-linux-gnu`、`aarch64-apple-darwin`、`x86_64-pc-windows-msvc`（`12-进程形态与分发.md` R11）。取依赖图里用得到的包，去掉工作区自己的。
+1. 对发布的四个平台各跑一次 `cargo tree --edges normal --prefix none --no-dedupe --format "{p}|{l}" --target <平台>`：`x86_64-unknown-linux-gnu`、`aarch64-unknown-linux-gnu`、`aarch64-apple-darwin`、`x86_64-pc-windows-msvc`（`12-进程形态与分发.md` R11）。`cargo tree` 给的是**真的编进包里的**那一圈，去掉工作区自己的，剩下的就是要查的包。
+   - 不能用 `cargo metadata` 的 resolve 图：那张图会把**没启用的可选依赖**也列进去，而且标成普通依赖（`ratatui` 的 `termwiz`、`termwiz` 的 `terminfo` 就是这样进去的），许可证一项会因此报一条本来不存在的依赖（施工 演示并进 2026-10-05 撞见）。
 2. 每个包读它的 `license`，照 SPDX 表达式算：
    - `OR` 连着的，有一个能用就行；老写法里的 `/` 也当 `OR`。
    - `AND` 连着的，每个都要能用。
