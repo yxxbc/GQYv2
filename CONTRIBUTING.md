@@ -1,8 +1,9 @@
 # 贡献规范
 <!-- GitHub Copilot; updated 2026-09-27T22:46:09Z -->
-<!-- 更新：AI 助手（Cline 会话），2026-09-29 00:22:26 —— 补 CI 作业列表与必需检查管理员清单，修正供应链审查的过时说明（P00-06）。 -->
+<!-- 更新：AI 助手（Cline 会话），2026-09-29 00:22:26 —— 补 CI 作业列表与必需检查管理员清单，修正供应链审查的过时说明。 -->
+<!-- 更新：AI 助手（Cline 会话），2026-10-05 —— 对齐现状：三平台各跑 `cargo xtask check` + Linux 长跑、分支跑绿后快进合 main（施工方案第一节）；删掉已经不存在的 `scripts/ci-*.sh`、`deny.toml`、worktree 同步脚本那一套；许可证改成 GPL-3.0-or-later。 -->
 
-所有合并到主分支的变更都必须通过 `pr-standards`、`workflow-security` 与 CI 的六个作业（见「CI 检查」）等检查。仓库管理员必须在 GitHub 分支保护规则中将这些检查设为必需状态检查，并禁止绕过检查的直接推送；仅添加工作流而不启用必需检查，不构成强制门槛。公开仓库还应将 `dependency-review` 设为必需检查；私有仓库需先启用 GitHub Advanced Security 才能使用该检查。管理员还必须保护 `v*` 版本 tag，禁止更新和删除已发布 tag。
+这个仓库按 `docs/construction/README.md`（施工方案）干活：一步一张施工单，改动在 `step/<编号>-<名字>` 分支上做，CI（`.github/workflows/ci.yml`）在 Linux、macOS、Windows 上各跑一遍 `cargo xtask check`，另有一项 Linux 长跑（随机测试两万例）；全绿再快进合进 `main`。真开的 PR（发布 PR、依赖更新）另过 `pr-standards` 与 `workflow-security` 两道检查。`v*` 版本 tag 由 GitHub 规则保护，禁止更新和删除已发布 tag。
 
 ## Commit 与 PR 标题
 
@@ -39,37 +40,18 @@ bash scripts/install-hooks.sh
 
 此后每次提交都会自动校验提交标题；不符合格式时，Git 会拒绝该次提交。该配置是本地 clone 级别的设置，每个开发者需各自启用。提交体量、PR 标题、提交范围和变更日志由 GitHub Actions 检查。
 
-### 同步本地 worktree
-
-云端 PR 合并到 `main` 后，在仓库任一 worktree 运行：
-
-```sh
-bash scripts/sync-worktrees.sh
-bash scripts/sync-worktrees.sh --apply
-```
-
-第一条命令 fetch `origin` 并报告所有 worktree 的落后、分叉和脏状态，不改本地分支。第二条只会快进干净的 `main`，或 rebase 干净且没有非 main upstream、也没有同名远端分支的本地分支到 `origin/main`。有未提交/未跟踪文件、已配置其他 upstream、upstream 已删除、存在同名远端分支或处于 detached HEAD 的 worktree 会跳过。遇到真实冲突时脚本会 abort 当前 rebase、停止后续同步并返回失败；之前已成功更新的 worktree 不会回滚。
-
-脚本不会删除 worktree、推送分支或 force-push。已发布的 PR 分支需要单独处理历史改写；此脚本不能保证不同分支修改同一文件时绝不冲突。
-
 ## CI 检查
 
-每个 PR 与 `main` 推送运行 `.github/workflows/ci.yml`（P00-06），作业与本地命令一一对应：
+推 `main`（或任何 `step/**` 分支）都会跑 `.github/workflows/ci.yml`，本地跟 CI 是同一条命令：
 
 | 作业 | 内容 | 本地复现 |
 | --- | --- | --- |
-| `checks` | 格式、clippy、层序、体积 | `bash scripts/ci-checks.sh` |
-| `test-linux` / `test-macos` | 全量测试（单元 + 集成 + doc）与计数门禁 | `bash scripts/ci-test.sh` |
-| `test-windows` | 编译 + 单元测试（Git Bash） | `bash scripts/ci-test.sh --unit` |
-| `docs` | rustdoc 文档门禁 | `bash scripts/ci-docs.sh` |
-| `supply-chain` | `cargo deny check`（许可证、重复版本、禁用源、advisories，配置见 `deny.toml`） | `cargo deny check` |
+| `check`（ubuntu-24.04 / macos-latest / windows-latest） | 三台机器各跑一遍门禁：格式、clippy、文档、分层、纯逻辑、行数、许可证、测试 | `cargo xtask check` |
+| `randomized`（ubuntu-24.04，release） | 长跑：随机测试接着平时的往后跑两万例（平时的门禁跳过标 `#[ignore]` 的这几个） | `cargo test --release --workspace -- --ignored` |
 
-测试作业会把 `target/gqy-test-report/` 作为构件上传（保留 14 天），并把 `report.md` 写入作业摘要。工作流顶层 `permissions: {}`，各作业只授予 `contents: read`；第三方 Action 固定到完整 commit SHA。
+为什么是三台机器各跑一遍：`docs/construction/0-3-三平台CI.md`。工作流顶层 `permissions: {}`，两个作业只授予 `contents: read`；checkout 不把凭据留在 `.git/config`（`persist-credentials: false`），第三方 Action 固定到完整 commit SHA。
 
-管理员配置（P00-06 合入后执行）：
-
-- 必需状态检查：`pr-standards`、`workflow-security`、`checks`、`test-linux`、`test-macos`、`test-windows`、`docs`、`supply-chain`（`dependency-review` 可用时同样设为必需）；
-- 分支保护：确保禁止直接推送 `main`；`v*` tag 禁止更新与删除。
+管理员可把这些检查配成必需（现在没配：`main` 的现行流程是分支跑绿后快进推上去，见施工方案第一节）；`v*` tag 的规则（禁止更新与删除）已经配着。工作流文件不能代替这些设置。
 
 ## 版本号与发布节奏
 
@@ -91,9 +73,9 @@ bash scripts/sync-worktrees.sh --apply
 
 ### 自动发布
 
-Release Please 根据 Conventional Commits 汇总发布 PR，并同步更新 `version.txt`、`Cargo.toml` 的 `[workspace.package].version`、`CHANGELOG.md` 和 `.release-please-manifest.json`；合并发布 PR 后会创建 `vX.Y.Z` tag 和 GitHub Release notes。初始版本为 `0.1.0`，类别映射见 `release-please-config.json`。版本一致性由 `scripts/check-version-consistency.sh` 校验。
+Release Please 根据 Conventional Commits 汇总发布 PR，并同步更新 `version.txt`、`Cargo.toml` 的 `[workspace.package].version`、`CHANGELOG.md` 和 `.release-please-manifest.json`；合并发布 PR 后会创建 `vX.Y.Z` tag 和 GitHub Release notes。类别映射见 `release-please-config.json`；这条链路没有门禁守（改的时候自己对一遍三处，见 `docs/release-versioning.md`）。
 
-**M1（P05 末）之前不合并发布 PR**：发布 PR 的出现不等于发布，合并才会创建 tag 与 Release；冻结规则与 2026-09-28 的回退记录见 `docs/release-versioning.md`。
+**发布 PR 的出现不等于发布**：合并它才会创建 tag 与 Release；合不合由项目主人定（发布冻结的来历与 2026-09-28 的回退记录见 `docs/release-versioning.md`）。
 
 为使发布机器人 PR 也触发必需检查，仓库管理员需创建只授权本仓库 `contents`、`issues`、`pull requests` 读写权限的 fine-grained token，并将其保存为 Actions secret `RELEASE_PLEASE_TOKEN`。同时在 Settings → Actions → General 允许 GitHub Actions 创建 pull request。不要将 token 写入文件或日志。
 
@@ -101,24 +83,21 @@ Release Please 根据 Conventional Commits 汇总发布 PR，并同步更新 `ve
 
 - Dependabot 每周检查 GitHub Actions 依赖，并将这些自动更新 PR 标记为 `skip-changelog`。请确认仓库存在 `dependencies` 与 `skip-changelog` 标签；依赖更新若有用户可见影响，维护者应移除豁免并补充 changelog。
 - `workflow-security` 使用 zizmor 审查 GitHub Actions 工作流；中等级及以上发现会阻止该检查通过。
-- `dependency-review` 在 PR 中阻止引入高危及以上漏洞依赖。仓库 `LICENSE` 尚未确定，当前也未配置依赖许可证允许/禁止清单，因此许可证兼容性还不是硬门禁；在引入外部依赖前必须确定策略并配置检查。该功能适用于公开仓库；私有仓库需要 GitHub Advanced Security 和启用 Dependency graph。
-- 私有仓库启用 GHAS 后，还需设置仓库 Actions variable `DEPENDENCY_REVIEW_ENABLED=true` 才会运行 `dependency-review`。
-- 仓库管理员应将 `pr-standards`、`workflow-security` 设为必需检查；在 Dependency Review 可用时也将 `dependency-review` 设为必需。另需在 GitHub 仓库设置启用 Dependency graph、Dependabot alerts、secret scanning、私有漏洞报告和分支保护，并为 `v*` tag 配置禁止更新与删除的规则；工作流文件不能代替这些设置。
-- Rust 供应链检查已接入：`supply-chain` 作业运行 `cargo deny check`（许可证、重复版本、禁用源、advisories，配置见 `deny.toml`）。Cargo 清单与 lockfile 已入库（P00-05）；Dependabot 的 Cargo ecosystem 待按 `.github/dependabot.yml` 注释加入。
+- `dependency-review` 在 PR 中阻止引入高危及以上漏洞依赖（公开仓库可用；私有仓库要先开 GitHub Advanced Security 和 Dependency graph，并设 Actions variable `DEPENDENCY_REVIEW_ENABLED=true`）。
+- 许可证兼容不是 `dependency-review` 管的：本仓库是 GPL-3.0-or-later，引入依赖之前先看它的许可证能不能和本仓库合在一起发——门禁的「许可证」一项查，规矩和名单见蓝图 `docs/blueprint/licenses.md`。
+- 管理员可把 `pr-standards`、`workflow-security` 设为必需检查（现在没配，见「CI 检查」那一节），`v*` tag 的规则（禁止更新与删除）已经配着。工作流文件不能代替这些设置。
 
 ## Changelog
 
-项目遵循 Keep a Changelog 的结构和语义化版本原则：
+发布说明由 Release Please 按提交类型自动生成（`feat` → Added、`fix` → Fixed，`docs`/`ci`/`chore` 这类隐藏；见 `release-please-config.json`）；已发布的版本节不改写。
 
-- 每个有面向用户影响的 PR 都必须在 `CHANGELOG.md` 的 `## [Unreleased]` 下新增条目。
-- 条目按 `Added`、`Changed`、`Deprecated`、`Removed`、`Fixed`、`Security` 分类；每条内容以 `- ` 开始，说明用户能感知的变化。
-- 不在日常 PR 中改写已发布版本的记录。发布时再将 `Unreleased` 内容归入版本号和 `YYYY-MM-DD` 日期标题。
-- 仅文档、测试或内部维护且不改变用户可见行为的 PR，可由维护者添加 `skip-changelog` 标签豁免；有用户影响的变更不得使用该标签。
+- 直接推 `main` 的提交不强制改 `CHANGELOG.md`：合发布 PR 时机器人按提交生成。
+- 走 PR 的（发布 PR、依赖更新、别人提的 PR）由 `pr-standards` 检查有没有 `CHANGELOG.md` 的改动与 `## [Unreleased]` 标题、其下有没有分类条目；纯文档/内部维护的 PR 由维护者加 `skip-changelog` 标签豁免（有用户影响的变更不得用这个标签）。
+- 标签只跳过 changelog 的要求，不跳过提交标题检查。
 
-工作流会验证 changelog 是否修改、是否有 `Unreleased` 标题，以及其下是否至少有一个分类条目。标签豁免只跳过 changelog 要求，不跳过提交标题检查。
 ## 贡献的授权
 
-本项目的源代码采用 [PolyForm Noncommercial 1.0.0](LICENSE) 协议；角色与品牌素材另按 [LICENSE-ASSETS](LICENSE-ASSETS) 授权。提交 PR 即表示你同意：
+本项目的源代码采用 [GPL-3.0-or-later](LICENSE) 协议；角色与品牌素材另按 [LICENSE-ASSETS](LICENSE-ASSETS) 授权。提交 PR 即表示你同意：
 
 1. 你有权提交这些内容：它们是你自己写的，或者来源的协议允许这样使用。
 2. 你的贡献按本项目的协议发布。

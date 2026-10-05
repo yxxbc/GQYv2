@@ -1,6 +1,6 @@
 # GQY v2 版本与发布流程
 
-本文档说明 GQY v2 当前仓库级版本号和 GitHub 发布流程。仓库现在有一个 Cargo workspace（P00-01），但还没有应用更新器或跨平台制品构建流程；不要照搬其他项目的包版本、平台渠道或资产发布步骤。
+本文档说明 GQY v2 当前仓库级版本号和 GitHub 发布流程。仓库现在有一个 Cargo workspace，但还没有应用更新器或跨平台制品构建流程；不要照搬其他项目的包版本、平台渠道或资产发布步骤。
 
 ## 当前版本来源
 
@@ -18,7 +18,7 @@ Release Please 以仓库根目录为单一发布单元，使用 `simple` release
 
 ### 为什么不是 `rust` release type（2026-09-28 实测）
 
-`release-please` 的 `rust` 策略会更新每个成员与根 `Cargo.toml` 的 `[package] version` 并写 `Cargo.lock`；但本仓库是**虚拟 workspace**（根 `Cargo.toml` 没有 `[package]`，版本在 `[workspace.package]`），它的 `CargoToml` updater 对没有 `[package]` 的清单会直接抛错（`is not a package manifest (might be a cargo workspace)`，release-please 17.11.2 实测）；成员清单用 `version.workspace = true` 时同样会因 `package.version` 不是字面量而抛错。因此维持 `simple` + `extra-files` 的 toml 更新器（实测格式与注释保留）。跨文件的一致性由 `scripts/check-version-consistency.sh` 守护，接入 CI 见 P00-06。
+`release-please` 的 `rust` 策略会更新每个成员与根 `Cargo.toml` 的 `[package] version` 并写 `Cargo.lock`；但本仓库是**虚拟 workspace**（根 `Cargo.toml` 没有 `[package]`，版本在 `[workspace.package]`），它的 `CargoToml` updater 对没有 `[package]` 的清单会直接抛错（`is not a package manifest (might be a cargo workspace)`，release-please 17.11.2 实测）；成员清单用 `version.workspace = true` 时同样会因 `package.version` 不是字面量而抛错。因此维持 `simple` + `extra-files` 的 toml 更新器（实测格式与注释保留）。跨文件的一致性**没有门禁守**（2026-10-05 项目主人定：那个只在文档里许过愿、一直没接进 CI 的 `scripts/check-version-consistency.sh` 已删）：改这条链路（`release-please-config.json` 的 `extra-files`、`version.txt`、`.release-please-manifest.json`）时自己把三处对齐一遍，合并发布 PR 前看一眼。
 
 ## 发布冻结（M1 之前）
 
@@ -75,13 +75,13 @@ GQY v2 目前处于 `0.x` 阶段，发布规则与 `release-please-config.json` 
 1. 创建仅授权此仓库 `contents`、`issues`、`pull requests` 读写的 fine-grained token。
 2. 将 token 保存为 GitHub Actions secret `RELEASE_PLEASE_TOKEN`。不要将 token 写进仓库文件、命令行参数或日志。
 3. 在 Settings → Actions → General 允许 GitHub Actions 创建 pull request。
-4. 配置分支保护，要求 `pr-standards` 和 `workflow-security` 通过；公开仓库还要求 `dependency-review`。私有仓库需启用 GitHub Advanced Security，并设置 Actions variable `DEPENDENCY_REVIEW_ENABLED=true` 才会运行该检查。
+4. （想让它成硬门槛的话）给 `main` 配分支保护、把 `pr-standards`、`workflow-security` 设为必需检查；公开仓库还看 `dependency-review`（私有仓库要先开 GitHub Advanced Security、设 Actions variable `DEPENDENCY_REVIEW_ENABLED=true` 才会跑）。**现在没配**：`main` 的现行流程是「分支上 CI 跑绿、快进推上去」（施工方案第一节），不走 PR，所以这几项只对真开的 PR（发布 PR、依赖更新）起作用。
 
 没有 `RELEASE_PLEASE_TOKEN` 时，发布工作流会明确失败，不会回退到无法触发后续 PR 检查的默认 token。Release Please 只在存在可发布的 Conventional Commit 变更时创建发布 PR；只有被隐藏的提交类型时，不会单独发布版本。
 
 ## 当前不包含的发布能力
 
-- 有 Cargo workspace 与 `Cargo.lock`（版本由发布 PR 与下一次 `cargo` 命令同步）；仍没有 `cargo audit`、`cargo deny` 门禁与 Rust 构建发布步骤（P16）。
+- 有 Cargo workspace 与 `Cargo.lock`（版本由发布 PR 与下一次 `cargo` 命令同步）；仍没有 `cargo audit`、`cargo deny` 门禁与制品构建步骤（打包那一步随发行，施工方案第三节里 W-11 现在暂停着）。
 - 当前没有桌面/移动端、CLI 更新器、跨平台打包或自定义 GitHub Release 附件。
 - 当前没有稳定/预发布更新通道，也没有按日期命名的开发版。
 
