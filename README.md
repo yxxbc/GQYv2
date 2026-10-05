@@ -69,7 +69,7 @@ GQY v2 是对 [gqy-agent（v1）](https://github.com/yxxbc/gqy-agent) 的一次�
 | --- | --- |
 | [技术白皮书](docs/GQYv2-Technical-Whitepaper.md) | 项目的来龙去脉和整体思路 |
 | [设计文档](docs/designs/00-设计理念.md) | 从 `00-设计理念.md` 开始，按编号阅读 |
-| [施工方案](docs/construction/00-施工总纲.md) | 阶段、里程碑和每一步的施工单 |
+| [施工方案](docs/construction/README.md) | 施工的规矩、总工程表、每一步的施工单 |
 | [技术栈](docs/tech-stack.md) | 语言与技术选型 |
 | [版本与发布](docs/release-versioning.md) | 版本号规则与发布流程 |
 
