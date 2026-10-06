@@ -1,0 +1,432 @@
+{
+  "status": {
+    "online": "在线",
+    "connecting": "连接中",
+    "offline": "离线"
+  },
+  "sidebar": {
+    "new_session": "新会话",
+    "collapse": "收起侧栏",
+    "expand": "展开侧栏",
+    "menu": "会话操作",
+    "theme_to_light": "换成浅色",
+    "theme_to_dark": "换成深色",
+    "untitled": "新会话",
+    "sessions": "会话",
+    "copy_id": "复制会话编号",
+    "rename": "重命名",
+    "delete": "删除",
+    "not_yet": "{name}：核心还没有这个命令",
+    "select": "多选",
+    "select_all": "全选",
+    "selected": "已选 {count} 个",
+    "bulk_failed": "{count} 个没删：{reason}",
+    "select_exit": "退出多选",
+    "fold": "收起子代理",
+    "unfold": "展开子代理",
+    "done_kids": "已完成 {count} 个",
+    "kids": "({count})",
+    "view_all": "查看全部",
+    "all_sessions": "查看全部会话",
+    "paused": "已打断，等你说话",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "pinned": "置顶"
+  },
+  "crumbs": {
+    "label": "子代理的会话在哪",
+    "back": "返回",
+    "back_to": "回到「{title}」"
+  },
+  "placeholder": "给 {name} 发消息",
+  "send": "发送",
+  "esc_clear_hint": "再按一次 Esc 清空",
+  "cleared": "已清空 · ↑ 找回",
+  "done": "{time} · {endpoint}/{model} · {elapsed}",
+  "done_usage": " · {tokens}(C{percent}%)",
+  "interrupted": "已中断",
+  "failed": "出错了：{message}",
+  "error_classes": {
+    "retryable": "暂时出错",
+    "rate_limited": "被限速了",
+    "context_too_long": "上下文太长",
+    "auth": "认证失败",
+    "content_policy": "被内容策略拦下了",
+    "bad_stream": "回复的流不对",
+    "empty_reply": "回复是空的",
+    "bad_summary": "取不出摘要",
+    "compaction_paused": "自动压缩暂停着",
+    "no_model": "没配好模型",
+    "other": "模型出错",
+    "cooling": "候选全在冷却"
+  },
+  "levels": {
+    "workspace": "工作区",
+    "full": "开放权限",
+    "read_only": "只读"
+  },
+  "speed": "{rate} tok/s",
+  "context": "{used}/{window}({percent}%)",
+  "total": "Σ{tokens}(C{percent}%)",
+  "refused": "被拒绝了：{message}",
+  "payload_busy": "附件还在传，传完再发",
+  "no_bridge": "连不上核心：看 gqy-web 印出来的报错",
+  "boot": {
+    "connecting": "正在连核心…",
+    "title": "连不上核心",
+    "down_why": "网页软件没在跑，或者连不上核心。",
+    "down_how": "回到终端敲 gqy web，再打开它打出来的链接。",
+    "core_how": "看起 gqy-web 的那个终端里的报错。"
+  },
+  "level_tip": "点一下换权限级别：工作区 → 开放权限 → 只读",
+  "copied": "已复制 {count} 个字",
+  "copy_failed": "复制失败：{reason}",
+  "reason_with": "{head}：{message}",
+  "list_sep": "、",
+  "timeline": {
+    "thinking": "正在思考",
+    "thought": "已思考",
+    "prepare": {
+      "command": "准备执行",
+      "edit": "准备编辑",
+      "tool": "准备工具"
+    },
+    "args": "参数",
+    "result": "结果",
+    "prompt": "提示词",
+    "to": "发给",
+    "message": "消息",
+    "parent": "父会话",
+    "message_subject": "{to}",
+    "message_to": "{job} · {title}",
+    "message_session": "会话 {id}",
+    "peek_sep": "·",
+    "agent_subject": "{job} · {title}",
+    "agent_pending": "{title}",
+    "created": "新建",
+    "changed": "修改",
+    "summary": {
+      "ran": [
+        "执行了 1 条命令",
+        "执行了 {count} 条命令"
+      ],
+      "used": [
+        "用了 1 个工具",
+        "用了 {count} 个工具"
+      ],
+      "made": [
+        "编辑了 1 处",
+        "编辑了 {count} 处"
+      ],
+      "edits": [
+        "1 处编辑",
+        "{count} 处编辑"
+      ],
+      "tools": [
+        "1 个工具",
+        "{count} 个工具"
+      ],
+      "thoughts": [
+        "1 次思考",
+        "{count} 次思考"
+      ],
+      "errors": [
+        "1 个出错",
+        "{count} 个出错"
+      ],
+      "thought_for": "思考了 {elapsed}",
+      "spawned": [
+        "派了 1 个子代理",
+        "派了 {count} 个子代理"
+      ],
+      "messaged": [
+        "给 1 个子代理留言",
+        "给 {count} 个子代理留言"
+      ],
+      "agents": [
+        "1 个子代理",
+        "{count} 个子代理"
+      ],
+      "messages": [
+        "1 条留言",
+        "{count} 条留言"
+      ],
+      "messaged_sessions": [
+        "给 1 个会话留言",
+        "给 {count} 个会话留言"
+      ]
+    }
+  },
+  "markdown": {
+    "code": "代码",
+    "copy_code": "复制代码"
+  },
+  "media": {
+    "image_failed": "图片载入失败",
+    "fullscreen": "铺满整页",
+    "progress": "播放进度",
+    "volume": "音量",
+    "download": "下载",
+    "play": "播放",
+    "pause": "暂停",
+    "mute": "静音",
+    "unmute": "取消静音",
+    "audio_failed": "放不了"
+  },
+  "artifacts": {
+    "toggle": "预览工作区",
+    "preview": "预览",
+    "source": "源码",
+    "copy": "复制",
+    "download": "下载",
+    "maximize": "最大化",
+    "restore": "还原",
+    "close": "关闭",
+    "list": "产物列表",
+    "loading": "载入中…",
+    "failed": "文件载入失败",
+    "resize": "拖动改宽度",
+    "types": {
+      "markdown": "MD",
+      "html": "HTML",
+      "image": "图片",
+      "video": "视频",
+      "code": "代码",
+      "text": "文字"
+    },
+    "failed_with": "文件载入失败：{reason}"
+  },
+  "commands": {
+    "header": "命令 · {count} 条",
+    "unknown": "命令不存在",
+    "fake": "/{name} 是演示用的假命令，还不做事",
+    "not_open": "这个会话还没有开",
+    "undone": "已撤销",
+    "theme_changed": "主题：{name}",
+    "nothing_to_copy": "还没有能复制的回答",
+    "undone_jobs": "已撤销 · 停掉了 {count} 个任务",
+    "language_changed": "界面语言：{name}",
+    "language_unknown": "没有这种语言：能写 {choices}",
+    "recap_working": "正在回顾…"
+  },
+  "language": {
+    "title": "界面语言",
+    "hint": "↑↓ 选择 · Enter 切换 · Esc 关闭",
+    "auto": "跟着浏览器（{name}）",
+    "current": "当前"
+  },
+  "history": {
+    "title": "历史",
+    "count": "{count} 条",
+    "search": "搜索",
+    "hint": "↑↓ 选择 · Tab 看全文 · Enter 填进输入框 · Esc 关闭",
+    "empty": "历史发送为空",
+    "no_match": "没有对得上的",
+    "lines": " · +{count} 行",
+    "more": "⋮ 还有 {count} 行",
+    "attachments": " · {count} 个附件",
+    "attachments_only": "{count} 个附件"
+  },
+  "session_list": {
+    "title": "会话",
+    "count": "{count} 个",
+    "count_of": "{shown} / {total} 个",
+    "search": "搜索标题、编号",
+    "no_match": "没有对得上的会话",
+    "loading": "正在读会话…",
+    "hint": "↑↓ 选 · Enter 打开 · Esc 关"
+  },
+  "mention": {
+    "title": "@{word} · {count} 个",
+    "partial": "只列了一部分，打 / 按目录找",
+    "partial_layer": "只列了前 {shown} 个，接着打名字",
+    "no_match": "没有对得上的",
+    "hint": "↑↓ 选择 · Tab 进目录 · Enter 选定 · Esc 关闭",
+    "no_api": "核心太旧，列不了文件：换新的核心",
+    "reasons": {
+      "path_unreadable": "这个目录读不了",
+      "path_forbidden": "GQY 自己的数据不列"
+    }
+  },
+  "refusals": {
+    "nothing_to_revert": "没有能撤销的",
+    "nothing_to_unrevert": "没有能恢复的撤销",
+    "nothing_to_compact": "上下文过少",
+    "turn_running": "回答进行中：先打断，或者等它做完",
+    "unknown_turn": "找不到要撤的那一轮",
+    "restoring": "上一次撤销、恢复还没做完，稍等",
+    "not_redoable": "无法重做",
+    "not_running": "没在回答",
+    "empty_message": "改完一个字都不剩了",
+    "unknown_attachment": "附件找不到了，重新传一次",
+    "attachment_too_big": "附件太大了（最多 20 MiB，图片最多 5 MiB、每边 8000 像素）",
+    "attachment_unreadable": "附件读不了",
+    "attachment_in_data_root": "不能从 GQY 的数据目录里拿附件",
+    "session_not_found": "这个会话已经不在了",
+    "nothing_to_clear": "上下文为空",
+    "nothing_to_recap": "还没有可回顾的内容",
+    "recap_failed": "回顾没写成，再要一次就是",
+    "unknown_model": "配置里没有这个模型或者池"
+  },
+  "said": {
+    "copy": "复制",
+    "edit": "编辑",
+    "redo": "重做",
+    "cancel": "取消",
+    "send": "发送",
+    "download": "下载 {name}",
+    "from": "来自「{title}」",
+    "from_session": "从会话 {id}「{title}」收到消息"
+  },
+  "esc_interrupt_hint": "再按一次 Esc 打断",
+  "interrupt": "打断",
+  "slot_failed": "这一块出错了（{owner}：{reason}）",
+  "pkg": {
+    "title": "软件包",
+    "note": "停用、启用当场生效，记在这个浏览器里",
+    "base": "基础系统",
+    "enable": "启用",
+    "disable": "停用",
+    "close": "关闭",
+    "states": {
+      "active": "就绪",
+      "pending": "等着",
+      "failed": "故障",
+      "disabled": "停了",
+      "idle": "还没起",
+      "disposed": "撤回了"
+    },
+    "missing": "缺 {names}"
+  },
+  "status_hints": {
+    "429": "被限速了，或者额度不够，过一会儿再试",
+    "402": "额度用完了",
+    "404": "找不到，检查端点地址和模型名"
+  },
+  "notes": {
+    "command": {
+      "name": "后台命令",
+      "done": "后台命令完成 · {title}",
+      "failed": "后台命令失败 · {title} · 退出码 {code}",
+      "signal": "后台命令失败 · {title} · 信号 {signal}",
+      "stopped": "后台命令已停止 · {title}",
+      "undone": "后台命令随撤销停止 · {title}",
+      "restarted": "后台命令因重启停止 · {title}",
+      "aborted": "后台命令中断：核心退出过 · {title}"
+    },
+    "agent": {
+      "name": "子代理",
+      "done": "子代理交回报告 · {title}",
+      "stopped": "子代理已停止 · {title}",
+      "undone": "子代理随撤销停止 · {title}",
+      "restarted": "子代理因重启停止 · {title}",
+      "aborted": "子代理中断：核心退出过 · {title}"
+    },
+    "unknown": "{what} · {title} · {reason}",
+    "compacted": "上下文已压缩",
+    "cleared": "上下文已清空",
+    "instructions": " · 要求：{text}",
+    "agent_speaker": "子代理 · {title}",
+    "harness_speaker": "{name} · 别的 agent",
+    "agent_plain": "子代理",
+    "external": "外部",
+    "tail": "只显示最后 {count} 行",
+    "no_output": "没有存下输出",
+    "truncated": "（中间截过）",
+    "loading": "正在取…",
+    "load_failed": "取不到：{reason}",
+    "command_label": "命令",
+    "output_label": "输出",
+    "parent_speaker": "派它的会话",
+    "recap": "回顾",
+    "compact_failed": "压缩失败：{reason}",
+    "compacted_stats": "上下文已压缩：{before} → {after} token",
+    "compacting": "正在压缩上下文",
+    "compacting_count": "{count} 字",
+    "session_speaker": "从会话 {id} 收到消息",
+    "peer": {
+      "idle": "会话 {id} 回复了",
+      "idle_status": "会话 {id} 回复：{status}",
+      "expired": "会话 {id} 一直没空下来，不等了",
+      "gone": "会话 {id} 不在了，不等了",
+      "unknown": "会话 {id} · {reason}"
+    },
+    "changed": "换到 {to}：原来的出错了",
+    "model_replaced": "{from} 没了，换回 {to}"
+  },
+  "ago": {
+    "now": "刚才",
+    "minutes": "{n} 分钟前",
+    "hours": "{n} 小时前",
+    "days": "{n} 天前",
+    "date": "{m} 月 {d} 日",
+    "full": "{y} 年 {m} 月 {d} 日"
+  },
+  "interrupted_jobs": " · 后台还有 {count} 个在跑，打断不停它们",
+  "sessions_page": {
+    "title": "全部会话",
+    "search": "搜索会话",
+    "select": "多选",
+    "new": "新会话",
+    "untitled": "没有标题",
+    "empty": "还没有会话",
+    "no_match": "没有找到",
+    "jobs": "{count} 个后台任务",
+    "agents": "{count} 个子代理"
+  },
+  "turn_end": {
+    "restarted": "已重启",
+    "aborted": "核心上次在这一轮崩了，没做完",
+    "step_limit": "请求次数到了上限，停了"
+  },
+  "jump_bottom": "回到最底下",
+  "stash": {
+    "mark": "已暂存",
+    "hint": "Ctrl+S 取回",
+    "stashed": "已暂存 · Ctrl+S 取回",
+    "empty": "没有暂存的"
+  },
+  "model_menu": {
+    "tip": "换模型",
+    "models": "模型",
+    "pools": "模型池",
+    "pin": "出错换下一个",
+    "rotate": "轮流用",
+    "cooling": "冷却到 {time}",
+    "no_key": "没设 key",
+    "failed": "拿不到模型列表：{message}",
+    "loading": "正在读模型列表…",
+    "empty": "没有配模型",
+    "effort": {
+      "title": "思考强度",
+      "default": "默认",
+      "levels": {
+        "off": "关",
+        "minimal": "极低",
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "xhigh": "更高",
+        "max": "最高",
+        "on": "开"
+      }
+    },
+    "no_pools": "还没有配模型池"
+  },
+  "login": {
+    "title": "登录",
+    "user": "用户名",
+    "password": "密码",
+    "submit": "登录",
+    "bad_user": "用户名要小写字母开头，只有小写字母、数字、- 和 _",
+    "setup": {
+      "title": "设一个登录用的用户名和密码",
+      "hint": "第一次用（或者重设）：设好以后用它们登录，这台设备上记 30 天。",
+      "submit": "设好，进去"
+    },
+    "long_user": "用户名最多 32 个字符",
+    "short_password": "密码至少 8 个字符",
+    "long_password": "密码最多 1024 个字符",
+    "blank_password": "密码不能只有空白"
+  }
+}

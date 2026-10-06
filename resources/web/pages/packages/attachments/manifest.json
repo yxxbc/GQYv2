@@ -1,0 +1,107 @@
+{
+  "id": "attachments",
+  "version": "0.1.0",
+  "name": {
+    "zh": "附件",
+    "ja": "添付ファイル"
+  },
+  "kind": "optional",
+  "description": {
+    "zh": "输入框里放图片和文件：回形针、拖进来、粘贴；分块传给核心存好（有本机路径的直接 blob.put），跟着话一起发。"
+  },
+  "inject": [
+    "slots",
+    "core",
+    "host",
+    "composer"
+  ],
+  "settings": {
+    "max_files": {
+      "type": "number",
+      "default": 10,
+      "min": 1,
+      "integer": true,
+      "name": {
+        "zh": "一次最多放几个"
+      }
+    },
+    "max_mib": {
+      "type": "number",
+      "default": 20,
+      "min": 1,
+      "max": 20,
+      "name": {
+        "zh": "一个最大多少 MiB（核心最多收 20）"
+      }
+    },
+    "count_lines_max": {
+      "type": "number",
+      "default": 1048576,
+      "min": 0,
+      "integer": true,
+      "name": {
+        "zh": "文字文件多大以内数有几行（字节）"
+      }
+    },
+    "chunk_bytes": {
+      "type": "number",
+      "default": 524288,
+      "min": 1024,
+      "max": 524288,
+      "integer": true,
+      "name": {
+        "zh": "分块传给核心时一块多少字节（核心收的上限 512 KiB）",
+        "ja": "コアへ分割して送るときの 1 ブロックのバイト数（コアの上限 512 KiB）"
+      }
+    },
+    "resume_tries": {
+      "type": "number",
+      "default": 3,
+      "min": 1,
+      "integer": true,
+      "name": {
+        "zh": "传的时候接不上，连着几次没往前走就算传不上",
+        "ja": "送信が続かないとき、何回連続で進まなければ失敗とみなすか"
+      }
+    }
+  },
+  "styles": [
+    "style.css"
+  ],
+  "text": {
+    "zh": {
+      "attach": "添加附件",
+      "remove": "拿掉",
+      "uploading": "在传",
+      "too_big": "{name} 太大：一个最多 {mib} MiB",
+      "too_many": "一次最多 {max} 个",
+      "failed": "{name} 没传上：{reason}",
+      "reasons": {
+        "attachment_too_big": "太大了（最多 20 MiB，图片最多 5 MiB、每边 8000 像素）",
+        "attachment_unreadable": "读不了",
+        "attachment_in_data_root": "GQY 的数据目录里的文件不能当附件",
+        "upload_unknown": "上传作废了：连接断过，或者停了太久",
+        "too_many_uploads": "同时在传的太多了"
+      },
+      "drop_here": "把文件拖到这里",
+      "lines": "{count} 行"
+    },
+    "ja": {
+      "attach": "ファイルを添付",
+      "remove": "外す",
+      "uploading": "アップロード中",
+      "too_big": "{name} が大きすぎます：1 つ最大 {mib} MiB まで",
+      "too_many": "一度に最大 {max} 個まで",
+      "failed": "{name} をアップロードできませんでした：{reason}",
+      "reasons": {
+        "attachment_too_big": "大きすぎます（最大 20 MiB、画像は最大 5 MiB・各辺 8000 ピクセルまで）",
+        "attachment_unreadable": "読み込めません",
+        "attachment_in_data_root": "GQY のデータディレクトリにあるファイルは添付できません",
+        "upload_unknown": "アップロードが無効になりました：接続が切れたか、長く止まっていました",
+        "too_many_uploads": "同時にアップロードしている数が多すぎます"
+      },
+      "drop_here": "ここにファイルをドロップ",
+      "lines": "{count} 行"
+    }
+  }
+}

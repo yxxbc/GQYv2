@@ -1,0 +1,57 @@
+/* 登录那一屏（施工 网页并进，核心 W-8）：第一次用一次性码设用户名密码、以后登录。
+   和「连不上核心」那张卡（`base.css` 的 `.boot-card`）同一个位置、同一套颜色：页面正中一张卡，整屏不留白。
+   颜色全从主题来（`--surface`、`--surface-1`、`--text`、`--accent`）。
+   登录时主题包还没挂上（它是个软件包，握手以后才起），所以这里给四个底色变量一组回退：深浅各一套，
+   照系统的 `prefers-color-scheme` 选（和控制台、`.boot-card` 的回退一个想法）。 */
+
+:root {
+  --login-surface: #1a1b26;
+  --login-card: #1f2233;
+  --login-text: #c0caf5;
+  --login-soft: #9aa3c7;
+  --login-line: #2e3348;
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --login-surface: #f5f2ec;
+    --login-card: #ffffff;
+    --login-text: #2b2724;
+    --login-soft: #6b655e;
+    --login-line: #ddd8d0;
+  }
+}
+
+#app.login { display: grid; min-height: 100vh; place-items: center; padding: 16px; }
+/* 登录时整页给底色：`base.css` 那句 `body { background: var(--surface) }` 现在还没变量（主题包没起），会用空的 */
+body:has(#app.login) { background: var(--surface, var(--login-surface)); color: var(--text, var(--login-text)); }
+
+.login {
+  display: flex; flex-direction: column; gap: 14px;
+  width: min(360px, 100%); padding: 24px 26px; border-radius: 14px;
+  background: var(--surface-1, var(--login-card)); color: var(--text, var(--login-text));
+  box-shadow: var(--float-shadow, 0 10px 30px -12px rgba(0, 0, 0, 0.35));
+}
+.login h1 { margin: 0; font-size: 17px; font-weight: 600; }
+.login-hint { margin: 0; font-size: 13px; line-height: 1.7; color: var(--text-soft, var(--login-soft)); }
+
+/* 一项：名字一行，下面的输入框占满 */
+.login label { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--text-soft, var(--login-soft)); }
+.login input {
+  padding: 9px 11px; border: 1px solid var(--line, var(--login-line)); border-radius: 9px;
+  background: var(--surface, var(--login-surface)); color: var(--text, var(--login-text));
+  font: inherit; font-size: 14px;
+}
+.login input:focus { outline: 2px solid color-mix(in srgb, var(--accent, #7aa2f7) 55%, transparent); outline-offset: 1px; border-color: transparent; }
+
+.login button {
+  margin-top: 2px; padding: 10px 14px; border: 0; border-radius: 9px;
+  background: var(--accent, #7aa2f7); color: var(--on-primary, var(--login-surface));
+  font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.login button:hover { background: color-mix(in srgb, var(--accent, #7aa2f7) 88%, var(--text, var(--login-text))); }
+.login button:disabled { opacity: 0.55; cursor: default; }
+
+/* 填得不对时那一行：红字，就在按钮上面 */
+.login-bad { margin: 0; font-size: 13px; line-height: 1.6; color: var(--danger, #f7768e); }
+.login-bad[hidden] { display: none; }
+

@@ -39,6 +39,23 @@ jobs:
       - name: 门禁
         run: cargo xtask check
 
+  # 网页那一层（施工 网页并进）：页面是原生 JavaScript（不用构建），410 条测试拿仓库里事件的样本当底料，
+  # 在 node 里跑，不开浏览器。只上 Linux：纯逻辑，不碰平台，三个平台都跑就白花时间。
+  # Node 22 起 `node --test <目录>` 会被当成模块解析，要进目录跑（上游 README 里那一行已经不准）。
+  pages:
+    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: '22'
+      - name: 网页那一层
+        working-directory: crates/gqy-web/tests/pages
+        run: node --test
+
   # 长跑：随机测试接着平时的往后跑两万例（照 niri 的 randomized-tests，施工 2-10）。平时的
   # cargo test 和本地门禁跳过这几个 #[ignore] 的测试；纯逻辑不碰平台，只在 Linux 上、release 模式跑。
   randomized:
