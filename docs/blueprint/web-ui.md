@@ -21,7 +21,8 @@
 | `crates/gqy-web/src/media/range.rs` | `Range` 要哪一段；下载的名字照 RFC 5987 转义 |
 | `crates/gqy-web/src/open.rs`、`texts.rs` | `open`：确保 `serve` 在跑；要一次性码；开浏览器；给人看的字 |
 | `crates/gqy-web/src/settings.rs`、`resources/web/web.json` | 出厂的端口（8300）、空闲多久、内容安全策略、页面的媒体类型；票据多久不用作废、最多几张（W-10） |
-| `resources/web/pages/` | 页面文件。M9 的网页搬进主仓库以前是空的，开发时设 `GQY_WEB_PAGES` 指到网页演示的 `web-demo/` |
+| `resources/web/pages/` | 页面文件（施工 网页并进）：`index.html` 入口，`src/` 页面代码（宿主、内核、模型、Markdown、界面）、`styles/` 样式、`packages/` 页面自己的软件包、`resources/` 页面的字与主题、`vendor/` 第三方的 Prism 与 KaTeX（见 `licenses.md`）、`distro.json` 发行版清单 |
+| `crates/gqy-web/tests/pages/` | 页面那一层的测试（Node 跑：进这个目录 `node --test`；Node 22 起 `node --test <目录>` 会被当成模块解析） |
 | `crates/gqy-cli/src/web.rs`、`help/{zh,en}/web.txt` | 主程序的 `gqy web` 和它的帮助页 |
 | `crates/gqy-ipc/src/start.rs` 的 `spawn_detached` | 拉起、跟终端脱开、等那一行：核心和 `serve` 共用 |
 
@@ -38,7 +39,7 @@
 3. 空闲退出：没有 WebSocket 连着、没有 `/media` 在给，连续 10 分钟就退出（`web.json` 的出厂值），先删 `run/web`、再放锁。收到停的信号照样先删再放。
 4. 每个请求先核对 Host：只认 `127.0.0.1:<端口>`、`localhost:<端口>`、`[::1]:<端口>`，别的回 403。别的网站把自己的域名解析到回环地址也进不来（DNS rebinding）。
 5. 页面文件：`GET /` 给 `index.html`，别的照路径在页面目录里找。带 `..` 的、换成真实位置以后跑到页面目录外的、不是普通文件的，404。类型照扩展名（`web.json` 的表）。响应头一律带：`X-Content-Type-Options: nosniff`、`Referrer-Policy: no-referrer`、`Cache-Control: no-cache`、`Content-Security-Policy`（照 `web.json`，至少有 `connect-src 'self'`、`frame-ancestors 'none'`）。从来不设 cookie（「起草时定的」第 13 条）。
-6. 页面目录：`GQY_WEB_PAGES` 设了照它，不然是资源目录下的 `web/pages/`。资源目录照 `store/resources.md` 第 1 条找，和核心同一个办法。
+6. 页面目录：`GQY_WEB_PAGES` 设了照它，不然是资源目录下的 `web/pages/`（出厂就有页面，施工 网页并进；开发时 `GQY_WEB_PAGES` 指到别处）。资源目录照 `store/resources.md` 第 1 条找，和核心同一个办法。
 7. `GET /ws`：Origin 要正好是 `http://` 加上第 4 款三种之一（带端口），不然 403。接了以后连核心：`connect_or_start_bare`，核心没在跑就拉起来（命令是主程序 `gqy` 加 `core`，主程序在 `gqy-web` 的真实位置旁边）。连不上：往 WebSocket 发一条通知 `{"jsonrpc":"2.0","method":"web.error","params":{"message":<原因>}}`，再关。
 8. 一个标签页一条核心连接，不合并（proto/web-demo 分支 `docs/blueprint/web/architecture.md`「多用户、多终端」第 7 条）。两头照转：文字帧加一个 `\n` 是一行，一行去掉 `\n` 是一个文字帧。不读、不改、不加：握手的凭据、命令、推送原样过去。二进制帧：关，1003。一帧超过 1 MiB：关，1009（核心那头一行也就这么长）。
 9. 一头断了另一头跟着关。核心那头断了（重启、退出）：WebSocket 关，1012，页面照自己的规矩重连（proto/web-demo 分支 `docs/blueprint/web.md`「连核心」第 1 条）。网页软件这头关的（1003、1009、1012、连不上核心）：发完关闭帧先关写的一半，把浏览器还在发的读掉、扔掉，读到头或者满 2 秒再放套接字（「施工时定的」第 10 条）。

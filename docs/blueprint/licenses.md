@@ -73,6 +73,8 @@ GPL-3.0-or-later，见 `LICENSE`。
 | 文件 | 从哪来 | 许可证 | 怎么守 |
 |---|---|---|---|
 | `resources/models/models-dev.json` | models.dev 的 `api.json`（模型目录，施工 8-7） | MIT（models.dev 仓库的 `LICENSE`，2025 models.dev） | 原文放在旁边的 `models-dev.LICENSE`，跟着快照一起发。MIT 能和 GPL-3.0 合在一起发 |
+| `resources/web/pages/vendor/prism/` | [Prism](https://prismjs.com) 1.29.0（回答的 Markdown 代码上色，施工 网页并进）；照旧版网页挑的几种语言拼成一个文件，文件头写着怎么重拼 | MIT | 文件头留着出处和拼法；页面只从本机取、不往外连。施工 网页并进 登记 |
+| `resources/web/pages/vendor/katex/` | [KaTeX](https://katex.org) 0.18.4（公式，连字体；施工 网页并进） | MIT | 同上。两个都只往本机发，不是 Rust 依赖，门禁的「许可证」一项查不到，在这里登记 |
 
 - 施工 8-7 定的（2026-10-01，施工员确认，主会话同意照图纸带快照）：快照约 5.3 MB，进仓库压缩以后约 0.5 MB，仓库的包原来约 13.5 MB，涨不到 4%。刷新一次快照是一次替换，照「怎么刷新」（`store/resources.md`）做。
 
