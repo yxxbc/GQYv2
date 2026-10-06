@@ -3,6 +3,17 @@
 
 本项目的变更记录遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)；版本号遵循 [Semantic Versioning](https://semver.org/lang/zh-CN/)。
 
+## [0.6.0](https://github.com/yxxbc/GQYv2/compare/v0.5.0...v0.6.0) (2026-10-06)
+
+
+### Added
+
+* **cli:** 施工 8-24：gqy config 拉起终端界面停在配置页 ([bdd778a](https://github.com/yxxbc/GQYv2/commit/bdd778a4dc4fa0af8adef1f09737c821195f444d))
+* **models:** 施工 8-22：模型默认温度 ([9b27390](https://github.com/yxxbc/GQYv2/commit/9b273902397d6162d87797f7d16158a79a5a1534))
+* **models:** 施工 8-23：下架的模型移出池 ([76f75a2](https://github.com/yxxbc/GQYv2/commit/76f75a28a2dc0d25bbc6e7d136708c85cba83e9a))
+* **tui:** 施工 演示并进：终端界面并进主仓库 ([0c19378](https://github.com/yxxbc/GQYv2/commit/0c19378452cfaa50d8f34632a863ca5383f4cc47))
+* **web:** 施工 网页并进：页面进资源目录、登录接上核心、桥删掉 ([bfb41fd](https://github.com/yxxbc/GQYv2/commit/bfb41fd8c629af20eb43c512b8f85db87a8b0b33))
+
 ## [0.5.0](https://github.com/yxxbc/GQYv2/compare/v0.4.0...v0.5.0) (2026-09-28)
 
 
