@@ -35,7 +35,7 @@ jobs:
       # 编译产物的缓存（施工 演示并进）。
       # 键里自带 job 和操作系统，所以三个平台、长短跑之间天然分开，不用另写 shared-key。
       # 只缓存 `~/.cargo` 的 registry 和仓库的 `target/`，密钥、数据根一概不碰。
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - name: 门禁
         run: cargo xtask check
 
@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
       - name: 网页那一层
@@ -68,6 +68,6 @@ jobs:
           persist-credentials: false
       - name: 装上 rust-toolchain.toml 钉住的工具链
         run: rustup toolchain install
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2.9.3
       - name: 长跑
         run: cargo test --release --workspace -- --ignored
